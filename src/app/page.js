@@ -1,12 +1,19 @@
-
+'use client'
 import React from "react";
-import { Requirements } from "xd-ui-kit";
-
+import apiService from "@/API/ApiService";
+ 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      {/* <button className="btn btn-primary">Primary</button> */}
-      <Requirements />
+    <div className="">
+      <h1 className="text-3xl font-bold underline">Hello world!</h1>
+      <button
+        onClick={() => {
+          apiService("get", "tenant/all").then((data) => console.log(data));
+        }}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      >
+        Fetch Tenants
+      </button>
     </div>
   );
 }
