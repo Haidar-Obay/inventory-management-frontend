@@ -1,6 +1,6 @@
 "use client";
 import { useParams } from "next/navigation";
-import apiService from "@/API/ApiService";
+import apiService from "@/API/CentralApiService";
 export default function TenantHome() {
   const { tenant } = useParams();
 

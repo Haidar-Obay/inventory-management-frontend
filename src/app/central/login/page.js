@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import apiService from "@/API/ApiService"; // adjust path if needed
+import apiService from "@/API/CentralApiService"; // adjust path if needed
 
 export default function CentralLoginPage() {
   const [email, setEmail] = useState("");

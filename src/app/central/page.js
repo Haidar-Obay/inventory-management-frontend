@@ -1,6 +1,6 @@
 'use client'
 import React from "react";
-import apiService from "@/API/ApiService";
+import apiService from "@/API/CentralApiService";
 
 export default function Home() {
   return (
