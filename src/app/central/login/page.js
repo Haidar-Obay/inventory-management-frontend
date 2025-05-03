@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import apiService from "@/API/CentralApiService"; // adjust path if needed
+import CentralApiService from "@/API/CentralApiService";
 
 export default function CentralLoginPage() {
   const [email, setEmail] = useState("");
@@ -16,11 +16,11 @@ export default function CentralLoginPage() {
     setError("");
 
     try {
-      const data = await apiService("post", "login", { email, password });
+      const data = await CentralApiService("post", "login", { email, password });
 
       console.log("Login Response:", data);
 
-      localStorage.setItem("central_token", data.token); // ✅ central only
+      localStorage.setItem("central_token", data.access_token);
       setToken(data.token);
 
       router.push("/central/");

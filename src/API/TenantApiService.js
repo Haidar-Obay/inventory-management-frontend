@@ -13,7 +13,7 @@ const tenantApiService = async (method, endpoint, data = null) => {
     return;
   }
 
-  const url = `http://${hostname}:${TENANT_API_PORT}/api/${endpoint}`;
+  const url = `http://${hostname}:${TENANT_API_PORT}/${endpoint}`;
   const token = localStorage.getItem(TENANT_TOKEN_KEY);
 
   const headers = {
