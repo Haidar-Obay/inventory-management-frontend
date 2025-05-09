@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import CentralApiService from "@/API/CentralApiService";
+import { Loader2, ExternalLink, ChevronRight } from "lucide-react";
+import { Button, Input } from "xd-ui-kit";
 
 export default function CentralLoginPage() {
   const [email, setEmail] = useState("");
@@ -16,7 +18,10 @@ export default function CentralLoginPage() {
     setError("");
 
     try {
-      const data = await CentralApiService("post", "login", { email, password });
+      const data = await CentralApiService("post", "login", {
+        email,
+        password,
+      });
 
       console.log("Login Response:", data);
 
@@ -60,6 +65,20 @@ export default function CentralLoginPage() {
         {error && <p style={{ color: "red" }}>{error}</p>}
         {token && <p style={{ color: "green" }}>✅ Token saved!</p>}
       </form>
+      
+      <Button
+      rightIcon={<ChevronRight className="transition-transform group-hover:translate-x-1" />}
+      className="group"
+      loading={true}
+      loadingText="Loading"
+      // fullWidth={true}
+      rounded={true}
+      sizeStyles="lg"
+    >
+      children
+    </Button>
+
+      <Input placeholder="XD input" className="transition-all duration-200 " />
     </div>
   );
 }
