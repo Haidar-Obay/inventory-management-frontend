@@ -10,6 +10,9 @@ export function MainLayout({ children }) {
   const [userRole, setUserRole] = useState("user")
 
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     // Get user role from localStorage
     const storedRole = localStorage.getItem("userRole") || "user"
     setUserRole(storedRole)
@@ -24,7 +27,9 @@ export function MainLayout({ children }) {
   const toggleSidebar = () => {
     const newState = !isSidebarCollapsed
     setIsSidebarCollapsed(newState)
-    localStorage.setItem("sidebarState", newState ? "collapsed" : "expanded")
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("sidebarState", newState ? "collapsed" : "expanded")
+    }
   }
 
   return (

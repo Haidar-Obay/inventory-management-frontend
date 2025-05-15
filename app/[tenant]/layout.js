@@ -1,8 +1,6 @@
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
-import { Toaster } from "@/components/ui/toaster"
 import { MainLayout } from "@/components/layout/main-layout"
-import "../../styles/globals.css";
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -14,10 +12,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <MainLayout>{children}</MainLayout>
-          <Toaster />
+      <body className={inter.className} suppressHydrationWarning>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            <MainLayout>{children}</MainLayout>
         </ThemeProvider>
       </body>
     </html>

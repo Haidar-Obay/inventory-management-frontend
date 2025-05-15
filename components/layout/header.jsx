@@ -16,12 +16,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import { SidebarTrigger } from "@/components/ui/sidebar"
-import { useToast } from "@/hooks/use-toast"
+import { toast } from "@/components/ui/simple-toast"
+
 
 export function Header({ toggleSidebar }) {
   const { theme, setTheme } = useTheme()
-  const { toast } = useToast()
+ 
   const [searchQuery, setSearchQuery] = useState("")
   const [notifications, setNotifications] = useState([
     { id: 1, message: "New user registered", time: "2 hours ago", read: false },
@@ -35,29 +35,29 @@ export function Header({ toggleSidebar }) {
   const handleSearch = (e) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      toast({
+      toast.info({
         title: "Search initiated",
         description: `Searching for: ${searchQuery}`,
-        className: "toast-info",
+        duration: 3000,
       })
     }
   }
 
   const markAllAsRead = () => {
     setNotifications(notifications.map((n) => ({ ...n, read: true })))
-    toast({
+    toast.success({
       title: "Notifications",
       description: "All notifications marked as read",
-      className: "toast-success",
+      duration: 3000,
     })
   }
 
   const clearNotifications = () => {
     setNotifications([])
-    toast({
+    toast.info({
       title: "Notifications",
       description: "All notifications cleared",
-      className: "toast-info",
+      duration: 3000,
     })
   }
 
@@ -73,39 +73,47 @@ export function Header({ toggleSidebar }) {
 
   const changeLanguage = (language) => {
     setCurrentLanguage(language)
-    toast({
+    toast.info({
       title: "Language Changed",
       description: `Language set to ${language.name}`,
-      className: "toast-info",
+      duration: 3000,
     })
   }
 
   // Function to show different types of toast notifications
   const showToast = (type) => {
     const toastConfig = {
-      success: {
-        title: "Success",
-        description: "Operation completed successfully",
-        className: "toast-success",
+      success: () => {
+        toast.success({
+          title: "Success",
+          description: "Operation completed successfully",
+          duration: 3000,
+        })
       },
-      error: {
-        title: "Error",
-        description: "An error occurred during the operation",
-        className: "toast-error",
+      error: () => {
+        toast.error({
+          title: "Error",
+          description: "An error occurred during the operation",
+          duration: 3000,
+        })
       },
-      warning: {
-        title: "Warning",
-        description: "Please be cautious with this action",
-        className: "toast-warning",
+      warning: () => {
+        toast.warning({
+          title: "Warning",
+          description: "Please be cautious with this action",
+          duration: 3000,
+        })
       },
-      info: {
-        title: "Information",
-        description: "Here's some information you might find useful",
-        className: "toast-info",
+      info: () => {
+        toast.info({
+          title: "Information",
+          description: "Here's some information you might find useful",
+          duration: 3000,
+        })
       },
     }
 
-    toast(toastConfig[type])
+    toastConfig[type]()
   }
 
   return (
@@ -227,13 +235,34 @@ export function Header({ toggleSidebar }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Settings</DropdownMenuLabel>
+              <DropdownMenuLabel>Appearance</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Preferences</DropdownMenuItem>
-              <DropdownMenuItem>Notifications</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("light")}>
+                <Sun className="mr-2 h-4 w-4" />
+                Light
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("dark")}>
+                <Moon className="mr-2 h-4 w-4" />
+                Dark
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("system")}>
+                <Settings className="mr-2 h-4 w-4" />
+                System
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Help & Support</DropdownMenuItem>
+              <DropdownMenuLabel>Toast Examples</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => showToast("success")}>
+                Success Toast
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => showToast("error")}>
+                Error Toast
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => showToast("warning")}>
+                Warning Toast
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => showToast("info")}>
+                Info Toast
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 

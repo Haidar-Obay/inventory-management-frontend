@@ -26,16 +26,19 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
-import { useToast } from "@/hooks/use-toast"
+import { toast } from "@/components/ui/simple-toast"
+import { SidebarItem } from "@/components/layout/SidebarItem"
+import { menuItems } from "@/constants/menuItems"
+
 
 export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
-  const { toast } = useToast()
   const [bookmarks, setBookmarks] = useState([])
   const [activeItem, setActiveItem] = useState("dashboard")
   const [openGroups, setOpenGroups] = useState({
     dashboard: true,
     management: false,
     settings: false,
+    testing: false,
   })
 
   useEffect(() => {
@@ -44,27 +47,32 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
     if (storedBookmarks) {
       setBookmarks(JSON.parse(storedBookmarks))
     }
+
+    // Initialize openGroups state for all menu categories
+    const groupKeys = Object.keys(menuItems).filter(key => key !== 'support');
+    const initialOpenGroups = groupKeys.reduce((acc, key) => {
+      acc[key] = key === 'dashboard'; // Only dashboard is open by default
+      return acc;
+    }, {});
+    
+    setOpenGroups(initialOpenGroups);
   }, [])
 
   const toggleBookmark = (item) => {
     let newBookmarks
     if (bookmarks.includes(item)) {
       newBookmarks = bookmarks.filter((b) => b !== item)
-      toast({
+      toast.info({
         title: "Bookmark Removed",
         description: `${item} has been removed from bookmarks`,
-        variant: "default",
-        type: "info",
-        className: "toast-info",
+        duration: 3000,
       })
     } else {
       newBookmarks = [...bookmarks, item]
-      toast({
+      toast.info({
         title: "Bookmark Added",
         description: `${item} has been added to bookmarks`,
-        variant: "default",
-        type: "info",
-        className: "toast-info",
+        duration: 3000,
       })
     }
     setBookmarks(newBookmarks)
@@ -76,34 +84,84 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
       ...openGroups,
       [group]: !openGroups[group],
     })
+    
+    // If sidebar is collapsed, expand it when clicking a group
+    if (isCollapsed) {
+      toggleSidebar();
+      
+      // Set all groups to closed except the clicked one
+      const updatedGroups = {};
+      Object.keys(openGroups).forEach(key => {
+        updatedGroups[key] = (key === group);
+      });
+      
+      setOpenGroups(updatedGroups);
+    }
   }
 
-  // Define menu items based on user role
-  const menuItems = {
-    dashboard: [
-      { name: "Overview", icon: Home, path: "/" },
-      { name: "Analytics", icon: BarChart3, path: "/analytics" },
-      { name: "Reports", icon: FileText, path: "/reports" },
-    ],
-    management: [
-      { name: "Users", icon: Users, path: "/users", adminOnly: false },
-      { name: "Products", icon: Package, path: "/products", adminOnly: false },
-      { name: "Orders", icon: ShoppingCart, path: "/orders", adminOnly: false },
-      { name: "Invoices", icon: CreditCard, path: "/salesmen", adminOnly: false },
-      { name: "Customers", icon: Users, path: "/customers", adminOnly: false },
-    ],
-    settings: [
-      { name: "General", icon: Settings, path: "/settings/general", adminOnly: false },
-      { name: "Notifications", icon: Bell, path: "/settings/notifications", adminOnly: false },
-    ],
-    support: [
-      { name: "Contact Us", icon: Mail, path: "/contact" },
-    ],
+  const handleNavigation = (itemName) => {
+    setActiveItem(itemName.toLowerCase())
+    
+    // Show navigation toast only in collapsed mode to provide feedback
+    if (isCollapsed) {
+      toast.info({
+        title: "Navigating",
+        description: `Going to ${itemName}`,
+        duration: 2000,
+      })
+    }
+  }
+  
+  const handleLogout = () => {
+    toast.warning({
+      title: "Logging Out",
+      description: "You are being logged out of the system",
+      duration: 3000,
+    })
+    // Add actual logout logic here
+    // For now, we'll just show the toast
+  }
+
+  const clearAllBookmarks = () => {
+    if (bookmarks.length === 0) {
+      toast.info({
+        title: "No Bookmarks",
+        description: "You don't have any bookmarks to clear",
+        duration: 3000,
+      })
+      return
+    }
+    
+    setBookmarks([])
+    localStorage.removeItem("sidebarBookmarks")
+    toast.info({
+      title: "Bookmarks Cleared",
+      description: "All your bookmarks have been removed",
+      duration: 3000,
+    })
+  }
+
+  // Map string icon names to actual icon components
+  const iconMap = {
+    Home,
+    BarChart3,
+    FileText,
+    Users,
+    Settings,
+    Bell,
+    Mail,
+    LayoutDashboard,
+    LifeBuoy,
   }
 
   // Filter items based on user role
   const filterItemsByRole = (items) => {
     return items.filter((item) => !item.adminOnly || userRole === "admin")
+  }
+
+  // Get all menu items for bookmarks search
+  const getAllMenuItems = () => {
+    return Object.values(menuItems).flatMap(group => group.items || []);
   }
 
   return (
@@ -119,7 +177,7 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
             "flex items-center",
             isCollapsed ? "justify-center w-full" : "justify-start"
           )}>
-            <SidebarTrigger collapsed={isCollapsed} onClick={toggleSidebar} />
+            <SidebarTrigger collapsed={isCollapsed ? "true" : "false"} onClick={toggleSidebar} />
             {!isCollapsed && <span className="font-bold pl-2 text-lg">Brain</span>}
           </div>
         </div>
@@ -129,43 +187,40 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
               {bookmarks.length > 0 && (
                 <div className="mb-4">
                   <div className={cn("px-4 mb-2", isCollapsed ? "text-center" : "")}>
-                    {!isCollapsed && <h3 className="text-sm font-medium">Bookmarks</h3>}
+                    {!isCollapsed && (
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-medium">Bookmarks</h3>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={clearAllBookmarks} 
+                          className="h-6 text-xs text-primary-foreground/70 hover:text-primary-foreground"
+                        >
+                          Clear All
+                        </Button>
+                      </div>
+                    )}
                     {isCollapsed && <BookMarked className="h-5 w-5 mx-auto" />}
                   </div>
                   <ul className="space-y-1">
                     {bookmarks.map((bookmark) => {
-                      const allItems = [
-                        ...menuItems.dashboard,
-                        ...menuItems.management,
-                        ...menuItems.settings,
-                        ...menuItems.support,
-                      ]
+                      const allItems = getAllMenuItems();
                       const item = allItems.find((i) => i.name === bookmark)
                       if (!item) return null
 
+                      const Icon = iconMap[item.icon]
+
                       return (
                         <li key={bookmark}>
-                          {isCollapsed ? (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Link
-                                  href={item.path}
-                                  className="flex justify-center p-2 mx-2 rounded-md hover:bg-primary-foreground/10"
-                                >
-                                  <item.icon className="h-5 w-5" />
-                                </Link>
-                              </TooltipTrigger>
-                              <TooltipContent side="right">{item.name}</TooltipContent>
-                            </Tooltip>
-                          ) : (
-                            <Link
-                              href={item.path}
-                              className="flex items-center gap-3 px-4 py-2 hover:bg-primary-foreground/10 rounded-md mx-2"
-                            >
-                              <item.icon className="h-5 w-5" />
-                              <span>{item.name}</span>
-                            </Link>
-                          )}
+                          <SidebarItem
+                            name={item.name}
+                            icon={Icon}
+                            path={item.path}
+                            isCollapsed={isCollapsed}
+                            isActive={activeItem === item.name.toLowerCase()}
+                            onNavigate={handleNavigation}
+                            isBookmarked={bookmarks.includes(item.name)}
+                          />
                         </li>
                       )
                     })}
@@ -174,231 +229,115 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
                 </div>
               )}
 
-              {/* Dashboard Group */}
-              <Collapsible
-                open={openGroups.dashboard}
-                onOpenChange={() => !isCollapsed && toggleGroup("dashboard")}
-                className="mb-2"
-              >
-                <div className={cn("px-4 mb-1", isCollapsed ? "text-center" : "")}>
-                  {!isCollapsed ? (
-                    <CollapsibleTrigger asChild>
-                      <button className="flex items-center gap-2 w-full text-sm font-medium hover:bg-primary-foreground/10 p-2 rounded-md">
-                        <LayoutDashboard className="h-5 w-5" />
-                        <span>Dashboard</span>
-                        <ChevronDown
-                          className={cn(
-                            "h-4 w-4 ml-auto transition-transform duration-200",
-                            openGroups.dashboard ? "rotate-180" : "rotate-0",
-                          )}
-                        />
-                      </button>
-                    </CollapsibleTrigger>
-                  ) : (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button onClick={() => toggleGroup("dashboard")} className="w-full flex justify-center">
-                          <LayoutDashboard className="h-5 w-5" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent side="right">Dashboard</TooltipContent>
-                    </Tooltip>
-                  )}
-                </div>
-                <CollapsibleContent className={cn("space-y-1 mt-1", isCollapsed && "hidden")}>
-                  {menuItems.dashboard.map((item) => (
-                    <div key={item.name} className="flex items-center">
-                      <Link
-                        href={item.path}
-                        className={cn(
-                          "flex items-center  gap-2 px-8  py-1.5 hover:bg-primary-foreground/10 rounded-md mx-2 flex-1 text-sm",
-                          activeItem === item.name.toLowerCase() && "bg-primary-foreground/10 font-medium",
-                        )}
-                        onClick={() => setActiveItem(item.name.toLowerCase())}
-                      >
-                        <item.icon className="h-4 w-4" />
-                        {!isCollapsed && <span>{item.name}</span>}
-                      </Link>
-                      {!isCollapsed && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="mr-4 text-primary-foreground hover:bg-transparent focus:ring-0 focus:ring-offset-0 group"
-                          onClick={() => toggleBookmark(item.name)}
-                        >
-                          <Star className={cn("h-4 w-4 group-hover:text-yellow-400 group-hover:fill-yellow-400", bookmarks.includes(item.name) ? "fill-yellow-400 text-yellow-400" : "")} />
-                        </Button>
+              {/* Dynamic Menu Groups */}
+              {Object.entries(menuItems).map(([groupName, groupData]) => {
+                // Skip support as it's rendered separately
+                if (groupName === 'support') return null;
+                
+                // Check if the group has the new structure with items property
+                const groupItems = groupData.items || groupData;
+                const GroupIcon = iconMap[groupData.groupIcon] || LayoutDashboard;
+                
+                return (
+                  <Collapsible
+                    key={groupName}
+                    open={openGroups[groupName]}
+                    onOpenChange={() => !isCollapsed && toggleGroup(groupName)}
+                    className={cn("mb-2", isCollapsed && "mb-6")}
+                  >
+                    <div className={cn("px-4 mb-1", isCollapsed ? "text-center" : "")}>
+                      {!isCollapsed ? (
+                        <CollapsibleTrigger asChild>
+                          <button className="flex items-center gap-2 w-full text-[15px] font-medium hover:bg-primary-foreground/10 p-2 rounded-md">
+                            <GroupIcon className="h-5 w-5" />
+                            <span>{groupName.charAt(0).toUpperCase() + groupName.slice(1)}</span>
+                            <ChevronDown
+                              className={cn(
+                                "h-4 w-4 ml-auto transition-transform duration-200",
+                                openGroups[groupName] ? "rotate-180" : "rotate-0",
+                              )}
+                            />
+                          </button>
+                        </CollapsibleTrigger>
+                      ) : (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button 
+                              onClick={() => toggleGroup(groupName)} 
+                              className="w-full flex justify-center p-2 rounded-md transition-colors duration-200 hover:bg-primary-foreground/20 active:bg-primary-foreground/30"
+                            >
+                              <GroupIcon className="h-5 w-5" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="right">{groupName.charAt(0).toUpperCase() + groupName.slice(1)}</TooltipContent>
+                        </Tooltip>
                       )}
                     </div>
-                  ))}
-                </CollapsibleContent>
-              </Collapsible>
-
-              {/* Management Group */}
-              <Collapsible
-                open={openGroups.management}
-                onOpenChange={() => !isCollapsed && toggleGroup("management")}
-                className="mb-2"
-              >
-                <div className={cn("px-4 mb-1", isCollapsed ? "text-center" : "")}>
-                  {!isCollapsed ? (
-                    <CollapsibleTrigger asChild>
-                      <button className="flex items-center gap-2 w-full text-sm font-medium hover:bg-primary-foreground/10 p-2 rounded-md">
-                        <Users className="h-5 w-5" />
-                        <span>Management</span>
-                        <ChevronDown
-                          className={cn(
-                            "h-4 w-4 ml-auto transition-transform duration-200",
-                            openGroups.management ? "rotate-180" : "rotate-0",
-                          )}
-                        />
-                      </button>
-                    </CollapsibleTrigger>
-                  ) : (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button onClick={() => toggleGroup("management")} className="w-full flex justify-center">
-                          <Users className="h-5 w-5" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent side="right">Management</TooltipContent>
-                    </Tooltip>
-                  )}
-                </div>
-                <CollapsibleContent className={cn("space-y-1 mt-1", isCollapsed && "hidden")}>
-                  {filterItemsByRole(menuItems.management).map((item) => (
-                    <div key={item.name} className="flex items-center">
-                      <Link
-                        href={item.path}
-                        className={cn(
-                          "flex items-center gap-2 px-3 py-1.5 hover:bg-primary-foreground/10 rounded-md mx-2 flex-1 text-sm",
-                          activeItem === item.name.toLowerCase() && "bg-primary-foreground/10 font-medium",
-                        )}
-                        onClick={() => setActiveItem(item.name.toLowerCase())}
-                      >
-                        <item.icon className="h-4 w-4" />
-                        {!isCollapsed && <span>{item.name}</span>}
-                      </Link>
-                      {!isCollapsed && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="mr-4 text-primary-foreground hover:bg-transparent focus:ring-0 focus:ring-offset-0 group"
-                          onClick={() => toggleBookmark(item.name)}
-                        >
-                          <Star className={cn("h-4 w-4 group-hover:text-yellow-400 group-hover:fill-yellow-400", bookmarks.includes(item.name) ? "fill-yellow-400 text-yellow-400" : "")} />
-                        </Button>
-                      )}
-                    </div>
-                  ))}
-                </CollapsibleContent>
-              </Collapsible>
-
-              {/* Settings Group */}
-              <Collapsible
-                open={openGroups.settings}
-                onOpenChange={() => !isCollapsed && toggleGroup("settings")}
-                className="mb-2"
-              >
-                <div className={cn("px-4 mb-1", isCollapsed ? "text-center" : "")}>
-                  {!isCollapsed ? (
-                    <CollapsibleTrigger asChild>
-                      <button className="flex items-center gap-2 w-full text-sm font-medium hover:bg-primary-foreground/10 p-2 rounded-md">
-                        <Settings className="h-5 w-5" />
-                        <span>Settings</span>
-                        <ChevronDown
-                          className={cn(
-                            "h-4 w-4 ml-auto transition-transform duration-200",
-                            openGroups.settings ? "rotate-180" : "rotate-0",
-                          )}
-                        />
-                      </button>
-                    </CollapsibleTrigger>
-                  ) : (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button onClick={() => toggleGroup("settings")} className="w-full flex justify-center">
-                          <Settings className="h-5 w-5" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent side="right">Settings</TooltipContent>
-                    </Tooltip>
-                  )}
-                </div>
-                <CollapsibleContent className={cn("space-y-1 mt-1", isCollapsed && "hidden")}>
-                  {filterItemsByRole(menuItems.settings).map((item) => (
-                    <div key={item.name} className="flex items-center">
-                      <Link
-                        href={item.path}
-                        className={cn(
-                          "flex items-center gap-2 px-3 py-1.5 hover:bg-primary-foreground/10 rounded-md mx-2 flex-1 text-sm",
-                          activeItem === item.name.toLowerCase() && "bg-primary-foreground/10 font-medium",
-                        )}
-                        onClick={() => setActiveItem(item.name.toLowerCase())}
-                      >
-                        <item.icon className="h-4 w-4" />
-                        {!isCollapsed && <span>{item.name}</span>}
-                      </Link>
-                      {!isCollapsed && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="mr-4 text-primary-foreground hover:bg-transparent focus:ring-0 focus:ring-offset-0 group"
-                          onClick={() => toggleBookmark(item.name)}
-                        >
-                          <Star className={cn("h-4 w-4 group-hover:text-yellow-400 group-hover:fill-yellow-400", bookmarks.includes(item.name) ? "fill-yellow-400 text-yellow-400" : "")} />
-                        </Button>
-                      )}
-                    </div>
-                  ))}
-                </CollapsibleContent>
-              </Collapsible>
+                    <CollapsibleContent className={cn("space-y-1 mt-1", isCollapsed && "hidden")}>
+                      {filterItemsByRole(groupItems).map((item) => {
+                        const Icon = iconMap[item.icon]
+                        return (
+                          <SidebarItem
+                            key={item.name}
+                            name={item.name}
+                            icon={Icon}
+                            path={item.path}
+                            isCollapsed={isCollapsed}
+                            isBookmarked={bookmarks.includes(item.name)}
+                            isActive={activeItem === item.name.toLowerCase()}
+                            onNavigate={handleNavigation}
+                            onToggleBookmark={toggleBookmark}
+                            padding="px-8"
+                          />
+                        )
+                      })}
+                    </CollapsibleContent>
+                  </Collapsible>
+                );
+              })}
 
               {/* Support Links */}
-              <div className="px-4 mb-1 mt-4">
-                {!isCollapsed && <h3 className="text-sm font-medium p-2 bg-primary-foreground/5 rounded-md">Support</h3>}
+              <div className={cn("px-4 mb-1 mt-4", isCollapsed && "mb-6")}>
+                {!isCollapsed && <h3 className="text-[15px] font-medium p-2 bg-primary-foreground/5 rounded-md">Support</h3>}
+                {isCollapsed && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        className="w-full flex justify-center p-2 rounded-md transition-colors duration-200 hover:bg-primary-foreground/20 active:bg-primary-foreground/30"
+                        onClick={() => {
+                          if (isCollapsed) toggleSidebar();
+                        }}
+                      >
+                        <LifeBuoy className="h-5 w-5" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">Support</TooltipContent>
+                  </Tooltip>
+                )}
               </div>
-              <ul className="space-y-1 mt-1">
-                {menuItems.support.map((item) => (
-                  <li key={item.name}>
-                    {isCollapsed ? (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Link
-                            href={item.path}
-                            className="flex justify-center p-1.5 mx-2 rounded-md hover:bg-primary-foreground/10"
-                          >
-                            <item.icon className="h-4 w-4" />
-                          </Link>
-                        </TooltipTrigger>
-                        <TooltipContent side="right">{item.name}</TooltipContent>
-                      </Tooltip>
-                    ) : (
-                      <div className="flex items-center">
-                        <Link
-                          href={item.path}
-                          className={cn(
-                            "flex items-center gap-2 px-3 py-1.5 hover:bg-primary-foreground/10 rounded-md mx-2 flex-1 text-sm",
-                            activeItem === item.name.toLowerCase() && "bg-primary-foreground/10 font-medium",
-                          )}
-                          onClick={() => setActiveItem(item.name.toLowerCase())}
-                        >
-                          <item.icon className="h-4 w-4" />
-                          <span>{item.name}</span>
-                        </Link>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="mr-2 text-primary-foreground hover:bg-transparent focus:ring-0 focus:ring-offset-0 group"
-                          onClick={() => toggleBookmark(item.name)}
-                        >
-                          <Star className={cn("h-4 w-4 group-hover:text-yellow-400 group-hover:fill-yellow-400", bookmarks.includes(item.name) ? "fill-yellow-400 text-yellow-400" : "")} />
-                        </Button>
-                      </div>
-                    )}
-                  </li>
-                ))}
-              </ul>
+              
+              {!isCollapsed && (
+                <ul className="space-y-1 mt-1">
+                  {menuItems.support.items.map((item) => {
+                    const Icon = iconMap[item.icon]
+                    return (
+                      <li key={item.name}>
+                        <SidebarItem
+                          name={item.name}
+                          icon={Icon}
+                          path={item.path}
+                          isCollapsed={isCollapsed}
+                          isBookmarked={bookmarks.includes(item.name)}
+                          isActive={activeItem === item.name.toLowerCase()}
+                          onNavigate={handleNavigation}
+                          onToggleBookmark={toggleBookmark}
+                          padding="px-8"
+                        />
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
             </div>
 
             <div className="border-t border-primary-foreground/10 p-4">
@@ -409,6 +348,7 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
                       variant="ghost"
                       size="icon"
                       className="w-full text-primary-foreground hover:bg-primary-foreground/10"
+                      onClick={handleLogout}
                     >
                       <LogOut className="h-5 w-5" />
                     </Button>
@@ -419,6 +359,7 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
                 <Button
                   variant="ghost"
                   className="w-full text-primary-foreground hover:bg-primary-foreground/10 justify-start"
+                  onClick={handleLogout}
                 >
                   <LogOut className="h-5 w-5 mr-2" />
                   Log out
