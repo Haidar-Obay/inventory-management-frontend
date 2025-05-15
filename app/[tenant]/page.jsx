@@ -120,7 +120,7 @@ function ToastButton({ type }) {
         description: "An error occurred during the operation",
         className: "toast-error",
       },
-      warning: {
+      warning: {  
         title: "Warning",
         description: "Please be cautious with this action",
         className: "toast-warning",

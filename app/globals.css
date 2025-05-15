@@ -111,12 +111,14 @@
   margin-left: var(--sidebar-width);
   transition: margin-left 0.3s ease;
   width: calc(100% - var(--sidebar-width));
+  max-width: 100%;
 }
 
 .main-content-collapsed {
   margin-left: var(--sidebar-width-collapsed);
   transition: margin-left 0.3s ease;
   width: calc(100% - var(--sidebar-width-collapsed));
+  max-width: 100%;
 }
 
 /* Add toast variant styles */
@@ -142,4 +144,17 @@
   background-color: hsl(var(--secondary));
   color: hsl(var(--secondary-foreground));
   border-color: hsl(var(--secondary));
+}
+
+/* Hide scrollbar but keep scrolling functionality */
+.scrollbar-hide {
+  /* For Firefox */
+  scrollbar-width: none;
+  /* For IE and Edge */
+  -ms-overflow-style: none;
+}
+
+/* For Webkit browsers (Chrome, Safari, etc.) */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

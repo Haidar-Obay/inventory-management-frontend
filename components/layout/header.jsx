@@ -112,13 +112,13 @@ export function Header({ toggleSidebar }) {
     <header className="h-[var(--header-height)] border-b bg-background flex items-center px-4 sticky top-0 z-10">
       <div className="flex items-center gap-4 w-full">
         <div className="flex items-center gap-2">
-          <SidebarTrigger />
+          {/* <SidebarTrigger /> */}
 
           <Link href="/" className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center text-primary-foreground font-bold">
-              D
+              I
             </div>
-            <span className="font-bold text-lg hidden md:inline-block">Dashboard</span>
+            <span className="font-bold text-lg hidden md:inline-block">Inventory Management</span>
           </Link>
         </div>
 

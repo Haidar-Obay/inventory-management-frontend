@@ -29,13 +29,13 @@ export function MainLayout({ children }) {
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex h-screen overflow-hidden w-full">
         <Sidebar userRole={userRole} isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar} />
         <div
-          className={`flex flex-col flex-1 ${isSidebarCollapsed ? "main-content-collapsed" : "main-content-expanded"}`}
+          className={`flex flex-col flex-1 w-full ${isSidebarCollapsed ? "main-content-collapsed" : "main-content-expanded"}`}
         >
           <Header toggleSidebar={toggleSidebar} />
-          <main className="flex-1 overflow-y-auto">{children}</main>
+          <main className="flex-1 overflow-y-auto w-full p-4">{children}</main>
         </div>
       </div>
     </SidebarProvider>
