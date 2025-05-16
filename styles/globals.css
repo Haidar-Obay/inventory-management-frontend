@@ -3,6 +3,32 @@
 @tailwind utilities;
 
 @layer base {
+  /* Global scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px; /* for horizontal scrollbars */
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+    border-radius: 100vh;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary));
+    border-radius: 100vh;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.8);
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--primary)) hsl(var(--muted));
+  }
+
   :root {
     --background: 220 14% 96%;
     --foreground: 0 0% 9%;

@@ -186,10 +186,10 @@ function SimpleToastItem({ toast, onClose }: { toast: Toast; onClose: () => void
       if (!isHovered) {
         intervalRef.current = setInterval(() => {
           setProgress((prev) => {
-            const newProgress = prev - (100 / (toast.duration || 5000) * 10);
+            const newProgress = prev - (100 / (toast.duration || 5000) * 100);
             return newProgress <= 0 ? 0 : newProgress;
           });
-        }, 10);
+        }, 100);
       }
 
       return () => {
@@ -252,7 +252,7 @@ function SimpleToastItem({ toast, onClose }: { toast: Toast; onClose: () => void
           className="toast-progress absolute bottom-0 left-0"
           style={{ 
             width: `${progress}%`,
-            transition: isHovered ? "none" : "width 10ms linear"
+            transition: isHovered ? "none" : "width 80ms linear"
           }}
         />
       )}
