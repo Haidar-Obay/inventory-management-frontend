@@ -1,6 +1,9 @@
 "use client"
 
-import Table from "../../components/ui/table.jsx";
+import Table from "@/components/ui/table.jsx";
+import { Button } from "@/components/ui/button.tsx";
+import { useEffect, useState } from "react";
+import tenantApiService from "@/API/TenantApiService.js"; 
 
 // Sample Data
 const data = [
@@ -26,6 +29,20 @@ const data = [
   { id: 20, name: "Creed Bratton", age: 65, isActive: false, joinDate: "2016-10-08" }
 ];
 
+
+const FetchCustomers = async () => {
+  try {
+    const response = await tenantApiService("GET", "customers");
+    console.log("Customers fetched successfully:");
+    return response;
+  } catch (err) {
+    console.error("Error fetching customers:", err);
+    return [];
+  }
+};
+
+
+
 // Column definitions
 const columns = [
   { key: "id", header: "ID", type: "number" },
@@ -34,6 +51,7 @@ const columns = [
   { key: "isActive", header: "Active", type: "boolean" },
   { key: "joinDate", header: "Join Date", type: "date" },
 ];
+
 
 export default function Home() {
   // Handle edit action
@@ -48,19 +66,52 @@ export default function Home() {
     // Implement your delete logic here
   };
 
+  // Action toolbar handlers
+  const handleAdd = () => {
+    console.log("Add new customer");
+    // Implement add logic here
+  };
+
+  const handleExportExcel = () => {
+    console.log("Export to Excel");
+    // Implement export logic here
+  };
+
+  const handleExportPdf = () => {
+    console.log("Export to PDF");
+    // Implement PDF export logic here
+  };
+
+  const handlePrint = () => {
+    console.log("Print");
+    // Implement print logic here
+  };
+
+  const handleRefresh = async () => {
+    console.log("Refreshing data");
+    const customers = await FetchCustomers();
+    console.log(customers);
+  };
+
+
+
+
   return (
-    <div className="min-h-screen bg-gray-50 p-1">
-      <div className="mx-auto max-w-7xl">
-        <h1 className="mb-8 text-3xl font-bold text-gray-900">Customers</h1>
-        
-        <div className="rounded-lg bg-white shadow">
-          <Table 
-            data={data}
-            columns={columns}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        </div>
+    <div className="min-h-screen w-full bg-gray-100 p-0 m-0 -mt-px -ml-px">
+      <h1 className="px-1 pb-10 text-3xl font-bold text-gray-900">Customers</h1>
+      
+      <div className="mx-auto w-full bg-white">
+        <Table
+          data={data}
+          columns={columns}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onAdd={handleAdd}
+          onExportExcel={handleExportExcel}
+          onExportPdf={handleExportPdf}
+          onPrint={handlePrint}
+          onRefresh={handleRefresh}
+        />
       </div>
     </div>
   );

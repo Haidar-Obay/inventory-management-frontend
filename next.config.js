@@ -1,17 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // swcMinify: true,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   images: {
     unoptimized: true,
   },
-  allowedDevOrigins: ['*'],
+  // Enable hostname rewrites for subdomains
+ skipTrailingSlashRedirect: true,
+  
 }
 
 module.exports = nextConfig

@@ -16,13 +16,11 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
 
   // This ensures that no matter what theme is selected, we don't render it until client-side
   // which prevents the hydration mismatch
-  return (
-    <NextThemesProvider {...props}>
-      {mounted ? children : (
-        <div style={{ visibility: 'hidden' }}>
-          {children}
-        </div>
-      )}
-    </NextThemesProvider>
-  )
+  if (!mounted) {
+    // Return children without any theme application during SSR
+    return <>{children}</>
+  }
+
+  // Only apply themes once mounted on client
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
 }

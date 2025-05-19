@@ -111,6 +111,17 @@ export default function Home() {
       setMessage("❌ Failed to delete tenant.");
     }
   };
+  const fetchTenant = async () => {
+    const res = await fetch(`http://app.localhost:8000/api/tenant/get-tenant-by-name/obai`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    });
+    const data = await res.json();
+    console.log(data);
+  }
 
   return (
     <div className="">
@@ -171,10 +182,11 @@ export default function Home() {
         />
         <button
           onClick={() => {
-            if (!userIdDelete) return alert("Please enter a user ID");
-            CentralApiService("delete", `delete-user/${userIdDelete}`).then(
-              (data) => console.log(data)
-            );
+            // if (!userIdDelete) return alert("Please enter a user ID");
+            // CentralApiService("delete", `delete-user/${userIdDelete}`).then(
+            //   (data) => console.log(data)
+            // );
+            fetchTenant();
           }}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >

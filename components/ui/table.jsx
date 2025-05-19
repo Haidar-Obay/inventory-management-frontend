@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { ActionToolbar } from "./action-toolbar.jsx";
 
 // Utility function to check if an element is a descendant of another
 const isDescendant = (parent, child) => {
@@ -251,7 +252,18 @@ const Modal = ({ isOpen, onClose, title, children }) => {
 };
 
 // Main Table component
-const Table = ({ data = [], columns = [], onEdit, onDelete }) => {
+const Table = ({ 
+  data = [], 
+  columns = [], 
+  onEdit, 
+  onDelete,
+  // Define default empty functions for the action toolbar props to ensure they're not undefined
+  onAdd = () => {},
+  onExportExcel = () => {},
+  onExportPdf = () => {},
+  onPrint = () => {},
+  onRefresh = () => {}
+}) => {
   const [tableData, setTableData] = useState(data);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [filters, setFilters] = useState({});
@@ -1188,7 +1200,17 @@ const Table = ({ data = [], columns = [], onEdit, onDelete }) => {
             )}
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-10">
+          {/* Action Toolbar with explicit props */}
+          <ActionToolbar
+            onAdd={onAdd}
+            onExportExcel={onExportExcel}
+            onExportPdf={onExportPdf}
+            onPrint={onPrint}
+            onRefresh={onRefresh}
+            className="m-0"
+          />
+          
           {/* Active Filters Count */}
           {Object.keys(activeColumnFilters).length > 0 && (
             <Badge variant="primary" className="flex items-center gap-1">
