@@ -260,6 +260,7 @@ const Table = ({
   // Define default empty functions for the action toolbar props to ensure they're not undefined
   onAdd = () => {},
   onExportExcel = () => {},
+  onImportExcel = () => {},
   onExportPdf = () => {},
   onPrint = () => {},
   onRefresh = () => {}
@@ -1209,6 +1210,7 @@ const Table = ({
             onPrint={onPrint}
             onRefresh={onRefresh}
             className="m-0"
+            onImportExcel={onImportExcel}
           />
           
           {/* Active Filters Count */}
