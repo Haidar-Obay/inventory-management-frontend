@@ -8,7 +8,17 @@ import {
   ChevronLeft,
   ChevronRight,
   File,
+  MapPin,
+  Flag,
+  Waypoints, 
+  FolderOpen,
+  PackageSearch,
+  ChartBarStacked,
   FileText,
+  Presentation,
+  HandCoins,
+  Building2,
+  ShoppingBasket,
   Home,
   LayoutDashboard,
   LifeBuoy,
@@ -17,6 +27,7 @@ import {
   Settings,
   Users,
   Bell,
+  ChevronDown,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
@@ -148,9 +159,19 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
     Home,
     BarChart3,
     FileText,
+    Presentation,
+    Waypoints,
+    MapPin,
+    HandCoins,
+    Flag,
+    PackageSearch,
+    ChartBarStacked,
+    Building2,
     File,
+    ShoppingBasket,                                                                                         
     Users,
     Settings,
+    FolderOpen,
     Bell,
     Mail,
     LayoutDashboard,
@@ -185,7 +206,9 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
             >
               <Icon className="h-5 w-5" />
               <span>{item.name}</span>
-              <ChevronRight className="h-4 w-4 ml-auto" />
+              <ChevronRight className={cn("h-4 w-4 ml-auto transition-transform", 
+                isOpen ? "rotate-180" : ""
+              )} />
             </button>
           </PopoverTrigger>
           <PopoverContent 
@@ -193,7 +216,14 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
             align="start" 
             className="w-56 p-2 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
             sideOffset={-10}
-            // alignOffset={-8}
+            onOpenAutoFocus={(e) => {
+              e.preventDefault();
+              setIsOpen(true);
+            }}
+            onCloseAutoFocus={(e) => {
+              e.preventDefault();
+              setIsOpen(false);
+            }}
           >
             <div className="space-y-1">
               {item.items.map((subItem) => {
@@ -207,8 +237,13 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
                     isCollapsed={false}
                     isBookmarked={bookmarks.includes(subItem.name)}
                     isActive={activeItem === subItem.name.toLowerCase()}
-                    onNavigate={onNavigate}
-                    onToggleBookmark={onToggleBookmark}
+                    onNavigate={() => {
+                      onNavigate(subItem.name);
+                      setIsOpen(false);
+                    }}
+                    onToggleBookmark={() => {
+                      onToggleBookmark(subItem.name);
+                    }}
                     padding="px-2"
                   />
                 );
@@ -345,8 +380,8 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
                           >
                             <GroupIcon className="h-5 w-5" />
                             <span>{groupName.charAt(0).toUpperCase() + groupName.slice(1)}</span>
-                            <ChevronRight className={cn("h-4 w-4 ml-auto transition-transform", 
-                              openGroups[groupName] ? "rotate-90" : ""
+                            <ChevronDown className={cn("h-4 w-4 ml-auto transition-transform", 
+                              openGroups[groupName] ? "rotate-180" : ""
                             )} />
                           </button>
                         ) : (
@@ -356,7 +391,9 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
                               <button className="flex items-center gap-2 w-full text-[15px] font-medium hover:bg-primary-foreground/10 p-2 rounded-md">
                                 <GroupIcon className="h-5 w-5" />
                                 <span>{groupName.charAt(0).toUpperCase() + groupName.slice(1)}</span>
-                                <ChevronRight className="h-4 w-4 ml-auto" />
+                                <ChevronRight className={cn("h-4 w-4 ml-auto transition-transform", 
+                                  openGroups[groupName] ? "rotate-180" : ""
+                                )} />
                               </button>
                             </PopoverTrigger>
                             <PopoverContent 
@@ -365,6 +402,20 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
                               className="w-56 p-2 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
                               sideOffset={11}
                               alignOffset={-8}
+                              onOpenAutoFocus={(e) => {
+                                e.preventDefault();
+                                setOpenGroups(prev => ({
+                                  ...prev,
+                                  [groupName]: true
+                                }));
+                              }}
+                              onCloseAutoFocus={(e) => {
+                                e.preventDefault();
+                                setOpenGroups(prev => ({
+                                  ...prev,
+                                  [groupName]: false
+                                }));
+                              }}
                             >
                               <div className="space-y-1">
                                 {filterItemsByRole(groupItems).map((item) => {
@@ -527,7 +578,8 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
                 </ul>
               )}
             </div>
-
+              
+              {/* handle logout */}
             <div className="border-t border-primary-foreground/10 p-4">
               {isCollapsed ? (
                 <Tooltip>

@@ -6,14 +6,13 @@ const tenantApiService = async (method, endpoint, data = null) => {
   if (typeof window === "undefined") return;
 
   const hostname = window.location.hostname;
-
-  // Reject if not a subdomain of app.localhost
-  if (!hostname.endsWith(`.${CENTRAL_DOMAIN}`)) {
-    console.warn(`[tenantApiService] Invalid tenant domain: ${hostname}`);
-    return;
-  }
-
-  const url = `http://${hostname}:${TENANT_API_PORT}/${endpoint}`;
+  
+  // Extract tenant name from subdomain (part before .localhost)
+  const tenantName = hostname.split('.')[0];
+  
+  // Construct the URL with tenant name and app.localhost
+  const url = `http://${tenantName}.${CENTRAL_DOMAIN}:${TENANT_API_PORT}/${endpoint}`;
+  
   const token = localStorage.getItem(TENANT_TOKEN_KEY);
 
   const headers = {
@@ -21,8 +20,12 @@ const tenantApiService = async (method, endpoint, data = null) => {
     Accept: "application/json",
     ...(token && { Authorization: `Bearer ${token}` }),
   };
+  
+  console.log("Tenant Name:", tenantName);
+  console.log("Request URL:", url);
   console.log("Token in Storage: ", token);
   console.log("Request Headers: ", headers);
+  
   try {
     const response = await fetch(url, {
       method: method.toUpperCase(),

@@ -1,12 +1,9 @@
 "use client"
-import { useEffect, useState } from "react";
-import tenantApiService from "@/API/TenantApiService.js"; 
-
 export default function Dashboard() {
 
   return (
     <div className="min-h-screen w-full bg-gray-100 p-0 m-0 -mt-px -ml-px">
-      <h1 className="px-1 pb-10 text-3xl font-bold text-gray-900">Dashboard</h1>
+      <h1 className="px-1 pb-10 text-3xl font-bold text-gray-900">route</h1>
       
       <div className="mx-auto w-full bg-white">
       </div>

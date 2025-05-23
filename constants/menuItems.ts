@@ -9,26 +9,40 @@ export const menuItems = {
     ],
   },
   Main_Files: {
-    groupIcon: "File",
+    groupIcon: "FolderOpen",
     displayType: "collapsible",
     items: [
       {
-        name: "Documents",
-        icon: "FileText",
+        name: "Address Codes",
+        icon: "MapPin",
         type: "group",
         displayType: "popover",
         items: [
-          { name: "Reports", icon: "FileText", path: "/documents/reports" },
-          { name: "Contracts", icon: "FileText", path: "/documents/contracts" },
+          { name: "Countries", icon: "Flag", path: "/addressCodes/countries" },
+          { name: "Cities", icon: "Flag", path: "/addressCodes/cities" },
+          { name: "Districts", icon: "Flag", path: "/addressCodes/districts" },
+          { name: "Provinces", icon: "Flag", path: "/addressCodes/provinces" },
         ]
       },
       {
-        name: "Files",
-        icon: "File",
+        name: "Sections",
+        icon: "Waypoints",
         type: "group",
+        displayType: "popover",
         items: [
-          { name: "Images", icon: "File", path: "/files/images" },
-          { name: "Videos", icon: "File", path: "/files/videos" },
+          { name: "Project", icon: "Presentation", path: "/sections/project" },
+          { name: "Cost Center", icon: "HandCoins", path: "/sections/cost-center" },
+          { name: "Department", icon: "Building2", path: "/sections/department" },
+        ]
+      },
+      {
+        name: "Items",
+        icon: "ShoppingBasket",
+        type: "group",
+        displayType: "popover",
+        items: [
+          { name: "Product Lines", icon: "PackageSearch", path: "/items/product-lines" },
+          { name: "Categories", icon: "ChartBarStacked", path: "/items/categories" },
         ]
       },
     ],

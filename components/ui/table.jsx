@@ -263,7 +263,8 @@ const Table = ({
   onImportExcel = () => {},
   onExportPdf = () => {},
   onPrint = () => {},
-  onRefresh = () => {}
+  onRefresh = () => {},
+  enableCellEditing = false
 }) => {
   const [tableData, setTableData] = useState(data);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -1665,6 +1666,7 @@ const Table = ({
                       if (!column || !visibleColumns[key]) return null;
 
                       const isEditing =
+                        enableCellEditing &&
                         editingCell &&
                         editingCell.rowIndex === actualRowIndex &&
                         editingCell.columnKey === key;
@@ -1673,7 +1675,8 @@ const Table = ({
                         <td
                           key={`${rowIndex}-${key}`}
                           className="border-b border-gray-200 px-4 py-2"
-                          onDoubleClick={() =>
+                          onDoubleClick={() => 
+                            enableCellEditing &&
                             handleCellDoubleClick(actualRowIndex, key)
                           }
                         >
