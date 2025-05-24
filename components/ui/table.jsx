@@ -264,7 +264,8 @@ const Table = ({
   onExportPdf = () => {},
   onPrint = () => {},
   onRefresh = () => {},
-  enableCellEditing = false
+  enableCellEditing = false,
+  loading = false
 }) => {
   const [tableData, setTableData] = useState(data);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -291,10 +292,12 @@ const Table = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [showSearch, setShowSearch] = useState(true);
-
   const [showSearchRow, setShowSearchRow] = useState(false);
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [jumpToPageInput, setJumpToPageInput] = useState("");
+  // Add state for delete confirmation modal
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [rowToDelete, setRowToDelete] = useState(null);
 
   const handleToggleSearchRow = () => {
     setShowSearchRow((prev) => !prev);
@@ -768,6 +771,27 @@ const Table = ({
     });
   };
 
+  // Add handleDeleteClick function
+  const handleDeleteClick = (row) => {
+    setRowToDelete(row);
+    setDeleteModalOpen(true);
+  };
+
+  // Add handleConfirmDelete function
+  const handleConfirmDelete = () => {
+    if (rowToDelete && onDelete) {
+      onDelete(rowToDelete);
+    }
+    setDeleteModalOpen(false);
+    setRowToDelete(null);
+  };
+
+  // Add handleCancelDelete function
+  const handleCancelDelete = () => {
+    setDeleteModalOpen(false);
+    setRowToDelete(null);
+  };
+
   // Render filter input based on column type
   const renderFilterInput = (column, columnKey) => {
     const filterConfig = activeColumnFilters[columnKey];
@@ -1116,6 +1140,35 @@ const Table = ({
 
   return (
     <div className="w-full rounded-lg border border-gray-200 bg-white shadow-sm">
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={deleteModalOpen}
+        onClose={handleCancelDelete}
+        title="Confirm Deletion"
+      >
+        <div className="space-y-4">
+          <p className="text-gray-600">
+            Are you sure you want to delete this item? This action cannot be undone.
+          </p>
+          <div className="flex justify-end space-x-2">
+            <Button
+              variant="outline"
+              onClick={handleCancelDelete}
+              className="border-gray-300"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              Delete
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
       {/* Table Controls */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 bg-gray-50 p-4">
         <div className="flex flex-wrap items-center gap-2">
@@ -1608,7 +1661,39 @@ const Table = ({
           </thead>
 
           <tbody>
-            {paginatedData.length > 0 ? (
+            {loading ? (
+              // Loading skeleton rows
+              Array.from({ length: rowsPerPage }).map((_, index) => (
+                <tr
+                  key={`skeleton-${index}`}
+                  className={`${
+                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                  }`}
+                >
+                  <td className="w-10 border-b border-gray-200 px-4 py-2">
+                    <div className="h-4 w-4 rounded bg-gray-200 animate-pulse"></div>
+                  </td>
+                  <td className="w-10 border-b border-gray-200 px-4 py-2">
+                    <div className="h-4 w-4 rounded bg-gray-200 animate-pulse"></div>
+                  </td>
+                  {columnOrder.map((key) => {
+                    const column = columns.find((col) => col.key === key);
+                    if (!column || !visibleColumns[key]) return null;
+                    return (
+                      <td key={key} className="border-b border-gray-200 px-4 py-2">
+                        <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                      </td>
+                    );
+                  })}
+                  <td className="w-20 border-b border-gray-200 px-4 py-2">
+                    <div className="flex space-x-2">
+                      <div className="h-8 w-8 rounded bg-gray-200 animate-pulse"></div>
+                      <div className="h-8 w-8 rounded bg-gray-200 animate-pulse"></div>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : paginatedData.length > 0 ? (
               paginatedData.map((row, rowIndex) => {
                 const actualRowIndex =
                   (currentPage - 1) * rowsPerPage + rowIndex;
@@ -1830,7 +1915,7 @@ const Table = ({
                             variant="destructive"
                             size="sm"
                             className="h-9 w-9 p-0 flex items-center justify-center text-white bg-red-600 hover:bg-red-700 transition-all duration-200 ease-in-out rounded-full shadow-md"
-                            onClick={() => onDelete && onDelete(row)}
+                            onClick={() => handleDeleteClick(row)}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"

@@ -1,8 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Tabs, Tab, Box, Typography } from '@mui/material'
+import {
+  Tabs,
+  Tab,
+  Box,
+  Typography,
+} from '@mui/material'
 import Table from "@/components/ui/table.jsx"
+import AddressCodeDrawer from "@/components/drawers/AddressCodeDrawer"
 import {
   getCountries,
   getProvinces,
@@ -15,6 +21,10 @@ import {
   editProvince,
   editDistrict,
   deleteDistrict,
+  createCountry,
+  createProvince,
+  createCity,
+  createDistrict,
 } from "@/API/geographyApi"
 import { countryColumns, cityColumns, provinceColumns, districtColumns } from "@/constants/tableColumns"
 import { toast } from "@/components/ui/simple-toast"
@@ -44,6 +54,11 @@ export default function AddressCodesPage() {
   const [provincesData, setProvincesData] = useState([]);
   const [citiesData, setCitiesData] = useState([]);
   const [districtsData, setDistrictsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [activeDrawerType, setActiveDrawerType] = useState('');
+  const [formData, setFormData] = useState({});
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -51,6 +66,7 @@ export default function AddressCodesPage() {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       // Fetch all data
       const [countriesResponse, provincesResponse, citiesResponse, districtsResponse] = await Promise.all([
         getCountries(),
@@ -58,7 +74,7 @@ export default function AddressCodesPage() {
         getCities(),
         getDistricts()
       ]);
- 
+
       // Set data directly without transformation
       setCountriesData(countriesResponse.data || []);
       setProvincesData(provincesResponse.data || []);
@@ -75,6 +91,8 @@ export default function AddressCodesPage() {
         title: "Error",
         description: error.message || "Failed to fetch data"
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -83,104 +101,44 @@ export default function AddressCodesPage() {
   }, []);
 
   // Handle edit functions
-  const handleEditCountry = async (row) => {
-    try {
-      if (!row.id) {
-        throw new Error('Invalid data: Missing ID');
-      }
-
-      const response = await editCountry(row.id, {
-        name: row.name
-      });
-
-      if (response.status) {
-        toast.success({
-          title: "Success",
-          description: response.message || "Country updated successfully"
-        });
-        fetchData();
-      }
-    } catch (error) {
-      toast.error({
-        title: "Error",
-        description: error.message || "Failed to update country"
-      });
-    }
+  const handleEditCountry = (row) => {
+    setFormData({
+      id: row.id,
+      name: row.name
+    });
+    setActiveDrawerType('country');
+    setIsEditMode(true);
+    setIsDrawerOpen(true);
   };
 
-  const handleEditCity = async (row) => {
-    try {
-      if (!row.id) {
-        throw new Error('Invalid data: Missing ID');
-      }
-
-      const response = await editCity(row.id, {
-        name: row.name
-      });
-
-      if (response.status) {
-        toast.success({
-          title: "Success",
-          description: response.message || "City updated successfully"
-        });
-        fetchData();
-      }
-    } catch (error) {
-      toast.error({
-        title: "Error",
-        description: error.message || "Failed to update city"
-      });
-    }
+  const handleEditCity = (row) => {
+    setFormData({
+      id: row.id,
+      name: row.name
+    });
+    setActiveDrawerType('city');
+    setIsEditMode(true);
+    setIsDrawerOpen(true);
   };
 
-  const handleEditProvince = async (row) => {
-    try {
-      if (!row.id) {
-        throw new Error('Invalid data: Missing ID');
-      }
-
-      const response = await editProvince(row.id, {
-        name: row.name
-      });
-
-      if (response.status) {
-        toast.success({
-          title: "Success",
-          description: response.message || "Province updated successfully"
-        });
-        fetchData();
-      }
-    } catch (error) {
-      toast.error({
-        title: "Error",
-        description: error.message || "Failed to update province"
-      });
-    }
+  const handleEditProvince = (row) => {
+    setFormData({
+      id: row.id,
+      name: row.name
+    });
+    setActiveDrawerType('province');
+    setIsEditMode(true);
+    setIsDrawerOpen(true);
   };
 
-  const handleEditDistrict = async (row) => {
-    try {
-      if (!row.id) {
-        throw new Error('Invalid data: Missing ID');
-      }
-
-      const response = await editDistrict(row.id, {
-        name: row.name
-      });
-
-      if (response.status) {
-        toast.success({
-          title: "Success",
-          description: response.message || "District updated successfully"
-        });
-        fetchData();
-      }
-    } catch (error) {
-      toast.error({
-        title: "Error",
-        description: error.message || "Failed to update district"
-      });
-    }
+  const handleEditDistrict = (row) => {
+    setFormData({
+      id: row.id,
+      name: row.name
+    });
+    setActiveDrawerType('district');
+    setIsEditMode(true);
+    setIsDrawerOpen(true);
   };
 
   // Handle delete functions
@@ -256,6 +214,135 @@ export default function AddressCodesPage() {
     }
   };
 
+  const handleAddNew = (type) => {
+    setActiveDrawerType(type);
+    setIsEditMode(false);
+    setFormData({});
+    setIsDrawerOpen(true);
+  };
+
+  const handleCloseDrawer = () => {
+    setIsDrawerOpen(false);
+    setActiveDrawerType('');
+    setFormData({});
+    setIsEditMode(false);
+  };
+
+  const handleFormDataChange = (data) => {
+    setFormData(data);
+  };
+
+  const handleSave = async () => {
+    try {
+      if (!formData.name) {
+        toast.error({
+          title: "Error",
+          description: "Name field is required"
+        });
+        return;
+      }
+
+      let response;
+      const formattedData = {
+        name: formData.name
+      };
+
+      if (isEditMode) {
+        switch (activeDrawerType) {
+          case 'country':
+            response = await editCountry(formData.id, formattedData);
+            if (response.status) {
+              setCountriesData(prevData => 
+                prevData.map(item => item.id === formData.id ? { ...item, ...formattedData } : item)
+              );
+            }
+            break;
+          case 'province':
+            response = await editProvince(formData.id, formattedData);
+            if (response.status) {
+              setProvincesData(prevData => 
+                prevData.map(item => item.id === formData.id ? { ...item, ...formattedData } : item)
+              );
+            }
+            break;
+          case 'city':
+            response = await editCity(formData.id, formattedData);
+            if (response.status) {
+              setCitiesData(prevData => 
+                prevData.map(item => item.id === formData.id ? { ...item, ...formattedData } : item)
+              );
+            }
+            break;
+          case 'district':
+            response = await editDistrict(formData.id, formattedData);
+            if (response.status) {
+              setDistrictsData(prevData => 
+                prevData.map(item => item.id === formData.id ? { ...item, ...formattedData } : item)
+              );
+            }
+            break;
+          default:
+            throw new Error('Invalid type');
+        }
+      } else {
+        switch (activeDrawerType) {
+          case 'country':
+            response = await createCountry(formattedData);
+            if (response.status) {
+              setCountriesData(prevData => [...prevData, response.data]);
+            }
+            break;
+          case 'province':
+            response = await createProvince(formattedData);
+            if (response.status) {
+              setProvincesData(prevData => [...prevData, response.data]);
+            }
+            break;
+          case 'city':
+            response = await createCity(formattedData);
+            if (response.status) {
+              setCitiesData(prevData => [...prevData, response.data]);
+            }
+            break;
+          case 'district':
+            response = await createDistrict(formattedData);
+            if (response.status) {
+              setDistrictsData(prevData => [...prevData, response.data]);
+            }
+            break;
+          default:
+            throw new Error('Invalid type');
+        }
+      }
+
+      if (response.status) {
+        toast.success({
+          title: "Success",
+          description: response.message || `${isEditMode ? 'Updated' : 'Created'} successfully`
+        });
+        setFormData({});
+      }
+    } catch (error) {
+      toast.error({
+        title: "Error",
+        description: error.message || `Failed to ${isEditMode ? 'update' : 'create'} ${activeDrawerType}`
+      });
+    }
+  };
+
+  const handleSaveAndNew = async () => {
+    await handleSave();
+    if (isEditMode) {
+      setIsEditMode(false);
+      setFormData({});
+    }
+  };
+
+  const handleSaveAndClose = async () => {
+    await handleSave();
+    handleCloseDrawer();
+  };
+
   return (
     <div className="p-4">
       <Box sx={{ width: '100%' }}>
@@ -279,10 +366,12 @@ export default function AddressCodesPage() {
               columns={countryColumns}
               onEdit={handleEditCountry}
               onDelete={handleDeleteCountry}
+              onAdd={() => handleAddNew('country')}
+              loading={loading}
             />
           </Box>
         </TabPanel>
-        
+
         {/* Provinces Management Tab*/}
         <TabPanel value={value} index={1}>
           <Box className="p-0">
@@ -294,6 +383,8 @@ export default function AddressCodesPage() {
               columns={provinceColumns}
               onEdit={handleEditProvince}
               onDelete={handleDeleteProvince}
+              onAdd={() => handleAddNew('province')}
+              loading={loading}
             />
           </Box>
         </TabPanel>
@@ -309,6 +400,8 @@ export default function AddressCodesPage() {
               columns={cityColumns}
               onEdit={handleEditCity}
               onDelete={handleDeleteCity}
+              onAdd={() => handleAddNew('city')}
+              loading={loading}
             />
           </Box>
         </TabPanel>
@@ -324,9 +417,24 @@ export default function AddressCodesPage() {
               columns={districtColumns}
               onEdit={handleEditDistrict}
               onDelete={handleDeleteDistrict}
+              onAdd={() => handleAddNew('district')}
+              loading={loading}
             />
           </Box>
         </TabPanel>
+
+        {/* Address Code Drawer */}
+        <AddressCodeDrawer
+          isOpen={isDrawerOpen}
+          onClose={handleCloseDrawer}
+          type={activeDrawerType}
+          onSave={handleSave}
+          onSaveAndNew={handleSaveAndNew}
+          onSaveAndClose={handleSaveAndClose}
+          formData={formData}
+          onFormDataChange={handleFormDataChange}
+          isEdit={isEditMode}
+        />
 
       </Box>
     </div>

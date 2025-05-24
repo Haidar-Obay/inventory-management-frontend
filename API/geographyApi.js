@@ -125,3 +125,44 @@ export const editDistrict = async (id, data) => {
     throw error;
   }
 };
+
+// Create functions
+export const createCountry = async (data) => {
+  try {
+    const response = await tenantApiService('POST', 'countries', data);
+    return response;
+  } catch (error) {
+    console.error('Error creating country:', error);
+    throw error;
+  }
+};
+
+export const createProvince = async (data) => {
+  try {
+    const response = await tenantApiService('POST', 'provinces', data);
+    return response;
+  } catch (error) {
+    console.error('Error creating province:', error);
+    throw error;
+  }
+};
+
+export const createCity = async (data) => {
+  try {
+    const response = await tenantApiService('POST', 'cities', data);
+    return response;
+  } catch (error) {
+    console.error('Error creating city:', error);
+    throw error;
+  }
+};
+
+export const createDistrict = async (data) => {
+  try {
+    const response = await tenantApiService('POST', 'districts', data);
+    return response;
+  } catch (error) {
+    console.error('Error creating district:', error);
+    throw error;
+  }
+};

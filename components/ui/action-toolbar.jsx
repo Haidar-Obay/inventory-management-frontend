@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useEffect } from 'react';
 import { Button } from './button.tsx';
 import { 
@@ -90,7 +91,7 @@ export function ActionToolbar({
       case 'refresh': return 'bg-white hover:bg-gray-100 text-gray-800 border border-gray-300';
       case 'save': return 'bg-blue-600 hover:bg-blue-700 text-white';
       case 'saveAndNew': return 'bg-green-600 hover:bg-green-700 text-white';
-      case 'saveAndExit': return 'bg-purple-600 hover:bg-purple-700 text-white';
+      case 'saveAndExit': return 'bg-red-600 hover:bg-red-700 text-white';
       case 'cancel': return 'bg-gray-600 hover:bg-gray-700 text-white';
       case 'importExcel': return 'bg-green-700 hover:bg-green-800 text-white border border-gray-300';
       default: return '';
