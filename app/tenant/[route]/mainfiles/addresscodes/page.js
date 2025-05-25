@@ -28,6 +28,7 @@ import {
 } from "@/API/geographyApi"
 import { countryColumns, cityColumns, provinceColumns, districtColumns } from "@/constants/tableColumns"
 import { toast } from "@/components/ui/simple-toast"
+import { useSearchParams, useRouter } from 'next/navigation'
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -49,6 +50,8 @@ function TabPanel(props) {
 }
 
 export default function AddressCodesPage() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
   const [value, setValue] = useState(0);
   const [countriesData, setCountriesData] = useState([]);
   const [provincesData, setProvincesData] = useState([]);
@@ -60,8 +63,34 @@ export default function AddressCodesPage() {
   const [formData, setFormData] = useState({});
   const [isEditMode, setIsEditMode] = useState(false);
 
+  // Initialize tab value from URL or localStorage
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab !== null) {
+      const tabValue = parseInt(tab);
+      setValue(tabValue);
+      localStorage.setItem('addressCodesLastTab', tabValue.toString());
+    } else {
+      // If no URL parameter, try to get from localStorage
+      const savedTab = localStorage.getItem('addressCodesLastTab');
+      if (savedTab) {
+        const tabValue = parseInt(savedTab);
+        setValue(tabValue);
+        // Update URL to match localStorage
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('tab', tabValue.toString());
+        router.push(`?${params.toString()}`);
+      }
+    }
+  }, [searchParams, router]);
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    localStorage.setItem('addressCodesLastTab', newValue.toString());
+    // Update URL with new tab value
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', newValue.toString());
+    router.push(`?${params.toString()}`);
   };
 
   const fetchData = async () => {
@@ -320,7 +349,6 @@ export default function AddressCodesPage() {
           title: "Success",
           description: response.message || `${isEditMode ? 'Updated' : 'Created'} successfully`
         });
-        setFormData({});
       }
     } catch (error) {
       toast.error({

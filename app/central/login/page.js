@@ -104,7 +104,7 @@ export default function LoginPage() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-xl shadow-xl overflow-hidden p-8 text-center"
+              className="bg-background rounded-xl shadow-xl overflow-hidden p-8 text-center"
             >
               <motion.div
                 initial={{ scale: 0 }}
@@ -128,7 +128,7 @@ export default function LoginPage() {
           ) : (
             <motion.div
               key="form"
-              className="bg-white rounded-xl shadow-xl overflow-hidden"
+              className="bg-background rounded-xl shadow-xl overflow-hidden"
               variants={formVariants}
               initial="hidden"
               animate="visible"

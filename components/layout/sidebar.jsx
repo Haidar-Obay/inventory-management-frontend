@@ -185,7 +185,21 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
 
   // Get all menu items for bookmarks search
   const getAllMenuItems = () => {
-    return Object.values(menuItems).flatMap(group => group.items || []);
+    const getAllNestedItems = (items) => {
+      return items.reduce((acc, item) => {
+        if (item.type === "group" && item.items) {
+          return [...acc, ...getAllNestedItems(item.items)];
+        }
+        return [...acc, item];
+      }, []);
+    };
+
+    return Object.values(menuItems).flatMap(group => {
+      if (group.items) {
+        return getAllNestedItems(group.items);
+      }
+      return [];
+    });
   }
 
   // Update the NestedGroup component to support both display types

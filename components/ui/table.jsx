@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useTheme } from "next-themes";
 import { ActionToolbar } from "./action-toolbar.jsx";
 
 // Utility function to check if an element is a descendant of another
@@ -24,16 +25,17 @@ const Button = ({
   onClick,
   ...props
 }) => {
+  const { theme } = useTheme();
   const baseStyles =
     "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50";
 
   const variantStyles = {
-    default: "bg-gray-100 text-gray-900 hover:bg-gray-200",
-    primary: "bg-blue-600 text-white hover:bg-blue-700",
-    destructive: "bg-red-600 text-white hover:bg-red-700",
-    outline: "border border-gray-300 bg-transparent hover:bg-gray-100",
-    ghost: "bg-transparent hover:bg-gray-100",
-    link: "bg-transparent underline-offset-4 hover:underline text-blue-600",
+    default: "bg-muted text-foreground hover:bg-muted/80",
+    primary: "bg-primary text-primary-foreground hover:bg-primary/90",
+    destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+    outline: "border border-border bg-transparent hover:bg-muted",
+    ghost: "bg-transparent hover:bg-muted",
+    link: "bg-transparent underline-offset-4 hover:underline text-primary",
   };
 
   const sizeStyles = {
@@ -56,10 +58,11 @@ const Button = ({
 
 // Input component
 const Input = ({ className = "", type = "text", ...props }) => {
+  const { theme } = useTheme();
   return (
     <input
       type={type}
-      className={`flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-400 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={`flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
       {...props}
     />
   );
@@ -67,9 +70,10 @@ const Input = ({ className = "", type = "text", ...props }) => {
 
 // Select component
 const Select = ({ children, className = "", ...props }) => {
+  const { theme } = useTheme();
   return (
     <select
-      className={`flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm transition-colors focus:outline-none focus:ring-1 focus:ring-blue-400 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={`flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm text-foreground shadow-sm transition-colors focus:outline-none focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
       {...props}
     >
       {children}
@@ -79,10 +83,11 @@ const Select = ({ children, className = "", ...props }) => {
 
 // Checkbox component
 const Checkbox = ({ className = "", ...props }) => {
+  const { theme } = useTheme();
   return (
     <input
       type="checkbox"
-      className={`h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 ${className}`}
+      className={`h-4 w-4 rounded border-border text-primary focus:ring-primary ${className}`}
       {...props}
     />
   );
@@ -90,6 +95,7 @@ const Checkbox = ({ className = "", ...props }) => {
 
 // Tooltip component
 const Tooltip = ({ children, content, position = "top" }) => {
+  const { theme } = useTheme();
   const [isVisible, setIsVisible] = useState(false);
   const tooltipRef = useRef(null);
 
@@ -111,18 +117,18 @@ const Tooltip = ({ children, content, position = "top" }) => {
       {isVisible && (
         <div
           ref={tooltipRef}
-          className={`absolute z-50 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-white ${positions[position]}`}
+          className={`absolute z-50 whitespace-nowrap rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground shadow-md ${positions[position]}`}
         >
           {content}
           <div
             className={`absolute ${
               position === "top"
-                ? "top-full left-1/2 -translate-x-1/2 border-t-gray-800"
+                ? "top-full left-1/2 -translate-x-1/2 border-t-muted"
                 : position === "bottom"
-                ? "bottom-full left-1/2 -translate-x-1/2 border-b-gray-800"
+                ? "bottom-full left-1/2 -translate-x-1/2 border-b-muted"
                 : position === "left"
-                ? "left-full top-1/2 -translate-y-1/2 border-l-gray-800"
-                : "right-full top-1/2 -translate-y-1/2 border-r-gray-800"
+                ? "left-full top-1/2 -translate-y-1/2 border-l-muted"
+                : "right-full top-1/2 -translate-y-1/2 border-r-muted"
             } border-4 border-transparent`}
           />
         </div>
@@ -133,6 +139,7 @@ const Tooltip = ({ children, content, position = "top" }) => {
 
 // Dropdown component
 const Dropdown = ({ trigger, children, align = "left" }) => {
+  const { theme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -163,7 +170,7 @@ const Dropdown = ({ trigger, children, align = "left" }) => {
       <div onClick={() => setIsOpen(!isOpen)}>{trigger}</div>
       {isOpen && (
         <div
-          className={`absolute z-50 mt-1 min-w-[12rem] rounded-md border border-gray-200 bg-white p-1 shadow-md ${alignments[align]}`}
+          className={`absolute z-50 mt-1 min-w-[12rem] rounded-md border border-border bg-background p-1 shadow-md ${alignments[align]}`}
         >
           {children}
         </div>
@@ -174,9 +181,10 @@ const Dropdown = ({ trigger, children, align = "left" }) => {
 
 // Dropdown item component
 const DropdownItem = ({ children, onClick }) => {
+  const { theme } = useTheme();
   return (
     <div
-      className="flex cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm hover:bg-gray-100"
+      className="flex cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground hover:bg-muted"
       onClick={onClick}
     >
       {children}
@@ -186,13 +194,14 @@ const DropdownItem = ({ children, onClick }) => {
 
 // Badge component
 const Badge = ({ children, variant = "default", className = "" }) => {
+  const { theme } = useTheme();
   const variantStyles = {
-    default: "bg-gray-100 text-gray-800",
-    primary: "bg-blue-100 text-blue-800",
-    secondary: "bg-purple-100 text-purple-800",
-    success: "bg-green-100 text-green-800",
-    danger: "bg-red-100 text-red-800",
-    warning: "bg-yellow-100 text-yellow-800",
+    default: "bg-muted text-muted-foreground",
+    primary: "bg-primary text-primary-foreground",
+    secondary: "bg-secondary text-secondary-foreground",
+    success: "bg-success text-success-foreground",
+    danger: "bg-destructive text-destructive-foreground",
+    warning: "bg-warning text-warning-foreground",
   };
 
   return (
@@ -206,28 +215,30 @@ const Badge = ({ children, variant = "default", className = "" }) => {
 
 // DatePicker component
 const DatePicker = ({ value, onChange, className = "" }) => {
+  const { theme } = useTheme();
   return (
     <input
       type="date"
       value={value || ""}
       onChange={onChange}
-      className={`flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm transition-colors focus:outline-none focus:ring-1 focus:ring-blue-400 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={`flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm text-foreground shadow-sm transition-colors focus:outline-none focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
     />
   );
 };
 
 // Modal component
 const Modal = ({ isOpen, onClose, title, children }) => {
+  const { theme } = useTheme();
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-lg bg-background p-6 shadow-lg border border-border">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-medium">{title}</h3>
+          <h3 className="text-lg font-medium text-foreground">{title}</h3>
           <button
             onClick={onClose}
-            className="rounded-full p-1 hover:bg-gray-200"
+            className="rounded-full p-1 hover:bg-muted text-muted-foreground"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -245,7 +256,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
             </svg>
           </button>
         </div>
-        <div>{children}</div>
+        <div className="text-foreground">{children}</div>
       </div>
     </div>
   );
@@ -267,6 +278,7 @@ const Table = ({
   enableCellEditing = false,
   loading = false
 }) => {
+  const { theme } = useTheme();
   const [tableData, setTableData] = useState(data);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [filters, setFilters] = useState({});
@@ -1139,7 +1151,7 @@ const Table = ({
     paginatedData.every((row) => selectedRows.has(row.id));
 
   return (
-    <div className="w-full rounded-lg border border-gray-200 bg-white shadow-sm">
+    <div className="w-full rounded-lg border border-border bg-background shadow-sm">
       {/* Delete Confirmation Modal */}
       <Modal
         isOpen={deleteModalOpen}
@@ -1154,7 +1166,7 @@ const Table = ({
             <Button
               variant="outline"
               onClick={handleCancelDelete}
-              className="border-gray-300"
+              className="border-border"
             >
               Cancel
             </Button>
@@ -1170,7 +1182,7 @@ const Table = ({
       </Modal>
 
       {/* Table Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 bg-gray-50 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-gray-50 dark:bg-muted/50 p-4">
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-2">
             <div className="relative">
@@ -1195,7 +1207,7 @@ const Table = ({
                 placeholder="Search all columns..."
                 value={globalSearch}
                 onChange={handleGlobalSearch}
-                className="w-64 pl-10"
+                className="w-64 pl-10 text-foreground bg-background"
               />
             </div>
 
@@ -1205,7 +1217,7 @@ const Table = ({
                 variant="outline"
                 size="sm"
                 onClick={handleClearGlobalSearch}
-                className="flex items-center gap-1 border-gray-300 bg-white shadow-sm"
+                className="flex items-center gap-1 border-border bg-background shadow-sm"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -1233,7 +1245,7 @@ const Table = ({
                 variant="outline"
                 size="sm"
                 onClick={handleClearColumnFilters}
-                className="flex items-center gap-1 border-gray-300 bg-white shadow-sm"
+                className="flex items-center gap-1 border-border bg-background shadow-sm"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -1292,7 +1304,7 @@ const Table = ({
               <Button
                 variant="outline"
                 size="sm"
-                className="flex items-center gap-1 border-gray-300 bg-white shadow-sm"
+                className="flex items-center gap-1 border-border bg-background text-foreground shadow-sm hover:bg-muted"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -1314,7 +1326,7 @@ const Table = ({
             align="right"
           >
             <div className="p-2">
-              <div className="mb-2 text-xs font-medium text-gray-500">
+              <div className="mb-2 text-xs font-medium text-muted-foreground">
                 Toggle column visibility
               </div>
               <div className="max-h-60 overflow-y-auto">
@@ -1328,7 +1340,7 @@ const Table = ({
                       onChange={() => {}}
                       className="mr-2"
                     />
-                    {column.header}
+                    <span className="text-foreground">{column.header}</span>
                   </DropdownItem>
                 ))}
               </div>
@@ -1339,7 +1351,7 @@ const Table = ({
 
       {/* Active Filters Display */}
       {Object.keys(activeColumnFilters).length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 bg-gray-50 p-2">
+        <div className="flex flex-wrap items-center gap-2 border-b border-border bg-gray-50 dark:bg-muted/50 p-2">
           <span className="text-xs font-medium text-gray-500">
             Active Filters:
           </span>
@@ -1385,12 +1397,12 @@ const Table = ({
       <div className="overflow-y-auto max-h-[95vh]">
         <table className="w-full border-collapse">
           <thead
-            className="bg-gray-50 sticky top-0 z-20"
+            className="bg-gray-50 dark:bg-muted/50 sticky top-0 z-20"
             style={{ transform: "translateZ(0px)" }}
           >
             {/* Header Row */}
-            <tr className="bg-gray-50">
-              <th className="w-10 border-b border-gray-200 px-4 py-2 text-center">
+            <tr className="bg-gray-50 dark:bg-muted/50">
+              <th className="w-10 border-b border-border px-4 py-2 text-center">
                 <Checkbox
                   checked={areAllOnPageSelected}
                   onChange={handleSelectAll}
@@ -1398,15 +1410,14 @@ const Table = ({
                   aria-label="Select all rows on this page"
                 />
               </th>
-              <th className="w-10 border-b border-gray-200 px-4 py-2">
+              <th className="w-10 border-b border-border px-4 py-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleToggleSearchRow}
-                  className="flex items-center gap-1 border-gray-300 bg-white shadow-sm hover:bg-gray-100"
+                  className="flex items-center gap-1 border-border bg-background shadow-sm hover:bg-muted"
                 >
                   {showSearchRow ? (
-                    // Hide Icon (when search row is visible)
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
@@ -1422,7 +1433,6 @@ const Table = ({
                       <circle cx="12" cy="12" r="7"></circle>
                     </svg>
                   ) : (
-                    // Show Icon (when search row is hidden)
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
@@ -1451,7 +1461,7 @@ const Table = ({
                 return (
                   <th
                     key={key}
-                    className="border-b border-gray-200 px-4 py-2 text-left"
+                    className="border-b border-border px-4 py-2 text-left"
                     draggable
                     onDragStart={() => handleColumnDragStart(key)}
                     onDragOver={(e) => handleColumnDragOver(e, key)}
@@ -1475,17 +1485,17 @@ const Table = ({
                               variant={hasActiveFilter ? "primary" : "ghost"}
                               size="sm"
                               className={`h-10 w-10 p-0 ml-2 flex items-center justify-center transition-all duration-200 
-  ${
-    hasActiveFilter
-      ? "text-white bg-blue-600 hover:bg-blue-700"
-      : "text-gray-600 hover:text-blue-600 hover:bg-gray-100"
-  }`}
+                              ${
+                                hasActiveFilter
+                                  ? "text-primary-foreground bg-primary hover:bg-primary/90"
+                                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                              }`}
                               title="Filter Options"
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                width="20"
-                                height="20"
+                                width="16"
+                                height="16"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 stroke="currentColor"
@@ -1493,26 +1503,22 @@ const Table = ({
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                               >
-                                <path d="M3 4h18" />
-                                <path d="M8 8h8" />
-                                <path d="M10 12h4" />
-                                <path d="M12 16h0" />
-                                <circle cx="12" cy="16" r="1.5" />
+                                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
                               </svg>
                             </Button>
                           }
-                          align="left"
+                          align="right"
                         >
                           <div className="p-2 w-64">
                             <div className="mb-2">
-                              <label className="block text-xs font-medium mb-1">
+                              <label className="block text-xs font-medium text-foreground mb-1">
                                 Filter Type
                               </label>
                               {renderFilterTypeSelector(column, key)}
                             </div>
 
                             <div className="mb-2">
-                              <label className="block text-xs font-medium mb-1">
+                              <label className="block text-xs font-medium text-foreground mb-1">
                                 Filter Value
                               </label>
                               {hasActiveFilter ? (
@@ -1526,6 +1532,7 @@ const Table = ({
                                       onChange={(e) =>
                                         handleColumnSearch(key, e.target.value)
                                       }
+                                      className="text-foreground bg-background border-border"
                                     />
                                   )}
                                   {column.type === "number" && (
@@ -1536,6 +1543,7 @@ const Table = ({
                                       onChange={(e) =>
                                         handleColumnSearch(key, e.target.value)
                                       }
+                                      className="text-foreground bg-background border-border"
                                     />
                                   )}
                                   {column.type === "date" && (
@@ -1544,6 +1552,7 @@ const Table = ({
                                       onChange={(e) =>
                                         handleColumnSearch(key, e.target.value)
                                       }
+                                      className="text-foreground bg-background border-border"
                                     />
                                   )}
                                   {column.type === "boolean" && (
@@ -1552,6 +1561,7 @@ const Table = ({
                                       onChange={(e) =>
                                         handleColumnSearch(key, e.target.value)
                                       }
+                                      className="text-foreground bg-background border-border"
                                     >
                                       <option value="">Select a value</option>
                                       <option value="true">True</option>
@@ -1598,14 +1608,14 @@ const Table = ({
               })}
 
               {/* Actions column */}
-              <th className="w-20 border-b border-gray-200 px-4 py-2 text-left">
+              <th className="w-20 border-b border-border px-4 py-2 text-left">
                 Actions
               </th>
             </tr>
 
             {showSearchRow && (
               <tr
-                className="bg-gray-50"
+                className="bg-gray-50 dark:bg-muted/50"
                 style={{
                   visibility: showSearchRow ? "visible" : "hidden",
                   position: showSearchRow ? "static" : "absolute",
@@ -1655,7 +1665,7 @@ const Table = ({
                     </td>
                   );
                 })}
-                <td className="w-20 border-b border-gray-200 px-4 py-2"></td>
+                <td className="w-20 border-b border-border px-4 py-2"></td>
               </tr>
             )}
           </thead>
@@ -1667,28 +1677,28 @@ const Table = ({
                 <tr
                   key={`skeleton-${index}`}
                   className={`${
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    index % 2 === 0 ? "bg-white dark:bg-background" : "bg-gray-50 dark:bg-muted/50"
                   }`}
                 >
-                  <td className="w-10 border-b border-gray-200 px-4 py-2">
-                    <div className="h-4 w-4 rounded bg-gray-200 animate-pulse"></div>
+                  <td className="w-10 border-b border-border px-4 py-2">
+                    <div className="h-4 w-4 rounded bg-gray-200 dark:bg-muted animate-pulse"></div>
                   </td>
-                  <td className="w-10 border-b border-gray-200 px-4 py-2">
-                    <div className="h-4 w-4 rounded bg-gray-200 animate-pulse"></div>
+                  <td className="w-10 border-b border-border px-4 py-2">
+                    <div className="h-4 w-4 rounded bg-gray-200 dark:bg-muted animate-pulse"></div>
                   </td>
                   {columnOrder.map((key) => {
                     const column = columns.find((col) => col.key === key);
                     if (!column || !visibleColumns[key]) return null;
                     return (
-                      <td key={key} className="border-b border-gray-200 px-4 py-2">
-                        <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                      <td key={key} className="border-b border-border px-4 py-2">
+                        <div className="h-4 bg-gray-200 dark:bg-muted rounded animate-pulse"></div>
                       </td>
                     );
                   })}
-                  <td className="w-20 border-b border-gray-200 px-4 py-2">
+                  <td className="w-20 border-b border-border px-4 py-2">
                     <div className="flex space-x-2">
-                      <div className="h-8 w-8 rounded bg-gray-200 animate-pulse"></div>
-                      <div className="h-8 w-8 rounded bg-gray-200 animate-pulse"></div>
+                      <div className="h-8 w-8 rounded bg-gray-200 dark:bg-muted animate-pulse"></div>
+                      <div className="h-8 w-8 rounded bg-gray-200 dark:bg-muted animate-pulse"></div>
                     </div>
                   </td>
                 </tr>
@@ -1703,17 +1713,17 @@ const Table = ({
                     key={`${rowIndex}-${row.id}`}
                     className={`${
                       selectedRows.has(row.id)
-                        ? "bg-blue-100 hover:bg-blue-200"
+                        ? "bg-primary/10 hover:bg-primary/20"
                         : rowIndex % 2 === 0
-                        ? "bg-white hover:bg-gray-100"
-                        : "bg-gray-50 hover:bg-gray-100"
+                        ? "bg-white dark:bg-background"
+                        : "bg-gray-50 dark:bg-muted/50 hover:bg-gray-100 dark:hover:bg-muted"
                     }`}
                     draggable
                     onDragStart={() => handleRowDragStart(actualRowIndex)}
                     onDragOver={(e) => handleRowDragOver(e, actualRowIndex)}
                   >
                     {/* Row selection checkbox */}
-                    <td className="border-b border-gray-200 px-4 py-2 text-center">
+                    <td className="border-b border-border px-4 py-2 text-center">
                       <Checkbox
                         checked={selectedRows.has(row.id)}
                         onChange={() => handleRowSelect(row.id)}
@@ -1721,7 +1731,7 @@ const Table = ({
                       />
                     </td>
                     {/* Row handle */}
-                    <td className="border-b border-gray-200 px-4 py-2">
+                    <td className="border-b border-border px-4 py-2">
                       <div className="flex h-full cursor-move items-center justify-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -1759,7 +1769,7 @@ const Table = ({
                       return (
                         <td
                           key={`${rowIndex}-${key}`}
-                          className="border-b border-gray-200 px-4 py-2"
+                          className="border-b border-border px-4 py-2"
                           onDoubleClick={() => 
                             enableCellEditing &&
                             handleCellDoubleClick(actualRowIndex, key)
@@ -1882,7 +1892,7 @@ const Table = ({
                     })}
 
                     {/* Actions */}
-                    <td className="border-b border-gray-200 px-4 py-2">
+                    <td className="border-b border-border px-4 py-2">
                       <div className="flex space-x-2">
                         {/* Enhanced Edit Button */}
                         <Tooltip content="Edit">
@@ -1957,17 +1967,17 @@ const Table = ({
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="text-gray-400"
+                      className="text-muted-foreground"
                     >
                       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                       <circle cx="9" cy="7" r="4"></circle>
                       <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
                       <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                     </svg>
-                    <p className="text-lg font-medium text-gray-900">
+                    <p className="text-lg font-medium text-foreground">
                       No data found
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-muted-foreground">
                       Try adjusting your search or filter to find what you're
                       looking for.
                     </p>
@@ -1981,7 +1991,7 @@ const Table = ({
 
       {/* Pagination controls */}
       {filteredData.length > 0 && (
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-gray-200 bg-white px-4 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border bg-background px-4 py-3">
           {/* Left: Showing X to Y of Z results */}
           <div className="flex-shrink-0">
             <div className="flex items-center text-sm text-gray-700">
@@ -2111,7 +2121,7 @@ const Table = ({
                 value={jumpToPageInput}
                 onChange={handleJumpToPageInputChange}
                 onKeyPress={handleJumpToPageKeyPress}
-                className="h-8 w-16 rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-400 focus:ring-blue-400"
+                className="h-8 w-16 rounded-md border-border text-foreground bg-background text-sm shadow-sm focus:border-primary focus:ring-primary"
                 placeholder="Page"
                 min="1"
                 max={totalPages}
@@ -2131,7 +2141,7 @@ const Table = ({
           {/* Right: Rows per page */}
           <div className="flex-shrink-0">
             <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-700 whitespace-nowrap">
+              <span className="text-sm text-gray-700 dark:text-gray-200 whitespace-nowrap">
                 Rows per page:
               </span>
               <Select
@@ -2140,12 +2150,12 @@ const Table = ({
                   setRowsPerPage(Number(e.target.value));
                   setCurrentPage(1);
                 }}
-                className="h-8 w-16"
+                className="h-8 w-16 text-foreground bg-background"
               >
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
+                <option value={10} className="bg-background text-foreground">10</option>
+                <option value={25} className="bg-background text-foreground">25</option>
+                <option value={50} className="bg-background text-foreground">50</option>
+                <option value={100} className="bg-background text-foreground">100</option>
               </Select>
             </div>
           </div>

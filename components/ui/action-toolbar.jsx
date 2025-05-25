@@ -88,7 +88,7 @@ export function ActionToolbar({
       case 'excel': return 'bg-green-700 hover:bg-green-800 text-white border border-gray-300';
       case 'pdf': return 'bg-red-700 hover:bg-red-800 text-white border border-gray-300';
       case 'print':
-      case 'refresh': return 'bg-white hover:bg-gray-100 text-gray-800 border border-gray-300';
+      case 'refresh': return 'bg-background hover:bg-muted text-foreground border border-border';
       case 'save': return 'bg-blue-600 hover:bg-blue-700 text-white';
       case 'saveAndNew': return 'bg-green-600 hover:bg-green-700 text-white';
       case 'saveAndExit': return 'bg-red-600 hover:bg-red-700 text-white';
@@ -171,7 +171,7 @@ export function ActionToolbar({
       <div className="flex items-center">
         <Button
           onClick={() => setShowDropdown(!showDropdown)}
-          className={`flex items-center bg-white hover:bg-gray-100 text-gray-800 border border-gray-300 ${isLeftExpansion ? 'border-r-0' : 'border-l-0'} px-2 py-2 text-sm h-8 transition-transform duration-200 ${showDropdown ? (isLeftExpansion ? '-rotate-180' : 'rotate-180') : ''}`}
+          className={`flex items-center bg-background hover:bg-muted text-foreground border border-border ${isLeftExpansion ? 'border-r-0' : 'border-l-0'} px-2 py-2 text-sm h-8 transition-transform duration-200 ${showDropdown ? (isLeftExpansion ? 'rotate-180' : '') : ''}`}
         >
           {isLeftExpansion ? <ChevronLeftIcon size={16} /> : <ChevronRightIcon size={16} />}
         </Button>

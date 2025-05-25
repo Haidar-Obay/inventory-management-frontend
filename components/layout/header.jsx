@@ -80,42 +80,6 @@ export function Header({ toggleSidebar }) {
     })
   }
 
-  // Function to show different types of toast notifications
-  const showToast = (type) => {
-    const toastConfig = {
-      success: () => {
-        toast.success({
-          title: "Success",
-          description: "Operation completed successfully",
-          duration: 3000,
-        })
-      },
-      error: () => {
-        toast.error({
-          title: "Error",
-          description: "An error occurred during the operation",
-          duration: 3000,
-        })
-      },
-      warning: () => {
-        toast.warning({
-          title: "Warning",
-          description: "Please be cautious with this action",
-          duration: 3000,
-        })
-      },
-      info: () => {
-        toast.info({
-          title: "Information",
-          description: "Here's some information you might find useful",
-          duration: 3000,
-        })
-      },
-    }
-
-    toastConfig[type]()
-  }
-
   return (
     <header className="h-[var(--header-height)] border-b bg-background flex items-center px-4 sticky top-0 z-10">
       <div className="flex items-center gap-4 w-full">
@@ -250,19 +214,6 @@ export function Header({ toggleSidebar }) {
                 System
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuLabel>Toast Examples</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => showToast("success")}>
-                Success Toast
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => showToast("error")}>
-                Error Toast
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => showToast("warning")}>
-                Warning Toast
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => showToast("info")}>
-                Info Toast
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 

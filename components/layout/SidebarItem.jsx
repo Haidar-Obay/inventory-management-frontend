@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useParams } from "next/navigation"
 import { Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
@@ -17,12 +18,22 @@ export function SidebarItem({
   onToggleBookmark,
   padding = "px-3",
 }) {
+  const params = useParams()
+  const route = params?.route
+
+  const getFullPath = () => {
+    if (path.startsWith('/mainfiles')) {
+      return `/tenant/${route}${path}`
+    }
+    return path
+  }
+
   if (isCollapsed) {
     return (
       <Tooltip>
         <TooltipTrigger asChild>
           <Link
-            href={path}
+            href={getFullPath()}
             className="flex justify-center p-2 mx-2 rounded-md hover:bg-primary-foreground/20 active:bg-primary-foreground/30 transition-colors duration-200"
             onClick={() => onNavigate && onNavigate(name)}
           >
@@ -37,7 +48,7 @@ export function SidebarItem({
   return (
     <div className="flex items-center">
       <Link
-        href={path}
+        href={getFullPath()}
         className={cn(
           `flex items-center gap-2 ${padding} py-1.5 hover:bg-primary-foreground/10 rounded-md mx-2 flex-1 text-[14px] transition-colors duration-200`,
           isActive && "bg-primary-foreground/10 font-medium",

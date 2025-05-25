@@ -40,7 +40,7 @@ export default function TenantLogin() {
     <main className="min-h-screen flex items-center justify-center bg-gray-100">
       <form
         onSubmit={handleLogin}
-        className="bg-white p-8 rounded shadow-md w-full max-w-sm"
+        className="bg-background p-8 rounded shadow-md w-full max-w-sm"
       >
         <h2 className="text-2xl font-bold mb-6 text-center">Tenant Login</h2>
 

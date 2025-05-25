@@ -148,31 +148,6 @@
   max-width: 100%;
 }
 
-/* Add toast variant styles
-.toast-success {
-  background-color: hsl(var(--success));
-  color: hsl(var(--success-foreground));
-  border-color: hsl(var(--success));
-}
-
-.toast-error {
-  background-color: hsl(var(--destructive));
-  color: hsl(var(--destructive-foreground));
-  border-color: hsl(var(--destructive));
-}
-
-.toast-warning {
-  background-color: hsl(38, 92%, 50%);
-  color: hsl(0, 0%, 100%);
-  border-color: hsl(38, 92%, 50%);
-}
-
-.toast-info {
-  background-color: hsl(var(--secondary));
-  color: hsl(var(--secondary-foreground));
-  border-color: hsl(var(--secondary));
-} */
-
 /* Hide scrollbar but keep scrolling functionality */
 .scrollbar-hide {
   /* For Firefox */

@@ -18,10 +18,10 @@ export const menuItems = {
         type: "group",
         displayType: "popover",
         items: [
-          { name: "Countries", icon: "Flag", path: "/addressCodes/countries" },
-          { name: "Cities", icon: "Flag", path: "/addressCodes/cities" },
-          { name: "Districts", icon: "Flag", path: "/addressCodes/districts" },
-          { name: "Provinces", icon: "Flag", path: "/addressCodes/provinces" },
+          { name: "Countries", icon: "Flag", path: "/mainfiles/addresscodes?tab=0" },
+          { name: "Cities", icon: "Flag", path: "/mainfiles/addresscodes?tab=2" },
+          { name: "Districts", icon: "Flag", path: "/mainfiles/addresscodes?tab=3" },
+          { name: "Provinces", icon: "Flag", path: "/mainfiles/addresscodes?tab=1" },
         ]
       },
       {
