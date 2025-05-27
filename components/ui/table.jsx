@@ -32,7 +32,8 @@ const Button = ({
   const variantStyles = {
     default: "bg-muted text-foreground hover:bg-muted/80",
     primary: "bg-primary text-primary-foreground hover:bg-primary/90",
-    destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+    destructive:
+      "bg-destructive text-destructive-foreground hover:bg-destructive/90",
     outline: "border border-border bg-transparent hover:bg-muted",
     ghost: "bg-transparent hover:bg-muted",
     link: "bg-transparent underline-offset-4 hover:underline text-primary",
@@ -125,10 +126,10 @@ const Tooltip = ({ children, content, position = "top" }) => {
               position === "top"
                 ? "top-full left-1/2 -translate-x-1/2 border-t-muted"
                 : position === "bottom"
-                ? "bottom-full left-1/2 -translate-x-1/2 border-b-muted"
-                : position === "left"
-                ? "left-full top-1/2 -translate-y-1/2 border-l-muted"
-                : "right-full top-1/2 -translate-y-1/2 border-r-muted"
+                  ? "bottom-full left-1/2 -translate-x-1/2 border-b-muted"
+                  : position === "left"
+                    ? "left-full top-1/2 -translate-y-1/2 border-l-muted"
+                    : "right-full top-1/2 -translate-y-1/2 border-r-muted"
             } border-4 border-transparent`}
           />
         </div>
@@ -263,12 +264,11 @@ const Modal = ({ isOpen, onClose, title, children }) => {
 };
 
 // Main Table component
-const Table = ({ 
-  data = [], 
-  columns = [], 
-  onEdit, 
+const Table = ({
+  data = [],
+  columns = [],
+  onEdit,
   onDelete,
-  // Define default empty functions for the action toolbar props to ensure they're not undefined
   onAdd = () => {},
   onExportExcel = () => {},
   onImportExcel = () => {},
@@ -276,7 +276,7 @@ const Table = ({
   onPrint = () => {},
   onRefresh = () => {},
   enableCellEditing = false,
-  loading = false
+  loading = false,
 }) => {
   const { theme } = useTheme();
   const [tableData, setTableData] = useState(data);
@@ -290,6 +290,8 @@ const Table = ({
       return acc;
     }, {})
   );
+  const [tempVisibleColumns, setTempVisibleColumns] = useState({});
+  const [showColumnModal, setShowColumnModal] = useState(false);
   const [columnOrder, setColumnOrder] = useState(columns.map((col) => col.key));
   const [draggedColumn, setDraggedColumn] = useState(null);
   const [draggedRow, setDraggedRow] = useState(null);
@@ -310,6 +312,8 @@ const Table = ({
   // Add state for delete confirmation modal
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [rowToDelete, setRowToDelete] = useState(null);
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [tempFilterConfig, setTempFilterConfig] = useState(null);
 
   const handleToggleSearchRow = () => {
     setShowSearchRow((prev) => !prev);
@@ -1150,6 +1154,53 @@ const Table = ({
     paginatedData.length > 0 &&
     paginatedData.every((row) => selectedRows.has(row.id));
 
+  // Add new function to handle column visibility modal
+  const handleOpenColumnModal = () => {
+    setTempVisibleColumns({ ...visibleColumns });
+    setShowColumnModal(true);
+  };
+
+  const handleSaveColumnVisibility = () => {
+    setVisibleColumns(tempVisibleColumns);
+    setShowColumnModal(false);
+  };
+
+  const handleCancelColumnVisibility = () => {
+    setShowColumnModal(false);
+  };
+
+  // Add new function to handle filter modal
+  const handleOpenFilterModal = (columnKey) => {
+    setSelectedColumnForFilter(columnKey);
+    const column = columns.find((col) => col.key === columnKey);
+    const currentFilter = activeColumnFilters[columnKey];
+
+    setTempFilterConfig({
+      type: currentFilter?.type || columnFilterTypes[columnKey],
+      value: currentFilter?.value || columnSearch[columnKey] || "",
+    });
+
+    setShowFilterModal(true);
+  };
+
+  const handleSaveFilter = () => {
+    if (selectedColumnForFilter && tempFilterConfig) {
+      setActiveColumnFilters((prev) => ({
+        ...prev,
+        [selectedColumnForFilter]: tempFilterConfig,
+      }));
+    }
+    setShowFilterModal(false);
+    setSelectedColumnForFilter(null);
+    setTempFilterConfig(null);
+  };
+
+  const handleCancelFilter = () => {
+    setShowFilterModal(false);
+    setSelectedColumnForFilter(null);
+    setTempFilterConfig(null);
+  };
+
   return (
     <div className="w-full rounded-lg border border-border bg-background shadow-sm">
       {/* Delete Confirmation Modal */}
@@ -1160,7 +1211,8 @@ const Table = ({
       >
         <div className="space-y-4">
           <p className="text-gray-600">
-            Are you sure you want to delete this item? This action cannot be undone.
+            Are you sure you want to delete this item? This action cannot be
+            undone.
           </p>
           <div className="flex justify-end space-x-2">
             <Button
@@ -1180,6 +1232,146 @@ const Table = ({
           </div>
         </div>
       </Modal>
+
+      {/* Column Visibility Modal */}
+      {showColumnModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-lg bg-background p-6 shadow-lg border border-border">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-medium text-foreground">
+                Column Visibility
+              </h3>
+              <button
+                onClick={handleCancelColumnVisibility}
+                className="rounded-full p-1 hover:bg-muted text-muted-foreground"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+            <div className="max-h-[60vh] overflow-y-auto">
+              {columns.map((column) => (
+                <div
+                  key={column.key}
+                  className="flex items-center space-x-2 py-2 border-b border-border last:border-0"
+                >
+                  <Checkbox
+                    checked={tempVisibleColumns[column.key]}
+                    onChange={(e) => {
+                      setTempVisibleColumns((prev) => ({
+                        ...prev,
+                        [column.key]: e.target.checked,
+                      }));
+                    }}
+                    className="mr-2"
+                  />
+                  <span className="text-foreground">{column.header}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 flex justify-end space-x-2">
+              <Button
+                variant="outline"
+                onClick={handleCancelColumnVisibility}
+                className="border-border"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleSaveColumnVisibility}
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                Save Changes
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Filter Modal */}
+      {showFilterModal && selectedColumnForFilter && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-lg bg-background p-6 shadow-lg border border-border">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-medium text-foreground">
+                Filter{" "}
+                {
+                  columns.find((col) => col.key === selectedColumnForFilter)
+                    ?.header
+                }
+              </h3>
+              <button
+                onClick={handleCancelFilter}
+                className="rounded-full p-1 hover:bg-muted text-muted-foreground"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">
+                  Filter Type
+                </label>
+                {renderFilterTypeSelector(
+                  columns.find((col) => col.key === selectedColumnForFilter),
+                  selectedColumnForFilter
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">
+                  Filter Value
+                </label>
+                {renderFilterInput(
+                  columns.find((col) => col.key === selectedColumnForFilter),
+                  selectedColumnForFilter
+                )}
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end space-x-2">
+              <Button
+                variant="outline"
+                onClick={handleCancelFilter}
+                className="border-border"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleSaveFilter}
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                Apply Filter
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Table Controls */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-gray-50 dark:bg-muted/50 p-4">
@@ -1268,7 +1460,7 @@ const Table = ({
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-10">
-          {/* Action Toolbar with explicit props */}
+          {/* Action Toolbar */}
           <ActionToolbar
             onAdd={onAdd}
             onExportExcel={onExportExcel}
@@ -1278,7 +1470,7 @@ const Table = ({
             className="m-0"
             onImportExcel={onImportExcel}
           />
-          
+
           {/* Active Filters Count */}
           {Object.keys(activeColumnFilters).length > 0 && (
             <Badge variant="primary" className="flex items-center gap-1">
@@ -1299,53 +1491,29 @@ const Table = ({
             </Badge>
           )}
 
-          <Dropdown
-            trigger={
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-1 border-border bg-background text-foreground shadow-sm hover:bg-muted"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                  <line x1="9" y1="3" x2="9" y2="21"></line>
-                </svg>
-                Columns
-              </Button>
-            }
-            align="right"
+          {/* Replace Dropdown with Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleOpenColumnModal}
+            className="flex items-center gap-1 border-border bg-background text-foreground shadow-sm hover:bg-muted"
           >
-            <div className="p-2">
-              <div className="mb-2 text-xs font-medium text-muted-foreground">
-                Toggle column visibility
-              </div>
-              <div className="max-h-60 overflow-y-auto">
-                {columns.map((column) => (
-                  <DropdownItem
-                    key={column.key}
-                    onClick={() => handleColumnVisibilityToggle(column.key)}
-                  >
-                    <Checkbox
-                      checked={visibleColumns[column.key]}
-                      onChange={() => {}}
-                      className="mr-2"
-                    />
-                    <span className="text-foreground">{column.header}</span>
-                  </DropdownItem>
-                ))}
-              </div>
-            </div>
-          </Dropdown>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="9" y1="3" x2="9" y2="21"></line>
+            </svg>
+            Columns
+          </Button>
         </div>
       </div>
 
@@ -1479,120 +1647,32 @@ const Table = ({
                             </span>
                           )}
                         </div>
-                        <Dropdown
-                          trigger={
-                            <Button
-                              variant={hasActiveFilter ? "primary" : "ghost"}
-                              size="sm"
-                              className={`h-10 w-10 p-0 ml-2 flex items-center justify-center transition-all duration-200 
-                              ${
-                                hasActiveFilter
-                                  ? "text-primary-foreground bg-primary hover:bg-primary/90"
-                                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                              }`}
-                              title="Filter Options"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              >
-                                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-                              </svg>
-                            </Button>
-                          }
-                          align="right"
+                        <Button
+                          variant={hasActiveFilter ? "primary" : "ghost"}
+                          size="sm"
+                          className={`h-10 w-10 p-0 ml-2 flex items-center justify-center transition-all duration-200 
+                          ${
+                            hasActiveFilter
+                              ? "text-primary-foreground bg-primary hover:bg-primary/90"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                          }`}
+                          onClick={() => handleOpenFilterModal(key)}
+                          title="Filter Options"
                         >
-                          <div className="p-2 w-64">
-                            <div className="mb-2">
-                              <label className="block text-xs font-medium text-foreground mb-1">
-                                Filter Type
-                              </label>
-                              {renderFilterTypeSelector(column, key)}
-                            </div>
-
-                            <div className="mb-2">
-                              <label className="block text-xs font-medium text-foreground mb-1">
-                                Filter Value
-                              </label>
-                              {hasActiveFilter ? (
-                                renderFilterInput(column, key)
-                              ) : (
-                                <div className="space-y-2">
-                                  {column.type === "text" && (
-                                    <Input
-                                      placeholder="Enter text to filter..."
-                                      value={columnSearch[key] || ""}
-                                      onChange={(e) =>
-                                        handleColumnSearch(key, e.target.value)
-                                      }
-                                      className="text-foreground bg-background border-border"
-                                    />
-                                  )}
-                                  {column.type === "number" && (
-                                    <Input
-                                      type="number"
-                                      placeholder="Enter number to filter..."
-                                      value={columnSearch[key] || ""}
-                                      onChange={(e) =>
-                                        handleColumnSearch(key, e.target.value)
-                                      }
-                                      className="text-foreground bg-background border-border"
-                                    />
-                                  )}
-                                  {column.type === "date" && (
-                                    <DatePicker
-                                      value={columnSearch[key] || ""}
-                                      onChange={(e) =>
-                                        handleColumnSearch(key, e.target.value)
-                                      }
-                                      className="text-foreground bg-background border-border"
-                                    />
-                                  )}
-                                  {column.type === "boolean" && (
-                                    <Select
-                                      value={columnSearch[key] || ""}
-                                      onChange={(e) =>
-                                        handleColumnSearch(key, e.target.value)
-                                      }
-                                      className="text-foreground bg-background border-border"
-                                    >
-                                      <option value="">Select a value</option>
-                                      <option value="true">True</option>
-                                      <option value="false">False</option>
-                                    </Select>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-
-                            <div className="flex justify-between pt-2">
-                              {hasActiveFilter ? (
-                                <Button
-                                  variant="destructive"
-                                  size="sm"
-                                  onClick={() => handleRemoveColumnFilter(key)}
-                                >
-                                  Remove Filter
-                                </Button>
-                              ) : (
-                                <Button
-                                  variant="primary"
-                                  size="sm"
-                                  onClick={() => handleAddColumnFilter(key)}
-                                >
-                                  Apply Filter
-                                </Button>
-                              )}
-                            </div>
-                          </div>
-                        </Dropdown>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                          </svg>
+                        </Button>
                       </div>
                       {hasActiveFilter && (
                         <div className="mt-1">
@@ -1677,7 +1757,9 @@ const Table = ({
                 <tr
                   key={`skeleton-${index}`}
                   className={`${
-                    index % 2 === 0 ? "bg-white dark:bg-background" : "bg-gray-50 dark:bg-muted/50"
+                    index % 2 === 0
+                      ? "bg-white dark:bg-background"
+                      : "bg-gray-50 dark:bg-muted/50"
                   }`}
                 >
                   <td className="w-10 border-b border-border px-4 py-2">
@@ -1690,7 +1772,10 @@ const Table = ({
                     const column = columns.find((col) => col.key === key);
                     if (!column || !visibleColumns[key]) return null;
                     return (
-                      <td key={key} className="border-b border-border px-4 py-2">
+                      <td
+                        key={key}
+                        className="border-b border-border px-4 py-2"
+                      >
                         <div className="h-4 bg-gray-200 dark:bg-muted rounded animate-pulse"></div>
                       </td>
                     );
@@ -1715,8 +1800,8 @@ const Table = ({
                       selectedRows.has(row.id)
                         ? "bg-primary/10 hover:bg-primary/20"
                         : rowIndex % 2 === 0
-                        ? "bg-white dark:bg-background"
-                        : "bg-gray-50 dark:bg-muted/50 hover:bg-gray-100 dark:hover:bg-muted"
+                          ? "bg-white dark:bg-background"
+                          : "bg-gray-50 dark:bg-muted/50 hover:bg-gray-100 dark:hover:bg-muted"
                     }`}
                     draggable
                     onDragStart={() => handleRowDragStart(actualRowIndex)}
@@ -1770,7 +1855,7 @@ const Table = ({
                         <td
                           key={`${rowIndex}-${key}`}
                           className="border-b border-border px-4 py-2"
-                          onDoubleClick={() => 
+                          onDoubleClick={() =>
                             enableCellEditing &&
                             handleCellDoubleClick(actualRowIndex, key)
                           }
@@ -2152,10 +2237,18 @@ const Table = ({
                 }}
                 className="h-8 w-16 text-foreground bg-background"
               >
-                <option value={10} className="bg-background text-foreground">10</option>
-                <option value={25} className="bg-background text-foreground">25</option>
-                <option value={50} className="bg-background text-foreground">50</option>
-                <option value={100} className="bg-background text-foreground">100</option>
+                <option value={10} className="bg-background text-foreground">
+                  10
+                </option>
+                <option value={25} className="bg-background text-foreground">
+                  25
+                </option>
+                <option value={50} className="bg-background text-foreground">
+                  50
+                </option>
+                <option value={100} className="bg-background text-foreground">
+                  100
+                </option>
               </Select>
             </div>
           </div>
