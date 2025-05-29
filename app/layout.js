@@ -1,5 +1,3 @@
-'use client'
-
 import { ThemeProvider } from "@/lib/themes/theme-provider"
 import { MUIThemeWrapper } from "@/lib/themes/mui-theme-provider";
 import { SimpleToastProvider } from "@/components/ui/simple-toast";
@@ -14,10 +12,10 @@ const inter = Inter({
   variable: "--font-inter",
 })
 
-// export const metadata = {
-//   title: 'Inventory Management System',
-//   description: 'An inventory management system',
-// };
+export const metadata = {
+  title: 'Inventory Management System',
+  description: 'An inventory management system',
+};
 
 export default function RootLayout({ children }) {
   return (

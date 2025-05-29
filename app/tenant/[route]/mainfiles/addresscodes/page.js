@@ -14,12 +14,25 @@ import {
   deleteProvince,
   editCountry,
   editProvince,
+  editCity,
   editDistrict,
   deleteDistrict,
   createCountry,
   createProvince,
   createCity,
   createDistrict,
+  exportCitiesToExcel,
+  exportCitiesToPdf,
+  importCitiesFromExcel,
+  exportCountriesToExcel,
+  exportCountriesToPdf,
+  importCountriesFromExcel,
+  exportProvincesToExcel,
+  exportProvincesToPdf,
+  importProvincesFromExcel,
+  exportDistrictsToExcel,
+  exportDistrictsToPdf,
+  importDistrictsFromExcel,
 } from "@/API/geographyApi";
 import {
   countryColumns,
@@ -58,6 +71,12 @@ export default function AddressCodesPage() {
   const [activeDrawerType, setActiveDrawerType] = useState("");
   const [formData, setFormData] = useState({});
   const [isEditMode, setIsEditMode] = useState(false);
+  const [dataFetched, setDataFetched] = useState({
+    countries: false,
+    provinces: false,
+    cities: false,
+    districts: false
+  });
 
   // Initialize tab value from URL or localStorage
   useEffect(() => {
@@ -89,31 +108,61 @@ export default function AddressCodesPage() {
     router.push(`?${params.toString()}`);
   };
 
-  const fetchData = async () => {
+  const fetchData = async (tabIndex, force = false) => {
     try {
       setLoading(true);
-      // Fetch all data
-      const [
-        countriesResponse,
-        provincesResponse,
-        citiesResponse,
-        districtsResponse,
-      ] = await Promise.all([
-        getCountries(),
-        getProvinces(),
-        getCities(),
-        getDistricts(),
-      ]);
+      let response;
+      let dataType;
 
-      // Set data directly without transformation
-      setCountriesData(countriesResponse.data || []);
-      setProvincesData(provincesResponse.data || []);
-      setCitiesData(citiesResponse.data || []);
-      setDistrictsData(districtsResponse.data || []);
+      switch (tabIndex) {
+        case 0: // Countries
+          if (!force && dataFetched.countries) {
+            setLoading(false);
+            return;
+          }
+          response = await getCountries();
+          setCountriesData(response.data || []);
+          dataType = 'countries';
+          break;
+        case 1: // Provinces
+          if (!force && dataFetched.provinces) {
+            setLoading(false);
+            return;
+          }
+          response = await getProvinces();
+          setProvincesData(response.data || []);
+          dataType = 'provinces';
+          break;
+        case 2: // Cities
+          if (!force && dataFetched.cities) {
+            setLoading(false);
+            return;
+          }
+          response = await getCities();
+          setCitiesData(response.data || []);
+          dataType = 'cities';
+          break;
+        case 3: // Districts
+          if (!force && dataFetched.districts) {
+            setLoading(false);
+            return;
+          }
+          response = await getDistricts();
+          setDistrictsData(response.data || []);
+          dataType = 'districts';
+          break;
+      }
+
+      if (dataType) {
+        setDataFetched(prev => ({
+          ...prev,
+          [dataType]: true
+        }));
+      }
 
       toast.success({
         title: "Success",
-        description: "All data fetched successfully",
+        description: "Data fetched successfully",
       });
     } catch (error) {
       toast.error({
@@ -125,128 +174,64 @@ export default function AddressCodesPage() {
     }
   };
 
+  // Initial data fetch for the first tab
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(value);
+  }, [value]);
 
-  // Handle edit functions
-  const handleEditCountry = (row) => {
-    setFormData({
-      id: row.id,
-      name: row.name,
-    });
-    setActiveDrawerType("country");
+  const entityHandlers = {
+    country: {
+      setData: setCountriesData,
+      deleteFn: deleteCountry,
+      editFn: editCountry,
+      createFn: createCountry,
+    },
+    province: {
+      setData: setProvincesData,
+      deleteFn: deleteProvince,
+      editFn: editProvince,
+      createFn: createProvince,
+    },
+    city: {
+      setData: setCitiesData,
+      deleteFn: deleteCity,
+      editFn: editCity,
+      createFn: createCity,
+    },
+    district: {
+      setData: setDistrictsData,
+      deleteFn: deleteDistrict,
+      editFn: editDistrict,
+      createFn: createDistrict,
+    },
+  };
+
+  const handleEdit = (type, row) => {
+    setFormData({ id: row.id, name: row.name });
+    setActiveDrawerType(type);
     setIsEditMode(true);
     setIsDrawerOpen(true);
   };
-
-  const handleEditCity = (row) => {
-    setFormData({
-      id: row.id,
-      name: row.name,
-    });
-    setActiveDrawerType("city");
-    setIsEditMode(true);
-    setIsDrawerOpen(true);
-  };
-
-  const handleEditProvince = (row) => {
-    setFormData({
-      id: row.id,
-      name: row.name,
-    });
-    setActiveDrawerType("province");
-    setIsEditMode(true);
-    setIsDrawerOpen(true);
-  };
-
-  const handleEditDistrict = (row) => {
-    setFormData({
-      id: row.id,
-      name: row.name,
-    });
-    setActiveDrawerType("district");
-    setIsEditMode(true);
-    setIsDrawerOpen(true);
-  };
-
-  // Handle delete functions
-  const handleDeleteCountry = async (row) => {
+  
+  const handleDelete = async (type, row) => {
     try {
-      const response = await deleteCountry(row.id);
+      const response = await entityHandlers[type].deleteFn(row.id);
       if (response.status) {
-        setCountriesData((prevData) =>
-          prevData.filter((item) => item.id !== row.id)
-        );
+        entityHandlers[type].setData(prev => prev.filter(item => item.id !== row.id));
+        // Reset the fetched state for the modified data type
+        setDataFetched(prev => ({
+          ...prev,
+          [type]: false
+        }));
         toast.success({
           title: "Success",
-          description: response.message || "Country deleted successfully",
+          description: response.message || `${type} deleted successfully`,
         });
       }
     } catch (error) {
       toast.error({
         title: "Error",
-        description: error.message || "Failed to delete country",
-      });
-    }
-  };
-
-  const handleDeleteCity = async (row) => {
-    try {
-      const response = await deleteCity(row.id);
-      if (response.status) {
-        setCitiesData((prevData) =>
-          prevData.filter((item) => item.id !== row.id)
-        );
-        toast.success({
-          title: "Success",
-          description: response.message || "City deleted successfully",
-        });
-      }
-    } catch (error) {
-      toast.error({
-        title: "Error",
-        description: error.message || "Failed to delete city",
-      });
-    }
-  };
-
-  const handleDeleteProvince = async (row) => {
-    try {
-      const response = await deleteProvince(row.id);
-      if (response.status) {
-        setProvincesData((prevData) =>
-          prevData.filter((item) => item.id !== row.id)
-        );
-        toast.success({
-          title: "Success",
-          description: response.message || "Province deleted successfully",
-        });
-      }
-    } catch (error) {
-      toast.error({
-        title: "Error",
-        description: error.message || "Failed to delete province",
-      });
-    }
-  };
-
-  const handleDeleteDistrict = async (row) => {
-    try {
-      const response = await deleteDistrict(row.id);
-      if (response.status) {
-        setDistrictsData((prevData) =>
-          prevData.filter((item) => item.id !== row.id)
-        );
-        toast.success({
-          title: "Success",
-          description: response.message || "District deleted successfully",
-        });
-      }
-    } catch (error) {
-      toast.error({
-        title: "Error",
-        description: error.message || "Failed to delete district",
+        description: error.message || `Failed to delete ${type}`,
       });
     }
   };
@@ -257,6 +242,8 @@ export default function AddressCodesPage() {
     setFormData({});
     setIsDrawerOpen(true);
   };
+  
+
 
   const handleCloseDrawer = () => {
     setIsDrawerOpen(false);
@@ -270,116 +257,42 @@ export default function AddressCodesPage() {
   };
 
   const handleSave = async () => {
+    const type = activeDrawerType;
+    const handler = entityHandlers[type];
+  
     try {
-      if (!formData.name) {
-        toast.error({
-          title: "Error",
-          description: "Name field is required",
-        });
-        return;
-      }
-
       let response;
-      const formattedData = {
-        name: formData.name,
-      };
-
       if (isEditMode) {
-        switch (activeDrawerType) {
-          case "country":
-            response = await editCountry(formData.id, formattedData);
-            if (response.status) {
-              setCountriesData((prevData) =>
-                prevData.map((item) =>
-                  item.id === formData.id ? { ...item, ...formattedData } : item
-                )
-              );
-            }
-            break;
-          case "province":
-            response = await editProvince(formData.id, formattedData);
-            if (response.status) {
-              setProvincesData((prevData) =>
-                prevData.map((item) =>
-                  item.id === formData.id ? { ...item, ...formattedData } : item
-                )
-              );
-            }
-            break;
-          case "city":
-            response = await editCity(formData.id, formattedData);
-            if (response.status) {
-              setCitiesData((prevData) =>
-                prevData.map((item) =>
-                  item.id === formData.id ? { ...item, ...formattedData } : item
-                )
-              );
-            }
-            break;
-          case "district":
-            response = await editDistrict(formData.id, formattedData);
-            if (response.status) {
-              setDistrictsData((prevData) =>
-                prevData.map((item) =>
-                  item.id === formData.id ? { ...item, ...formattedData } : item
-                )
-              );
-            }
-            break;
-          default:
-            throw new Error("Invalid type");
-        }
+        response = await handler.editFn(formData.id, formData);
       } else {
-        switch (activeDrawerType) {
-          case "country":
-            response = await createCountry(formattedData);
-            if (response.status) {
-              setCountriesData((prevData) => [...prevData, response.data]);
-            }
-            break;
-          case "province":
-            response = await createProvince(formattedData);
-            if (response.status) {
-              setProvincesData((prevData) => [...prevData, response.data]);
-            }
-            break;
-          case "city":
-            response = await createCity(formattedData);
-            if (response.status) {
-              setCitiesData((prevData) => [...prevData, response.data]);
-            }
-            break;
-          case "district":
-            response = await createDistrict(formattedData);
-            if (response.status) {
-              setDistrictsData((prevData) => [...prevData, response.data]);
-            }
-            break;
-          default:
-            throw new Error("Invalid type");
-        }
+        response = await handler.createFn(formData);
       }
-
+  
       if (response.status) {
+        // Reset the fetched state for the modified data type
+        setDataFetched(prev => ({
+          ...prev,
+          [type]: false
+        }));
+        
         toast.success({
           title: "Success",
-          description:
-            response.message ||
-            `${isEditMode ? "Updated" : "Created"} successfully`,
+          description: response.message || `${type} ${isEditMode ? "updated" : "created"} successfully`,
         });
+  
+        setIsEditMode(false);
       }
     } catch (error) {
       toast.error({
         title: "Error",
-        description:
-          error.message ||
-          `Failed to ${isEditMode ? "update" : "create"} ${activeDrawerType}`,
+        description: error.message || `Failed to ${isEditMode ? "update" : "create"} ${type}`,
       });
     }
   };
-
+  
   const handleSaveAndNew = async () => {
     await handleSave();
+    setFormData({});
     if (isEditMode) {
       setIsEditMode(false);
       setFormData({});
@@ -389,6 +302,192 @@ export default function AddressCodesPage() {
   const handleSaveAndClose = async () => {
     await handleSave();
     handleCloseDrawer();
+  };
+
+  const handleExportExcel = async (type) => {
+    try {
+      let response;
+      switch (type) {
+        case 'country':
+          response = await exportCountriesToExcel();
+          break;
+        case 'province':
+          response = await exportProvincesToExcel();
+          break;
+        case 'city':
+          response = await exportCitiesToExcel();
+          break;
+        case 'district':
+          response = await exportDistrictsToExcel();
+          break;
+        default:
+          return;
+      }
+      
+      // Create a download link for the Excel file
+      const url = window.URL.createObjectURL(new Blob([response]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${type}s.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      
+      toast.success({
+        title: "Success",
+        description: `${type} exported successfully`,
+      });
+    } catch (error) {
+      toast.error({
+        title: "Error",
+        description: error.message || `Failed to export ${type}`,
+      });
+    }
+  };
+
+  const handleExportPdf = async (type) => {
+    try {
+      let response;
+      switch (type) {
+        case 'country':
+          response = await exportCountriesToPdf();
+          break;
+        case 'province':
+          response = await exportProvincesToPdf();
+          break;
+        case 'city':
+          response = await exportCitiesToPdf();
+          break;
+        case 'district':
+          response = await exportDistrictsToPdf();
+          break;
+        default:
+          return;
+      }
+      
+      // Create a download link for the PDF file
+      const url = window.URL.createObjectURL(new Blob([response]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${type}s.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      
+      toast.success({
+        title: "Success",
+        description: `${type} exported successfully`,
+      });
+    } catch (error) {
+      toast.error({
+        title: "Error",
+        description: error.message || `Failed to export ${type}`,
+      });
+    }
+  };
+
+  const handleImportExcel = async (type, file) => {
+    try {
+      let response;
+      switch (type) {
+        case 'country':
+          response = await importCountriesFromExcel(file);
+          break;
+        case 'province':
+          response = await importProvincesFromExcel(file);
+          break;
+        case 'city':
+          response = await importCitiesFromExcel(file);
+          break;
+        case 'district':
+          response = await importDistrictsFromExcel(file);
+          break;
+        default:
+          return;
+      }
+      
+      if (response.status) {
+        // Refresh the data after successful import
+        fetchData(value, true);
+        toast.success({
+          title: "Success",
+          description: `${type} imported successfully`,
+        });
+      }
+    } catch (error) {
+      toast.error({
+        title: "Error",
+        description: error.message || `Failed to import ${type}`,
+      });
+    }
+  };
+
+  const handlePrint = (type, data, columns) => {
+    try {
+      // Create a new window for printing
+      const printWindow = window.open('', '_blank');
+      
+      // Create the HTML content for printing
+      const content = `
+        <html>
+          <head>
+            <title>${type.charAt(0).toUpperCase() + type.slice(1)} List</title>
+            <style>
+              body { font-family: Arial, sans-serif; }
+              table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+              th { background-color: #f5f5f5; }
+              h1 { text-align: center; }
+              @media print {
+                body { margin: 0; padding: 20px; }
+                table { page-break-inside: auto; }
+                tr { page-break-inside: avoid; page-break-after: auto; }
+              }
+            </style>
+          </head>
+          <body>
+            <h1>${type.charAt(0).toUpperCase() + type.slice(1)} List</h1>
+            <table>
+              <thead>
+                <tr>
+                  ${columns.map(col => `<th>${col.header}</th>`).join('')}
+                </tr>
+              </thead>
+              <tbody>
+                ${data.map(row => `
+                  <tr>
+                    ${columns.map(col => `<td>${row[col.key] || ''}</td>`).join('')}
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </body>
+        </html>
+      `;
+
+      // Write the content to the new window
+      printWindow.document.write(content);
+      printWindow.document.close();
+
+      // Wait for content to load then print
+      printWindow.onload = function() {
+        printWindow.print();
+        // Close the window after printing
+        printWindow.onafterprint = function() {
+          printWindow.close();
+        };
+      };
+
+      toast.success({
+        title: "Success",
+        description: `${type} list prepared for printing`,
+      });
+    } catch (error) {
+      toast.error({
+        title: "Error",
+        description: error.message || `Failed to print ${type} list`,
+      });
+    }
   };
 
   return (
@@ -416,16 +515,16 @@ export default function AddressCodesPage() {
             <Table
               data={countriesData}
               columns={countryColumns}
-              onEdit={handleEditCountry}
-              onDelete={handleDeleteCountry}
+              onEdit={(row) => handleEdit("country", row)}
+              onDelete={(row) => handleDelete("country", row)}
               onAdd={() => handleAddNew("country")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => {}}
-              onExportPdf={() => {}}
-              onPrint={() => {}}
-              onRefresh={fetchData}
-              onImportExcel={() => {}}
+              onExportExcel={() => handleExportExcel('country')}
+              onExportPdf={() => handleExportPdf('country')}
+              onPrint={() => handlePrint('country', countriesData, countryColumns)}
+              onRefresh={() => fetchData(0, true)}
+              onImportExcel={(file) => handleImportExcel('country', file)}
             />
           </Box>
         </TabPanel>
@@ -439,16 +538,16 @@ export default function AddressCodesPage() {
             <Table
               data={provincesData}
               columns={provinceColumns}
-              onEdit={handleEditProvince}
-              onDelete={handleDeleteProvince}
+              onEdit={(row) => handleEdit("province", row)}
+              onDelete={(row) => handleDelete("province", row)}
               onAdd={() => handleAddNew("province")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => {}}
-              onExportPdf={() => {}}
-              onPrint={() => {}}
-              onRefresh={fetchData}
-              onImportExcel={() => {}}
+              onExportExcel={() => handleExportExcel('province')}
+              onExportPdf={() => handleExportPdf('province')}
+              onPrint={() => handlePrint('province', provincesData, provinceColumns)}
+              onRefresh={() => fetchData(1, true)}
+              onImportExcel={(file) => handleImportExcel('province', file)}
             />
           </Box>
         </TabPanel>
@@ -462,16 +561,16 @@ export default function AddressCodesPage() {
             <Table
               data={citiesData}
               columns={cityColumns}
-              onEdit={handleEditCity}
-              onDelete={handleDeleteCity}
+              onEdit={(row) => handleEdit("city", row)}
+              onDelete={(row) => handleDelete("city", row)}
               onAdd={() => handleAddNew("city")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => {}}
-              onExportPdf={() => {}}
-              onPrint={() => {}}
-              onRefresh={fetchData}
-              onImportExcel={() => {}}
+              onExportExcel={() => handleExportExcel('city')}
+              onExportPdf={() => handleExportPdf('city')}
+              onPrint={() => handlePrint('city', citiesData, cityColumns)}
+              onRefresh={() => fetchData(2, true)}
+              onImportExcel={(file) => handleImportExcel('city', file)}
             />
           </Box>
         </TabPanel>
@@ -485,16 +584,16 @@ export default function AddressCodesPage() {
             <Table
               data={districtsData}
               columns={districtColumns}
-              onEdit={handleEditDistrict}
-              onDelete={handleDeleteDistrict}
+              onEdit={(row) => handleEdit("district", row)}
+              onDelete={(row) => handleDelete("district", row)}
               onAdd={() => handleAddNew("district")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => {}}
-              onExportPdf={() => {}}
-              onPrint={() => {}}
-              onRefresh={fetchData}
-              onImportExcel={() => {}}
+              onExportExcel={() => handleExportExcel('district')}
+              onExportPdf={() => handleExportPdf('district')}
+              onPrint={() => handlePrint('district', districtsData, districtColumns)}
+              onRefresh={() => fetchData(3, true)}
+              onImportExcel={(file) => handleImportExcel('district', file)}
             />
           </Box>
         </TabPanel>

@@ -1,5 +1,11 @@
 import { NextResponse } from 'next/server';
 
+// In-memory cache for tenant verification
+const tenantCache = new Map();
+
+// Cache duration in milliseconds (10 minutes)
+const CACHE_DURATION = 10 * 60 * 1000;
+
 export async function middleware(request) {
   const url = request.nextUrl.clone();
   const hostname = request.headers.get('host');
@@ -23,37 +29,58 @@ export async function middleware(request) {
       url.pathname = `/central${url.pathname === '/' ? '' : url.pathname}`;
       return NextResponse.rewrite(url);
     }
-  } else {
-    // Extract tenant name from subdomain
-    const tenantName = hostname.split('.')[0];
-    
-    try {
-      // Check if tenant exists by making API request
-      const response = await fetch(`http://app.localhost:8000/api/tenant/get-tenant-by-name/${tenantName}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      });
-      
-      if (!response.ok) {
-        // If tenant doesn't exist, redirect to central domain
-        return NextResponse.redirect(new URL('/','http://localhost:3000'));
-      }
-
-      // If tenant exists, route to tenant pages
-      if (!url.pathname.startsWith('/tenant')) {
-        url.pathname = `/tenant${url.pathname === '/' ? '' : url.pathname}`;
-        return NextResponse.rewrite(url);
-      }
-    } catch (error) {
-      // On error, redirect to central domain
-      return NextResponse.redirect(new URL('/', 'http://localhost:3000'));
-    }
+    return NextResponse.next();
   }
 
-  return NextResponse.next();
+  // Extract tenant name from subdomain
+  const tenantName = hostname.split('.')[0];
+  
+  // Check cache for tenant verification
+  const cachedTenant = tenantCache.get(tenantName);
+  const now = Date.now();
+  
+  if (cachedTenant && (now - cachedTenant.timestamp) < CACHE_DURATION) {
+    // If tenant is verified and cache is still valid, just handle routing
+    if (!url.pathname.startsWith('/tenant')) {
+      url.pathname = `/tenant${url.pathname === '/' ? '' : url.pathname}`;
+      return NextResponse.rewrite(url);
+    }
+    return NextResponse.next();
+  }
+  
+  try {
+    // Check if tenant exists by making API request
+    const tenantResponse = await fetch(`http://app.localhost:8000/api/tenant/get-tenant-by-name/${tenantName}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      // Add cache control headers to prevent unnecessary API calls
+      cache: 'force-cache'
+    });
+    
+    if (!tenantResponse.ok) {
+      // If tenant doesn't exist, redirect to central domain
+      return NextResponse.redirect(new URL('/','http://localhost:3000'));
+    }
+
+    // Cache the tenant verification result
+    tenantCache.set(tenantName, {
+      verified: true,
+      timestamp: now
+    });
+
+    // Handle routing for verified tenant
+    if (!url.pathname.startsWith('/tenant')) {
+      url.pathname = `/tenant${url.pathname === '/' ? '' : url.pathname}`;
+      return NextResponse.rewrite(url);
+    }
+    return NextResponse.next();
+  } catch (error) {
+    // On error, redirect to central domain
+    return NextResponse.redirect(new URL('/', 'http://localhost:3000'));
+  }
 }
 
 // Run middleware on all routes except static files

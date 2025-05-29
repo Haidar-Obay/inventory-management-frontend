@@ -32,9 +32,23 @@ const tenantApiService = async (method, endpoint, data = null) => {
       headers,
       credentials: "include",
       mode: "cors",
-      ...(data && { body: JSON.stringify(data) }),
+      ...(data && { body: data instanceof FormData ? data : JSON.stringify(data) }),
     });
 
+    // Check if the response is a file download (Excel or PDF)
+    const contentType = response.headers.get("content-type");
+    if (contentType && (
+      contentType.includes("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") || // Excel
+      contentType.includes("application/pdf") || // PDF
+      contentType.includes("application/octet-stream") // Generic binary
+    )) {
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      return await response.blob();
+    }
+
+    // For JSON responses
     const responseData = await response.json();
 
     if (!response.ok) {

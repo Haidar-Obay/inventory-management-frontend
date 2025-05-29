@@ -166,3 +166,139 @@ export const createDistrict = async (data) => {
     throw error;
   }
 };
+
+// Export and Import functions for Cities
+export const exportCitiesToExcel = async () => {
+  try {
+    const response = await tenantApiService('GET', 'exportExcell/cities');
+    return response;
+  } catch (error) {
+    console.error('Error exporting cities to Excel:', error);
+    throw error;
+  }
+};
+
+export const exportCitiesToPdf = async () => {
+  try {
+    const response = await tenantApiService('GET', 'exportPdf/cities');
+    return response;
+  } catch (error) {
+    console.error('Error exporting cities to PDF:', error);
+    throw error;
+  }
+};
+
+export const importCitiesFromExcel = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await tenantApiService('POST', 'importFromExcel/cities', formData);
+    return response;
+  } catch (error) {
+    console.error('Error importing cities from Excel:', error);
+    throw error;
+  }
+};
+
+// Export and Import functions for Countries
+export const exportCountriesToExcel = async () => {
+  try {
+    const response = await tenantApiService('GET', 'exportExcell/countries');
+    return response;
+  } catch (error) {
+    console.error('Error exporting countries to Excel:', error);
+    throw error;
+  }
+};
+
+export const exportCountriesToPdf = async () => {
+  try {
+    const response = await tenantApiService('GET', 'exportPdf/countries');
+    return response;
+  } catch (error) {
+    console.error('Error exporting countries to PDF:', error);
+    throw error;
+  }
+};
+
+export const importCountriesFromExcel = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await tenantApiService('POST', 'importFromExcel/countries', formData);
+    return response;
+  } catch (error) {
+    console.error('Error importing countries from Excel:', error);
+    throw error;
+  }
+};
+
+// Export and Import functions for Provinces
+export const exportProvincesToExcel = async () => {
+  try {
+    const response = await tenantApiService('GET', 'exportExcell/provinces');
+    return response;
+  } catch (error) {
+    console.error('Error exporting provinces to Excel:', error);
+    throw error;
+  }
+};
+
+export const exportProvincesToPdf = async () => {
+  try {
+    const response = await tenantApiService('GET', 'exportPdf/provinces');
+    return response;
+  } catch (error) {
+    console.error('Error exporting provinces to PDF:', error);
+    throw error;
+  }
+};
+
+export const importProvincesFromExcel = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await tenantApiService('POST', 'importFromExcel/provinces', formData);
+    return response;
+  } catch (error) {
+    console.error('Error importing provinces from Excel:', error);
+    throw error;
+  }
+};
+
+// Export and Import functions for Districts
+export const exportDistrictsToExcel = async () => {
+  try {
+    const response = await tenantApiService('GET', 'exportExcell/districts');
+    return response;
+  } catch (error) {
+    console.error('Error exporting districts to Excel:', error);
+    throw error;
+  }
+};
+
+export const exportDistrictsToPdf = async () => {
+  try {
+    const response = await tenantApiService('GET', 'exportPdf/districts');
+    return response;
+  } catch (error) {
+    console.error('Error exporting districts to PDF:', error);
+    throw error;
+  }
+};
+
+export const importDistrictsFromExcel = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await tenantApiService('POST', 'importFromExcel/districts', formData);
+    return response;
+  } catch (error) {
+    console.error('Error importing districts from Excel:', error);
+    throw error;
+  }
+};

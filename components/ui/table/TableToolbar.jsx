@@ -105,7 +105,7 @@ export const TableToolbar = ({
           )}
         </div>
       </div>
-      <div className="flex flex-wrap items-center gap-10">
+      <div className="flex flex-wrap items-center gap-1">
         {/* Action Toolbar */}
         <ActionToolbar
           onAdd={onAdd}
@@ -118,7 +118,7 @@ export const TableToolbar = ({
         />
 
         {/* Active Filters Count */}
-        {Object.keys(activeColumnFilters).length > 0 && (
+        {/* {Object.keys(activeColumnFilters).length > 0 && (
           <Badge variant="primary" className="flex items-center gap-1">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -135,7 +135,7 @@ export const TableToolbar = ({
             </svg>
             {Object.keys(activeColumnFilters).length} active filters
           </Badge>
-        )}
+        )} */}
 
         {/* Replace Dropdown with Button */}
         <Button
