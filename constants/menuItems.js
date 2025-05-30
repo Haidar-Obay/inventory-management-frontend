@@ -18,10 +18,10 @@ export const menuItems = {
         type: "group",
         displayType: "popover",
         items: [
-          { name: "Countries", icon: "Flag", path: "/mainfiles/addresscodes?tab=0" },
-          { name: "Cities", icon: "Flag", path: "/mainfiles/addresscodes?tab=2" },
-          { name: "Districts", icon: "Flag", path: "/mainfiles/addresscodes?tab=3" },
-          { name: "Provinces", icon: "Flag", path: "/mainfiles/addresscodes?tab=1" },
+          { name: "Countries", icon: "Flag", path: "main/mainfiles/addresscodes?tab=0" },
+          { name: "Cities", icon: "Flag", path: "main/mainfiles/addresscodes?tab=2" },
+          { name: "Districts", icon: "Flag", path: "main/mainfiles/addresscodes?tab=3" },
+          { name: "Provinces", icon: "Flag", path: "main/mainfiles/addresscodes?tab=1" },
         ]
       },
       {
@@ -30,9 +30,9 @@ export const menuItems = {
         type: "group",
         displayType: "popover",
         items: [
-          { name: "Project", icon: "Presentation", path: "/sections/project" },
-          { name: "Cost Center", icon: "HandCoins", path: "/sections/cost-center" },
-          { name: "Department", icon: "Building2", path: "/sections/department" },
+          { name: "Project", icon: "Presentation", path: "main/sections/project" },
+          { name: "Cost Center", icon: "HandCoins", path: "main/sections/cost-center" },
+          { name: "Department", icon: "Building2", path: "main/sections/department" },
         ]
       },
       {
@@ -41,8 +41,8 @@ export const menuItems = {
         type: "group",
         displayType: "popover",
         items: [
-          { name: "Product Lines", icon: "PackageSearch", path: "/items/product-lines" },
-          { name: "Categories", icon: "ChartBarStacked", path: "/items/categories" },
+          { name: "Product Lines", icon: "PackageSearch", path: "main/items/product-lines" },
+          { name: "Categories", icon: "ChartBarStacked", path: "main/items/categories" },
         ]
       },
     ],
@@ -54,13 +54,13 @@ export const menuItems = {
       {
         name: "General",
         icon: "Settings",
-        path: "/settings/general",
+        path: "main/settings/general",
         adminOnly: false,
       },
       {
         name: "Notifications",
         icon: "Bell",
-        path: "/settings/notifications",
+        path: "main/settings/notifications",
         adminOnly: false,
       },
     ],
@@ -68,6 +68,6 @@ export const menuItems = {
   support: {
     groupIcon: "LifeBuoy",
     displayType: "popover",
-    items: [{ name: "Contact Us", icon: "Mail", path: "/contact" }],
+    items: [{ name: "Contact Us", icon: "Mail", path: "main/contact" }],
   },
 }; 
