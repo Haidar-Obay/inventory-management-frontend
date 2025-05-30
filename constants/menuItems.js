@@ -70,4 +70,4 @@ export const menuItems = {
     displayType: "popover",
     items: [{ name: "Contact Us", icon: "Mail", path: "/contact" }],
   },
-} as const; 
+}; 
