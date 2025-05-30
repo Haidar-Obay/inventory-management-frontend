@@ -5,8 +5,9 @@ const nextConfig = {
     unoptimized: true,
   },
   // Enable hostname rewrites for subdomains
- skipTrailingSlashRedirect: true,
-  
+  skipTrailingSlashRedirect: true,
+  // Allow cross-origin requests from hadishokor.localhost
+  allowedDevOrigins: ['hadishokor.localhost'],
 }
 
-module.exports = nextConfig
+module.exports = nextConfig;
