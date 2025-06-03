@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Tabs, Tab, Box, Typography } from "@mui/material";
 import Table from "@/components/ui/table/Table";
-import AddressCodeDrawer from "@/components/drawers/AddressCodeDrawer";
+import AddressCodeDrawer from "@/components/ui/drawers/AddressCodeDrawer";
 import {
   getCountries,
   getProvinces,
@@ -264,17 +264,21 @@ export default function AddressCodesPage() {
       let response;
       if (isEditMode) {
         response = await handler.editFn(formData.id, formData);
+        if (response.status) {
+          // Update existing item in the state
+          entityHandlers[type].setData(prev => 
+            prev.map(item => item.id === formData.id ? { ...item, ...formData } : item)
+          );
+        }
       } else {
         response = await handler.createFn(formData);
+        if (response.status) {
+          // Add new item to the state
+          entityHandlers[type].setData(prev => [...prev, response.data]);
+        }
       }
   
       if (response.status) {
-        // Reset the fetched state for the modified data type
-        setDataFetched(prev => ({
-          ...prev,
-          [type]: false
-        }));
-        
         toast.success({
           title: "Success",
           description: response.message || `${type} ${isEditMode ? "updated" : "created"} successfully`,

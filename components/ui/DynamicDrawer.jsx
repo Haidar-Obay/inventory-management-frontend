@@ -78,6 +78,7 @@ const DynamicDrawer = ({
             onCancel={onCancel || onClose}
             expandDirection="left"
             className="[&_button]:h-10"
+            storageKey={`drawer-${title}-last-action`}
           />
         </div>
       </Box>

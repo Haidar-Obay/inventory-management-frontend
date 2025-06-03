@@ -13,7 +13,11 @@ const tenantApiService = async (method, endpoint, data = null) => {
   // Construct the URL with tenant name and app.localhost
   const url = `http://${tenantName}.${CENTRAL_DOMAIN}:${TENANT_API_PORT}/${endpoint}`;
   
-  const token = localStorage.getItem(TENANT_TOKEN_KEY);
+  // Get token from cookies instead of localStorage
+  const token = document.cookie
+    .split('; ')
+    .find(row => row.startsWith(`${TENANT_TOKEN_KEY}=`))
+    ?.split('=')[1];
 
   const headers = {
     "Content-Type": "application/json",
@@ -23,7 +27,7 @@ const tenantApiService = async (method, endpoint, data = null) => {
   
   console.log("Tenant Name:", tenantName);
   console.log("Request URL:", url);
-  console.log("Token in Storage: ", token);
+  console.log("Token in Cookie: ", token);
   console.log("Request Headers: ", headers);
   
   try {

@@ -22,10 +22,16 @@ export function SidebarItem({
   const route = params?.route
 
   const getFullPath = () => {
-    if (path.startsWith('/mainfiles')) {
-      return `/tenant/${route}${path}`
+    // If path starts with /, it's an absolute path
+    if (path.startsWith('/')) {
+      return path;
     }
-    return path
+    // If path starts with mainfiles, add tenant prefix
+    if (path.startsWith('main')) {
+      return `/${path}`;
+    }
+    // For other paths, just add tenant prefix
+    return `/${route}/${path}`;
   }
 
   if (isCollapsed) {

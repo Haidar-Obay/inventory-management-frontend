@@ -3,9 +3,9 @@ export const menuItems = {
     groupIcon: "LayoutDashboard",
     displayType: "popover",
     items: [
-      { name: "Overview", icon: "Home", path: "/" },
-      { name: "Analytics", icon: "BarChart3", path: "/analytics" },
-      { name: "Reports", icon: "FileText", path: "/reports" },
+      { name: "Overview", icon: "Home", path: "/" ,roles: ["admin", "user", "owner"],},
+      { name: "Analytics", icon: "BarChart3", path: "/analytics" ,roles: ["admin", "user", "owner"],},
+      { name: "Reports", icon: "FileText", path: "/reports" ,roles: ["admin", "user", "owner"],},
     ],
   },
   Main_Files: {
@@ -17,18 +17,20 @@ export const menuItems = {
         icon: "MapPin",
         type: "group",
         displayType: "popover",
+        roles: ["admin", "owner"],
         items: [
           { name: "Countries", icon: "Flag", path: "main/mainfiles/addresscodes?tab=0" },
+          { name: "Provinces", icon: "Flag", path: "main/mainfiles/addresscodes?tab=1" },
           { name: "Cities", icon: "Flag", path: "main/mainfiles/addresscodes?tab=2" },
           { name: "Districts", icon: "Flag", path: "main/mainfiles/addresscodes?tab=3" },
-          { name: "Provinces", icon: "Flag", path: "main/mainfiles/addresscodes?tab=1" },
-        ]
+        ] 
       },
       {
         name: "Sections",
         icon: "Waypoints",
         type: "group",
         displayType: "popover",
+        roles: ["admin", "owner"],
         items: [
           { name: "Project", icon: "Presentation", path: "main/sections/project" },
           { name: "Cost Center", icon: "HandCoins", path: "main/sections/cost-center" },
@@ -40,6 +42,7 @@ export const menuItems = {
         icon: "ShoppingBasket",
         type: "group",
         displayType: "popover",
+        roles: ["admin", "owner"],
         items: [
           { name: "Product Lines", icon: "PackageSearch", path: "main/items/product-lines" },
           { name: "Categories", icon: "ChartBarStacked", path: "main/items/categories" },
@@ -50,24 +53,38 @@ export const menuItems = {
   settings: {
     groupIcon: "Settings",
     displayType: "popover",
+    roles: ["admin", "owner"],
     items: [
       {
-        name: "General",
-        icon: "Settings",
-        path: "main/settings/general",
-        adminOnly: false,
+        name: "User Management",
+        icon: "Users",
+        path: "/main/settings/users",
+        roles: ["admin"]
       },
       {
-        name: "Notifications",
-        icon: "Bell",
-        path: "main/settings/notifications",
-        adminOnly: false,
-      },
+        name: "System Settings",
+        icon: "Settings",
+        path: "/main/settings/system",
+        roles: ["admin", "owner"]
+      }
     ],
   },
   support: {
     groupIcon: "LifeBuoy",
     displayType: "popover",
-    items: [{ name: "Contact Us", icon: "Mail", path: "main/contact" }],
+    items: [
+      {
+        name: "Help Center",
+        icon: "LifeBuoy",
+        path: "/main/support/help",
+        roles: ["admin", "user", "owner"]
+      },
+      {
+        name: "Contact Support",
+        icon: "Mail",
+        path: "/main/support/contact",
+        roles: ["admin", "user", "owner"]
+      }
+    ],
   },
 }; 

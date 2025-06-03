@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CustomBackground } from "@/components/ui/backgrounds";
 import { Building2, Mail, Lock, ArrowRight, Check, Eye, EyeOff } from "lucide-react";
+import Cookies from 'js-cookie';
 
 const TENANT_TOKEN_KEY = "tenant_token";
 
@@ -54,7 +55,17 @@ export default function TenantLogin() {
 
     try {
       const response = await tenantApiService("POST", "login", { email, password });
-      localStorage.setItem(TENANT_TOKEN_KEY, response.access_token);
+      // Store token in cookie instead of localStorage
+      Cookies.set('tenant_token', response.access_token, { 
+        expires: 7, // Cookie expires in 7 days
+        secure: process.env.NODE_ENV === 'production', // Only send cookie over HTTPS in production
+        sameSite: 'strict' // Protect against CSRF
+      });
+      Cookies.set('userRole', response.role, { 
+        expires: 7, // Cookie expires in 7 days
+        secure: process.env.NODE_ENV === 'production', // Only send cookie over HTTPS in production
+        sameSite: 'strict' // Protect against CSRF
+      });
       setLoginSuccess(true);
       setTimeout(() => router.push("/main"), 2000);
     } catch (err) {

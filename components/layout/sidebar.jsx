@@ -5,7 +5,6 @@ import Link from "next/link"
 import {
   BarChart3,
   BookMarked,
-  ChevronLeft,
   ChevronRight,
   File,
   MapPin,
@@ -27,7 +26,6 @@ import {
   Settings,
   Users,
   Bell,
-  ChevronDown,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
@@ -43,6 +41,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
+import tenantApiService from "@/API/TenantApiService"
+import { useRouter } from "next/navigation"
 // Icon mapping for menu items
 const iconMap = {
   Home,
@@ -414,7 +414,8 @@ const getAllMenuItems = () => {
   });
 };
 
-export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
+export function Sidebar({ isCollapsed, toggleSidebar }) {
+  const router = useRouter();
   const [bookmarks, setBookmarks] = useState([])
   const [activeItem, setActiveItem] = useState("dashboard")
   const [openGroups, setOpenGroups] = useState({
@@ -423,6 +424,7 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
     settings: false,
     testing: false,
   })
+  const [userRole, setUserRole] = useState(null)
 
   useEffect(() => {
     // Load bookmarks from localStorage
@@ -430,6 +432,18 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
     if (storedBookmarks) {
       setBookmarks(JSON.parse(storedBookmarks))
     }
+
+    // Get user role from cookies
+    const getRoleFromCookies = () => {
+      const cookies = document.cookie.split(';');
+      const roleCookie = cookies.find(cookie => cookie.trim().startsWith('userRole='));
+      if (roleCookie) {
+        const role = roleCookie.split('=')[1];
+        setUserRole(role);
+      }
+    };
+
+    getRoleFromCookies();
 
     // Initialize openGroups state for all menu categories
     const groupKeys = Object.keys(menuItems).filter(key => key !== 'support');
@@ -495,14 +509,55 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
     }
   }
   
-  const handleLogout = () => {
-    toast.warning({
-      title: "Logging Out",
-      description: "You are being logged out of the system",
-      duration: 3000,
-    })
-    // Add actual logout logic here
-  }
+  const handleLogout = async () => {
+    try {
+      // Get token before making the API call
+      const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('tenant_token='))
+        ?.split('=')[1];
+
+      if (!token) {
+        // If no token, just clear cookies and redirect
+        clearCookies();
+        router.push('/login');
+        return;
+      }
+
+      const response = await tenantApiService("POST", "logout");
+      
+      // Clear cookies after successful API call
+      clearCookies();
+      
+      toast.success({
+        title: "Logged Out",
+        description: "You have been logged out of the system",
+        duration: 3000,
+      });
+      
+      router.push('/login');
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Even if API call fails, clear cookies and redirect
+      clearCookies();
+      toast.error({
+        title: "Logout Failed",
+        description: "There was an error logging out. Please try again.",
+        duration: 3000,
+      });
+      router.push('/login');
+    }
+  };
+
+  // Helper function to clear all cookies
+  const clearCookies = () => {
+    document.cookie = "tenant_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "userRole=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "tenantName=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "tenantId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "tenantEmail=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "tenantPassword=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  };
 
   const clearAllBookmarks = () => {
     if (bookmarks.length === 0) {
@@ -525,7 +580,15 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
 
   // Filter items based on user role
   const filterItemsByRole = (items) => {
-    return items.filter((item) => !item.adminOnly || userRole === "admin")
+    if (!userRole) return items; // If no role is set, show all items
+    
+    return items.filter((item) => {
+      // If item has no role restrictions, show it
+      if (!item.roles) return true;
+      
+      // If item has role restrictions, check if user's role is allowed
+      return item.roles.includes(userRole);
+    });
   }
 
   return (
@@ -564,6 +627,12 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
             const groupItems = groupData.items || groupData;
             const GroupIcon = iconMap[groupData.groupIcon] || LayoutDashboard;
             
+            // Filter items based on role
+            const filteredItems = filterItemsByRole(groupItems);
+            
+            // Skip rendering if no items are available for this role
+            if (filteredItems.length === 0) return null;
+            
             return (
               <div key={groupName}>
                 {index > 0 && (
@@ -575,7 +644,7 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
                     groupName={groupName}
                     GroupIcon={GroupIcon}
                     isCollapsed={isCollapsed}
-                    groupItems={groupItems}
+                    groupItems={filteredItems}
                     filterItemsByRole={filterItemsByRole}
                     bookmarks={bookmarks}
                     activeItem={activeItem}
@@ -586,7 +655,7 @@ export function Sidebar({ userRole, isCollapsed, toggleSidebar }) {
                 </div>
 
                 <GroupItems
-                  groupItems={filterItemsByRole(groupItems)}
+                  groupItems={filteredItems}
                   isCollapsed={isCollapsed}
                   activeItem={activeItem}
                   bookmarks={bookmarks}

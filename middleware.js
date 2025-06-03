@@ -10,9 +10,6 @@ export async function middleware(request) {
   const url = request.nextUrl.clone();
   const hostname = request.headers.get('host');
   
-  // Check if the hostname is just localhost (without subdomain)
-  const isRootDomain = hostname === 'localhost:3000' || hostname === 'localhost';
-  
   // Skip middleware for static files and API routes
   if (
     url.pathname.startsWith('/_next') || 
@@ -22,9 +19,14 @@ export async function middleware(request) {
     return NextResponse.next();
   }
 
-  // Route based on hostname
+  // Check if the hostname is just localhost (without subdomain)
+  const isRootDomain = hostname === 'localhost:3000' || hostname === 'localhost';
+  
+  // Get token from cookies
+  const token = request.cookies.get('tenant_token')?.value;
+
+  // For root domain (localhost), serve everything from central directory
   if (isRootDomain) {
-    // If we're at the root domain, route to central
     if (!url.pathname.startsWith('/central')) {
       url.pathname = `/central${url.pathname === '/' ? '' : url.pathname}`;
       return NextResponse.rewrite(url);
@@ -32,7 +34,7 @@ export async function middleware(request) {
     return NextResponse.next();
   }
 
-  // Extract tenant name from subdomain
+  // For tenant subdomains, verify tenant and serve from tenant directory
   const tenantName = hostname.split('.')[0];
   
   // Check cache for tenant verification
@@ -40,8 +42,12 @@ export async function middleware(request) {
   const now = Date.now();
   
   if (cachedTenant && (now - cachedTenant.timestamp) < CACHE_DURATION) {
-    // If tenant is verified and cache is still valid, just handle routing
+    // If tenant is verified and cache is still valid, serve from tenant directory
     if (!url.pathname.startsWith('/tenant')) {
+      // Check if user is trying to access a protected route
+      if (url.pathname !== '/login' && !token) {
+        return NextResponse.redirect(new URL('/login', request.url));
+      }
       url.pathname = `/tenant${url.pathname === '/' ? '' : url.pathname}`;
       return NextResponse.rewrite(url);
     }
@@ -56,13 +62,14 @@ export async function middleware(request) {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      // Add cache control headers to prevent unnecessary API calls
       cache: 'force-cache'
     });
     
     if (!tenantResponse.ok) {
-      // If tenant doesn't exist, redirect to central domain
-      return NextResponse.redirect(new URL('/','http://localhost:3000'));
+      // If tenant doesn't exist, redirect to notfound page
+      const notFoundUrl = new URL('/notfound', request.url);
+      notFoundUrl.searchParams.set('tenant', tenantName);
+      return NextResponse.redirect(notFoundUrl);
     }
 
     // Cache the tenant verification result
@@ -71,28 +78,27 @@ export async function middleware(request) {
       timestamp: now
     });
 
-    // Handle routing for verified tenant
+    // Serve from tenant directory
     if (!url.pathname.startsWith('/tenant')) {
+      // Check if user is trying to access a protected route
+      if (url.pathname !== '/login' && !token) {
+        return NextResponse.redirect(new URL('/login', request.url));
+      }
       url.pathname = `/tenant${url.pathname === '/' ? '' : url.pathname}`;
       return NextResponse.rewrite(url);
     }
     return NextResponse.next();
   } catch (error) {
-    // On error, redirect to central domain
-    return NextResponse.redirect(new URL('/', 'http://localhost:3000'));
+    // On error, redirect to notfound page
+    const notFoundUrl = new URL('/notfound', request.url);
+    notFoundUrl.searchParams.set('tenant', tenantName);
+    return NextResponse.redirect(notFoundUrl);
   }
 }
 
 // Run middleware on all routes except static files
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 }; 
