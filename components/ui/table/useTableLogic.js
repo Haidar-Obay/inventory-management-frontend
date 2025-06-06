@@ -64,6 +64,10 @@ export function useTableLogic({
   const [rowToDelete, setRowToDelete] = useState(null);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [tempFilterConfig, setTempFilterConfig] = useState(null);
+  const [columnWidths, setColumnWidths] = useState({});
+  const [resizingColumn, setResizingColumn] = useState(null);
+  const [startX, setStartX] = useState(0);
+  const [startWidth, setStartWidth] = useState(0);
 
   // Initialize filter types for each column
   const [columnFilterTypes, setColumnFilterTypes] = useState(() => {
@@ -594,6 +598,36 @@ export function useTableLogic({
     paginatedData.length > 0 &&
     paginatedData.every((row) => selectedRows.has(row.id));
 
+  const handleResizeStart = (e, columnKey) => {
+    e.preventDefault();
+    setResizingColumn(columnKey);
+    setStartX(e.pageX);
+    const column = e.target.parentElement;
+    setStartWidth(column.offsetWidth);
+
+    // Add event listeners for mouse move and up
+    document.addEventListener("mousemove", handleResizeMove);
+    document.addEventListener("mouseup", handleResizeEnd);
+  };
+
+  const handleResizeMove = (e) => {
+    if (!resizingColumn) return;
+
+    const diff = e.pageX - startX;
+    const newWidth = Math.max(50, startWidth + diff); // Minimum width of 50px
+
+    setColumnWidths((prev) => ({
+      ...prev,
+      [resizingColumn]: newWidth,
+    }));
+  };
+
+  const handleResizeEnd = () => {
+    setResizingColumn(null);
+    document.removeEventListener("mousemove", handleResizeMove);
+    document.removeEventListener("mouseup", handleResizeEnd);
+  };
+
   return {
     // State
     tableData,
@@ -631,6 +665,10 @@ export function useTableLogic({
     paginatedData,
     totalPages,
     areAllOnPageSelected,
+    columnWidths,
+    resizingColumn,
+    startX,
+    startWidth,
 
     // Handlers
     handleToggleSearchRow,
@@ -668,6 +706,9 @@ export function useTableLogic({
     handleOpenFilterModal,
     handleSaveFilter,
     handleCancelFilter,
+    handleResizeStart,
+    handleResizeMove,
+    handleResizeEnd,
 
     // Setters
     setTableData,
@@ -700,5 +741,9 @@ export function useTableLogic({
     setShowFilterModal,
     setTempFilterConfig,
     setColumnFilterTypes,
+    setColumnWidths,
+    setResizingColumn,
+    setStartX,
+    setStartWidth,
   };
 }

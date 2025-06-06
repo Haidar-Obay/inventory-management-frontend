@@ -21,6 +21,8 @@ export const TableHeader = ({
   handleOpenFilterModal,
   handleColumnSearch,
   handleSelectAll,
+  columnWidths,
+  handleResizeStart,
 }) => {
   return (
     <thead
@@ -84,11 +86,13 @@ export const TableHeader = ({
           if (!column || !visibleColumns[key]) return null;
 
           const hasActiveFilter = activeColumnFilters[key];
+          const columnWidth = columnWidths[key] || "auto";
 
           return (
             <th
               key={key}
-              className="border-b border-border px-4 py-2 text-left"
+              className="border-b border-border px-4 py-2 text-left relative"
+              style={{ width: columnWidth }}
               draggable
               onDragStart={() => handleColumnDragStart(key)}
               onDragOver={(e) => handleColumnDragOver(e, key)}
@@ -142,6 +146,15 @@ export const TableHeader = ({
                   </div>
                 )}
               </div>
+              {/* Column Resizer */}
+              <div
+                className="absolute right-0 top-0 h-full w-2 cursor-col-resize bg-gray-200 dark:bg-gray-700 hover:bg-primary hover:w-3 transition-all duration-150"
+                onMouseDown={(e) => handleResizeStart(e, key)}
+                style={{
+                  transform: "translateX(50%)",
+                  zIndex: 10,
+                }}
+              />
             </th>
           );
         })}

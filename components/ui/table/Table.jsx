@@ -51,6 +51,7 @@ const Table = (props) => {
     paginatedData,
     totalPages,
     areAllOnPageSelected,
+    columnWidths,
 
     // Handlers
     handleToggleSearchRow,
@@ -238,6 +239,8 @@ const Table = (props) => {
             handleOpenFilterModal={handleOpenFilterModal}
             handleColumnSearch={handleColumnSearch}
             handleSelectAll={handleSelectAll}
+            columnWidths={columnWidths}
+            handleResizeStart={handleResizeStart}
           />
 
           <TableBody
