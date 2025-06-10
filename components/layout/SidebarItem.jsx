@@ -17,6 +17,7 @@ export function SidebarItem({
   onNavigate,
   onToggleBookmark,
   padding = "px-3",
+  className,
 }) {
   const params = useParams()
   const route = params?.route
@@ -58,11 +59,12 @@ export function SidebarItem({
         className={cn(
           `flex items-center gap-2 ${padding} py-1.5 hover:bg-primary-foreground/10 rounded-md mx-2 flex-1 text-[14px] transition-colors duration-200`,
           isActive && "bg-primary-foreground/10 font-medium",
+          className
         )}
         onClick={() => onNavigate && onNavigate(name)}
       >
         <Icon className="h-4 w-4" />
-        <span>{name}</span>
+        <span className="whitespace-nowrap">{name}</span>
       </Link>
       {onToggleBookmark && (
         <Button

@@ -26,6 +26,14 @@ import {
   Settings,
   Users,
   Bell,
+  Tag,
+  Package,
+  UserCog,
+  UserCheck,
+  Truck,
+  Wrench,
+  Building,
+  Briefcase,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
@@ -65,6 +73,14 @@ const iconMap = {
   Mail,
   LayoutDashboard,
   LifeBuoy,
+  Tag,
+  Package,
+  UserCog,
+  UserCheck,
+  Truck,
+  Wrench,
+  Building,
+  Briefcase,
 }
 
 // Component for rendering bookmarks section
@@ -297,6 +313,7 @@ const NestedGroup = ({ item, isCollapsed, activeItem, bookmarks, onNavigate, onT
                     onToggleBookmark(subItem.name);
                   }}
                   padding="px-2"
+                  className="whitespace-nowrap"
                 />
               );
             })}

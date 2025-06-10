@@ -3,45 +3,60 @@
 import { useState, useEffect, Suspense } from "react";
 import { Tabs, Tab, Box, Typography, CircularProgress } from "@mui/material";
 import Table from "@/components/ui/table/Table";
-import AddressCodeDrawer from "@/components/ui/drawers/AddressCodeDrawer";
-import {
-  getCountries,
-  getProvinces,
-  getCities,
-  getDistricts,
-  deleteCountry,
-  deleteCity,
-  deleteProvince,
-  editCountry,
-  editProvince,
-  editCity,
-  editDistrict,
-  deleteDistrict,
-  createCountry,
-  createProvince,
-  createCity,
-  createDistrict,
-  exportCitiesToExcel,
-  exportCitiesToPdf,
-  importCitiesFromExcel,
-  exportCountriesToExcel,
-  exportCountriesToPdf,
-  importCountriesFromExcel,
-  exportProvincesToExcel,
-  exportProvincesToPdf,
-  importProvincesFromExcel,
-  exportDistrictsToExcel,
-  exportDistrictsToPdf,
-  importDistrictsFromExcel,
-} from "@/API/AddressCodes";
-import {
-  countryColumns,
-  cityColumns,
-  provinceColumns,
-  districtColumns,
-} from "@/constants/tableColumns";
+import SectionDrawer from "@/components/ui/drawers/SectionDrawer";
 import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
+
+// Placeholder for API functions - to be implemented later
+const getProjects = async () => ({ data: [] });
+const getCostCenters = async () => ({ data: [] });
+const getDepartments = async () => ({ data: [] });
+const getTrades = async () => ({ data: [] });
+const getCompanyCodes = async () => ({ data: [] });
+const getJobs = async () => ({ data: [] });
+
+// Placeholder for table columns - to be customized later
+const projectColumns = [
+  { header: "ID", key: "id" },
+  { header: "Name", key: "name" },
+  { header: "Description", key: "description" },
+  { header: "Actions", key: "actions" }
+];
+
+const costCenterColumns = [
+  { header: "ID", key: "id" },
+  { header: "Name", key: "name" },
+  { header: "Description", key: "description" },
+  { header: "Actions", key: "actions" }
+];
+
+const departmentColumns = [
+  { header: "ID", key: "id" },
+  { header: "Name", key: "name" },
+  { header: "Description", key: "description" },
+  { header: "Actions", key: "actions" }
+];
+
+const tradesColumns = [
+  { header: "ID", key: "id" },
+  { header: "Name", key: "name" },
+  { header: "Description", key: "description" },
+  { header: "Actions", key: "actions" }
+];
+
+const companyCodesColumns = [
+  { header: "ID", key: "id" },
+  { header: "Name", key: "name" },
+  { header: "Description", key: "description" },
+  { header: "Actions", key: "actions" }
+];
+
+const jobsColumns = [
+  { header: "ID", key: "id" },
+  { header: "Name", key: "name" },
+  { header: "Description", key: "description" },
+  { header: "Actions", key: "actions" }
+];
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -59,43 +74,47 @@ function TabPanel(props) {
 }
 
 // Loading component for Suspense
-function AddressCodesPageLoading() {
+function SectionsPageLoading() {
   return (
     <div className="flex justify-center items-center min-h-screen">
       <CircularProgress />
-      <span className="ml-2">Loading address codes...</span>
+      <span className="ml-2">Loading sections...</span>
     </div>
   );
 }
 
 // Main component wrapped with Suspense
-export default function AddressCodesPageWrapper() {
+export default function SectionsPageWrapper() {
   return (
-    <Suspense fallback={<AddressCodesPageLoading />}>
-      <AddressCodesPage />
+    <Suspense fallback={<SectionsPageLoading />}>
+      <SectionsPage />
     </Suspense>
   );
 }
 
 // The actual component that uses useSearchParams
-function AddressCodesPage() {
+function SectionsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [value, setValue] = useState(0);
-  const [countriesData, setCountriesData] = useState([]);
-  const [provincesData, setProvincesData] = useState([]);
-  const [citiesData, setCitiesData] = useState([]);
-  const [districtsData, setDistrictsData] = useState([]);
+  const [projectsData, setProjectsData] = useState([]);
+  const [costCentersData, setCostCentersData] = useState([]);
+  const [departmentsData, setDepartmentsData] = useState([]);
+  const [tradesData, setTradesData] = useState([]);
+  const [companyCodesData, setCompanyCodesData] = useState([]);
+  const [jobsData, setJobsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeDrawerType, setActiveDrawerType] = useState("");
   const [formData, setFormData] = useState({});
   const [isEditMode, setIsEditMode] = useState(false);
   const [dataFetched, setDataFetched] = useState({
-    countries: false,
-    provinces: false,
-    cities: false,
-    districts: false
+    projects: false,
+    costCenters: false,
+    departments: false,
+    trades: false,
+    companyCodes: false,
+    jobs: false
   });
 
   // Initialize tab value from URL or localStorage
@@ -104,14 +123,12 @@ function AddressCodesPage() {
     if (tab !== null) {
       const tabValue = parseInt(tab);
       setValue(tabValue);
-      localStorage.setItem("addressCodesLastTab", tabValue.toString());
+      localStorage.setItem("sectionsLastTab", tabValue.toString());
     } else {
-      // If no URL parameter, try to get from localStorage
-      const savedTab = localStorage.getItem("addressCodesLastTab");
+      const savedTab = localStorage.getItem("sectionsLastTab");
       if (savedTab) {
         const tabValue = parseInt(savedTab);
         setValue(tabValue);
-        // Update URL to match localStorage
         const params = new URLSearchParams(searchParams.toString());
         params.set("tab", tabValue.toString());
         router.push(`?${params.toString()}`);
@@ -121,8 +138,7 @@ function AddressCodesPage() {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    localStorage.setItem("addressCodesLastTab", newValue.toString());
-    // Update URL with new tab value
+    localStorage.setItem("sectionsLastTab", newValue.toString());
     const params = new URLSearchParams(searchParams.toString());
     params.set("tab", newValue.toString());
     router.push(`?${params.toString()}`);
@@ -135,41 +151,59 @@ function AddressCodesPage() {
       let dataType;
 
       switch (tabIndex) {
-        case 0: // Countries
-          if (!force && dataFetched.countries) {
+        case 0: // Projects
+          if (!force && dataFetched.projects) {
             setLoading(false);
             return;
           }
-          response = await getCountries();
-          setCountriesData(response.data || []);
-          dataType = 'countries';
+          response = await getProjects();
+          setProjectsData(response.data || []);
+          dataType = 'projects';
           break;
-        case 1: // Provinces
-          if (!force && dataFetched.provinces) {
+        case 1: // Cost Centers
+          if (!force && dataFetched.costCenters) {
             setLoading(false);
             return;
           }
-          response = await getProvinces();
-          setProvincesData(response.data || []);
-          dataType = 'provinces';
+          response = await getCostCenters();
+          setCostCentersData(response.data || []);
+          dataType = 'costCenters';
           break;
-        case 2: // Cities
-          if (!force && dataFetched.cities) {
+        case 2: // Departments
+          if (!force && dataFetched.departments) {
             setLoading(false);
             return;
           }
-          response = await getCities();
-          setCitiesData(response.data || []);
-          dataType = 'cities';
+          response = await getDepartments();
+          setDepartmentsData(response.data || []);
+          dataType = 'departments';
           break;
-        case 3: // Districts
-          if (!force && dataFetched.districts) {
+        case 3: // Trades
+          if (!force && dataFetched.trades) {
             setLoading(false);
             return;
           }
-          response = await getDistricts();
-          setDistrictsData(response.data || []);
-          dataType = 'districts';
+          response = await getTrades();
+          setTradesData(response.data || []);
+          dataType = 'trades';
+          break;
+        case 4: // Company Codes
+          if (!force && dataFetched.companyCodes) {
+            setLoading(false);
+            return;
+          }
+          response = await getCompanyCodes();
+          setCompanyCodesData(response.data || []);
+          dataType = 'companyCodes';
+          break;
+        case 5: // Jobs
+          if (!force && dataFetched.jobs) {
+            setLoading(false);
+            return;
+          }
+          response = await getJobs();
+          setJobsData(response.data || []);
+          dataType = 'jobs';
           break;
       }
 
@@ -200,29 +234,41 @@ function AddressCodesPage() {
   }, [value]);
 
   const entityHandlers = {
-    country: {
-      setData: setCountriesData,
-      deleteFn: deleteCountry,
-      editFn: editCountry,
-      createFn: createCountry,
+    project: {
+      setData: setProjectsData,
+      deleteFn: async () => ({ status: true }),
+      editFn: async () => ({ status: true }),
+      createFn: async () => ({ status: true, data: {} }),
     },
-    province: {
-      setData: setProvincesData,
-      deleteFn: deleteProvince,
-      editFn: editProvince,
-      createFn: createProvince,
+    costCenter: {
+      setData: setCostCentersData,
+      deleteFn: async () => ({ status: true }),
+      editFn: async () => ({ status: true }),
+      createFn: async () => ({ status: true, data: {} }),
     },
-    city: {
-      setData: setCitiesData,
-      deleteFn: deleteCity,
-      editFn: editCity,
-      createFn: createCity,
+    department: {
+      setData: setDepartmentsData,
+      deleteFn: async () => ({ status: true }),
+      editFn: async () => ({ status: true }),
+      createFn: async () => ({ status: true, data: {} }),
     },
-    district: {
-      setData: setDistrictsData,
-      deleteFn: deleteDistrict,
-      editFn: editDistrict,
-      createFn: createDistrict,
+    trade: {
+      setData: setTradesData,
+      deleteFn: async () => ({ status: true }),
+      editFn: async () => ({ status: true }),
+      createFn: async () => ({ status: true, data: {} }),
+    },
+    companyCode: {
+      setData: setCompanyCodesData,
+      deleteFn: async () => ({ status: true }),
+      editFn: async () => ({ status: true }),
+      createFn: async () => ({ status: true, data: {} }),
+    },
+    job: {
+      setData: setJobsData,
+      deleteFn: async () => ({ status: true }),
+      editFn: async () => ({ status: true }),
+      createFn: async () => ({ status: true, data: {} }),
     },
   };
 
@@ -238,14 +284,13 @@ function AddressCodesPage() {
       const response = await entityHandlers[type].deleteFn(row.id);
       if (response.status) {
         entityHandlers[type].setData(prev => prev.filter(item => item.id !== row.id));
-        // Reset the fetched state for the modified data type
         setDataFetched(prev => ({
           ...prev,
           [type]: false
         }));
         toast.success({
           title: "Success",
-          description: response.message || `${type} deleted successfully`,
+          description: `${type} deleted successfully`,
         });
       }
     } catch (error) {
@@ -262,8 +307,6 @@ function AddressCodesPage() {
     setFormData({});
     setIsDrawerOpen(true);
   };
-  
-
 
   const handleCloseDrawer = () => {
     setIsDrawerOpen(false);
@@ -285,25 +328,22 @@ function AddressCodesPage() {
       if (isEditMode) {
         response = await handler.editFn(formData.id, formData);
         if (response.status) {
-          // Update existing item in the state
-          entityHandlers[type].setData(prev => 
+          handler.setData(prev => 
             prev.map(item => item.id === formData.id ? { ...item, ...formData } : item)
           );
         }
       } else {
         response = await handler.createFn(formData);
         if (response.status) {
-          // Add new item to the state
-          entityHandlers[type].setData(prev => [...prev, response.data]);
+          handler.setData(prev => [...prev, response.data]);
         }
       }
   
       if (response.status) {
         toast.success({
           title: "Success",
-          description: response.message || `${type} ${isEditMode ? "updated" : "created"} successfully`,
+          description: `${type} ${isEditMode ? "updated" : "created"} successfully`,
         });
-  
         setIsEditMode(false);
       }
     } catch (error) {
@@ -330,33 +370,7 @@ function AddressCodesPage() {
 
   const handleExportExcel = async (type) => {
     try {
-      let response;
-      switch (type) {
-        case 'country':
-          response = await exportCountriesToExcel();
-          break;
-        case 'province':
-          response = await exportProvincesToExcel();
-          break;
-        case 'city':
-          response = await exportCitiesToExcel();
-          break;
-        case 'district':
-          response = await exportDistrictsToExcel();
-          break;
-        default:
-          return;
-      }
-      
-      // Create a download link for the Excel file
-      const url = window.URL.createObjectURL(new Blob([response]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `${type}s.xlsx`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      
+      // Placeholder for export functionality
       toast.success({
         title: "Success",
         description: `${type} exported successfully`,
@@ -371,33 +385,7 @@ function AddressCodesPage() {
 
   const handleExportPdf = async (type) => {
     try {
-      let response;
-      switch (type) {
-        case 'country':
-          response = await exportCountriesToPdf();
-          break;
-        case 'province':
-          response = await exportProvincesToPdf();
-          break;
-        case 'city':
-          response = await exportCitiesToPdf();
-          break;
-        case 'district':
-          response = await exportDistrictsToPdf();
-          break;
-        default:
-          return;
-      }
-      
-      // Create a download link for the PDF file
-      const url = window.URL.createObjectURL(new Blob([response]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `${type}s.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      
+      // Placeholder for export functionality
       toast.success({
         title: "Success",
         description: `${type} exported successfully`,
@@ -412,32 +400,12 @@ function AddressCodesPage() {
 
   const handleImportExcel = async (type, file) => {
     try {
-      let response;
-      switch (type) {
-        case 'country':
-          response = await importCountriesFromExcel(file);
-          break;
-        case 'province':
-          response = await importProvincesFromExcel(file);
-          break;
-        case 'city':
-          response = await importCitiesFromExcel(file);
-          break;
-        case 'district':
-          response = await importDistrictsFromExcel(file);
-          break;
-        default:
-          return;
-      }
-      
-      if (response.status) {
-        // Refresh the data after successful import
-        fetchData(value, true);
-        toast.success({
-          title: "Success",
-          description: `${type} imported successfully`,
-        });
-      }
+      // Placeholder for import functionality
+      fetchData(value, true);
+      toast.success({
+        title: "Success",
+        description: `${type} imported successfully`,
+      });
     } catch (error) {
       toast.error({
         title: "Error",
@@ -448,10 +416,8 @@ function AddressCodesPage() {
 
   const handlePrint = (type, data, columns) => {
     try {
-      // Create a new window for printing
       const printWindow = window.open('', '_blank');
       
-      // Create the HTML content for printing
       const content = `
         <html>
           <head>
@@ -489,14 +455,11 @@ function AddressCodesPage() {
         </html>
       `;
 
-      // Write the content to the new window
       printWindow.document.write(content);
       printWindow.document.close();
 
-      // Wait for content to load then print
       printWindow.onload = function() {
         printWindow.print();
-        // Close the window after printing
         printWindow.onafterprint = function() {
           printWindow.close();
         };
@@ -521,109 +484,157 @@ function AddressCodesPage() {
           <Tabs
             value={value}
             onChange={handleChange}
-            aria-label="address code tabs"
+            aria-label="sections tabs"
           >
-            <Tab label="Countries" />
-            <Tab label="Provinces" />
-            <Tab label="Cities" />
-            <Tab label="Districts" />
+            <Tab label="Projects" />
+            <Tab label="Cost Centers" />
+            <Tab label="Departments" />
+            <Tab label="Trades" />
+            <Tab label="Company Codes" />
+            <Tab label="Jobs" />
           </Tabs>
         </Box>
 
-        {/* Countries Management Tab*/}
+        {/* Projects Tab */}
         <TabPanel value={value} index={0}>
           <Box className="p-0">
             <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Countries Management
+              Projects Management
             </Typography>
             <Table
-              data={countriesData}
-              columns={countryColumns}
-              onEdit={(row) => handleEdit("country", row)}
-              onDelete={(row) => handleDelete("country", row)}
-              onAdd={() => handleAddNew("country")}
+              data={projectsData}
+              columns={projectColumns}
+              onEdit={(row) => handleEdit("project", row)}
+              onDelete={(row) => handleDelete("project", row)}
+              onAdd={() => handleAddNew("project")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => handleExportExcel('country')}
-              onExportPdf={() => handleExportPdf('country')}
-              onPrint={() => handlePrint('country', countriesData, countryColumns)}
+              onExportExcel={() => handleExportExcel('project')}
+              onExportPdf={() => handleExportPdf('project')}
+              onPrint={() => handlePrint('project', projectsData, projectColumns)}
               onRefresh={() => fetchData(0, true)}
-              onImportExcel={(file) => handleImportExcel('country', file)}
+              onImportExcel={(file) => handleImportExcel('project', file)}
             />
           </Box>
         </TabPanel>
 
-        {/* Provinces Management Tab*/}
+        {/* Cost Centers Tab */}
         <TabPanel value={value} index={1}>
           <Box className="p-0">
             <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Provinces Management
+              Cost Centers Management
             </Typography>
             <Table
-              data={provincesData}
-              columns={provinceColumns}
-              onEdit={(row) => handleEdit("province", row)}
-              onDelete={(row) => handleDelete("province", row)}
-              onAdd={() => handleAddNew("province")}
+              data={costCentersData}
+              columns={costCenterColumns}
+              onEdit={(row) => handleEdit("costCenter", row)}
+              onDelete={(row) => handleDelete("costCenter", row)}
+              onAdd={() => handleAddNew("costCenter")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => handleExportExcel('province')}
-              onExportPdf={() => handleExportPdf('province')}
-              onPrint={() => handlePrint('province', provincesData, provinceColumns)}
+              onExportExcel={() => handleExportExcel('costCenter')}
+              onExportPdf={() => handleExportPdf('costCenter')}
+              onPrint={() => handlePrint('costCenter', costCentersData, costCenterColumns)}
               onRefresh={() => fetchData(1, true)}
-              onImportExcel={(file) => handleImportExcel('province', file)}
+              onImportExcel={(file) => handleImportExcel('costCenter', file)}
             />
           </Box>
         </TabPanel>
 
-        {/* Cities Management Tab*/}
+        {/* Departments Tab */}
         <TabPanel value={value} index={2}>
           <Box className="p-0">
             <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Cities Management
+              Departments Management
             </Typography>
             <Table
-              data={citiesData}
-              columns={cityColumns}
-              onEdit={(row) => handleEdit("city", row)}
-              onDelete={(row) => handleDelete("city", row)}
-              onAdd={() => handleAddNew("city")}
+              data={departmentsData}
+              columns={departmentColumns}
+              onEdit={(row) => handleEdit("department", row)}
+              onDelete={(row) => handleDelete("department", row)}
+              onAdd={() => handleAddNew("department")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => handleExportExcel('city')}
-              onExportPdf={() => handleExportPdf('city')}
-              onPrint={() => handlePrint('city', citiesData, cityColumns)}
+              onExportExcel={() => handleExportExcel('department')}
+              onExportPdf={() => handleExportPdf('department')}
+              onPrint={() => handlePrint('department', departmentsData, departmentColumns)}
               onRefresh={() => fetchData(2, true)}
-              onImportExcel={(file) => handleImportExcel('city', file)}
+              onImportExcel={(file) => handleImportExcel('department', file)}
             />
           </Box>
         </TabPanel>
 
-        {/* Districts Management Tab*/}
+        {/* Trades Tab */}
         <TabPanel value={value} index={3}>
           <Box className="p-0">
             <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Districts Management
+              Trades Management
             </Typography>
             <Table
-              data={districtsData}
-              columns={districtColumns}
-              onEdit={(row) => handleEdit("district", row)}
-              onDelete={(row) => handleDelete("district", row)}
-              onAdd={() => handleAddNew("district")}
+              data={tradesData}
+              columns={tradesColumns}
+              onEdit={(row) => handleEdit("trade", row)}
+              onDelete={(row) => handleDelete("trade", row)}
+              onAdd={() => handleAddNew("trade")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => handleExportExcel('district')}
-              onExportPdf={() => handleExportPdf('district')}
-              onPrint={() => handlePrint('district', districtsData, districtColumns)}
+              onExportExcel={() => handleExportExcel('trade')}
+              onExportPdf={() => handleExportPdf('trade')}
+              onPrint={() => handlePrint('trade', tradesData, tradesColumns)}
               onRefresh={() => fetchData(3, true)}
-              onImportExcel={(file) => handleImportExcel('district', file)}
+              onImportExcel={(file) => handleImportExcel('trade', file)}
             />
           </Box>
         </TabPanel>
 
-        {/* Address Code Drawer */}
-        <AddressCodeDrawer
+        {/* Company Codes Tab */}
+        <TabPanel value={value} index={4}>
+          <Box className="p-0">
+            <Typography variant="h5" component="h2" className="mb-4 pb-3">
+              Company Codes Management
+            </Typography>
+            <Table
+              data={companyCodesData}
+              columns={companyCodesColumns}
+              onEdit={(row) => handleEdit("companyCode", row)}
+              onDelete={(row) => handleDelete("companyCode", row)}
+              onAdd={() => handleAddNew("companyCode")}
+              loading={loading}
+              enableCellEditing={false}
+              onExportExcel={() => handleExportExcel('companyCode')}
+              onExportPdf={() => handleExportPdf('companyCode')}
+              onPrint={() => handlePrint('companyCode', companyCodesData, companyCodesColumns)}
+              onRefresh={() => fetchData(4, true)}
+              onImportExcel={(file) => handleImportExcel('companyCode', file)}
+            />
+          </Box>
+        </TabPanel>
+
+        {/* Jobs Tab */}
+        <TabPanel value={value} index={5}>
+          <Box className="p-0">
+            <Typography variant="h5" component="h2" className="mb-4 pb-3">
+              Jobs Management
+            </Typography>
+            <Table
+              data={jobsData}
+              columns={jobsColumns}
+              onEdit={(row) => handleEdit("job", row)}
+              onDelete={(row) => handleDelete("job", row)}
+              onAdd={() => handleAddNew("job")}
+              loading={loading}
+              enableCellEditing={false}
+              onExportExcel={() => handleExportExcel('job')}
+              onExportPdf={() => handleExportPdf('job')}
+              onPrint={() => handlePrint('job', jobsData, jobsColumns)}
+              onRefresh={() => fetchData(5, true)}
+              onImportExcel={(file) => handleImportExcel('job', file)}
+            />
+          </Box>
+        </TabPanel>
+
+        {/* Section Drawer */}
+        <SectionDrawer
           isOpen={isDrawerOpen}
           onClose={handleCloseDrawer}
           type={activeDrawerType}
