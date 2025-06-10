@@ -22,6 +22,7 @@ export const TableBody = ({
   handleRowSelect,
   handleDeleteClick,
   onEdit,
+  columnWidths,
 }) => {
   return (
     <tbody>
@@ -124,10 +125,13 @@ export const TableBody = ({
                   editingCell.rowIndex === actualRowIndex &&
                   editingCell.columnKey === key;
 
+                const width = columnWidths[key];
+
                 return (
                   <td
                     key={`${rowIndex}-${key}`}
                     className="border-b border-border px-4 py-2"
+                    style={{ width: width === 'auto' ? 'auto' : width }}
                     onDoubleClick={() =>
                       enableCellEditing &&
                       handleCellDoubleClick(actualRowIndex, key)
@@ -170,7 +174,13 @@ export const TableBody = ({
                           value={row[key]}
                           onChange={(e) => handleCellEdit(e, actualRowIndex, key)}
                           onBlur={handleCellEditFinish}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              handleCellEditFinish();
+                            }
+                          }}
                           autoFocus
+                          className="w-full"
                         />
                       )
                     ) : (

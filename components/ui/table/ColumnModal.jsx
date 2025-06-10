@@ -11,8 +11,17 @@ export const ColumnModal = ({
   onCancel,
   onToggleColumn,
 }) => {
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onCancel();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onClick={handleBackdropClick}
+    >
       <div className="w-full max-w-md rounded-lg bg-background p-6 shadow-lg border border-border">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-medium text-foreground">

@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Button, Input, Badge } from "./CustomControls";
 import { ActionToolbar } from "../action-toolbar.jsx";
+import { SearchColumnsModal } from "./SearchColumnsModal";
 
 export const TableToolbar = ({
   globalSearch,
@@ -18,8 +19,14 @@ export const TableToolbar = ({
   onPrint,
   onRefresh,
   onImportExcel,
-  
+  columns,
+  selectedSearchColumns,
+  handleSearchColumnToggle,
+  handleSelectAllSearchColumns,
+  visibleColumns,
 }) => {
+  const [showSearchModal, setShowSearchModal] = useState(false);
+
   return (
     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-gray-50 dark:bg-muted/50 p-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -49,6 +56,27 @@ export const TableToolbar = ({
               className="w-64 pl-10 text-foreground bg-background"
             />
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowSearchModal(true)}
+            className="h-9 px-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </Button>
 
           {/* Show Clear Search only if there is text in the global search */}
           {globalSearch && (
@@ -116,28 +144,8 @@ export const TableToolbar = ({
           onRefresh={onRefresh}
           className="m-0"
           onImportExcel={onImportExcel}
-          dropdownDirection = 'down'
+          dropdownDirection="down"
         />
-
-        {/* Active Filters Count */}
-        {/* {Object.keys(activeColumnFilters).length > 0 && (
-          <Badge variant="primary" className="flex items-center gap-1">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-            </svg>
-            {Object.keys(activeColumnFilters).length} active filters
-          </Badge>
-        )} */}
 
         {/* Replace Dropdown with Button */}
         <Button
@@ -163,6 +171,17 @@ export const TableToolbar = ({
           Columns
         </Button>
       </div>
+
+      {/* Search Columns Modal */}
+      <SearchColumnsModal
+        isOpen={showSearchModal}
+        onClose={() => setShowSearchModal(false)}
+        columns={columns}
+        selectedSearchColumns={selectedSearchColumns}
+        handleSearchColumnToggle={handleSearchColumnToggle}
+        handleSelectAllSearchColumns={handleSelectAllSearchColumns}
+        visibleColumns={visibleColumns}
+      />
     </div>
   );
 };

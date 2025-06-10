@@ -549,6 +549,7 @@ function AddressCodesPage() {
               onPrint={() => handlePrint('country', countriesData, countryColumns)}
               onRefresh={() => fetchData(0, true)}
               onImportExcel={(file) => handleImportExcel('country', file)}
+              tableId="countries"
             />
           </Box>
         </TabPanel>
@@ -572,6 +573,7 @@ function AddressCodesPage() {
               onPrint={() => handlePrint('province', provincesData, provinceColumns)}
               onRefresh={() => fetchData(1, true)}
               onImportExcel={(file) => handleImportExcel('province', file)}
+              tableId="provinces"
             />
           </Box>
         </TabPanel>
@@ -595,6 +597,7 @@ function AddressCodesPage() {
               onPrint={() => handlePrint('city', citiesData, cityColumns)}
               onRefresh={() => fetchData(2, true)}
               onImportExcel={(file) => handleImportExcel('city', file)}
+              tableId="cities"
             />
           </Box>
         </TabPanel>
@@ -618,6 +621,7 @@ function AddressCodesPage() {
               onPrint={() => handlePrint('district', districtsData, districtColumns)}
               onRefresh={() => fetchData(3, true)}
               onImportExcel={(file) => handleImportExcel('district', file)}
+              tableId="districts"
             />
           </Box>
         </TabPanel>

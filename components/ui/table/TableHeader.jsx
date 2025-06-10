@@ -21,6 +21,9 @@ export const TableHeader = ({
   handleOpenFilterModal,
   handleColumnSearch,
   handleSelectAll,
+  columnWidths,
+  handleResizeStart,
+  resizingColumn,
 }) => {
   return (
     <thead
@@ -84,11 +87,13 @@ export const TableHeader = ({
           if (!column || !visibleColumns[key]) return null;
 
           const hasActiveFilter = activeColumnFilters[key];
+          const width = columnWidths[key];
 
           return (
             <th
               key={key}
-              className="border-b border-border px-4 py-2 text-left"
+              className="border-b border-border px-4 py-2 text-left relative group"
+              style={{ width: width === 'auto' ? 'auto' : width }}
               draggable
               onDragStart={() => handleColumnDragStart(key)}
               onDragOver={(e) => handleColumnDragOver(e, key)}
@@ -141,6 +146,18 @@ export const TableHeader = ({
                     </Badge>
                   </div>
                 )}
+              </div>
+              {/* Resize handle */}
+              <div
+                className={`absolute right-0 top-0 h-full w-2 cursor-col-resize transition-all duration-200 ${
+                  resizingColumn === key 
+                    ? 'bg-blue-500/10' 
+                    : 'hover:bg-blue-500/5'
+                }`}
+                onMouseDown={(e) => handleResizeStart(e, key)}
+              >
+                <div className="absolute right-0 top-0 h-full w-[1px] bg-gradient-to-b from-blue-500/0 via-blue-500/30 to-blue-500/0 group-hover:from-blue-500/30 group-hover:via-blue-500/50 group-hover:to-blue-500/30 transition-all duration-200" />
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[1px] h-6 bg-gradient-to-b from-blue-500/0 via-blue-500/50 to-blue-500/0 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200" />
               </div>
             </th>
           );

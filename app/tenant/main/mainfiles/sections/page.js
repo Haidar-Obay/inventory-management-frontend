@@ -522,6 +522,7 @@ function SectionsPage() {
               onPrint={() => handlePrint('project', projectsData, projectColumns)}
               onRefresh={() => fetchData(0, true)}
               onImportExcel={(file) => handleImportExcel('project', file)}
+              tableId="projects"
             />
           </Box>
         </TabPanel>
@@ -545,6 +546,7 @@ function SectionsPage() {
               onPrint={() => handlePrint('costCenter', costCentersData, costCenterColumns)}
               onRefresh={() => fetchData(1, true)}
               onImportExcel={(file) => handleImportExcel('costCenter', file)}
+              tableId="costCenters"
             />
           </Box>
         </TabPanel>
@@ -568,6 +570,7 @@ function SectionsPage() {
               onPrint={() => handlePrint('department', departmentsData, departmentColumns)}
               onRefresh={() => fetchData(2, true)}
               onImportExcel={(file) => handleImportExcel('department', file)}
+              tableId="departments"
             />
           </Box>
         </TabPanel>
@@ -591,6 +594,7 @@ function SectionsPage() {
               onPrint={() => handlePrint('trade', tradesData, tradesColumns)}
               onRefresh={() => fetchData(3, true)}
               onImportExcel={(file) => handleImportExcel('trade', file)}
+              tableId="trades"
             />
           </Box>
         </TabPanel>
@@ -614,6 +618,7 @@ function SectionsPage() {
               onPrint={() => handlePrint('companyCode', companyCodesData, companyCodesColumns)}
               onRefresh={() => fetchData(4, true)}
               onImportExcel={(file) => handleImportExcel('companyCode', file)}
+              tableId="companyCodes"
             />
           </Box>
         </TabPanel>
@@ -637,6 +642,7 @@ function SectionsPage() {
               onPrint={() => handlePrint('job', jobsData, jobsColumns)}
               onRefresh={() => fetchData(5, true)}
               onImportExcel={(file) => handleImportExcel('job', file)}
+              tableId="jobs"
             />
           </Box>
         </TabPanel>

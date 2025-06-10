@@ -51,6 +51,12 @@ const Table = (props) => {
     paginatedData,
     totalPages,
     areAllOnPageSelected,
+    columnWidths,
+    handleResizeStart,
+    resizingColumn,
+    selectedSearchColumns,
+    handleSearchColumnToggle,
+    handleSelectAllSearchColumns,
 
     // Handlers
     handleToggleSearchRow,
@@ -120,7 +126,13 @@ const Table = (props) => {
     setShowFilterModal,
     setTempFilterConfig,
     setColumnFilterTypes,
-  } = useTableLogic(props);
+    setSelectedSearchColumns,
+    setHandleSearchColumnToggle,
+    setHandleSelectAllSearchColumns,
+  } = useTableLogic({
+    ...props,
+    tableId: props.tableId || 'default'
+  });
 
   return (
     <div className="w-full rounded-lg border border-border bg-background shadow-sm">
@@ -173,6 +185,11 @@ const Table = (props) => {
         onPrint={props.onPrint}
         onRefresh={props.onRefresh}
         onImportExcel={props.onImportExcel}
+        columns={props.columns}
+        selectedSearchColumns={selectedSearchColumns}
+        handleSearchColumnToggle={handleSearchColumnToggle}
+        handleSelectAllSearchColumns={handleSelectAllSearchColumns}
+        visibleColumns={visibleColumns}
       />
 
       {Object.keys(activeColumnFilters).length > 0 && (
@@ -238,6 +255,9 @@ const Table = (props) => {
             handleOpenFilterModal={handleOpenFilterModal}
             handleColumnSearch={handleColumnSearch}
             handleSelectAll={handleSelectAll}
+            columnWidths={columnWidths}
+            handleResizeStart={handleResizeStart}
+            resizingColumn={resizingColumn}
           />
 
           <TableBody
@@ -259,6 +279,7 @@ const Table = (props) => {
             handleRowSelect={handleRowSelect}
             handleDeleteClick={handleDeleteClick}
             onEdit={props.onEdit}
+            columnWidths={columnWidths}
           />
         </table>
       </div>

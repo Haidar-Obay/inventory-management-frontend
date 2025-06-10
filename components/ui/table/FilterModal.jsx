@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Modal, Button, Select, Input, DatePicker } from "./CustomControls";
+import { Button, Select, Input, DatePicker } from "./CustomControls";
 
 export const FilterModal = ({
   isOpen,
@@ -15,6 +15,14 @@ export const FilterModal = ({
   onFilterValueChange,
   uniqueValues = [],
 }) => {
+  if (!isOpen) return null;
+
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onCancel();
+    }
+  };
+
   const column = columns.find((col) => col.key === selectedColumn);
 
   const formatDate = (date) => {
@@ -58,23 +66,28 @@ export const FilterModal = ({
     }
 
     return (
-      <Select
-        value={filterType}
-        onChange={(e) => {
-          const newType = e.target.value;
-          onFilterTypeChange(columnKey, newType);
-          // Reset filter value when type changes or when default is selected
-          onFilterValueChange(columnKey, "");
-        }}
-        className="w-full"
-      >
-        <option value="">Select filter type</option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </Select>
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-1">
+          Filter Type
+        </label>
+        <Select
+          value={filterType}
+          onChange={(e) => {
+            const newType = e.target.value;
+            onFilterTypeChange(columnKey, newType);
+            // Reset filter value when type changes or when default is selected
+            onFilterValueChange(columnKey, "");
+          }}
+          className="w-full"
+        >
+          <option value="">Select filter type</option>
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </Select>
+      </div>
     );
   };
 
@@ -212,14 +225,15 @@ export const FilterModal = ({
     }
   };
 
-  if (!isOpen || !selectedColumn) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onClick={handleBackdropClick}
+    >
       <div className="w-full max-w-md rounded-lg bg-background p-6 shadow-lg border border-border">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-medium text-foreground">
-            Filter {column?.header}
+            Filter {column?.header || selectedColumn}
           </h3>
           <button
             onClick={onCancel}
@@ -242,20 +256,10 @@ export const FilterModal = ({
           </button>
         </div>
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
-              Filter Type
-            </label>
-            {renderFilterTypeSelector(column, selectedColumn)}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
-              Filter Value
-            </label>
-            {renderFilterInput(column, selectedColumn)}
-          </div>
+          {renderFilterTypeSelector(column, selectedColumn)}
+          {renderFilterInput(column, selectedColumn)}
         </div>
-        <div className="mt-6 flex justify-end space-x-2">
+        <div className="mt-4 flex justify-end space-x-2">
           <Button
             variant="outline"
             onClick={onCancel}
