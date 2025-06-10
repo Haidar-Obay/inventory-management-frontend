@@ -79,6 +79,7 @@ const DynamicDrawer = ({
             expandDirection="left"
             className="[&_button]:h-10"
             storageKey={`drawer-${title}-last-action`}
+            dropdownDirection = 'up'
           />
         </div>
       </Box>

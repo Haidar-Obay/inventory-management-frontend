@@ -7,8 +7,8 @@ import {
   FileTextIcon, 
   PrinterIcon, 
   RefreshCwIcon,
-  ChevronRightIcon,
-  ChevronLeftIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
   SaveIcon,
   SaveIcon as SaveAndNewIcon,
   LogOutIcon,
@@ -21,52 +21,86 @@ const ACTION_CONFIG = {
   add: {
     icon: PlusIcon,
     label: 'Add New',
-    style: 'bg-blue-600 hover:bg-blue-700 text-white'
+    style: 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm'
   },
   excel: {
     icon: FileSpreadsheetIcon,
     label: 'Export Excel',
-    style: 'bg-green-700 hover:bg-green-800 text-white border border-gray-300'
+    style: 'bg-green-700 hover:bg-green-800 text-white border border-gray-300 shadow-sm'
   },
   pdf: {
     icon: FileTextIcon,
     label: 'Export PDF',
-    style: 'bg-red-700 hover:bg-red-800 text-white border border-gray-300'
+    style: 'bg-red-700 hover:bg-red-800 text-white border border-gray-300 shadow-sm'
   },
   print: {
     icon: PrinterIcon,
     label: 'Print',
-    style: 'bg-background hover:bg-muted text-foreground border border-border'
+    style: 'bg-background hover:bg-muted text-foreground border border-border shadow-sm'
   },
   refresh: {
     icon: RefreshCwIcon,
     label: 'Refresh',
-    style: 'bg-background hover:bg-muted text-foreground border border-border'
+    style: 'bg-background hover:bg-muted text-foreground border border-border shadow-sm'
   },
   save: {
     icon: SaveIcon,
     label: 'Save',
-    style: 'bg-blue-600 hover:bg-blue-700 text-white'
+    style: 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm'
   },
   saveAndNew: {
     icon: SaveAndNewIcon,
     label: 'Save & New',
-    style: 'bg-green-600 hover:bg-green-700 text-white'
+    style: 'bg-green-600 hover:bg-green-700 text-white shadow-sm'
   },
   saveAndExit: {
     icon: LogOutIcon,
     label: 'Save & Exit',
-    style: 'bg-red-600 hover:bg-red-700 text-white'
+    style: 'bg-red-600 hover:bg-red-700 text-white shadow-sm'
   },
   cancel: {
     icon: XIcon,
     label: 'Cancel',
-    style: 'bg-gray-600 hover:bg-gray-700 text-white'
+    style: 'bg-gray-600 hover:bg-gray-700 text-white shadow-sm'
   },
   importExcel: {
     icon: UploadIcon,
     label: 'Import Excel',
-    style: 'bg-green-700 hover:bg-green-800 text-white border border-gray-300'
+    style: 'bg-green-700 hover:bg-green-800 text-white border border-gray-300 shadow-sm'
+  }
+};
+
+// Action groups configuration
+const ACTION_GROUPS = {
+  add: {
+    id: 'add',
+    actions: ['add'],
+    storageKey: 'action-toolbar-add-group',
+    isSingleAction: true
+  },
+  save: {
+    id: 'save',
+    actions: ['save', 'saveAndNew', 'saveAndExit'],
+    storageKey: 'action-toolbar-save-group',
+    isSingleAction: false
+  },
+  cancel: {
+    id: 'cancel',
+    actions: ['cancel'],
+    storageKey: 'action-toolbar-cancel-group',
+    isSingleAction: true
+  },
+  export: {
+    id: 'export',
+    actions: ['pdf', 'excel', 'importExcel', 'print'],
+    storageKey: 'action-toolbar-export-group',
+    isSingleAction: false
+  },
+  refresh: {
+    id: 'refresh',
+    actions: ['refresh'],
+    storageKey: 'action-toolbar-refresh-group',
+    isSingleAction: true
   }
 };
 
@@ -81,69 +115,78 @@ export function ActionToolbar({
   onSaveAndExit,
   onCancel,
   onImportExcel,
-  expandDirection = 'left',
-  className = "",
-  storageKey = 'action-toolbar-last-action'
+  dropdownDirection = 'down',
+  className = ""
 }) {
-  const [lastUsedAction, setLastUsedAction] = useState(null);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [loadingAction, setLoadingAction] = useState(null);
+  const [groupStates, setGroupStates] = useState({});
+  const [loadingActions, setLoadingActions] = useState({});
 
   // Memoize available actions
   const availableActions = useMemo(() => {
-    const actions = [
-      { id: 'add', callback: onAdd },
-      { id: 'excel', callback: onExportExcel },
-      { id: 'pdf', callback: onExportPdf },
-      { id: 'print', callback: onPrint },
-      { id: 'refresh', callback: onRefresh },
-      { id: 'save', callback: onSave },
-      { id: 'saveAndNew', callback: onSaveAndNew },
-      { id: 'saveAndExit', callback: onSaveAndExit },
-      { id: 'cancel', callback: onCancel },
-      { id: 'importExcel', callback: onImportExcel }
-    ];
-    return actions.filter(action => action.callback);
+    const actions = {
+      add: onAdd,
+      excel: onExportExcel,
+      pdf: onExportPdf,
+      print: onPrint,
+      refresh: onRefresh,
+      save: onSave,
+      saveAndNew: onSaveAndNew,
+      saveAndExit: onSaveAndExit,
+      cancel: onCancel,
+      importExcel: onImportExcel
+    };
+    return Object.entries(actions)
+      .filter(([_, callback]) => callback)
+      .reduce((acc, [id, callback]) => ({ ...acc, [id]: callback }), {});
   }, [onAdd, onExportExcel, onExportPdf, onPrint, onRefresh, onSave, onSaveAndNew, onSaveAndExit, onCancel, onImportExcel]);
 
-  // Load the last used action from localStorage on component mount
+  // Load the last used actions from localStorage on component mount
   useEffect(() => {
-    const savedAction = localStorage.getItem(storageKey);
-    if (savedAction && availableActions.some(action => action.id === savedAction)) {
-      setLastUsedAction(savedAction);
-    } else if (availableActions.length > 0) {
-      setLastUsedAction(availableActions[0].id);
-    }
-  }, [availableActions, storageKey]);
+    const states = {};
+    Object.values(ACTION_GROUPS).forEach(group => {
+      const savedAction = localStorage.getItem(group.storageKey);
+      if (savedAction && group.actions.includes(savedAction) && availableActions[savedAction]) {
+        states[group.id] = savedAction;
+      } else {
+        const firstAvailableAction = group.actions.find(action => availableActions[action]);
+        if (firstAvailableAction) {
+          states[group.id] = firstAvailableAction;
+        }
+      }
+    });
+    setGroupStates(states);
+  }, [availableActions]);
 
   // Memoize action handlers
-  const handleAction = useCallback(async (actionId, callback) => {
+  const handleAction = useCallback(async (actionId, callback, groupId) => {
     try {
-      setLoadingAction(actionId);
-      setLastUsedAction(actionId);
-      localStorage.setItem(storageKey, actionId);
+      setLoadingActions(prev => ({ ...prev, [actionId]: true }));
+      setGroupStates(prev => ({ ...prev, [groupId]: actionId }));
+      localStorage.setItem(ACTION_GROUPS[groupId].storageKey, actionId);
       await callback();
     } catch (error) {
       console.error(`Error executing action ${actionId}:`, error);
     } finally {
-      setLoadingAction(null);
-      setShowDropdown(false);
+      setLoadingActions(prev => ({ ...prev, [actionId]: false }));
     }
-  }, [storageKey]);
+  }, []);
 
-  const toggleDropdown = useCallback(() => {
-    setShowDropdown(prev => !prev);
+  const toggleGroup = useCallback((groupId) => {
+    setGroupStates(prev => ({
+      ...prev,
+      [`${groupId}Open`]: !prev[`${groupId}Open`]
+    }));
   }, []);
 
   // Memoize action button renderer
-  const renderActionButton = useCallback((action) => {
-    const config = ACTION_CONFIG[action.id];
-    const isLoading = loadingAction === action.id;
+  const renderActionButton = useCallback((actionId, groupId) => {
+    const config = ACTION_CONFIG[actionId];
+    const isLoading = loadingActions[actionId];
     
     return (
       <Button
-        onClick={() => handleAction(action.id, action.callback)}
-        className={`flex items-center gap-1 ${config.style} px-3 py-2 text-sm h-8 whitespace-nowrap ${
+        onClick={() => handleAction(actionId, availableActions[actionId], groupId)}
+        className={`flex items-center gap-2 ${config.style} px-4 py-2 text-sm h-9 whitespace-nowrap w-full transition-all duration-200 ${
           isLoading ? 'opacity-50 cursor-not-allowed' : ''
         }`}
         disabled={isLoading}
@@ -151,70 +194,75 @@ export function ActionToolbar({
         {isLoading ? (
           <RefreshCwIcon size={16} className="animate-spin" />
         ) : (
-          <config.icon size={16} />
+          <config.icon size={16} className="flex-shrink-0" />
         )}
-        <span>{config.label}</span>
+        <span className="font-medium">{config.label}</span>
       </Button>
     );
-  }, [handleAction, loadingAction]);
+  }, [handleAction, loadingActions, availableActions]);
 
-  const isLeftExpansion = expandDirection === 'left';
-  const filteredActions = useMemo(() => 
-    availableActions.filter(action => action.id !== lastUsedAction),
-    [availableActions, lastUsedAction]
-  );
+  const renderGroup = useCallback((group) => {
+    const isOpen = groupStates[`${group.id}Open`];
+    const lastUsedAction = groupStates[group.id];
+    const availableGroupActions = group.actions.filter(action => availableActions[action]);
+    
+    if (availableGroupActions.length === 0) return null;
+
+    // For single action groups, just render the button without dropdown
+    if (group.isSingleAction) {
+      return (
+        <div className="relative inline-block" key={group.id}>
+          {renderActionButton(availableGroupActions[0], group.id)}
+        </div>
+      );
+    }
+
+    return (
+      <div className="relative inline-block" key={group.id}>
+        <div className="flex flex-col">
+          {isOpen && dropdownDirection === 'up' && (
+            <div className="absolute bottom-full mb-2 flex flex-col gap-1 min-w-[180px] bg-background border border-border rounded-md shadow-lg p-1 z-50 backdrop-blur-sm bg-opacity-95">
+              {availableGroupActions.map(action => (
+                <div key={action} className="w-full">
+                  {renderActionButton(action, group.id)}
+                </div>
+              ))}
+            </div>
+          )}
+          
+          <div className="flex items-center">
+            <Button
+              onClick={() => toggleGroup(group.id)}
+              className="flex items-center justify-center bg-background hover:bg-muted text-foreground border border-border px-2 py-2 text-sm h-9 w-8 rounded-r-none transition-all duration-200 shadow-sm"
+            >
+              <div className={`transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>
+                {dropdownDirection === 'down' ? <ChevronDownIcon size={16} /> : <ChevronUpIcon size={16} />}
+              </div>
+            </Button>
+            {lastUsedAction && (
+              <div className="rounded-l-none">
+                {renderActionButton(lastUsedAction, group.id)}
+              </div>
+            )}
+          </div>
+
+          {isOpen && dropdownDirection === 'down' && (
+            <div className="absolute top-full mt-2 flex flex-col gap-1 min-w-[180px] bg-background border border-border rounded-md shadow-lg p-1 z-50 backdrop-blur-sm bg-opacity-95">
+              {availableGroupActions.map(action => (
+                <div key={action} className="w-full">
+                  {renderActionButton(action, group.id)}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }, [groupStates, dropdownDirection, renderActionButton, toggleGroup, availableActions]);
 
   return (
-    <div className={`inline-flex items-center ${className}`}>
-      {isLeftExpansion && (
-        <div className="flex items-center gap-1 mr-1">
-          {filteredActions.map(action => (
-            <div
-              key={action.id}
-              className={`transition-all duration-200 ease-in-out ${
-                showDropdown 
-                  ? 'opacity-100 translate-x-0' 
-                  : 'opacity-0 translate-x-4 pointer-events-none'
-              }`}
-            >
-              {renderActionButton(action)}
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div className="flex items-center">
-        <Button
-          onClick={toggleDropdown}
-          className={`flex items-center bg-background hover:bg-muted text-foreground border border-border ${
-            isLeftExpansion ? 'border-r-0' : 'border-l-0'
-          } px-2 py-2 text-sm h-8 transition-transform duration-200 ${
-            showDropdown ? (isLeftExpansion ? 'rotate-180' : '') : ''
-          }`}
-        >
-          {isLeftExpansion ? <ChevronLeftIcon size={16} /> : <ChevronRightIcon size={16} />}
-        </Button>
-        {lastUsedAction && (
-          renderActionButton(availableActions.find(action => action.id === lastUsedAction))
-        )}
-      </div>
-
-      {!isLeftExpansion && (
-        <div className="flex items-center gap-1 ml-1">
-          {filteredActions.map(action => (
-            <div
-              key={action.id}
-              className={`transition-all duration-200 ease-in-out ${
-                showDropdown 
-                  ? 'opacity-100 translate-x-0' 
-                  : 'opacity-0 -translate-x-4 pointer-events-none'
-              }`}
-            >
-              {renderActionButton(action)}
-            </div>
-          ))}
-        </div>
-      )}
+    <div className={`inline-flex items-center gap-1.5 p-1 relative ${className}`}>
+      {Object.values(ACTION_GROUPS).map(group => renderGroup(group))}
     </div>
   );
 } 

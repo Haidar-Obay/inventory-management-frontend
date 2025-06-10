@@ -6,57 +6,17 @@ import Table from "@/components/ui/table/Table";
 import SectionDrawer from "@/components/ui/drawers/SectionDrawer";
 import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
+import {
+  getProjects,
+  createProject,
+  editProject,
+  deleteProject,
+  exportProjectsToExcel,
+  exportProjectsToPdf,  
+  importProjectsFromExcel,
+} from "@/API/Sections";
+import { projectColumns, costCenterColumns, departmentColumns, tradesColumns, companyCodesColumns, jobsColumns } from "@/constants/tableColumns";
 
-// Placeholder for API functions - to be implemented later
-const getProjects = async () => ({ data: [] });
-const getCostCenters = async () => ({ data: [] });
-const getDepartments = async () => ({ data: [] });
-const getTrades = async () => ({ data: [] });
-const getCompanyCodes = async () => ({ data: [] });
-const getJobs = async () => ({ data: [] });
-
-// Placeholder for table columns - to be customized later
-const projectColumns = [
-  { header: "ID", key: "id" },
-  { header: "Name", key: "name" },
-  { header: "Description", key: "description" },
-  { header: "Actions", key: "actions" }
-];
-
-const costCenterColumns = [
-  { header: "ID", key: "id" },
-  { header: "Name", key: "name" },
-  { header: "Description", key: "description" },
-  { header: "Actions", key: "actions" }
-];
-
-const departmentColumns = [
-  { header: "ID", key: "id" },
-  { header: "Name", key: "name" },
-  { header: "Description", key: "description" },
-  { header: "Actions", key: "actions" }
-];
-
-const tradesColumns = [
-  { header: "ID", key: "id" },
-  { header: "Name", key: "name" },
-  { header: "Description", key: "description" },
-  { header: "Actions", key: "actions" }
-];
-
-const companyCodesColumns = [
-  { header: "ID", key: "id" },
-  { header: "Name", key: "name" },
-  { header: "Description", key: "description" },
-  { header: "Actions", key: "actions" }
-];
-
-const jobsColumns = [
-  { header: "ID", key: "id" },
-  { header: "Name", key: "name" },
-  { header: "Description", key: "description" },
-  { header: "Actions", key: "actions" }
-];
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -236,9 +196,9 @@ function SectionsPage() {
   const entityHandlers = {
     project: {
       setData: setProjectsData,
-      deleteFn: async () => ({ status: true }),
-      editFn: async () => ({ status: true }),
-      createFn: async () => ({ status: true, data: {} }),
+      deleteFn: deleteProject,
+      editFn: editProject,
+      createFn: createProject,
     },
     costCenter: {
       setData: setCostCentersData,
@@ -370,7 +330,25 @@ function SectionsPage() {
 
   const handleExportExcel = async (type) => {
     try {
-      // Placeholder for export functionality
+      let response;
+      switch (type) {
+        case 'project':
+          response = await exportProjectsToExcel();
+          break;
+        // Add other cases as they are implemented
+        default:
+          return;
+      }
+      
+      // Create a download link for the Excel file
+      const url = window.URL.createObjectURL(new Blob([response]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${type}s.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      
       toast.success({
         title: "Success",
         description: `${type} exported successfully`,
@@ -385,7 +363,25 @@ function SectionsPage() {
 
   const handleExportPdf = async (type) => {
     try {
-      // Placeholder for export functionality
+      let response;
+      switch (type) {
+        case 'project':
+          response = await exportProjectsToPdf();
+          break;
+        // Add other cases as they are implemented
+        default:
+          return;
+      }
+      
+      // Create a download link for the PDF file
+      const url = window.URL.createObjectURL(new Blob([response]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${type}s.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      
       toast.success({
         title: "Success",
         description: `${type} exported successfully`,
@@ -400,12 +396,24 @@ function SectionsPage() {
 
   const handleImportExcel = async (type, file) => {
     try {
-      // Placeholder for import functionality
-      fetchData(value, true);
-      toast.success({
-        title: "Success",
-        description: `${type} imported successfully`,
-      });
+      let response;
+      switch (type) {
+        case 'project':
+          response = await importProjectsFromExcel(file);
+          break;
+        // Add other cases as they are implemented
+        default:
+          return;
+      }
+      
+      if (response.status) {
+        // Refresh the data after successful import
+        fetchData(value, true);
+        toast.success({
+          title: "Success",
+          description: `${type} imported successfully`,
+        });
+      }
     } catch (error) {
       toast.error({
         title: "Error",

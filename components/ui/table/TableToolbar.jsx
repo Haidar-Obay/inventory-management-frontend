@@ -18,6 +18,7 @@ export const TableToolbar = ({
   onPrint,
   onRefresh,
   onImportExcel,
+  
 }) => {
   return (
     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-gray-50 dark:bg-muted/50 p-4">
@@ -115,6 +116,7 @@ export const TableToolbar = ({
           onRefresh={onRefresh}
           className="m-0"
           onImportExcel={onImportExcel}
+          dropdownDirection = 'down'
         />
 
         {/* Active Filters Count */}
