@@ -131,7 +131,7 @@ const Table = (props) => {
     setHandleSelectAllSearchColumns,
   } = useTableLogic({
     ...props,
-    tableId: props.tableId || 'default'
+    tableId: props.tableId || "default",
   });
 
   return (
@@ -235,53 +235,57 @@ const Table = (props) => {
         </div>
       )}
 
-      <div className="overflow-y-auto max-h-[95vh]">
-        <table className="w-full border-collapse">
-          <TableHeader
-            columnOrder={columnOrder}
-            columns={props.columns}
-            visibleColumns={visibleColumns}
-            sortConfig={sortConfig}
-            activeColumnFilters={activeColumnFilters}
-            columnFilterTypes={columnFilterTypes}
-            showSearchRow={showSearchRow}
-            columnSearch={columnSearch}
-            areAllOnPageSelected={areAllOnPageSelected}
-            paginatedData={paginatedData}
-            handleSort={handleSort}
-            handleColumnDragStart={handleColumnDragStart}
-            handleColumnDragOver={handleColumnDragOver}
-            handleToggleSearchRow={handleToggleSearchRow}
-            handleOpenFilterModal={handleOpenFilterModal}
-            handleColumnSearch={handleColumnSearch}
-            handleSelectAll={handleSelectAll}
-            columnWidths={columnWidths}
-            handleResizeStart={handleResizeStart}
-            resizingColumn={resizingColumn}
-          />
+      <div className="w-full">
+        <div className="overflow-x-auto" style={{ scrollbarWidth: "thin" }}>
+          <div style={{ minWidth: "max-content", width: "100%" }}>
+            <table className="w-full border-collapse">
+              <TableHeader
+                columnOrder={columnOrder}
+                columns={props.columns}
+                visibleColumns={visibleColumns}
+                sortConfig={sortConfig}
+                activeColumnFilters={activeColumnFilters}
+                columnFilterTypes={columnFilterTypes}
+                showSearchRow={showSearchRow}
+                columnSearch={columnSearch}
+                areAllOnPageSelected={areAllOnPageSelected}
+                paginatedData={paginatedData}
+                handleSort={handleSort}
+                handleColumnDragStart={handleColumnDragStart}
+                handleColumnDragOver={handleColumnDragOver}
+                handleToggleSearchRow={handleToggleSearchRow}
+                handleOpenFilterModal={handleOpenFilterModal}
+                handleColumnSearch={handleColumnSearch}
+                handleSelectAll={handleSelectAll}
+                columnWidths={columnWidths}
+                handleResizeStart={handleResizeStart}
+                resizingColumn={resizingColumn}
+              />
 
-          <TableBody
-            paginatedData={paginatedData}
-            columns={props.columns}
-            columnOrder={columnOrder}
-            visibleColumns={visibleColumns}
-            currentPage={currentPage}
-            rowsPerPage={rowsPerPage}
-            selectedRows={selectedRows}
-            editingCell={editingCell}
-            enableCellEditing={props.enableCellEditing}
-            loading={props.loading}
-            handleRowDragStart={handleRowDragStart}
-            handleRowDragOver={handleRowDragOver}
-            handleCellDoubleClick={handleCellDoubleClick}
-            handleCellEdit={handleCellEdit}
-            handleCellEditFinish={handleCellEditFinish}
-            handleRowSelect={handleRowSelect}
-            handleDeleteClick={handleDeleteClick}
-            onEdit={props.onEdit}
-            columnWidths={columnWidths}
-          />
-        </table>
+              <TableBody
+                paginatedData={paginatedData}
+                columns={props.columns}
+                columnOrder={columnOrder}
+                visibleColumns={visibleColumns}
+                currentPage={currentPage}
+                rowsPerPage={rowsPerPage}
+                selectedRows={selectedRows}
+                editingCell={editingCell}
+                enableCellEditing={props.enableCellEditing}
+                loading={props.loading}
+                handleRowDragStart={handleRowDragStart}
+                handleRowDragOver={handleRowDragOver}
+                handleCellDoubleClick={handleCellDoubleClick}
+                handleCellEdit={handleCellEdit}
+                handleCellEditFinish={handleCellEditFinish}
+                handleRowSelect={handleRowSelect}
+                handleDeleteClick={handleDeleteClick}
+                onEdit={props.onEdit}
+                columnWidths={columnWidths}
+              />
+            </table>
+          </div>
+        </div>
       </div>
 
       {filteredData.length > 0 && (

@@ -123,8 +123,7 @@ export function useTableLogic({
           search: parsedWidths.search || "40px",
         };
         columns.forEach((column) => {
-          validWidths[column.key] =
-            parsedWidths[column.key] || column.width || "auto";
+          validWidths[column.key] = parsedWidths[column.key] || column.width || "100px";
         });
         return validWidths;
       } catch (error) {
@@ -136,7 +135,7 @@ export function useTableLogic({
       select: "40px",
       search: "40px",
       ...columns.reduce((acc, column) => {
-        acc[column.key] = column.width || "auto";
+        acc[column.key] = column.width || "100px";
         return acc;
       }, {}),
     };
