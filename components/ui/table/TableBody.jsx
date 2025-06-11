@@ -1,7 +1,14 @@
 "use client";
 
 import React from "react";
-import { Button, Checkbox, Input, Select, DatePicker, Tooltip } from "./CustomControls";
+import {
+  Button,
+  Checkbox,
+  Input,
+  Select,
+  DatePicker,
+  Tooltip,
+} from "./CustomControls";
 
 export const TableBody = ({
   paginatedData,
@@ -37,20 +44,25 @@ export const TableBody = ({
                 : "bg-gray-50 dark:bg-muted/50"
             }`}
           >
-            <td className="w-10 border-b border-border px-4 py-2">
-              <div className="h-4 w-4 rounded bg-gray-200 dark:bg-muted animate-pulse"></div>
+            <td
+              className="border-b border-border px-4 py-2"
+              style={{ width: columnWidths["select"] || "40px" }}
+            >
+              <div className="flex items-center justify-center w-full">
+                <div className="h-4 w-4 rounded bg-gray-200 dark:bg-muted animate-pulse"></div>
+              </div>
             </td>
-            <td className="w-10 border-b border-border px-4 py-2">
+            <td
+              className="border-b border-border px-4 py-2"
+              style={{ width: columnWidths["search"] || "40px" }}
+            >
               <div className="h-4 w-4 rounded bg-gray-200 dark:bg-muted animate-pulse"></div>
             </td>
             {columnOrder.map((key) => {
               const column = columns.find((col) => col.key === key);
               if (!column || !visibleColumns[key]) return null;
               return (
-                <td
-                  key={key}
-                  className="border-b border-border px-4 py-2"
-                >
+                <td key={key} className="border-b border-border px-4 py-2">
                   <div className="h-4 bg-gray-200 dark:bg-muted rounded animate-pulse"></div>
                 </td>
               );
@@ -82,15 +94,23 @@ export const TableBody = ({
               onDragOver={(e) => handleRowDragOver(e, actualRowIndex)}
             >
               {/* Row selection checkbox */}
-              <td className="border-b border-border px-4 py-2 text-center">
-                <Checkbox
-                  checked={selectedRows.has(row.id)}
-                  onChange={() => handleRowSelect(row.id)}
-                  aria-label={`Select row ${actualRowIndex + 1}`}
-                />
+              <td
+                className="border-b border-border px-4 py-2"
+                style={{ width: columnWidths["select"] || "40px" }}
+              >
+                <div className="flex items-center justify-center w-full">
+                  <Checkbox
+                    checked={selectedRows.has(row.id)}
+                    onChange={() => handleRowSelect(row.id)}
+                    aria-label={`Select row ${actualRowIndex + 1}`}
+                  />
+                </div>
               </td>
               {/* Row handle */}
-              <td className="border-b border-border px-4 py-2">
+              <td
+                className="border-b border-border px-4 py-2"
+                style={{ width: columnWidths["search"] || "40px" }}
+              >
                 <div className="flex h-full cursor-move items-center justify-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -131,7 +151,7 @@ export const TableBody = ({
                   <td
                     key={`${rowIndex}-${key}`}
                     className="border-b border-border px-4 py-2"
-                    style={{ width: width === 'auto' ? 'auto' : width }}
+                    style={{ width: width === "auto" ? "auto" : width }}
                     onDoubleClick={() =>
                       enableCellEditing &&
                       handleCellDoubleClick(actualRowIndex, key)
@@ -141,7 +161,9 @@ export const TableBody = ({
                       column.type === "boolean" ? (
                         <Select
                           value={String(row[key])}
-                          onChange={(e) => handleCellEdit(e, actualRowIndex, key)}
+                          onChange={(e) =>
+                            handleCellEdit(e, actualRowIndex, key)
+                          }
                           onBlur={handleCellEditFinish}
                           autoFocus
                         >
@@ -151,14 +173,18 @@ export const TableBody = ({
                       ) : column.type === "date" ? (
                         <DatePicker
                           value={row[key]}
-                          onChange={(e) => handleCellEdit(e, actualRowIndex, key)}
+                          onChange={(e) =>
+                            handleCellEdit(e, actualRowIndex, key)
+                          }
                           onBlur={handleCellEditFinish}
                           autoFocus
                         />
                       ) : column.options ? (
                         <Select
                           value={row[key]}
-                          onChange={(e) => handleCellEdit(e, actualRowIndex, key)}
+                          onChange={(e) =>
+                            handleCellEdit(e, actualRowIndex, key)
+                          }
                           onBlur={handleCellEditFinish}
                           autoFocus
                         >
@@ -172,7 +198,9 @@ export const TableBody = ({
                         <Input
                           type={column.type === "number" ? "number" : "text"}
                           value={row[key]}
-                          onChange={(e) => handleCellEdit(e, actualRowIndex, key)}
+                          onChange={(e) =>
+                            handleCellEdit(e, actualRowIndex, key)
+                          }
                           onBlur={handleCellEditFinish}
                           onKeyDown={(e) => {
                             if (e.key === "Enter") {
@@ -299,7 +327,9 @@ export const TableBody = ({
       ) : (
         <tr>
           <td
-            colSpan={columnOrder.filter((key) => visibleColumns[key]).length + 3}
+            colSpan={
+              columnOrder.filter((key) => visibleColumns[key]).length + 3
+            }
             className="px-4 py-8 text-center"
           >
             <div className="flex flex-col items-center justify-center">
@@ -324,8 +354,8 @@ export const TableBody = ({
                 No data found
               </p>
               <p className="text-sm text-muted-foreground">
-                Try adjusting your search or filter to find what you're
-                looking for.
+                Try adjusting your search or filter to find what you're looking
+                for.
               </p>
             </div>
           </td>

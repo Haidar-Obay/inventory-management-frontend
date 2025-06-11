@@ -32,53 +32,99 @@ export const TableHeader = ({
     >
       {/* Header Row */}
       <tr className="bg-gray-50 dark:bg-muted/50">
-        <th className="w-10 border-b border-border px-4 py-2 text-center">
-          <Checkbox
-            checked={areAllOnPageSelected}
-            onChange={handleSelectAll}
-            disabled={paginatedData.length === 0}
-            aria-label="Select all rows on this page"
-          />
-        </th>
-        <th className="w-10 border-b border-border px-4 py-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleToggleSearchRow}
-            className="flex items-center gap-1 border-border bg-background shadow-sm hover:bg-muted"
+        <th
+          className="border-b border-border px-4 py-2 relative group"
+          data-column="select"
+          style={{ width: columnWidths["select"] || "40px" }}
+        >
+          <div className="flex items-center justify-center w-full">
+            <Checkbox
+              checked={areAllOnPageSelected}
+              onChange={handleSelectAll}
+              disabled={paginatedData.length === 0}
+              aria-label="Select all rows on this page"
+            />
+          </div>
+          {/* Resize handle for select column */}
+          <div
+            className={`absolute right-0 top-0 h-full w-1 cursor-col-resize transition-all duration-200 ${
+              resizingColumn === "select"
+                ? "bg-blue-500/20"
+                : "hover:bg-blue-500/10"
+            }`}
+            style={{ transform: "translateX(0)" }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleResizeStart(e, "select");
+            }}
           >
-            {showSearchRow ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M3 3l18 18"></path>
-                <circle cx="12" cy="12" r="7"></circle>
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-            )}
-          </Button>
+            <div className="absolute right-0 top-0 h-full w-[1px] bg-gradient-to-b from-blue-500/0 via-blue-500/40 to-blue-500/0 group-hover:from-blue-500/40 group-hover:via-blue-500/60 group-hover:to-blue-500/40 transition-all duration-200" />
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[1px] h-8 bg-gradient-to-b from-blue-500/0 via-blue-500/60 to-blue-500/0 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200" />
+          </div>
+        </th>
+        <th
+          className="border-b border-border px-4 py-2 relative group"
+          data-column="search"
+          style={{ width: columnWidths["search"] || "40px" }}
+        >
+          <div className="flex items-center justify-center w-full">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleToggleSearchRow}
+              className="flex items-center gap-1 border-border bg-background shadow-sm hover:bg-muted"
+            >
+              {showSearchRow ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M3 3l18 18"></path>
+                  <circle cx="12" cy="12" r="7"></circle>
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              )}
+            </Button>
+          </div>
+          {/* Resize handle for search column */}
+          <div
+            className={`absolute right-0 top-0 h-full w-1 cursor-col-resize transition-all duration-200 ${
+              resizingColumn === "search"
+                ? "bg-blue-500/20"
+                : "hover:bg-blue-500/10"
+            }`}
+            style={{ transform: "translateX(0)" }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleResizeStart(e, "search");
+            }}
+          >
+            <div className="absolute right-0 top-0 h-full w-[1px] bg-gradient-to-b from-blue-500/0 via-blue-500/40 to-blue-500/0 group-hover:from-blue-500/40 group-hover:via-blue-500/60 group-hover:to-blue-500/40 transition-all duration-200" />
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[1px] h-8 bg-gradient-to-b from-blue-500/0 via-blue-500/60 to-blue-500/0 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200" />
+          </div>
         </th>
 
         {/* Column headers */}
@@ -92,51 +138,99 @@ export const TableHeader = ({
           return (
             <th
               key={key}
+              data-column={key}
               className="border-b border-border px-4 py-2 text-left relative group"
-              style={{ width: width === 'auto' ? 'auto' : width }}
+              style={{ width: width === "auto" ? "auto" : width }}
               draggable
               onDragStart={() => handleColumnDragStart(key)}
               onDragOver={(e) => handleColumnDragOver(e, key)}
             >
               <div className="flex flex-col">
-                <div className="flex items-center">
-                  <div
-                    className="flex items-center cursor-pointer"
-                    onClick={() => handleSort(key)}
-                  >
-                    <span>{column.header}</span>
-                    {sortConfig.key === key && (
-                      <span className="ml-1">
-                        {sortConfig.direction === "asc" ? "↑" : "↓"}
-                      </span>
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">{column.header}</span>
+                  <div className="flex items-center space-x-2">
+                    {column.sortable && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort(key)}
+                        className="h-8 w-8 p-0"
+                      >
+                        {sortConfig.key === key ? (
+                          sortConfig.direction === "asc" ? (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M6 9l6 6 6-6" />
+                            </svg>
+                          ) : (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M18 15l-6-6-6 6" />
+                            </svg>
+                          )
+                        ) : (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M7 10l5 5 5-5" />
+                            <path d="M7 14l5-5 5 5" />
+                          </svg>
+                        )}
+                      </Button>
                     )}
-                  </div>
-                  <Button
-                    variant={hasActiveFilter ? "primary" : "ghost"}
-                    size="sm"
-                    className={`h-10 w-10 p-0 ml-2 flex items-center justify-center transition-all duration-200 
-                    ${
-                      hasActiveFilter
-                        ? "text-primary-foreground bg-primary hover:bg-primary/90"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                    }`}
-                    onClick={() => handleOpenFilterModal(key)}
-                    title="Filter Options"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                    <Button
+                      variant={hasActiveFilter ? "primary" : "ghost"}
+                      size="sm"
+                      className={`h-10 w-10 p-0 ml-2 flex items-center justify-center transition-all duration-200 
+                      ${
+                        hasActiveFilter
+                          ? "text-primary-foreground bg-primary hover:bg-primary/90"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      }`}
+                      onClick={() => handleOpenFilterModal(key)}
+                      title="Filter Options"
                     >
-                      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-                    </svg>
-                  </Button>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                      </svg>
+                    </Button>
+                  </div>
                 </div>
                 {hasActiveFilter && (
                   <div className="mt-1">
@@ -149,15 +243,20 @@ export const TableHeader = ({
               </div>
               {/* Resize handle */}
               <div
-                className={`absolute right-0 top-0 h-full w-2 cursor-col-resize transition-all duration-200 ${
-                  resizingColumn === key 
-                    ? 'bg-blue-500/10' 
-                    : 'hover:bg-blue-500/5'
+                className={`absolute right-0 top-0 h-full w-1 cursor-col-resize transition-all duration-200 ${
+                  resizingColumn === key
+                    ? "bg-blue-500/20"
+                    : "hover:bg-blue-500/10"
                 }`}
-                onMouseDown={(e) => handleResizeStart(e, key)}
+                style={{ transform: "translateX(0)" }}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleResizeStart(e, key);
+                }}
               >
-                <div className="absolute right-0 top-0 h-full w-[1px] bg-gradient-to-b from-blue-500/0 via-blue-500/30 to-blue-500/0 group-hover:from-blue-500/30 group-hover:via-blue-500/50 group-hover:to-blue-500/30 transition-all duration-200" />
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[1px] h-6 bg-gradient-to-b from-blue-500/0 via-blue-500/50 to-blue-500/0 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200" />
+                <div className="absolute right-0 top-0 h-full w-[1px] bg-gradient-to-b from-blue-500/0 via-blue-500/40 to-blue-500/0 group-hover:from-blue-500/40 group-hover:via-blue-500/60 group-hover:to-blue-500/40 transition-all duration-200" />
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[1px] h-8 bg-gradient-to-b from-blue-500/0 via-blue-500/60 to-blue-500/0 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200" />
               </div>
             </th>
           );

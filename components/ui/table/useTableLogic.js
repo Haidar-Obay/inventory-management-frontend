@@ -28,7 +28,7 @@ export function useTableLogic({
   onRefresh = () => {},
   enableCellEditing = false,
   loading = false,
-  tableId = 'default',
+  tableId = "default",
 }) {
   const { theme } = useTheme();
   const [tableData, setTableData] = useState(data);
@@ -39,7 +39,7 @@ export function useTableLogic({
   const [visibleColumns, setVisibleColumns] = useState(() => {
     // Create a unique key for this table using tableId
     const storageKey = `tableColumnVisibility_${tableId}`;
-    
+
     // Try to get saved settings from localStorage
     const savedSettings = localStorage.getItem(storageKey);
     if (savedSettings) {
@@ -47,19 +47,22 @@ export function useTableLogic({
         const parsedSettings = JSON.parse(savedSettings);
         // Validate that all current columns have a visibility setting
         const validSettings = {};
-        columns.forEach(col => {
-          validSettings[col.key] = parsedSettings[col.key] ?? (col.key !== 'created_at' && col.key !== 'updated_at');
+        columns.forEach((col) => {
+          validSettings[col.key] =
+            parsedSettings[col.key] ??
+            (col.key !== "created_at" && col.key !== "updated_at");
         });
         return validSettings;
       } catch (error) {
-        console.error('Error parsing saved column visibility settings:', error);
+        console.error("Error parsing saved column visibility settings:", error);
       }
     }
 
     // Default settings if no saved settings or error
     const defaultSettings = {};
-    columns.forEach(col => {
-      defaultSettings[col.key] = col.key !== 'created_at' && col.key !== 'updated_at';
+    columns.forEach((col) => {
+      defaultSettings[col.key] =
+        col.key !== "created_at" && col.key !== "updated_at";
     });
     return defaultSettings;
   });
@@ -110,30 +113,38 @@ export function useTableLogic({
   // Add column widths state with localStorage
   const [columnWidths, setColumnWidths] = useState(() => {
     // Try to load saved widths from localStorage
-    const savedWidths = localStorage.getItem('tableColumnWidths');
+    const savedWidths = localStorage.getItem("tableColumnWidths");
     if (savedWidths) {
       try {
         const parsedWidths = JSON.parse(savedWidths);
         // Validate that all columns have a width
-        const validWidths = {};
+        const validWidths = {
+          select: parsedWidths.select || "40px",
+          search: parsedWidths.search || "40px",
+        };
         columns.forEach((column) => {
-          validWidths[column.key] = parsedWidths[column.key] || column.width || 'auto';
+          validWidths[column.key] =
+            parsedWidths[column.key] || column.width || "auto";
         });
         return validWidths;
       } catch (error) {
-        console.error('Error parsing saved column widths:', error);
+        console.error("Error parsing saved column widths:", error);
       }
     }
     // If no saved widths or error, use default widths
-    return columns.reduce((acc, column) => {
-      acc[column.key] = column.width || 'auto';
-      return acc;
-    }, {});
+    return {
+      select: "40px",
+      search: "40px",
+      ...columns.reduce((acc, column) => {
+        acc[column.key] = column.width || "auto";
+        return acc;
+      }, {}),
+    };
   });
 
   // Save column widths to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('tableColumnWidths', JSON.stringify(columnWidths));
+    localStorage.setItem("tableColumnWidths", JSON.stringify(columnWidths));
   }, [columnWidths]);
 
   // Add column resizing state with better precision
@@ -141,6 +152,7 @@ export function useTableLogic({
   const [resizeStartX, setResizeStartX] = useState(0);
   const [resizeStartWidth, setResizeStartWidth] = useState(0);
   const resizeRef = useRef(null);
+  const resizeTimeoutRef = useRef(null);
 
   // Extract unique values for each column
   useEffect(() => {
@@ -170,7 +182,7 @@ export function useTableLogic({
   // Initialize selectedSearchColumns when visibleColumns is set
   useEffect(() => {
     const initialSelection = {};
-    columns.forEach(col => {
+    columns.forEach((col) => {
       if (visibleColumns[col.key]) {
         initialSelection[col.key] = true;
       }
@@ -180,16 +192,16 @@ export function useTableLogic({
 
   // Update selectedSearchColumns when visibleColumns changes
   useEffect(() => {
-    setSelectedSearchColumns(prev => {
+    setSelectedSearchColumns((prev) => {
       const newSelection = { ...prev };
       // Remove columns that are no longer visible
-      Object.keys(newSelection).forEach(key => {
+      Object.keys(newSelection).forEach((key) => {
         if (!visibleColumns[key]) {
           delete newSelection[key];
         }
       });
       // Add newly visible columns
-      columns.forEach(col => {
+      columns.forEach((col) => {
         if (visibleColumns[col.key] && !(col.key in newSelection)) {
           newSelection[col.key] = true;
         }
@@ -473,10 +485,10 @@ export function useTableLogic({
   };
 
   const handleColumnVisibilityToggle = (key) => {
-    setVisibleColumns(prev => {
+    setVisibleColumns((prev) => {
       const newSettings = {
         ...prev,
-        [key]: !prev[key]
+        [key]: !prev[key],
       };
       // Save to localStorage with table-specific key
       const storageKey = `tableColumnVisibility_${tableId}`;
@@ -492,19 +504,19 @@ export function useTableLogic({
   const handleSearchColumnToggle = (columnKey) => {
     // Only allow toggling if the column is visible
     if (visibleColumns[columnKey]) {
-      setSelectedSearchColumns(prev => ({
+      setSelectedSearchColumns((prev) => ({
         ...prev,
-        [columnKey]: !prev[columnKey]
+        [columnKey]: !prev[columnKey],
       }));
     }
   };
 
   const handleSelectAllSearchColumns = () => {
-    const allSelected = Object.keys(selectedSearchColumns).every(key => 
-      selectedSearchColumns[key] && visibleColumns[key]
+    const allSelected = Object.keys(selectedSearchColumns).every(
+      (key) => selectedSearchColumns[key] && visibleColumns[key]
     );
     const newSelection = {};
-    columns.forEach(col => {
+    columns.forEach((col) => {
       if (visibleColumns[col.key]) {
         newSelection[col.key] = !allSelected;
       }
@@ -716,105 +728,164 @@ export function useTableLogic({
     paginatedData.length > 0 &&
     paginatedData.every((row) => selectedRows.has(row.id));
 
-  // Handle column resize start with better precision
+  // Enhanced column resize start handler
   const handleResizeStart = (e, columnKey) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    // Get the initial position and width
+
+    const th = e.currentTarget.closest("th");
+    const currentWidth = columnWidths[columnKey];
+    const startWidth =
+      currentWidth === "auto" ? th.offsetWidth : parseInt(currentWidth);
     const startX = e.clientX;
-    const currentWidth = columnWidths[columnKey] === 'auto' ? 150 : parseInt(columnWidths[columnKey]);
-    
+
     setResizingColumn(columnKey);
     setResizeStartX(startX);
-    setResizeStartWidth(currentWidth);
+    setResizeStartWidth(startWidth);
 
     // Add a temporary overlay to prevent text selection during resize
-    const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.right = '0';
-    overlay.style.bottom = '0';
-    overlay.style.cursor = 'col-resize';
-    overlay.style.zIndex = '9999';
+    const overlay = document.createElement("div");
+    overlay.style.position = "fixed";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+    overlay.style.right = "0";
+    overlay.style.bottom = "0";
+    overlay.style.cursor = "col-resize";
+    overlay.style.zIndex = "9999";
     document.body.appendChild(overlay);
     resizeRef.current = overlay;
+
+    // Add double-click handler to reset column width
+    const handleDoubleClick = (e) => {
+      if (e.target === overlay) {
+        const defaultWidth =
+          columnKey === "select" || columnKey === "search" ? "40px" : "auto";
+        setColumnWidths((prev) => ({
+          ...prev,
+          [columnKey]: defaultWidth,
+        }));
+        handleResizeEnd();
+      }
+    };
+    overlay.addEventListener("dblclick", handleDoubleClick);
   };
 
-  // Enhanced column resize handler
+  // Enhanced column resize handler with debouncing and constraints
   const handleResize = (e) => {
     if (!resizingColumn) return;
 
     // Calculate the new width with better precision
     const diff = e.clientX - resizeStartX;
-    const newWidth = Math.max(100, resizeStartWidth + diff);
-    
+    const minWidth =
+      resizingColumn === "select" || resizingColumn === "search" ? 40 : 100;
+    const newWidth = Math.max(minWidth, resizeStartWidth + diff);
+
     // Round to nearest pixel for smoother updates
     const roundedWidth = Math.round(newWidth);
-    
-    // Update the width with a debounce-like effect for better performance
-    requestAnimationFrame(() => {
-      setColumnWidths(prev => ({
-        ...prev,
-        [resizingColumn]: `${roundedWidth}px`
-      }));
-    });
+
+    // Only update if there's actual movement
+    if (Math.abs(diff) > 0) {
+      // Debounce the width updates for better performance
+      if (resizeTimeoutRef.current) {
+        cancelAnimationFrame(resizeTimeoutRef.current);
+      }
+
+      resizeTimeoutRef.current = requestAnimationFrame(() => {
+        setColumnWidths((prev) => ({
+          ...prev,
+          [resizingColumn]: `${roundedWidth}px`,
+        }));
+      });
+    }
   };
 
-  // Enhanced column resize end handler
+  // Enhanced column resize end handler with cleanup
   const handleResizeEnd = () => {
     if (resizeRef.current) {
-      document.body.removeChild(resizeRef.current);
+      const overlay = resizeRef.current;
+      overlay.removeEventListener("dblclick", handleDoubleClick);
+      document.body.removeChild(overlay);
       resizeRef.current = null;
     }
+
+    if (resizeTimeoutRef.current) {
+      cancelAnimationFrame(resizeTimeoutRef.current);
+      resizeTimeoutRef.current = null;
+    }
+
     setResizingColumn(null);
+    document.body.style.userSelect = "";
+    document.body.style.cursor = "";
   };
 
   // Add resize event listeners with better cleanup
   useEffect(() => {
     if (resizingColumn) {
       // Use passive event listeners for better performance
-      window.addEventListener('mousemove', handleResize, { passive: true });
-      window.addEventListener('mouseup', handleResizeEnd);
-      window.addEventListener('mouseleave', handleResizeEnd);
-      
+      window.addEventListener("mousemove", handleResize, { passive: true });
+      window.addEventListener("mouseup", handleResizeEnd);
+      window.addEventListener("mouseleave", handleResizeEnd);
+
       // Prevent text selection during resize
-      document.body.style.userSelect = 'none';
-      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = "none";
+      document.body.style.cursor = "col-resize";
     }
 
     return () => {
-      window.removeEventListener('mousemove', handleResize);
-      window.removeEventListener('mouseup', handleResizeEnd);
-      window.removeEventListener('mouseleave', handleResizeEnd);
-      
+      window.removeEventListener("mousemove", handleResize);
+      window.removeEventListener("mouseup", handleResizeEnd);
+      window.removeEventListener("mouseleave", handleResizeEnd);
+
       // Restore text selection
-      document.body.style.userSelect = '';
-      document.body.style.cursor = '';
-      
+      document.body.style.userSelect = "";
+      document.body.style.cursor = "";
+
       // Clean up overlay if it exists
       if (resizeRef.current) {
         document.body.removeChild(resizeRef.current);
         resizeRef.current = null;
       }
+
+      // Clean up animation frame
+      if (resizeTimeoutRef.current) {
+        cancelAnimationFrame(resizeTimeoutRef.current);
+        resizeTimeoutRef.current = null;
+      }
     };
   }, [resizingColumn]);
 
-  // Reset column widths
+  // Reset column widths with animation
   const resetColumnWidths = () => {
-    const defaultWidths = columns.reduce((acc, column) => {
-      acc[column.key] = column.width || 'auto';
-      return acc;
-    }, {});
+    const defaultWidths = {
+      select: "40px",
+      search: "40px",
+      ...columns.reduce((acc, column) => {
+        acc[column.key] = column.width || "auto";
+        return acc;
+      }, {}),
+    };
+
+    // Animate the width changes
+    Object.entries(defaultWidths).forEach(([key, width]) => {
+      const th = document.querySelector(`th[data-column="${key}"]`);
+      if (th) {
+        th.style.transition = "width 0.3s ease";
+        th.style.width = width;
+        setTimeout(() => {
+          th.style.transition = "";
+        }, 300);
+      }
+    });
+
     setColumnWidths(defaultWidths);
   };
 
   // Reset column visibility to defaults
   const resetColumnVisibility = () => {
     const defaultSettings = {};
-    columns.forEach(col => {
-      defaultSettings[col.key] = col.key !== 'created_at' && col.key !== 'updated_at';
+    columns.forEach((col) => {
+      defaultSettings[col.key] =
+        col.key !== "created_at" && col.key !== "updated_at";
     });
     setVisibleColumns(defaultSettings);
     // Save to localStorage with table-specific key
@@ -824,7 +895,7 @@ export function useTableLogic({
 
   // Get visible columns
   const getVisibleColumns = () => {
-    return columns.filter(col => visibleColumns[col.key]);
+    return columns.filter((col) => visibleColumns[col.key]);
   };
 
   return {
