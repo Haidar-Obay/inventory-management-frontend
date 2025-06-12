@@ -1,12 +1,164 @@
-"use client"
+"use client";
+import { motion } from "framer-motion";
+import {
+  Package,
+  BarChart3,
+  Users,
+  Settings,
+  AlertCircle,
+  TrendingUp,
+  Shield,
+  Clock,
+} from "lucide-react";
+
 export default function Dashboard() {
+  const features = [
+    {
+      icon: Package,
+      title: "Inventory Tracking",
+      description:
+        "Real-time tracking of all your inventory items with detailed stock levels, locations, and movement history.",
+    },
+    {
+      icon: BarChart3,
+      title: "Analytics Dashboard",
+      description:
+        "Comprehensive analytics and reporting tools to help you make data-driven decisions about your inventory.",
+    },
+    {
+      icon: Users,
+      title: "User Management",
+      description:
+        "Role-based access control to manage your team's permissions and access to different features.",
+    },
+    {
+      icon: Settings,
+      title: "Customizable Settings",
+      description:
+        "Flexible configuration options to tailor the system to your specific business needs.",
+    },
+    {
+      icon: AlertCircle,
+      title: "Stock Alerts",
+      description:
+        "Automated notifications for low stock levels, expiring items, and other important inventory events.",
+    },
+    {
+      icon: TrendingUp,
+      title: "Performance Metrics",
+      description:
+        "Track key performance indicators to optimize your inventory management and reduce costs.",
+    },
+    {
+      icon: Shield,
+      title: "Security Features",
+      description:
+        "Advanced security measures to protect your inventory data and business operations.",
+    },
+    {
+      icon: Clock,
+      title: "Real-time Updates",
+      description:
+        "Instant updates across all devices to ensure everyone has access to the latest inventory information.",
+    },
+  ];
 
   return (
-    <div className="min-h-screen w-full bg-gray-100 p-0 m-0 -mt-px -ml-px">
-      <h1 className="px-1 pb-10 text-3xl font-bold text-foreground">main</h1>
-      
-      <div className="mx-auto w-full bg-background">
-      </div>
+    <div className="min-h-screen w-full bg-background p-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-7xl mx-auto"
+      >
+        <div className="text-center mb-12">
+          <motion.h1
+            className="text-4xl font-bold text-foreground mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            Welcome to Your Inventory Management System
+          </motion.h1>
+          <motion.p
+            className="text-xl text-muted-foreground max-w-3xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            Streamline your inventory operations with our comprehensive
+            management solution. Track, analyze, and optimize your inventory in
+            real-time.
+          </motion.p>
+        </div>
+
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+        >
+          {features.map((feature, index) => (
+            <motion.div
+              key={feature.title}
+              className="bg-card rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 + index * 0.1 }}
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <feature.icon className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground">
+                  {feature.title}
+                </h3>
+              </div>
+              <p className="text-muted-foreground">{feature.description}</p>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        <motion.div
+          className="mt-16 bg-card rounded-xl p-8 shadow-sm"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <h2 className="text-2xl font-bold text-foreground mb-4">
+            Getting Started
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-foreground">
+                1. Set Up Your Inventory
+              </h3>
+              <p className="text-muted-foreground">
+                Begin by adding your products and setting up your initial
+                inventory levels.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-foreground">
+                2. Configure Settings
+              </h3>
+              <p className="text-muted-foreground">
+                Customize your preferences and set up alerts for important
+                inventory events.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-foreground">
+                3. Invite Your Team
+              </h3>
+              <p className="text-muted-foreground">
+                Add team members and assign roles to start collaborating on
+                inventory management.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
