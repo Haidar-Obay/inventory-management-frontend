@@ -84,5 +84,89 @@ export const importProjectsFromExcel = async (file) => {
   }
 };
 
+// Cost Center API functions
+export const getCostCenters = async () => {
+  try {
+    const response = await tenantApiService('GET', 'cost-centers');
+    return response;
+  } catch (error) {
+    console.error('Error fetching cost centers:', error);
+    throw error;
+  }
+};
+
+export const getCostCenterById = async (id) => {
+  try {
+    const response = await tenantApiService('GET', `cost-centers/${id}`);
+    return response;
+  } catch (error) {
+    console.error('Error fetching cost center:', error);
+    throw error;
+  }
+};
+
+export const createCostCenter = async (data) => {
+  try {
+    const response = await tenantApiService('POST', 'cost-centers', data);
+    return response;
+  } catch (error) {
+    console.error('Error creating cost center:', error);
+    throw error;
+  }
+};
+
+export const editCostCenter = async (id, data) => {
+  try {
+    const response = await tenantApiService('PUT', `cost-centers/${id}`, data);
+    return response;
+  } catch (error) {
+    console.error('Error editing cost center:', error);
+    throw error;
+  }
+};
+
+export const deleteCostCenter = async (id) => {
+  try {
+    const response = await tenantApiService('DELETE', `cost-centers/${id}`);
+    return response;
+  } catch (error) {
+    console.error('Error deleting cost center:', error);
+    throw error;
+  }
+};
+
+export const exportCostCentersToExcel = async () => {
+  try {
+    const response = await tenantApiService('GET', 'exportExcell/cost-centers');
+    return response;
+  } catch (error) {
+    console.error('Error exporting cost centers to Excel:', error);
+    throw error;
+  }
+};
+
+export const exportCostCentersToPdf = async () => {
+  try {
+    const response = await tenantApiService('GET', 'exportPdf/cost-centers');
+    return response;
+  } catch (error) {
+    console.error('Error exporting cost centers to PDF:', error);
+    throw error;
+  }
+};
+
+export const importCostCentersFromExcel = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await tenantApiService('POST', 'importFromExcel/cost-centers', formData);
+    return response;
+  } catch (error) {
+    console.error('Error importing cost centers from Excel:', error);
+    throw error;
+  }
+};
+
 
 

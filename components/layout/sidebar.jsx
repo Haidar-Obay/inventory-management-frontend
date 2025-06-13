@@ -259,6 +259,7 @@ const GroupItems = ({ groupItems, isCollapsed, activeItem, bookmarks, handleNavi
 // Component for rendering nested groups
 const NestedGroup = ({ item, isCollapsed, activeItem, bookmarks, onNavigate, onToggleBookmark, padding = "px-8" }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeSubmenu, setActiveSubmenu] = useState(null);
   const Icon = iconMap[item.icon];
   const isPopover = item.displayType === "popover";
 
@@ -291,11 +292,67 @@ const NestedGroup = ({ item, isCollapsed, activeItem, bookmarks, onNavigate, onT
           onCloseAutoFocus={(e) => {
             e.preventDefault();
             setIsOpen(false);
+            setActiveSubmenu(null);
           }}
         >
           <div className="space-y-1">
             {item.items.map((subItem) => {
               const SubIcon = iconMap[subItem.icon];
+              
+              // If the subItem is a group, create a button that shows its items
+              if (subItem.type === "group") {
+                return (
+                  <div key={subItem.name} className="relative">
+                    <button
+                      className={cn(
+                        "flex items-center gap-2 w-full text-[15px] font-medium hover:bg-primary-foreground/10 p-2 rounded-md",
+                        "px-2",
+                        activeSubmenu === subItem.name && "bg-primary-foreground/10"
+                      )}
+                      onMouseEnter={() => setActiveSubmenu(subItem.name)}
+                      onMouseLeave={() => setActiveSubmenu(null)}
+                    >
+                      <SubIcon className="h-5 w-5" />
+                      <span>{subItem.name}</span>
+                      <ChevronRight className="h-4 w-4 ml-auto" />
+                    </button>
+                    
+                    {/* Show nested items when this group is active */}
+                    {activeSubmenu === subItem.name && (
+                      <div className="absolute left-full top-0 w-56 p-2 bg-primary text-primary-foreground border border-primary-foreground/10 rounded-md shadow-lg">
+                        <div className="space-y-1">
+                          {subItem.items.map((nestedItem) => {
+                            const NestedIcon = iconMap[nestedItem.icon];
+                            return (
+                              <SidebarItem
+                                key={nestedItem.name}
+                                name={nestedItem.name}
+                                icon={NestedIcon}
+                                path={nestedItem.path}
+                                isCollapsed={false}
+                                isBookmarked={bookmarks.includes(nestedItem.name)}
+                                isActive={activeItem === nestedItem.name.toLowerCase()}
+                                onNavigate={() => {
+                                  onNavigate(nestedItem.name);
+                                  setIsOpen(false);
+                                  setActiveSubmenu(null);
+                                }}
+                                onToggleBookmark={() => {
+                                  onToggleBookmark(nestedItem.name);
+                                }}
+                                padding="px-2"
+                                className="whitespace-nowrap"
+                              />
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+              
+              // Regular menu item
               return (
                 <SidebarItem
                   key={subItem.name}

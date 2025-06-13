@@ -14,6 +14,13 @@ import {
   exportProjectsToExcel,
   exportProjectsToPdf,  
   importProjectsFromExcel,
+  getCostCenters,
+  createCostCenter,
+  editCostCenter,
+  deleteCostCenter,
+  exportCostCentersToExcel,
+  exportCostCentersToPdf,
+  importCostCentersFromExcel,
 } from "@/API/Sections";
 import { projectColumns, costCenterColumns, departmentColumns, tradesColumns, companyCodesColumns, jobsColumns } from "@/constants/tableColumns";
 
@@ -202,9 +209,9 @@ function SectionsPage() {
     },
     costCenter: {
       setData: setCostCentersData,
-      deleteFn: async () => ({ status: true }),
-      editFn: async () => ({ status: true }),
-      createFn: async () => ({ status: true, data: {} }),
+      deleteFn: deleteCostCenter,
+      editFn: editCostCenter,
+      createFn: createCostCenter,
     },
     department: {
       setData: setDepartmentsData,
@@ -233,7 +240,14 @@ function SectionsPage() {
   };
 
   const handleEdit = (type, row) => {
-    setFormData({ id: row.id, name: row.name });
+    setFormData({
+      id: row.id,
+      name: row.name,
+      start_date: row.start_date ? new Date(row.start_date) : null,
+      end_date: row.end_date ? new Date(row.end_date) : null,
+      expected_date: row.expected_date ? new Date(row.expected_date) : null,
+      customer_id: row.customer_id || ''
+    });
     setActiveDrawerType(type);
     setIsEditMode(true);
     setIsDrawerOpen(true);
@@ -250,13 +264,13 @@ function SectionsPage() {
         }));
         toast.success({
           title: "Success",
-          description: `${type} deleted successfully`,
+          description: response.message || `${type} deleted successfully`,
         });
       }
     } catch (error) {
       toast.error({
         title: "Error",
-        description: error.message || `Failed to delete ${type}`,
+        description:  `Failed to delete ${type} , delete ${type} from other tables first` || error.message
       });
     }
   };
@@ -288,23 +302,33 @@ function SectionsPage() {
       if (isEditMode) {
         response = await handler.editFn(formData.id, formData);
         if (response.status) {
-          handler.setData(prev => 
-            prev.map(item => item.id === formData.id ? { ...item, ...formData } : item)
+          entityHandlers[type].setData(prev => 
+            prev.map(item => item.id === formData.id ? response.data : item)
           );
+          setDataFetched(prev => ({
+            ...prev,
+            [type]: false
+          }));
+          toast.success({
+            title: "Success",
+            description: response.message || `${type} updated successfully`,
+          });
+          handleCloseDrawer();
         }
       } else {
         response = await handler.createFn(formData);
         if (response.status) {
-          handler.setData(prev => [...prev, response.data]);
+          entityHandlers[type].setData(prev => [...prev, response.data]);
+          setDataFetched(prev => ({
+            ...prev,
+            [type]: false
+          }));
+          toast.success({
+            title: "Success",
+            description: response.message || `${type} created successfully`,
+          });
+          handleCloseDrawer();
         }
-      }
-  
-      if (response.status) {
-        toast.success({
-          title: "Success",
-          description: `${type} ${isEditMode ? "updated" : "created"} successfully`,
-        });
-        setIsEditMode(false);
       }
     } catch (error) {
       toast.error({
@@ -334,6 +358,9 @@ function SectionsPage() {
       switch (type) {
         case 'project':
           response = await exportProjectsToExcel();
+          break;
+        case 'costCenter':
+          response = await exportCostCentersToExcel();
           break;
         // Add other cases as they are implemented
         default:
@@ -368,6 +395,9 @@ function SectionsPage() {
         case 'project':
           response = await exportProjectsToPdf();
           break;
+        case 'costCenter':
+          response = await exportCostCentersToPdf();
+          break;
         // Add other cases as they are implemented
         default:
           return;
@@ -400,6 +430,9 @@ function SectionsPage() {
       switch (type) {
         case 'project':
           response = await importProjectsFromExcel(file);
+          break;
+        case 'costCenter':
+          response = await importCostCentersFromExcel(file);
           break;
         // Add other cases as they are implemented
         default:

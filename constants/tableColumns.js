@@ -33,8 +33,12 @@ export const districtColumns = [
 export const projectColumns = [
   { header: "ID", key: "id" },
   { header: "Name", key: "name" },
-  { header: "Description", key: "description" },
-  { header: "Actions", key: "actions" }
+  { header: "Start Date", key: "start_date", type: "date" },
+  { header: "End Date", key: "end_date", type: "date" },
+  { header: "Expected Date", key: "expected_date", type: "date" },
+  { header: "Customer ID", key: "customer_id", type: "text" },
+  { header: "Created At", key: "created_at", type: "date" },
+  { header: "Updated At", key: "updated_at", type: "date" }
 ];
 
 export const costCenterColumns = [
