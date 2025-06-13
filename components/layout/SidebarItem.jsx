@@ -18,6 +18,7 @@ export function SidebarItem({
   onToggleBookmark,
   padding = "px-3",
   className,
+  t,
 }) {
   const params = useParams()
   const route = params?.route
@@ -35,6 +36,8 @@ export function SidebarItem({
     return `/${route}/${path}`;
   }
 
+  const label = t ? t(name) : name;
+
   if (isCollapsed) {
     return (
       <Tooltip>
@@ -47,7 +50,7 @@ export function SidebarItem({
             <Icon className="h-4 w-4" />
           </Link>
         </TooltipTrigger>
-        <TooltipContent side="right">{name}</TooltipContent>
+        <TooltipContent side="right">{label}</TooltipContent>
       </Tooltip>
     )
   }
@@ -64,7 +67,7 @@ export function SidebarItem({
         onClick={() => onNavigate && onNavigate(name)}
       >
         <Icon className="h-4 w-4" />
-        <span className="whitespace-nowrap">{name}</span>
+        <span className="whitespace-nowrap">{label}</span>
       </Link>
       {onToggleBookmark && (
         <Button

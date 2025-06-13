@@ -1,4 +1,4 @@
-import { ThemeProvider } from "@/lib/themes/theme-provider"
+import { ThemeProvider } from "@/lib/themes/theme-provider";
 import { MUIThemeWrapper } from "@/lib/themes/mui-theme-provider";
 import { SimpleToastProvider } from "@/components/ui/simple-toast";
 import { ToastSetup } from "@/components/ui/toast-provider";
@@ -10,19 +10,24 @@ const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-inter",
-})
+});
 
 export const metadata = {
-  title: 'Inventory Management System',
-  description: 'An inventory management system',
+  title: "Inventory Management System",
+  description: "An inventory management system",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html suppressHydrationWarning>
       <body className={`${inter.variable} ${inter.className}`}>
         <SimpleToastProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
             <MUIThemeWrapper>
               <ToastSetup />
               {children}
@@ -32,4 +37,4 @@ export default function RootLayout({ children }) {
       </body>
     </html>
   );
-} 
+}
