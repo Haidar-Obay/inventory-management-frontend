@@ -1,7 +1,6 @@
-import { useTranslations } from "next-intl";
+"use client";
 
-export function useMenuItems() {
-  const t = useTranslations("sidebar");
+export function useMenuItems(t) {
   return {
     [t("dashboard")]: {
       groupIcon: "LayoutDashboard",
@@ -10,19 +9,19 @@ export function useMenuItems() {
         {
           name: t("overview"),
           icon: "Home",
-          path: "/tenant/main/dashboard/overview",
+          path: "/main/dashboard/overview",
           roles: ["admin", "user", "owner"],
         },
         {
           name: t("analytics"),
           icon: "BarChart3",
-          path: "/tenant/main/dashboard/analytics",
+          path: "/main/dashboard/analytics",
           roles: ["admin", "user", "owner"],
         },
         {
           name: t("reports"),
           icon: "FileText",
-          path: "/tenant/main/dashboard/reports",
+          path: "/main/dashboard/reports",
           roles: ["admin", "user", "owner"],
         },
       ],
@@ -36,27 +35,31 @@ export function useMenuItems() {
           icon: "MapPin",
           type: "group",
           displayType: "popover",
-          roles: ["admin", "owner"],
+          roles: ["admin", "user", "owner"],
           items: [
             {
               name: t("countries"),
               icon: "Flag",
-              path: "/tenant/main/mainfiles/addresscodes?tab=0",
+              path: "/main/mainfiles/addresscodes?tab=0",
+              roles: ["admin", "user", "owner"],
             },
             {
               name: t("provinces"),
               icon: "Flag",
-              path: "/tenant/main/mainfiles/addresscodes?tab=1",
+              path: "/main/mainfiles/addresscodes?tab=1",
+              roles: ["admin", "user", "owner"],
             },
             {
               name: t("cities"),
               icon: "Flag",
-              path: "/tenant/main/mainfiles/addresscodes?tab=2",
+              path: "/main/mainfiles/addresscodes?tab=2",
+              roles: ["admin", "user", "owner"],
             },
             {
               name: t("districts"),
               icon: "Flag",
-              path: "/tenant/main/mainfiles/addresscodes?tab=3",
+              path: "/main/mainfiles/addresscodes?tab=3",
+              roles: ["admin", "user", "owner"],
             },
           ],
         },
@@ -65,37 +68,43 @@ export function useMenuItems() {
           icon: "Waypoints",
           type: "group",
           displayType: "popover",
-          roles: ["admin", "owner"],
+          roles: ["admin", "user", "owner"],
           items: [
             {
               name: t("project"),
               icon: "Presentation",
-              path: "/tenant/main/mainfiles/sections?tab=0",
+              path: "/main/mainfiles/sections?tab=0",
+              roles: ["admin", "user", "owner"],
             },
             {
               name: t("costCenter"),
               icon: "HandCoins",
-              path: "/tenant/main/mainfiles/sections?tab=1",
+              path: "/main/mainfiles/sections?tab=1",
+              roles: ["admin", "user", "owner"],
             },
             {
               name: t("department"),
               icon: "Building2",
-              path: "/tenant/main/mainfiles/sections?tab=2",
+              path: "/main/mainfiles/sections?tab=2",
+              roles: ["admin", "user", "owner"],
             },
             {
               name: t("trades"),
               icon: "Wrench",
-              path: "/tenant/main/mainfiles/sections?tab=3",
+              path: "/main/mainfiles/sections?tab=3",
+              roles: ["admin", "user", "owner"],
             },
             {
               name: t("companyCodes"),
               icon: "Building",
-              path: "/tenant/main/mainfiles/sections?tab=4",
+              path: "/main/mainfiles/sections?tab=4",
+              roles: ["admin", "user", "owner"],
             },
             {
               name: t("jobs"),
               icon: "Briefcase",
-              path: "/tenant/main/mainfiles/sections?tab=5",
+              path: "/main/mainfiles/sections?tab=5",
+              roles: ["admin", "user", "owner"],
             },
           ],
         },
@@ -104,20 +113,32 @@ export function useMenuItems() {
           icon: "ShoppingBasket",
           type: "group",
           displayType: "popover",
-          roles: ["admin", "owner"],
+          roles: ["admin", "user", "owner"],
           items: [
             {
               name: t("productLines"),
               icon: "PackageSearch",
-              path: "/tenant/main/items/product-lines",
+              path: "/main/items/product-lines",
+              roles: ["admin", "user", "owner"],
             },
             {
               name: t("categories"),
               icon: "ChartBarStacked",
-              path: "/tenant/main/items/categories",
+              path: "/main/items/categories",
+              roles: ["admin", "user", "owner"],
             },
-            { name: t("brands"), icon: "Tag", path: "main/items/brands" },
-            { name: t("items"), icon: "Package", path: "main/items/items" },
+            {
+              name: t("brands"),
+              icon: "Tag",
+              path: "main/items/brands",
+              roles: ["admin", "user", "owner"],
+            },
+            {
+              name: t("items"),
+              icon: "Package",
+              path: "main/items/items",
+              roles: ["admin", "user", "owner"],
+            },
           ],
         },
         {
@@ -125,22 +146,25 @@ export function useMenuItems() {
           icon: "Users",
           type: "group",
           displayType: "popover",
-          roles: ["admin", "owner"],
+          roles: ["admin", "user", "owner"],
           items: [
             {
               name: t("customerGroup"),
               icon: "UserCog",
-              path: "/tenant/main/customer/customer-group",
+              path: "/main/customer/customer-group",
+              roles: ["admin", "user", "owner"],
             },
             {
               name: t("salesmen"),
               icon: "UserCheck",
-              path: "/tenant/main/customer/salesmen",
+              path: "/main/customer/salesmen",
+              roles: ["admin", "user", "owner"],
             },
             {
               name: t("customer"),
               icon: "Users",
               path: "main/customer/customer",
+              roles: ["admin", "user", "owner"],
             },
           ],
         },
@@ -149,17 +173,19 @@ export function useMenuItems() {
           icon: "Truck",
           type: "group",
           displayType: "popover",
-          roles: ["admin", "owner"],
+          roles: ["admin", "user", "owner"],
           items: [
             {
               name: t("supplierGroup"),
               icon: "Users",
-              path: "/tenant/main/supplier/supplier-group",
+              path: "/main/supplier/supplier-group",
+              roles: ["admin", "user", "owner"],
             },
             {
               name: t("suppliers"),
               icon: "Truck",
-              path: "/tenant/main/supplier/suppliers",
+              path: "/rs",
+              roles: ["admin", "user", "owner"],
             },
           ],
         },
@@ -173,19 +199,19 @@ export function useMenuItems() {
     [t("settings")]: {
       groupIcon: "Settings",
       displayType: "popover",
-      roles: ["admin", "owner"],
+      roles: ["admin", "user", "owner"],
       items: [
         {
           name: t("userManagement"),
           icon: "Users",
-          path: "/tenant/main/settings/users",
-          roles: ["admin"],
+          path: "/main/settings/users",
+          roles: ["admin", "user", "owner"],
         },
         {
           name: t("systemSettings"),
           icon: "Settings",
-          path: "/tenant//main/settings/system",
-          roles: ["admin", "owner"],
+          path: "/main/settings/system",
+          roles: ["admin", "user", "owner"],
         },
       ],
     },
@@ -196,13 +222,13 @@ export function useMenuItems() {
         {
           name: t("helpCenter"),
           icon: "LifeBuoy",
-          path: "/tenant/main/support/help",
+          path: "/main/support/help",
           roles: ["admin", "user", "owner"],
         },
         {
           name: t("contactSupport"),
           icon: "Mail",
-          path: "/tenant/main/support/contact",
+          path: "/main/support/contact",
           roles: ["admin", "user", "owner"],
         },
       ],

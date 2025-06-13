@@ -17,6 +17,24 @@
     "notificationsRead": "All notifications marked as read",
     "notificationsCleared": "All notifications cleared"
   },
+  "toast": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information",
+    "close": "Close",
+    "searchInitiated": "Search initiated",
+    "searchingFor": "Searching for",
+    "notificationsRead": "All notifications marked as read",
+    "notificationsCleared": "All notifications cleared",
+    "languageChanged": "Language changed to",
+    "notifications": "Notifications",
+    "dataFetchedSuccessfully": "Data fetched successfully",
+    "failedToFetchData": "Failed to fetch data",
+    "sidebarInfo": "Sidebar info message.",
+    "sidebarSuccess": "Sidebar action was successful.",
+    "sidebarError": "Sidebar action failed."
+  },
   "login": {
     "title": "Sign in to your account",
     "subtitle": "Enter your credentials to access your dashboard",
@@ -99,6 +117,8 @@
     "step3Desc": "Add team members and assign roles to start collaborating on inventory management."
   },
   "sidebar": {
+    "bookmarks": "Bookmarks",
+    "clearAll": "Clear All",
     "dashboard": "Dashboard",
     "overview": "Overview",
     "analytics": "Analytics",
@@ -132,6 +152,7 @@
     "systemSettings": "System Settings",
     "support": "Support",
     "helpCenter": "Help Center",
-    "contactSupport": "Contact Support"
+    "contactSupport": "Contact Support",
+    "logout": "Log out"
   }
 }

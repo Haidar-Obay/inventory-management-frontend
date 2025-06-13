@@ -36,7 +36,8 @@ export function SidebarItem({
     return `/${route}/${path}`;
   }
 
-  const label = t ? t(name) : name;
+  // Use the name directly since it's already translated from the menu items
+  const label = name;
 
   if (isCollapsed) {
     return (

@@ -132,6 +132,32 @@
     "systemSettings": "إعدادات النظام",
     "support": "الدعم",
     "helpCenter": "مركز المساعدة",
-    "contactSupport": "اتصل بالدعم"
+    "contactSupport": "اتصل بالدعم",
+    "bookmarks": "الإشارات المرجعية",
+    "clearAll": "مسح الكل",
+    "addBookmark": "إضافة إشارة مرجعية",
+    "removeBookmark": "إزالة الإشارة المرجعية",
+    "bookmarkAdded": "تمت إضافة الإشارة المرجعية",
+    "bookmarkRemoved": "تمت إزالة الإشارة المرجعية",
+    "bookmarksCleared": "تم مسح جميع الإشارات المرجعية",
+    "logout": "تسجيل الخروج"
+  },
+  "toast": {
+    "success": "نجاح",
+    "error": "خطأ",
+    "warning": "تحذير",
+    "info": "معلومات",
+    "close": "إغلاق",
+    "searchInitiated": "تم بدء البحث",
+    "searchingFor": "جاري البحث عن",
+    "notificationsRead": "تم تحديد جميع الإشعارات كمقروءة",
+    "notificationsCleared": "تم مسح جميع الإشعارات",
+    "languageChanged": "تم تغيير اللغة إلى",
+    "notifications": "الإشعارات",
+    "dataFetchedSuccessfully": "تم جلب البيانات بنجاح",
+    "failedToFetchData": "فشل في جلب البيانات",
+    "sidebarInfo": "رسالة معلومات الشريط الجانبي.",
+    "sidebarSuccess": "تمت العملية بنجاح في الشريط الجانبي.",
+    "sidebarError": "فشلت العملية في الشريط الجانبي."
   }
 }

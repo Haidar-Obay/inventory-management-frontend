@@ -60,6 +60,7 @@ import {
 
 import tenantApiService from "@/API/TenantApiService";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 // Icon mapping for menu items
 const iconMap = {
@@ -93,6 +94,27 @@ const iconMap = {
   Briefcase,
 };
 
+// Helper function to get all menu items
+const GetAllMenuItems = () => {
+  const t = useTranslations("sidebar");
+
+  const getAllNestedItems = (items) => {
+    return items.reduce((acc, item) => {
+      if (item.type === "group" && item.items) {
+        return [...acc, ...getAllNestedItems(item.items)];
+      }
+      return [...acc, item];
+    }, []);
+  };
+
+  return Object.values(useMenuItems(t)).flatMap((group) => {
+    if (group.items) {
+      return getAllNestedItems(group.items);
+    }
+    return [];
+  });
+};
+
 // Component for rendering bookmarks section
 const BookmarksSection = ({
   bookmarks,
@@ -104,6 +126,9 @@ const BookmarksSection = ({
   t,
 }) => {
   if (bookmarks.length === 0) return null;
+
+  // Use the GetAllMenuItems component
+  const allItems = GetAllMenuItems();
 
   return (
     <div className="mb-4">
@@ -125,7 +150,6 @@ const BookmarksSection = ({
       </div>
       <ul className="space-y-1">
         {bookmarks.map((bookmark) => {
-          const allItems = getAllMenuItems();
           const item = allItems.find((i) => i.name === bookmark);
           if (!item) return null;
 
@@ -315,72 +339,74 @@ const NestedGroup = ({
   const Icon = iconMap[item.icon];
   const isPopover = item.displayType === "popover";
 
-  if (isPopover) {
-    return (
-      <Popover>
-        <PopoverTrigger asChild>
-          <button
-            className={cn(
-              "flex items-center gap-2 w-full text-[15px] font-medium hover:bg-primary-foreground/10 p-2 rounded-md",
-              padding
-            )}
-          >
-            <Icon className="h-5 w-5" />
-            <span>{item.name}</span>
-            <ChevronRight
-              className={cn(
-                "h-4 w-4 ml-auto transition-transform",
-                isOpen ? "rotate-180" : ""
-              )}
-            />
-          </button>
-        </PopoverTrigger>
-        <PopoverContent
-          side="right"
-          align="start"
-          className="w-56 p-2 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
-          sideOffset={-10}
-          onOpenAutoFocus={(e) => {
-            e.preventDefault();
-            setIsOpen(true);
-          }}
-          onCloseAutoFocus={(e) => {
-            e.preventDefault();
-            setIsOpen(false);
-          }}
-        >
-          <div className="space-y-1">
-            {item.items.map((subItem) => {
-              const SubIcon = iconMap[subItem.icon];
-              return (
-                <SidebarItem
-                  key={subItem.name}
-                  name={subItem.name}
-                  icon={SubIcon}
-                  path={subItem.path}
-                  isCollapsed={false}
-                  isBookmarked={bookmarks.includes(subItem.name)}
-                  isActive={activeItem === subItem.name.toLowerCase()}
-                  onNavigate={() => {
-                    onNavigate(subItem.name);
-                    setIsOpen(false);
-                  }}
-                  onToggleBookmark={() => {
-                    onToggleBookmark(subItem.name);
-                  }}
-                  padding="px-2"
-                  className="whitespace-nowrap"
-                  t={t}
-                />
-              );
-            })}
-          </div>
-        </PopoverContent>
-      </Popover>
-    );
-  }
+  const handlePopoverOpen = (e) => {
+    e.preventDefault();
+    setIsOpen(true);
+  };
 
-  return (
+  const handlePopoverClose = (e) => {
+    e.preventDefault();
+    setIsOpen(false);
+  };
+
+  const handleNavigate = (itemName) => {
+    onNavigate(itemName);
+    setIsOpen(false);
+  };
+
+  const renderPopover = () => (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          className={cn(
+            "flex items-center gap-2 w-full text-[15px] font-medium hover:bg-primary-foreground/10 p-2 rounded-md",
+            padding
+          )}
+        >
+          <Icon className="h-5 w-5" />
+          <span>{item.name}</span>
+          <ChevronRight
+            className={cn(
+              "h-4 w-4 ml-auto transition-transform",
+              isOpen ? "rotate-180" : ""
+            )}
+          />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        side="right"
+        align="start"
+        className="w-56 p-2 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
+        sideOffset={-10}
+        onOpenAutoFocus={handlePopoverOpen}
+        onCloseAutoFocus={handlePopoverClose}
+      >
+        <div className="space-y-1">
+          {item.items.map((subItem) => {
+            const SubIcon = iconMap[subItem.icon];
+            return (
+              <SidebarItem
+                key={subItem.name}
+                name={subItem.name}
+                icon={SubIcon}
+                path={subItem.path}
+                isCollapsed={false}
+                isBookmarked={bookmarks.includes(subItem.name)}
+                isActive={activeItem === subItem.name.toLowerCase()}
+                onNavigate={() => handleNavigate(subItem.name)}
+                onToggleBookmark={() => onToggleBookmark(subItem.name)}
+                padding="px-2"
+                className="whitespace-nowrap"
+                t={t}
+              />
+            );
+          })}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+
+  const renderCollapsible = () => (
     <div>
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -423,6 +449,8 @@ const NestedGroup = ({
       )}
     </div>
   );
+
+  return isPopover ? renderPopover() : renderCollapsible();
 };
 
 // Component for rendering support section
@@ -443,11 +471,11 @@ const SupportSection = ({
     <>
       <div className="border-t border-primary-foreground/10 my-4"></div>
       <div className={cn("px-4 mb-2", isCollapsed && "mb-6")}>
-        {!isCollapsed && (
+        {/* {!isCollapsed && (
           <h3 className="text-[15px] font-medium p-2 bg-primary-foreground/5 rounded-md">
             Support
           </h3>
-        )}
+        )} */}
         {isCollapsed && (
           <Tooltip>
             <TooltipTrigger asChild>
@@ -492,37 +520,14 @@ const SupportSection = ({
   );
 };
 
-// Helper function to get all menu items
-const getAllMenuItems = () => {
-  const getAllNestedItems = (items) => {
-    return items.reduce((acc, item) => {
-      if (item.type === "group" && item.items) {
-        return [...acc, ...getAllNestedItems(item.items)];
-      }
-      return [...acc, item];
-    }, []);
-  };
-
-  return Object.values(useMenuItems()).flatMap((group) => {
-    if (group.items) {
-      return getAllNestedItems(group.items);
-    }
-    return [];
-  });
-};
-
 export function Sidebar({ isCollapsed, toggleSidebar }) {
+  const t = useTranslations("sidebar");
   const router = useRouter();
-  const menuItems = useMenuItems();
   const [bookmarks, setBookmarks] = useState([]);
-  const [activeItem, setActiveItem] = useState("dashboard");
-  const [openGroups, setOpenGroups] = useState({
-    dashboard: true,
-    management: false,
-    settings: false,
-    testing: false,
-  });
-  const [userRole, setUserRole] = useState(null);
+  const [activeItem, setActiveItem] = useState("");
+  const [expandedGroups, setExpandedGroups] = useState({});
+  const [userRole, setUserRole] = useState("user");
+  const menuItems = useMenuItems(t);
 
   useEffect(() => {
     // Load bookmarks from localStorage
@@ -531,7 +536,7 @@ export function Sidebar({ isCollapsed, toggleSidebar }) {
       setBookmarks(JSON.parse(storedBookmarks));
     }
 
-    // Get user role from cookies
+    // Set default role to "user" if no role is found in cookies
     const getRoleFromCookies = () => {
       const cookies = document.cookie.split(";");
       const roleCookie = cookies.find((cookie) =>
@@ -540,19 +545,21 @@ export function Sidebar({ isCollapsed, toggleSidebar }) {
       if (roleCookie) {
         const role = roleCookie.split("=")[1];
         setUserRole(role);
+      } else {
+        setUserRole("user"); // Set default role if none found
       }
     };
 
     getRoleFromCookies();
 
-    // Initialize openGroups state for all menu categories
+    // Initialize expandedGroups state for all menu categories
     const groupKeys = Object.keys(menuItems).filter((key) => key !== "support");
-    const initialOpenGroups = groupKeys.reduce((acc, key) => {
-      acc[key] = key === "dashboard"; // Only dashboard is open by default
+    const initialExpandedGroups = groupKeys.reduce((acc, key) => {
+      acc[key] = true; // Expand all groups by default
       return acc;
     }, {});
 
-    setOpenGroups(initialOpenGroups);
+    setExpandedGroups(initialExpandedGroups);
   }, []);
 
   const toggleBookmark = (item) => {
@@ -560,16 +567,16 @@ export function Sidebar({ isCollapsed, toggleSidebar }) {
     if (bookmarks.includes(item)) {
       newBookmarks = bookmarks.filter((b) => b !== item);
       toast.info({
-        title: "Bookmark Removed",
-        description: `${item} has been removed from bookmarks`,
-        duration: 3000,
+        title: "info",
+        description: "sidebarInfo",
+        isTranslated: true,
       });
     } else {
       newBookmarks = [...bookmarks, item];
       toast.info({
-        title: "Bookmark Added",
-        description: `${item} has been added to bookmarks`,
-        duration: 3000,
+        title: "info",
+        description: "sidebarInfo",
+        isTranslated: true,
       });
     }
     setBookmarks(newBookmarks);
@@ -577,22 +584,22 @@ export function Sidebar({ isCollapsed, toggleSidebar }) {
   };
 
   const toggleGroup = (group) => {
-    setOpenGroups({
-      ...openGroups,
-      [group]: !openGroups[group],
+    setExpandedGroups({
+      ...expandedGroups,
+      [group]: !expandedGroups[group],
     });
 
     // If sidebar is collapsed, expand it when clicking a group
     if (isCollapsed) {
       toggleSidebar();
 
-      // Set all groups to closed except the clicked one
+      // Set all groups to collapsed except the clicked one
       const updatedGroups = {};
-      Object.keys(openGroups).forEach((key) => {
+      Object.keys(expandedGroups).forEach((key) => {
         updatedGroups[key] = key === group;
       });
 
-      setOpenGroups(updatedGroups);
+      setExpandedGroups(updatedGroups);
     }
   };
 
@@ -602,9 +609,9 @@ export function Sidebar({ isCollapsed, toggleSidebar }) {
     // Show navigation toast only in collapsed mode to provide feedback
     if (isCollapsed) {
       toast.info({
-        title: "Navigating",
-        description: `Going to ${itemName}`,
-        duration: 2000,
+        title: "info",
+        description: "sidebarInfo",
+        isTranslated: true,
       });
     }
   };
@@ -630,9 +637,9 @@ export function Sidebar({ isCollapsed, toggleSidebar }) {
       clearCookies();
 
       toast.success({
-        title: "Logged Out",
-        description: "You have been logged out of the system",
-        duration: 3000,
+        title: "success",
+        description: "sidebarSuccess",
+        isTranslated: true,
       });
 
       router.push("/login");
@@ -641,9 +648,9 @@ export function Sidebar({ isCollapsed, toggleSidebar }) {
       // Even if API call fails, clear cookies and redirect
       clearCookies();
       toast.error({
-        title: "Logout Failed",
-        description: "There was an error logging out. Please try again.",
-        duration: 3000,
+        title: "error",
+        description: "sidebarError",
+        isTranslated: true,
       });
       router.push("/login");
     }
@@ -668,9 +675,9 @@ export function Sidebar({ isCollapsed, toggleSidebar }) {
   const clearAllBookmarks = () => {
     if (bookmarks.length === 0) {
       toast.info({
-        title: "No Bookmarks",
-        description: "You don't have any bookmarks to clear",
-        duration: 3000,
+        title: "info",
+        description: "sidebarInfo",
+        isTranslated: true,
       });
       return;
     }
@@ -678,30 +685,22 @@ export function Sidebar({ isCollapsed, toggleSidebar }) {
     setBookmarks([]);
     localStorage.removeItem("sidebarBookmarks");
     toast.info({
-      title: "Bookmarks Cleared",
-      description: "All your bookmarks have been removed",
-      duration: 3000,
+      title: "info",
+      description: "sidebarInfo",
+      isTranslated: true,
     });
   };
 
   // Filter items based on user role
   const filterItemsByRole = (items) => {
-    if (!userRole) return items; // If no role is set, show all items
-
-    return items.filter((item) => {
-      // If item has no role restrictions, show it
-      if (!item.roles) return true;
-
-      // If item has role restrictions, check if user's role is allowed
-      return item.roles.includes(userRole);
-    });
+    return items; // Show all items regardless of role
   };
 
   return (
     <TooltipProvider delayDuration={600}>
       <aside
         className={cn(
-          "bg-primary text-primary-foreground h-screen fixed left-0 top-0 z-20 flex flex-col",
+          "bg-primary text-primary-foreground h-full flex flex-col",
           isCollapsed ? "sidebar-collapsed" : "sidebar-expanded"
         )}
       >
@@ -731,6 +730,7 @@ export function Sidebar({ isCollapsed, toggleSidebar }) {
             handleNavigation={handleNavigation}
             activeItem={activeItem}
             iconMap={iconMap}
+            t={t}
           />
 
           {/* Dynamic Menu Groups */}
@@ -800,7 +800,7 @@ export function Sidebar({ isCollapsed, toggleSidebar }) {
                   <LogOut className="h-5 w-5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="right">Log out</TooltipContent>
+              <TooltipContent side="right">{t("logout")}</TooltipContent>
             </Tooltip>
           ) : (
             <Button
@@ -809,7 +809,7 @@ export function Sidebar({ isCollapsed, toggleSidebar }) {
               onClick={handleLogout}
             >
               <LogOut className="h-5 w-5 mr-2" />
-              Log out
+              {t("logout")}
             </Button>
           )}
         </div>

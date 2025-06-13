@@ -109,7 +109,7 @@ export default function TenantLogin() {
         Cookies.set(TENANT_TOKEN_KEY, response.access_token, { expires: 7 });
         setLoginSuccess(true);
         setTimeout(() => {
-          router.push("/tenant/dashboard");
+          router.push("/main/dashboard/overview");
         }, 2000);
       }
     } catch (err) {

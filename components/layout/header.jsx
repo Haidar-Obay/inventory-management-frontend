@@ -133,12 +133,13 @@ const LanguageSelector = () => {
   const t = useTranslations("header");
 
   const languages = [
-    { code: "en", name: "English", flag: "🇺🇸" },
-    { code: "ar", name: "العربية", flag: "🇸🇦" },
+    { code: "en", name: "English", direction: "ltr" },
+    { code: "ar", name: "العربية", direction: "rtl" },
   ];
 
   const changeLanguage = (language) => {
     const newPath = pathname.replace(`/${currentLocale}`, `/${language.code}`);
+    document.documentElement.dir = language.direction;
     router.push(newPath);
   };
 
@@ -223,9 +224,10 @@ export function Header({ toggleSidebar }) {
     e.preventDefault();
     if (searchQuery.trim()) {
       toast.info({
-        title: t("searchInitiated"),
-        description: t("searchingFor", { query: searchQuery }),
+        title: "searchInitiated",
+        description: "searchingFor",
         duration: 3000,
+        isTranslated: true,
       });
     }
   };
@@ -233,18 +235,18 @@ export function Header({ toggleSidebar }) {
   const markAllAsRead = () => {
     setNotifications(notifications.map((n) => ({ ...n, read: true })));
     toast.success({
-      title: t("notifications"),
-      description: t("allMarkedAsRead"),
+      title: "notificationsRead",
       duration: 3000,
+      isTranslated: true,
     });
   };
 
   const clearNotifications = () => {
     setNotifications([]);
     toast.info({
-      title: t("notifications"),
-      description: t("allCleared"),
+      title: "notificationsCleared",
       duration: 3000,
+      isTranslated: true,
     });
   };
 

@@ -12,11 +12,17 @@ import {
   editProject,
   deleteProject,
   exportProjectsToExcel,
-  exportProjectsToPdf,  
+  exportProjectsToPdf,
   importProjectsFromExcel,
 } from "@/API/Sections";
-import { projectColumns, costCenterColumns, departmentColumns, tradesColumns, companyCodesColumns, jobsColumns } from "@/constants/tableColumns";
-
+import {
+  projectColumns,
+  costCenterColumns,
+  departmentColumns,
+  tradesColumns,
+  companyCodesColumns,
+  jobsColumns,
+} from "@/constants/tableColumns";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -74,7 +80,7 @@ function SectionsPage() {
     departments: false,
     trades: false,
     companyCodes: false,
-    jobs: false
+    jobs: false,
   });
 
   // Initialize tab value from URL or localStorage
@@ -118,7 +124,7 @@ function SectionsPage() {
           }
           response = await getProjects();
           setProjectsData(response.data || []);
-          dataType = 'projects';
+          dataType = "projects";
           break;
         case 1: // Cost Centers
           if (!force && dataFetched.costCenters) {
@@ -127,7 +133,7 @@ function SectionsPage() {
           }
           response = await getCostCenters();
           setCostCentersData(response.data || []);
-          dataType = 'costCenters';
+          dataType = "costCenters";
           break;
         case 2: // Departments
           if (!force && dataFetched.departments) {
@@ -136,7 +142,7 @@ function SectionsPage() {
           }
           response = await getDepartments();
           setDepartmentsData(response.data || []);
-          dataType = 'departments';
+          dataType = "departments";
           break;
         case 3: // Trades
           if (!force && dataFetched.trades) {
@@ -145,7 +151,7 @@ function SectionsPage() {
           }
           response = await getTrades();
           setTradesData(response.data || []);
-          dataType = 'trades';
+          dataType = "trades";
           break;
         case 4: // Company Codes
           if (!force && dataFetched.companyCodes) {
@@ -154,7 +160,7 @@ function SectionsPage() {
           }
           response = await getCompanyCodes();
           setCompanyCodesData(response.data || []);
-          dataType = 'companyCodes';
+          dataType = "companyCodes";
           break;
         case 5: // Jobs
           if (!force && dataFetched.jobs) {
@@ -163,25 +169,27 @@ function SectionsPage() {
           }
           response = await getJobs();
           setJobsData(response.data || []);
-          dataType = 'jobs';
+          dataType = "jobs";
           break;
       }
 
       if (dataType) {
-        setDataFetched(prev => ({
+        setDataFetched((prev) => ({
           ...prev,
-          [dataType]: true
+          [dataType]: true,
         }));
       }
 
       toast.success({
-        title: "Success",
-        description: "Data fetched successfully",
+        title: "success",
+        description: "dataFetchedSuccessfully",
+        isTranslated: true,
       });
     } catch (error) {
       toast.error({
-        title: "Error",
-        description: error.message || "Failed to fetch data",
+        title: "error",
+        description: "failedToFetchData",
+        isTranslated: true,
       });
     } finally {
       setLoading(false);
@@ -238,25 +246,29 @@ function SectionsPage() {
     setIsEditMode(true);
     setIsDrawerOpen(true);
   };
-  
+
   const handleDelete = async (type, row) => {
     try {
       const response = await entityHandlers[type].deleteFn(row.id);
       if (response.status) {
-        entityHandlers[type].setData(prev => prev.filter(item => item.id !== row.id));
-        setDataFetched(prev => ({
+        entityHandlers[type].setData((prev) =>
+          prev.filter((item) => item.id !== row.id)
+        );
+        setDataFetched((prev) => ({
           ...prev,
-          [type]: false
+          [type]: false,
         }));
         toast.success({
-          title: "Success",
+          title: "success",
           description: `${type} deleted successfully`,
+          isTranslated: true,
         });
       }
     } catch (error) {
       toast.error({
-        title: "Error",
+        title: "error",
         description: error.message || `Failed to delete ${type}`,
+        isTranslated: true,
       });
     }
   };
@@ -282,38 +294,44 @@ function SectionsPage() {
   const handleSave = async () => {
     const type = activeDrawerType;
     const handler = entityHandlers[type];
-  
+
     try {
       let response;
       if (isEditMode) {
         response = await handler.editFn(formData.id, formData);
         if (response.status) {
-          handler.setData(prev => 
-            prev.map(item => item.id === formData.id ? { ...item, ...formData } : item)
+          handler.setData((prev) =>
+            prev.map((item) =>
+              item.id === formData.id ? { ...item, ...formData } : item
+            )
           );
         }
       } else {
         response = await handler.createFn(formData);
         if (response.status) {
-          handler.setData(prev => [...prev, response.data]);
+          handler.setData((prev) => [...prev, response.data]);
         }
       }
-  
+
       if (response.status) {
         toast.success({
-          title: "Success",
+          title: "success",
           description: `${type} ${isEditMode ? "updated" : "created"} successfully`,
+          isTranslated: true,
         });
         setIsEditMode(false);
       }
     } catch (error) {
       toast.error({
-        title: "Error",
-        description: error.message || `Failed to ${isEditMode ? "update" : "create"} ${type}`,
+        title: "error",
+        description:
+          error.message ||
+          `Failed to ${isEditMode ? "update" : "create"} ${type}`,
+        isTranslated: true,
       });
     }
   };
-  
+
   const handleSaveAndNew = async () => {
     await handleSave();
     setFormData({});
@@ -332,31 +350,33 @@ function SectionsPage() {
     try {
       let response;
       switch (type) {
-        case 'project':
+        case "project":
           response = await exportProjectsToExcel();
           break;
         // Add other cases as they are implemented
         default:
           return;
       }
-      
+
       // Create a download link for the Excel file
       const url = window.URL.createObjectURL(new Blob([response]));
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `${type}s.xlsx`);
+      link.setAttribute("download", `${type}s.xlsx`);
       document.body.appendChild(link);
       link.click();
       link.remove();
-      
+
       toast.success({
-        title: "Success",
+        title: "success",
         description: `${type} exported successfully`,
+        isTranslated: true,
       });
     } catch (error) {
       toast.error({
-        title: "Error",
+        title: "error",
         description: error.message || `Failed to export ${type}`,
+        isTranslated: true,
       });
     }
   };
@@ -365,31 +385,33 @@ function SectionsPage() {
     try {
       let response;
       switch (type) {
-        case 'project':
+        case "project":
           response = await exportProjectsToPdf();
           break;
         // Add other cases as they are implemented
         default:
           return;
       }
-      
+
       // Create a download link for the PDF file
       const url = window.URL.createObjectURL(new Blob([response]));
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `${type}s.pdf`);
+      link.setAttribute("download", `${type}s.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
-      
+
       toast.success({
-        title: "Success",
+        title: "success",
         description: `${type} exported successfully`,
+        isTranslated: true,
       });
     } catch (error) {
       toast.error({
-        title: "Error",
+        title: "error",
         description: error.message || `Failed to export ${type}`,
+        isTranslated: true,
       });
     }
   };
@@ -398,34 +420,36 @@ function SectionsPage() {
     try {
       let response;
       switch (type) {
-        case 'project':
+        case "project":
           response = await importProjectsFromExcel(file);
           break;
         // Add other cases as they are implemented
         default:
           return;
       }
-      
+
       if (response.status) {
         // Refresh the data after successful import
         fetchData(value, true);
         toast.success({
-          title: "Success",
+          title: "success",
           description: `${type} imported successfully`,
+          isTranslated: true,
         });
       }
     } catch (error) {
       toast.error({
-        title: "Error",
+        title: "error",
         description: error.message || `Failed to import ${type}`,
+        isTranslated: true,
       });
     }
   };
 
   const handlePrint = (type, data, columns) => {
     try {
-      const printWindow = window.open('', '_blank');
-      
+      const printWindow = window.open("", "_blank");
+
       const content = `
         <html>
           <head>
@@ -448,15 +472,19 @@ function SectionsPage() {
             <table>
               <thead>
                 <tr>
-                  ${columns.map(col => `<th>${col.header}</th>`).join('')}
+                  ${columns.map((col) => `<th>${col.header}</th>`).join("")}
                 </tr>
               </thead>
               <tbody>
-                ${data.map(row => `
+                ${data
+                  .map(
+                    (row) => `
                   <tr>
-                    ${columns.map(col => `<td>${row[col.key] || ''}</td>`).join('')}
+                    ${columns.map((col) => `<td>${row[col.key] || ""}</td>`).join("")}
                   </tr>
-                `).join('')}
+                `
+                  )
+                  .join("")}
               </tbody>
             </table>
           </body>
@@ -466,21 +494,23 @@ function SectionsPage() {
       printWindow.document.write(content);
       printWindow.document.close();
 
-      printWindow.onload = function() {
+      printWindow.onload = function () {
         printWindow.print();
-        printWindow.onafterprint = function() {
+        printWindow.onafterprint = function () {
           printWindow.close();
         };
       };
 
       toast.success({
-        title: "Success",
+        title: "success",
         description: `${type} list prepared for printing`,
+        isTranslated: true,
       });
     } catch (error) {
       toast.error({
-        title: "Error",
+        title: "error",
         description: error.message || `Failed to print ${type} list`,
+        isTranslated: true,
       });
     }
   };
@@ -517,11 +547,13 @@ function SectionsPage() {
               onAdd={() => handleAddNew("project")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => handleExportExcel('project')}
-              onExportPdf={() => handleExportPdf('project')}
-              onPrint={() => handlePrint('project', projectsData, projectColumns)}
+              onExportExcel={() => handleExportExcel("project")}
+              onExportPdf={() => handleExportPdf("project")}
+              onPrint={() =>
+                handlePrint("project", projectsData, projectColumns)
+              }
               onRefresh={() => fetchData(0, true)}
-              onImportExcel={(file) => handleImportExcel('project', file)}
+              onImportExcel={(file) => handleImportExcel("project", file)}
               tableId="projects"
             />
           </Box>
@@ -541,11 +573,13 @@ function SectionsPage() {
               onAdd={() => handleAddNew("costCenter")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => handleExportExcel('costCenter')}
-              onExportPdf={() => handleExportPdf('costCenter')}
-              onPrint={() => handlePrint('costCenter', costCentersData, costCenterColumns)}
+              onExportExcel={() => handleExportExcel("costCenter")}
+              onExportPdf={() => handleExportPdf("costCenter")}
+              onPrint={() =>
+                handlePrint("costCenter", costCentersData, costCenterColumns)
+              }
               onRefresh={() => fetchData(1, true)}
-              onImportExcel={(file) => handleImportExcel('costCenter', file)}
+              onImportExcel={(file) => handleImportExcel("costCenter", file)}
               tableId="costCenters"
             />
           </Box>
@@ -565,11 +599,13 @@ function SectionsPage() {
               onAdd={() => handleAddNew("department")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => handleExportExcel('department')}
-              onExportPdf={() => handleExportPdf('department')}
-              onPrint={() => handlePrint('department', departmentsData, departmentColumns)}
+              onExportExcel={() => handleExportExcel("department")}
+              onExportPdf={() => handleExportPdf("department")}
+              onPrint={() =>
+                handlePrint("department", departmentsData, departmentColumns)
+              }
               onRefresh={() => fetchData(2, true)}
-              onImportExcel={(file) => handleImportExcel('department', file)}
+              onImportExcel={(file) => handleImportExcel("department", file)}
               tableId="departments"
             />
           </Box>
@@ -589,11 +625,11 @@ function SectionsPage() {
               onAdd={() => handleAddNew("trade")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => handleExportExcel('trade')}
-              onExportPdf={() => handleExportPdf('trade')}
-              onPrint={() => handlePrint('trade', tradesData, tradesColumns)}
+              onExportExcel={() => handleExportExcel("trade")}
+              onExportPdf={() => handleExportPdf("trade")}
+              onPrint={() => handlePrint("trade", tradesData, tradesColumns)}
               onRefresh={() => fetchData(3, true)}
-              onImportExcel={(file) => handleImportExcel('trade', file)}
+              onImportExcel={(file) => handleImportExcel("trade", file)}
               tableId="trades"
             />
           </Box>
@@ -613,11 +649,17 @@ function SectionsPage() {
               onAdd={() => handleAddNew("companyCode")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => handleExportExcel('companyCode')}
-              onExportPdf={() => handleExportPdf('companyCode')}
-              onPrint={() => handlePrint('companyCode', companyCodesData, companyCodesColumns)}
+              onExportExcel={() => handleExportExcel("companyCode")}
+              onExportPdf={() => handleExportPdf("companyCode")}
+              onPrint={() =>
+                handlePrint(
+                  "companyCode",
+                  companyCodesData,
+                  companyCodesColumns
+                )
+              }
               onRefresh={() => fetchData(4, true)}
-              onImportExcel={(file) => handleImportExcel('companyCode', file)}
+              onImportExcel={(file) => handleImportExcel("companyCode", file)}
               tableId="companyCodes"
             />
           </Box>
@@ -637,11 +679,11 @@ function SectionsPage() {
               onAdd={() => handleAddNew("job")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => handleExportExcel('job')}
-              onExportPdf={() => handleExportPdf('job')}
-              onPrint={() => handlePrint('job', jobsData, jobsColumns)}
+              onExportExcel={() => handleExportExcel("job")}
+              onExportPdf={() => handleExportPdf("job")}
+              onPrint={() => handlePrint("job", jobsData, jobsColumns)}
               onRefresh={() => fetchData(5, true)}
-              onImportExcel={(file) => handleImportExcel('job', file)}
+              onImportExcel={(file) => handleImportExcel("job", file)}
               tableId="jobs"
             />
           </Box>
