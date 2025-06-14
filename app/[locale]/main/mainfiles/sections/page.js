@@ -6,23 +6,37 @@ import Table from "@/components/ui/table/Table";
 import SectionDrawer from "@/components/ui/drawers/SectionDrawer";
 import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   getProjects,
-  createProject,
-  editProject,
+  getCostCenters,
+  getDepartments,
+  getTrades,
+  getCompanyCodes,
+  getJobs,
   deleteProject,
+  deleteCostCenter,
+  deleteDepartment,
+  deleteTrade,
+  deleteCompanyCode,
+  deleteJob,
+  editProject,
+  editCostCenter,
+  editDepartment,
+  editTrade,
+  editCompanyCode,
+  editJob,
+  createProject,
+  createCostCenter,
+  createDepartment,
+  createTrade,
+  createCompanyCode,
+  createJob,
   exportProjectsToExcel,
   exportProjectsToPdf,
   importProjectsFromExcel,
 } from "@/API/Sections";
-import {
-  projectColumns,
-  costCenterColumns,
-  departmentColumns,
-  tradesColumns,
-  companyCodesColumns,
-  jobsColumns,
-} from "@/constants/tableColumns";
+import { useTableColumns } from "@/constants/tableColumns";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -60,6 +74,16 @@ export default function SectionsPageWrapper() {
 
 // The actual component that uses useSearchParams
 function SectionsPage() {
+  const t = useTranslations("sections");
+  const tableT = useTranslations("tableColumns");
+  const {
+    projectColumns,
+    costCenterColumns,
+    departmentColumns,
+    tradesColumns,
+    companyCodesColumns,
+    jobsColumns,
+  } = useTableColumns(tableT);
   const searchParams = useSearchParams();
   const router = useRouter();
   const [value, setValue] = useState(0);
@@ -210,33 +234,33 @@ function SectionsPage() {
     },
     costCenter: {
       setData: setCostCentersData,
-      deleteFn: async () => ({ status: true }),
-      editFn: async () => ({ status: true }),
-      createFn: async () => ({ status: true, data: {} }),
+      deleteFn: deleteCostCenter,
+      editFn: editCostCenter,
+      createFn: createCostCenter,
     },
     department: {
       setData: setDepartmentsData,
-      deleteFn: async () => ({ status: true }),
-      editFn: async () => ({ status: true }),
-      createFn: async () => ({ status: true, data: {} }),
+      deleteFn: deleteDepartment,
+      editFn: editDepartment,
+      createFn: createDepartment,
     },
     trade: {
       setData: setTradesData,
-      deleteFn: async () => ({ status: true }),
-      editFn: async () => ({ status: true }),
-      createFn: async () => ({ status: true, data: {} }),
+      deleteFn: deleteTrade,
+      editFn: editTrade,
+      createFn: createTrade,
     },
     companyCode: {
       setData: setCompanyCodesData,
-      deleteFn: async () => ({ status: true }),
-      editFn: async () => ({ status: true }),
-      createFn: async () => ({ status: true, data: {} }),
+      deleteFn: deleteCompanyCode,
+      editFn: editCompanyCode,
+      createFn: createCompanyCode,
     },
     job: {
       setData: setJobsData,
-      deleteFn: async () => ({ status: true }),
-      editFn: async () => ({ status: true }),
-      createFn: async () => ({ status: true, data: {} }),
+      deleteFn: deleteJob,
+      editFn: editJob,
+      createFn: createJob,
     },
   };
 
@@ -260,14 +284,14 @@ function SectionsPage() {
         }));
         toast.success({
           title: "success",
-          description: `${type} deleted successfully`,
+          description: `${type} ${t("messages.deleteSuccess")}`,
           isTranslated: true,
         });
       }
     } catch (error) {
       toast.error({
         title: "error",
-        description: error.message || `Failed to delete ${type}`,
+        description: `${t("messages.deleteError")} ${type}`,
         isTranslated: true,
       });
     }
@@ -316,7 +340,7 @@ function SectionsPage() {
       if (response.status) {
         toast.success({
           title: "success",
-          description: `${type} ${isEditMode ? "updated" : "created"} successfully`,
+          description: `${type} ${isEditMode ? t("messages.updateSuccess") : t("messages.createSuccess")}`,
           isTranslated: true,
         });
         setIsEditMode(false);
@@ -324,9 +348,7 @@ function SectionsPage() {
     } catch (error) {
       toast.error({
         title: "error",
-        description:
-          error.message ||
-          `Failed to ${isEditMode ? "update" : "create"} ${type}`,
+        description: `${isEditMode ? t("messages.updateError") : t("messages.createError")} ${type}`,
         isTranslated: true,
       });
     }
@@ -369,13 +391,13 @@ function SectionsPage() {
 
       toast.success({
         title: "success",
-        description: `${type} exported successfully`,
+        description: `${type} ${t("messages.exportSuccess")}`,
         isTranslated: true,
       });
     } catch (error) {
       toast.error({
         title: "error",
-        description: error.message || `Failed to export ${type}`,
+        description: `${t("messages.exportError")} ${type}`,
         isTranslated: true,
       });
     }
@@ -404,13 +426,13 @@ function SectionsPage() {
 
       toast.success({
         title: "success",
-        description: `${type} exported successfully`,
+        description: `${type} ${t("messages.exportSuccess")}`,
         isTranslated: true,
       });
     } catch (error) {
       toast.error({
         title: "error",
-        description: error.message || `Failed to export ${type}`,
+        description: `${t("messages.exportError")} ${type}`,
         isTranslated: true,
       });
     }
@@ -433,14 +455,14 @@ function SectionsPage() {
         fetchData(value, true);
         toast.success({
           title: "success",
-          description: `${type} imported successfully`,
+          description: `${type} ${t("messages.importSuccess")}`,
           isTranslated: true,
         });
       }
     } catch (error) {
       toast.error({
         title: "error",
-        description: error.message || `Failed to import ${type}`,
+        description: `${t("messages.importError")} ${type}`,
         isTranslated: true,
       });
     }
@@ -503,13 +525,13 @@ function SectionsPage() {
 
       toast.success({
         title: "success",
-        description: `${type} list prepared for printing`,
+        description: `${type} ${t("messages.printSuccess")}`,
         isTranslated: true,
       });
     } catch (error) {
       toast.error({
         title: "error",
-        description: error.message || `Failed to print ${type} list`,
+        description: `${t("messages.printError")} ${type}`,
         isTranslated: true,
       });
     }
@@ -524,12 +546,12 @@ function SectionsPage() {
             onChange={handleChange}
             aria-label="sections tabs"
           >
-            <Tab label="Projects" />
-            <Tab label="Cost Centers" />
-            <Tab label="Departments" />
-            <Tab label="Trades" />
-            <Tab label="Company Codes" />
-            <Tab label="Jobs" />
+            <Tab label={t("tabs.projects")} />
+            <Tab label={t("tabs.costCenters")} />
+            <Tab label={t("tabs.departments")} />
+            <Tab label={t("tabs.trades")} />
+            <Tab label={t("tabs.companyCodes")} />
+            <Tab label={t("tabs.jobs")} />
           </Tabs>
         </Box>
 
@@ -537,7 +559,7 @@ function SectionsPage() {
         <TabPanel value={value} index={0}>
           <Box className="p-0">
             <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Projects Management
+              {t("management.projects")}
             </Typography>
             <Table
               data={projectsData}
@@ -563,7 +585,7 @@ function SectionsPage() {
         <TabPanel value={value} index={1}>
           <Box className="p-0">
             <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Cost Centers Management
+              {t("management.costCenters")}
             </Typography>
             <Table
               data={costCentersData}
@@ -589,7 +611,7 @@ function SectionsPage() {
         <TabPanel value={value} index={2}>
           <Box className="p-0">
             <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Departments Management
+              {t("management.departments")}
             </Typography>
             <Table
               data={departmentsData}
@@ -615,7 +637,7 @@ function SectionsPage() {
         <TabPanel value={value} index={3}>
           <Box className="p-0">
             <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Trades Management
+              {t("management.trades")}
             </Typography>
             <Table
               data={tradesData}
@@ -639,7 +661,7 @@ function SectionsPage() {
         <TabPanel value={value} index={4}>
           <Box className="p-0">
             <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Company Codes Management
+              {t("management.companyCodes")}
             </Typography>
             <Table
               data={companyCodesData}
@@ -669,7 +691,7 @@ function SectionsPage() {
         <TabPanel value={value} index={5}>
           <Box className="p-0">
             <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Jobs Management
+              {t("management.jobs")}
             </Typography>
             <Table
               data={jobsData}

@@ -1,73 +1,74 @@
-// Table columns configuration for countries
-export const countryColumns = [
-  { key: "id", header: "ID", type: "text" },
-  { key: "name", header: "Name", type: "text" },
-  { key: "created_at", header: "Created At", type: "date" },
-  { key: "updated_at", header: "Updated At", type: "date" }
-];
+// Table columns configuration
+export function useTableColumns(t) {
+  return {
+    countryColumns: [
+      { key: "id", header: t("id"), type: "text" },
+      { key: "name", header: t("name"), type: "text" },
+      { key: "created_at", header: t("createdAt"), type: "date" },
+      { key: "updated_at", header: t("updatedAt"), type: "date" },
+    ],
 
-// Table columns configuration for cities
-export const cityColumns = [
-  { key: "id", header: "ID", type: "text" },
-  { key: "name", header: "Name", type: "text" },
-  { key: "created_at", header: "Created At", type: "date" },
-  { key: "updated_at", header: "Updated At", type: "date" }
-];
+    cityColumns: [
+      { key: "id", header: t("id"), type: "text" },
+      { key: "name", header: t("name"), type: "text" },
+      { key: "created_at", header: t("createdAt"), type: "date" },
+      { key: "updated_at", header: t("updatedAt"), type: "date" },
+    ],
 
-// Table columns configuration for provinces
-export const provinceColumns = [
-  { key: "id", header: "ID", type: "text" },
-  { key: "name", header: "Name", type: "text" },
-  { key: "created_at", header: "Created At", type: "date" },
-  { key: "updated_at", header: "Updated At", type: "date" }
-];
+    provinceColumns: [
+      { key: "id", header: t("id"), type: "text" },
+      { key: "name", header: t("name"), type: "text" },
+      { key: "created_at", header: t("createdAt"), type: "date" },
+      { key: "updated_at", header: t("updatedAt"), type: "date" },
+    ],
 
-export const districtColumns = [
-  { key: "id", header: "ID", type: "text" },
-  { key: "name", header: "Name", type: "text" },
-  { key: "created_at", header: "Created At", type: "date" },
-  { key: "updated_at", header: "Updated At", type: "date" }
-];
+    districtColumns: [
+      { key: "id", header: t("id"), type: "text" },
+      { key: "name", header: t("name"), type: "text" },
+      { key: "created_at", header: t("createdAt"), type: "date" },
+      { key: "updated_at", header: t("updatedAt"), type: "date" },
+    ],
 
+    projectColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("name"), key: "name" },
+      { header: t("description"), key: "description" },
+      { header: t("actions"), key: "actions" },
+    ],
 
-export const projectColumns = [
-  { header: "ID", key: "id" },
-  { header: "Name", key: "name" },
-  { header: "Description", key: "description" },
-  { header: "Actions", key: "actions" }
-];
+    costCenterColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("name"), key: "name" },
+      { header: t("description"), key: "description" },
+      { header: t("actions"), key: "actions" },
+    ],
 
-export const costCenterColumns = [
-  { header: "ID", key: "id" },
-  { header: "Name", key: "name" },
-  { header: "Description", key: "description" },
-  { header: "Actions", key: "actions" }
-];
+    departmentColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("name"), key: "name" },
+      { header: t("description"), key: "description" },
+      { header: t("actions"), key: "actions" },
+    ],
 
-export const departmentColumns = [
-  { header: "ID", key: "id" },
-  { header: "Name", key: "name" },
-  { header: "Description", key: "description" },
-  { header: "Actions", key: "actions" }
-];
+    tradesColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("name"), key: "name" },
+      { header: t("description"), key: "description" },
+      { header: t("actions"), key: "actions" },
+    ],
 
-export const tradesColumns = [
-  { header: "ID", key: "id" },
-  { header: "Name", key: "name" },
-  { header: "Description", key: "description" },
-  { header: "Actions", key: "actions" }
-];
+    companyCodesColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("name"), key: "name" },
+      { header: t("description"), key: "description" },
+      { header: t("actions"), key: "actions" },
+    ],
 
-export const companyCodesColumns = [
-  { header: "ID", key: "id" },
-  { header: "Name", key: "name" },
-  { header: "Description", key: "description" },
-  { header: "Actions", key: "actions" }
-];
-
-export const jobsColumns = [
-  { header: "ID", key: "id" },
-  { header: "Name", key: "name" },
-  { header: "Description", key: "description" },
-  { header: "Actions", key: "actions" }
-];
+    jobsColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("name"), key: "name" },
+      { header: t("description"), key: "description" },
+      { header: t("actions"), key: "actions" },
+    ],
+  };
+}

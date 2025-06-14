@@ -159,5 +159,76 @@
     "sidebarInfo": "رسالة معلومات الشريط الجانبي.",
     "sidebarSuccess": "تمت العملية بنجاح في الشريط الجانبي.",
     "sidebarError": "فشلت العملية في الشريط الجانبي."
+  },
+  "addressCodes": {
+    "title": "إدارة رموز العناوين",
+    "tabs": {
+      "countries": "الدول",
+      "provinces": "المناطق",
+      "cities": "المدن",
+      "districts": "الأحياء"
+    },
+    "management": {
+      "countries": "إدارة الدول",
+      "provinces": "إدارة المناطق",
+      "cities": "إدارة المدن",
+      "districts": "إدارة الأحياء"
+    },
+    "messages": {
+      "exportSuccess": "تم التصدير بنجاح",
+      "importSuccess": "تم الاستيراد بنجاح",
+      "printSuccess": "تم تجهيز القائمة للطباعة",
+      "deleteSuccess": "تم الحذف بنجاح",
+      "updateSuccess": "تم التحديث بنجاح",
+      "createSuccess": "تم الإنشاء بنجاح",
+      "exportError": "فشل التصدير",
+      "importError": "فشل الاستيراد",
+      "printError": "فشل طباعة القائمة",
+      "deleteError": "فشل الحذف",
+      "updateError": "فشل التحديث",
+      "createError": "فشل الإنشاء"
+    },
+    "actions": "الإجراءات"
+  },
+  "sections": {
+    "title": "إدارة الأقسام",
+    "tabs": {
+      "projects": "المشاريع",
+      "costCenters": "مراكز التكلفة",
+      "departments": "الأقسام",
+      "trades": "الحرف",
+      "companyCodes": "رموز الشركة",
+      "jobs": "الوظائف"
+    },
+    "management": {
+      "projects": "إدارة المشاريع",
+      "costCenters": "إدارة مراكز التكلفة",
+      "departments": "إدارة الأقسام",
+      "trades": "إدارة الحرف",
+      "companyCodes": "إدارة رموز الشركة",
+      "jobs": "إدارة الوظائف"
+    },
+    "messages": {
+      "exportSuccess": "تم التصدير بنجاح",
+      "importSuccess": "تم الاستيراد بنجاح",
+      "printSuccess": "تم تجهيز القائمة للطباعة",
+      "deleteSuccess": "تم الحذف بنجاح",
+      "updateSuccess": "تم التحديث بنجاح",
+      "createSuccess": "تم الإنشاء بنجاح",
+      "exportError": "فشل التصدير",
+      "importError": "فشل الاستيراد",
+      "printError": "فشل طباعة القائمة",
+      "deleteError": "فشل الحذف",
+      "updateError": "فشل التحديث",
+      "createError": "فشل الإنشاء"
+    }
+  },
+  "tableColumns": {
+    "id": "المعرف",
+    "name": "الاسم",
+    "description": "الوصف",
+    "actions": "الإجراءات",
+    "createdAt": "تاريخ الإنشاء",
+    "updatedAt": "تاريخ التحديث"
   }
 }

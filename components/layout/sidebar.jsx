@@ -124,6 +124,7 @@ const BookmarksSection = ({
   activeItem,
   iconMap,
   t,
+  isRTL,
 }) => {
   if (bookmarks.length === 0) return null;
 
@@ -166,6 +167,7 @@ const BookmarksSection = ({
                 onNavigate={handleNavigation}
                 isBookmarked={bookmarks.includes(item.name)}
                 t={t}
+                isRTL={isRTL}
               />
             </li>
           );
@@ -189,10 +191,17 @@ const GroupHeader = ({
   toggleBookmark,
   iconMap,
   t,
+  isMainFiles = false,
+  isRTL,
 }) => {
   if (!isCollapsed) {
     return (
-      <h3 className="text-[15px] font-medium p-2 bg-primary-foreground/5 rounded-md">
+      <h3
+        className={cn(
+          "text-[15px] font-medium bg-primary-foreground/5 rounded-md",
+          isMainFiles ? "p-2" : "px-6 py-3"
+        )}
+      >
         {groupName}
       </h3>
     );
@@ -239,6 +248,7 @@ const GroupHeader = ({
                           onToggleBookmark={toggleBookmark}
                           padding="px-2"
                           t={t}
+                          isRTL={isRTL}
                         />
                       );
                     })}
@@ -260,6 +270,7 @@ const GroupHeader = ({
                   onToggleBookmark={toggleBookmark}
                   padding="px-2"
                   t={t}
+                  isRTL={isRTL}
                 />
               );
             })}
@@ -280,6 +291,8 @@ const GroupItems = ({
   toggleBookmark,
   iconMap,
   t,
+  isMainFiles = false,
+  isRTL,
 }) => {
   if (isCollapsed) return null;
 
@@ -297,6 +310,8 @@ const GroupItems = ({
                 onNavigate={handleNavigation}
                 onToggleBookmark={toggleBookmark}
                 t={t}
+                isMainFiles={isMainFiles}
+                isRTL={isRTL}
               />
             </li>
           );
@@ -314,8 +329,9 @@ const GroupItems = ({
               isActive={activeItem === item.name.toLowerCase()}
               onNavigate={handleNavigation}
               onToggleBookmark={toggleBookmark}
-              padding="px-8"
+              padding={isMainFiles ? "pl-8" : "pl-20"}
               t={t}
+              isRTL={isRTL}
             />
           </li>
         );
@@ -334,10 +350,10 @@ const NestedGroup = ({
   onToggleBookmark,
   padding = "px-8",
   t,
+  isMainFiles = false,
+  isRTL,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const Icon = iconMap[item.icon];
-  const isPopover = item.displayType === "popover";
 
   const handlePopoverOpen = (e) => {
     e.preventDefault();
@@ -359,15 +375,16 @@ const NestedGroup = ({
       <PopoverTrigger asChild>
         <button
           className={cn(
-            "flex items-center gap-2 w-full text-[15px] font-medium hover:bg-primary-foreground/10 p-2 rounded-md",
-            padding
+            "flex items-center gap-2 w-full text-[15px] font-medium hover:bg-primary-foreground/10 rounded-md",
+            isMainFiles ? "p-2" : "px-6 py-3"
           )}
         >
           <Icon className="h-5 w-5" />
           <span>{item.name}</span>
           <ChevronRight
             className={cn(
-              "h-4 w-4 ml-auto transition-transform",
+              "h-4 w-4 transition-transform",
+              isRTL ? "mr-auto scale-x-[-1]" : "ml-auto",
               isOpen ? "rotate-180" : ""
             )}
           />
@@ -395,9 +412,10 @@ const NestedGroup = ({
                 isActive={activeItem === subItem.name.toLowerCase()}
                 onNavigate={() => handleNavigate(subItem.name)}
                 onToggleBookmark={() => onToggleBookmark(subItem.name)}
-                padding="px-2"
+                padding={isMainFiles ? "px-8" : "px-12"}
                 className="whitespace-nowrap"
                 t={t}
+                isRTL={isRTL}
               />
             );
           })}
@@ -411,15 +429,16 @@ const NestedGroup = ({
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "flex items-center gap-2 w-full text-[15px] font-medium hover:bg-primary-foreground/10 p-2 rounded-md",
-          padding
+          "flex items-center gap-2 w-full text-[15px] font-medium hover:bg-primary-foreground/10 rounded-md",
+          isMainFiles ? "p-2" : "px-6 py-3"
         )}
       >
         <Icon className="h-5 w-5" />
         <span>{item.name}</span>
         <ChevronRight
           className={cn(
-            "h-4 w-4 ml-auto transition-transform",
+            "h-4 w-4 transition-transform",
+            isRTL ? "mr-auto scale-x-[-1]" : "ml-auto",
             isOpen ? "rotate-90" : ""
           )}
         />
@@ -439,8 +458,9 @@ const NestedGroup = ({
                   isActive={activeItem === subItem.name.toLowerCase()}
                   onNavigate={onNavigate}
                   onToggleBookmark={onToggleBookmark}
-                  padding="px-12"
+                  padding={isMainFiles ? "px-8" : "px-12"}
                   t={t}
+                  isRTL={isRTL}
                 />
               </li>
             );
@@ -449,6 +469,9 @@ const NestedGroup = ({
       )}
     </div>
   );
+
+  const Icon = iconMap[item.icon];
+  const isPopover = item.displayType === "popover";
 
   return isPopover ? renderPopover() : renderCollapsible();
 };
@@ -464,6 +487,7 @@ const SupportSection = ({
   toggleBookmark,
   iconMap,
   t,
+  isRTL,
 }) => {
   const supportItems = menuItems.support?.items || [];
 
@@ -510,6 +534,7 @@ const SupportSection = ({
                   onToggleBookmark={toggleBookmark}
                   padding="px-8"
                   t={t}
+                  isRTL={isRTL}
                 />
               </li>
             );
@@ -520,7 +545,7 @@ const SupportSection = ({
   );
 };
 
-export function Sidebar({ isCollapsed, toggleSidebar }) {
+export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   const t = useTranslations("sidebar");
   const router = useRouter();
   const [bookmarks, setBookmarks] = useState([]);
@@ -731,6 +756,7 @@ export function Sidebar({ isCollapsed, toggleSidebar }) {
             activeItem={activeItem}
             iconMap={iconMap}
             t={t}
+            isRTL={isRTL}
           />
 
           {/* Dynamic Menu Groups */}
@@ -739,6 +765,7 @@ export function Sidebar({ isCollapsed, toggleSidebar }) {
 
             const groupItems = groupData.items || groupData;
             const GroupIcon = iconMap[groupData.groupIcon] || LayoutDashboard;
+            const isMainFiles = groupName.toLowerCase().includes("mainfiles");
 
             // Filter items based on role
             const filteredItems = filterItemsByRole(groupItems);
@@ -759,6 +786,9 @@ export function Sidebar({ isCollapsed, toggleSidebar }) {
                   handleNavigation={handleNavigation}
                   toggleBookmark={toggleBookmark}
                   iconMap={iconMap}
+                  t={t}
+                  isMainFiles={isMainFiles}
+                  isRTL={isRTL}
                 />
                 <GroupItems
                   groupItems={filteredItems}
@@ -768,6 +798,9 @@ export function Sidebar({ isCollapsed, toggleSidebar }) {
                   handleNavigation={handleNavigation}
                   toggleBookmark={toggleBookmark}
                   iconMap={iconMap}
+                  t={t}
+                  isMainFiles={isMainFiles}
+                  isRTL={isRTL}
                 />
               </div>
             );
@@ -783,6 +816,8 @@ export function Sidebar({ isCollapsed, toggleSidebar }) {
             handleNavigation={handleNavigation}
             toggleBookmark={toggleBookmark}
             iconMap={iconMap}
+            t={t}
+            isRTL={isRTL}
           />
         </div>
 

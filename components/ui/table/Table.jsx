@@ -134,6 +134,11 @@ const Table = (props) => {
     tableId: props.tableId || "default",
   });
 
+  // Convert columns object to array if needed
+  const columnsArray = Array.isArray(props.columns)
+    ? props.columns
+    : Object.values(props.columns);
+
   return (
     <div className="w-full rounded-lg border border-border bg-background shadow-sm">
       <DeleteModal
@@ -145,7 +150,7 @@ const Table = (props) => {
       {showColumnModal && (
         <ColumnModal
           isOpen={showColumnModal}
-          columns={props.columns}
+          columns={columnsArray}
           visibleColumns={tempVisibleColumns}
           onSave={handleSaveColumnVisibility}
           onCancel={handleCancelColumnVisibility}
@@ -161,7 +166,7 @@ const Table = (props) => {
       <FilterModal
         isOpen={showFilterModal}
         selectedColumn={selectedColumnForFilter}
-        columns={props.columns}
+        columns={columnsArray}
         filterType={tempFilterConfig?.type}
         filterValue={tempFilterConfig?.value}
         onSave={handleSaveFilter}
@@ -185,7 +190,7 @@ const Table = (props) => {
         onPrint={props.onPrint}
         onRefresh={props.onRefresh}
         onImportExcel={props.onImportExcel}
-        columns={props.columns}
+        columns={columnsArray}
         selectedSearchColumns={selectedSearchColumns}
         handleSearchColumnToggle={handleSearchColumnToggle}
         handleSelectAllSearchColumns={handleSelectAllSearchColumns}
@@ -198,7 +203,7 @@ const Table = (props) => {
             Active Filters:
           </span>
           {Object.entries(activeColumnFilters).map(([key, filterConfig]) => {
-            const column = props.columns.find((col) => col.key === key);
+            const column = columnsArray.find((col) => col.key === key);
             if (!column) return null;
 
             return (
@@ -241,7 +246,7 @@ const Table = (props) => {
             <table className="w-full border-collapse">
               <TableHeader
                 columnOrder={columnOrder}
-                columns={props.columns}
+                columns={columnsArray}
                 visibleColumns={visibleColumns}
                 sortConfig={sortConfig}
                 activeColumnFilters={activeColumnFilters}
@@ -260,11 +265,12 @@ const Table = (props) => {
                 columnWidths={columnWidths}
                 handleResizeStart={handleResizeStart}
                 resizingColumn={resizingColumn}
+                t={props.t}
               />
 
               <TableBody
                 paginatedData={paginatedData}
-                columns={props.columns}
+                columns={columnsArray}
                 columnOrder={columnOrder}
                 visibleColumns={visibleColumns}
                 currentPage={currentPage}

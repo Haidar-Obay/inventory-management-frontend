@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { Tabs, Tab, Box, Typography, CircularProgress } from "@mui/material";
 import Table from "@/components/ui/table/Table";
 import AddressCodeDrawer from "@/components/ui/drawers/AddressCodeDrawer";
+import { useTranslations } from "next-intl";
 import {
   getCountries,
   getProvinces,
@@ -34,12 +35,7 @@ import {
   exportDistrictsToPdf,
   importDistrictsFromExcel,
 } from "@/API/AddressCodes";
-import {
-  countryColumns,
-  cityColumns,
-  provinceColumns,
-  districtColumns,
-} from "@/constants/tableColumns";
+import { useTableColumns } from "@/constants/tableColumns";
 import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
 
@@ -79,6 +75,10 @@ export default function AddressCodesPageWrapper() {
 
 // The actual component that uses useSearchParams
 function AddressCodesPage() {
+  const t = useTranslations("addressCodes");
+  const tableT = useTranslations("tableColumns");
+  const { countryColumns, cityColumns, provinceColumns, districtColumns } =
+    useTableColumns(tableT);
   const searchParams = useSearchParams();
   const router = useRouter();
   const [value, setValue] = useState(0);
@@ -371,13 +371,13 @@ function AddressCodesPage() {
 
       toast.success({
         title: "success",
-        description: `${type} exported successfully`,
+        description: `${type} ${t("messages.exportSuccess")}`,
         isTranslated: true,
       });
     } catch (error) {
       toast.error({
         title: "error",
-        description: error.message || `Failed to export ${type}`,
+        description: `${t("messages.exportError")} ${type}`,
         isTranslated: true,
       });
     }
@@ -414,13 +414,13 @@ function AddressCodesPage() {
 
       toast.success({
         title: "success",
-        description: `${type} exported successfully`,
+        description: `${type} ${t("messages.exportSuccess")}`,
         isTranslated: true,
       });
     } catch (error) {
       toast.error({
         title: "error",
-        description: error.message || `Failed to export ${type}`,
+        description: `${t("messages.exportError")} ${type}`,
         isTranslated: true,
       });
     }
@@ -451,14 +451,14 @@ function AddressCodesPage() {
         fetchData(value, true);
         toast.success({
           title: "success",
-          description: `${type} imported successfully`,
+          description: `${type} ${t("messages.importSuccess")}`,
           isTranslated: true,
         });
       }
     } catch (error) {
       toast.error({
         title: "error",
-        description: error.message || `Failed to import ${type}`,
+        description: `${t("messages.importError")} ${type}`,
         isTranslated: true,
       });
     }
@@ -526,13 +526,13 @@ function AddressCodesPage() {
 
       toast.success({
         title: "success",
-        description: `${type} list prepared for printing`,
+        description: `${type} ${t("messages.printSuccess")}`,
         isTranslated: true,
       });
     } catch (error) {
       toast.error({
         title: "error",
-        description: error.message || `Failed to print ${type} list`,
+        description: `${t("messages.printError")} ${type}`,
         isTranslated: true,
       });
     }
@@ -547,10 +547,10 @@ function AddressCodesPage() {
             onChange={handleChange}
             aria-label="address code tabs"
           >
-            <Tab label="Countries" />
-            <Tab label="Provinces" />
-            <Tab label="Cities" />
-            <Tab label="Districts" />
+            <Tab label={t("tabs.countries")} />
+            <Tab label={t("tabs.provinces")} />
+            <Tab label={t("tabs.cities")} />
+            <Tab label={t("tabs.districts")} />
           </Tabs>
         </Box>
 
@@ -558,11 +558,12 @@ function AddressCodesPage() {
         <TabPanel value={value} index={0}>
           <Box className="p-0">
             <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Countries Management
+              {t("management.countries")}
             </Typography>
             <Table
-              data={countriesData}
               columns={countryColumns}
+              data={countriesData}
+              t={t}
               onEdit={(row) => handleEdit("country", row)}
               onDelete={(row) => handleDelete("country", row)}
               onAdd={() => handleAddNew("country")}
@@ -584,11 +585,12 @@ function AddressCodesPage() {
         <TabPanel value={value} index={1}>
           <Box className="p-0">
             <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Provinces Management
+              {t("management.provinces")}
             </Typography>
             <Table
               data={provincesData}
               columns={provinceColumns}
+              t={t}
               onEdit={(row) => handleEdit("province", row)}
               onDelete={(row) => handleDelete("province", row)}
               onAdd={() => handleAddNew("province")}
@@ -610,11 +612,12 @@ function AddressCodesPage() {
         <TabPanel value={value} index={2}>
           <Box className="p-0">
             <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Cities Management
+              {t("management.cities")}
             </Typography>
             <Table
               data={citiesData}
               columns={cityColumns}
+              t={t}
               onEdit={(row) => handleEdit("city", row)}
               onDelete={(row) => handleDelete("city", row)}
               onAdd={() => handleAddNew("city")}
@@ -634,11 +637,12 @@ function AddressCodesPage() {
         <TabPanel value={value} index={3}>
           <Box className="p-0">
             <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Districts Management
+              {t("management.districts")}
             </Typography>
             <Table
               data={districtsData}
               columns={districtColumns}
+              t={t}
               onEdit={(row) => handleEdit("district", row)}
               onDelete={(row) => handleDelete("district", row)}
               onAdd={() => handleAddNew("district")}

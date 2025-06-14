@@ -154,5 +154,76 @@
     "helpCenter": "Help Center",
     "contactSupport": "Contact Support",
     "logout": "Log out"
+  },
+  "addressCodes": {
+    "title": "Address Codes Management",
+    "tabs": {
+      "countries": "Countries",
+      "provinces": "Provinces",
+      "cities": "Cities",
+      "districts": "Districts"
+    },
+    "management": {
+      "countries": "Countries Management",
+      "provinces": "Provinces Management",
+      "cities": "Cities Management",
+      "districts": "Districts Management"
+    },
+    "messages": {
+      "exportSuccess": "exported successfully",
+      "importSuccess": "imported successfully",
+      "printSuccess": "list prepared for printing",
+      "deleteSuccess": "deleted successfully",
+      "updateSuccess": "updated successfully",
+      "createSuccess": "created successfully",
+      "exportError": "Failed to export",
+      "importError": "Failed to import",
+      "printError": "Failed to print list",
+      "deleteError": "Failed to delete",
+      "updateError": "Failed to update",
+      "createError": "Failed to create"
+    },
+    "actions": "Actions"
+  },
+  "sections": {
+    "title": "Sections Management",
+    "tabs": {
+      "projects": "Projects",
+      "costCenters": "Cost Centers",
+      "departments": "Departments",
+      "trades": "Trades",
+      "companyCodes": "Company Codes",
+      "jobs": "Jobs"
+    },
+    "management": {
+      "projects": "Projects Management",
+      "costCenters": "Cost Centers Management",
+      "departments": "Departments Management",
+      "trades": "Trades Management",
+      "companyCodes": "Company Codes Management",
+      "jobs": "Jobs Management"
+    },
+    "messages": {
+      "exportSuccess": "exported successfully",
+      "importSuccess": "imported successfully",
+      "printSuccess": "list prepared for printing",
+      "deleteSuccess": "deleted successfully",
+      "updateSuccess": "updated successfully",
+      "createSuccess": "created successfully",
+      "exportError": "Failed to export",
+      "importError": "Failed to import",
+      "printError": "Failed to print list",
+      "deleteError": "Failed to delete",
+      "updateError": "Failed to update",
+      "createError": "Failed to create"
+    }
+  },
+  "tableColumns": {
+    "id": "ID",
+    "name": "Name",
+    "description": "Description",
+    "actions": "Actions",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At"
   }
 }

@@ -56,6 +56,7 @@ export function MainLayout({ children }) {
             userRole={userRole}
             isCollapsed={isSidebarCollapsed}
             toggleSidebar={toggleSidebar}
+            isRTL={isRTL}
           />
         </div>
         <div className="flex flex-col flex-1 w-full" style={mainContentStyle}>
