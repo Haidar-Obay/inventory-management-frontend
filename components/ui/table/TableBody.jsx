@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import {
   Button,
   Checkbox,
@@ -31,6 +32,8 @@ export const TableBody = ({
   onEdit,
   columnWidths,
 }) => {
+  const t = useTranslations("table.noData");
+
   return (
     <tbody>
       {loading ? (
@@ -351,11 +354,10 @@ export const TableBody = ({
                 <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
               </svg>
               <p className="text-lg font-medium text-foreground">
-                No data found
+                {t("title")}
               </p>
               <p className="text-sm text-muted-foreground">
-                Try adjusting your search or filter to find what you're looking
-                for.
+                {t("description")}
               </p>
             </div>
           </td>

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Button, Checkbox, Input, Badge } from "./CustomControls";
+import { useTranslations } from "next-intl";
 
 export const TableHeader = ({
   columnOrder,
@@ -24,8 +25,8 @@ export const TableHeader = ({
   columnWidths,
   handleResizeStart,
   resizingColumn,
-  t,
 }) => {
+  const t = useTranslations("table");
   console.log("t is a function:", typeof t === "function");
 
   return (
@@ -311,11 +312,16 @@ export const TableHeader = ({
                     </svg>
                   </div>
                   <Input
-                    type={column.type === "number" ? "number" : "text"}
-                    placeholder={`Search ${column.header}...`}
-                    value={columnSearch[key] || ""}
-                    onChange={(e) => handleColumnSearch(key, e.target.value)}
-                    className="pl-8 w-full"
+                    type="text"
+                    placeholder={t(
+                      "table.search.columnPlaceholder",
+                      { column: column.header }
+                    )}
+                    value={columnSearch[column.id] || ""}
+                    onChange={(e) =>
+                      handleColumnSearch(column.id, e.target.value)
+                    }
+                    className="h-8 w-full"
                   />
                 </div>
               </td>

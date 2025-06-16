@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Button, Input, Badge } from "./CustomControls";
 import { ActionToolbar } from "../action-toolbar.jsx";
 import { SearchColumnsModal } from "./SearchColumnsModal";
+import { useTranslations } from "next-intl";
 
 export const TableToolbar = ({
   globalSearch,
@@ -26,6 +27,7 @@ export const TableToolbar = ({
   visibleColumns,
 }) => {
   const [showSearchModal, setShowSearchModal] = useState(false);
+  const t = useTranslations("table");
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-gray-50 dark:bg-muted/50 p-4">
@@ -50,7 +52,7 @@ export const TableToolbar = ({
               </svg>
             </div>
             <Input
-              placeholder="Search all columns..."
+              placeholder={t("search.placeholder")}
               value={globalSearch}
               onChange={handleGlobalSearch}
               className="w-64 pl-10 text-foreground bg-background"
@@ -101,7 +103,7 @@ export const TableToolbar = ({
                 <line x1="15" y1="9" x2="9" y2="15"></line>
                 <line x1="9" y1="9" x2="15" y2="15"></line>
               </svg>
-              Clear Search
+              {t("search.clear")}
             </Button>
           )}
 
@@ -129,7 +131,7 @@ export const TableToolbar = ({
                 <line x1="15" y1="9" x2="9" y2="15"></line>
                 <line x1="9" y1="9" x2="15" y2="15"></line>
               </svg>
-              Clear Filters
+              {t("search.clearFilters")}
             </Button>
           )}
         </div>
@@ -168,7 +170,7 @@ export const TableToolbar = ({
             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
             <line x1="9" y1="3" x2="9" y2="21"></line>
           </svg>
-          Columns
+          {t("columns.title")}
         </Button>
       </div>
 

@@ -251,8 +251,8 @@ export function Header({ toggleSidebar }) {
   };
 
   return (
-    <header className="h-[var(--header-height)] border-b bg-background flex items-center px-4 sticky top-0 z-10 shadow-md">
-      <div className="flex items-center justify-between w-full max-w-[1400px] mx-auto">
+    <header className="w-full h-16 border-b bg-background">
+      <div className="flex h-full items-center justify-between px-4" style={{ transition: "all 0.3s ease-in-out" }}>
         <div className="flex items-center gap-4">
           <Link
             href="/"
@@ -263,7 +263,7 @@ export function Header({ toggleSidebar }) {
             </div>
             <span className="font-bold text-lg hidden md:inline-block">
               {t("appName")}
-            </span>{" "}
+            </span>
           </Link>
           <SearchBar
             searchQuery={searchQuery}
@@ -272,7 +272,9 @@ export function Header({ toggleSidebar }) {
             t={t}
           />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2" style={{ transition: "all 0.3s ease-in-out" }}>
+          <LanguageSelector />
+          <ThemeToggle theme={theme} setTheme={setTheme} />
           <NotificationCenter
             notifications={notifications}
             unreadCount={unreadCount}
@@ -280,8 +282,6 @@ export function Header({ toggleSidebar }) {
             clearNotifications={clearNotifications}
             t={t}
           />
-          <LanguageSelector />
-          <ThemeToggle theme={theme} setTheme={setTheme} />
           <UserMenu />
         </div>
       </div>

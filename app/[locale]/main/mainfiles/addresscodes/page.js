@@ -56,10 +56,11 @@ function TabPanel(props) {
 
 // Loading component for Suspense
 function AddressCodesPageLoading() {
+  const t = useTranslations("addressCodes");
   return (
     <div className="flex justify-center items-center min-h-screen">
       <CircularProgress />
-      <span className="ml-2">Loading address codes...</span>
+      <span className="ml-2">{t("loading")}</span>
     </div>
   );
 }
@@ -306,10 +307,10 @@ function AddressCodesPage() {
 
       if (response.status) {
         toast.success({
-          title: "success",
-          description:
-            response.message ||
-            `${type} ${isEditMode ? "updated" : "created"} successfully`,
+          title: t("toast.success"),
+          description: isEditMode
+            ? t("toast.countryUpdatedSuccessfully")
+            : t("toast.countryCreatedSuccessfully"),
           isTranslated: true,
         });
 

@@ -334,6 +334,7 @@ const internalToast = {
     title: string;
     description?: string;
     duration?: number;
+    isTranslated?: boolean;
   }) => {
     // This implementation will be replaced at runtime
   },
@@ -341,6 +342,7 @@ const internalToast = {
     title: string;
     description?: string;
     duration?: number;
+    isTranslated?: boolean;
   }) => {
     // This implementation will be replaced at runtime
   },
@@ -348,6 +350,7 @@ const internalToast = {
     title: string;
     description?: string;
     duration?: number;
+    isTranslated?: boolean;
   }) => {
     // This implementation will be replaced at runtime
   },
@@ -355,6 +358,7 @@ const internalToast = {
     title: string;
     description?: string;
     duration?: number;
+    isTranslated?: boolean;
   }) => {
     // This implementation will be replaced at runtime
   },

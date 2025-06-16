@@ -2,6 +2,29 @@
 
 import React from "react";
 import { Button, Input, Select } from "./CustomControls";
+import { useTranslations, useLocale } from "next-intl";
+
+// Function to convert numbers to Arabic numerals
+const toArabicNumeral = (num) => {
+  const arabicNumerals = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
+  return num.toString().replace(/[0-9]/g, (d) => arabicNumerals[d]);
+};
+
+// Function to convert Arabic numerals to English numerals
+const toEnglishNumeral = (num) => {
+  const englishNumerals = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+  return num
+    .toString()
+    .replace(
+      /[\u0660-\u0669]/g,
+      (d) => englishNumerals[d.charCodeAt(0) - 0x0660]
+    );
+};
+
+const formatNumber = (num, locale) => {
+  if (locale === "ar") return toArabicNumeral(num);
+  return num;
+};
 
 export const TablePagination = ({
   currentPage,
@@ -16,6 +39,9 @@ export const TablePagination = ({
   setRowsPerPage,
   setCurrentPage,
 }) => {
+  const t = useTranslations("table.pagination");
+  const locale = useLocale();
+
   const renderPaginationItems = () => {
     const items = [];
     const maxVisiblePages = 5;
@@ -39,7 +65,7 @@ export const TablePagination = ({
               : "border-border"
           }`}
         >
-          {i}
+          {formatNumber(i, locale)}
         </Button>
       );
     }
@@ -53,19 +79,28 @@ export const TablePagination = ({
       <div className="flex-shrink-0">
         <div className="flex items-center text-sm text-gray-700">
           <span>
-            Showing{" "}
+            {t("showing")}{" "}
             <span className="font-medium">
-              {Math.min(
-                (currentPage - 1) * rowsPerPage + 1,
-                filteredData.length
+              {formatNumber(
+                Math.min(
+                  (currentPage - 1) * rowsPerPage + 1,
+                  filteredData.length
+                ),
+                locale
               )}
             </span>{" "}
-            to{" "}
+            {t("to")}{" "}
             <span className="font-medium">
-              {Math.min(currentPage * rowsPerPage, filteredData.length)}
+              {formatNumber(
+                Math.min(currentPage * rowsPerPage, filteredData.length),
+                locale
+              )}
             </span>{" "}
-            of <span className="font-medium">{filteredData.length}</span>{" "}
-            results
+            {t("of")}{" "}
+            <span className="font-medium">
+              {formatNumber(filteredData.length, locale)}
+            </span>{" "}
+            {t("results")}
           </span>
         </div>
       </div>
@@ -83,7 +118,7 @@ export const TablePagination = ({
             disabled={currentPage === 1}
             className="rounded-l-md"
           >
-            <span className="sr-only">First</span>
+            <span className="sr-only">{t("first")}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -105,7 +140,7 @@ export const TablePagination = ({
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            <span className="sr-only">Previous</span>
+            <span className="sr-only">{t("previous")}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -130,7 +165,7 @@ export const TablePagination = ({
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages || totalPages === 0}
           >
-            <span className="sr-only">Next</span>
+            <span className="sr-only">{t("next")}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -152,7 +187,7 @@ export const TablePagination = ({
             onClick={() => handlePageChange(totalPages)}
             disabled={currentPage === totalPages || totalPages === 0}
           >
-            <span className="sr-only">Last</span>
+            <span className="sr-only">{t("last")}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -170,25 +205,99 @@ export const TablePagination = ({
           </Button>
         </nav>
         {/* Jump to page input */}
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center space-x-1 relative">
+          <button
+            type="button"
+            onClick={() => {
+              let value = Number(jumpToPageInput) - 1;
+              if (value < 1) value = 1;
+              handleJumpToPageInputChange({
+                target: { value: value.toString() },
+              });
+            }}
+            className="h-8 w-8 flex items-center justify-center rounded-md border border-border bg-background text-foreground hover:bg-muted focus:outline-none"
+            tabIndex={-1}
+            aria-label="Decrement"
+          >
+            -
+          </button>
           <Input
-            type="number"
+            type="text"
             value={jumpToPageInput}
-            onChange={handleJumpToPageInputChange}
+            onChange={(e) => {
+              // Only allow numbers
+              let value = e.target.value.replace(/[^0-9\u0660-\u0669]/g, "");
+              // Convert Arabic numerals to English for logic
+              if (locale === "ar") {
+                value = toEnglishNumeral(value);
+              }
+              // Prevent leading zeros
+              value = value.replace(/^0+/, "");
+              // Clamp value
+              if (value && Number(value) > totalPages)
+                value = totalPages.toString();
+              handleJumpToPageInputChange({ target: { value } });
+            }}
             onKeyPress={handleJumpToPageKeyPress}
-            className="h-8 w-16 rounded-md border-border text-foreground bg-background text-sm shadow-sm focus:border-primary focus:ring-primary"
-            placeholder="Page"
+            className="h-8 w-32 rounded-md border-border text-foreground bg-background text-sm shadow-sm focus:border-primary focus:ring-primary pr-8 text-center"
+            placeholder={t("jumpTo")}
             min="1"
             max={totalPages}
             aria-label="Jump to page"
+            style={
+              locale === "ar"
+                ? {
+                    color: "transparent",
+                    textShadow: "none",
+                    caretColor: "#fff",
+                  }
+                : {}
+            }
+            inputMode="numeric"
+            autoComplete="off"
           />
+          {locale === "ar" && (
+            <span
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "50%",
+                transform: "translate(-50%, -50%)",
+                pointerEvents: "none",
+                color: "var(--foreground, #fff)",
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                direction: "ltr",
+                letterSpacing: "0.05em",
+                width: "100%",
+                textAlign: "center",
+              }}
+            >
+              {toArabicNumeral(jumpToPageInput)}
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={() => {
+              let value = Number(jumpToPageInput) + 1;
+              if (value > totalPages) value = totalPages;
+              handleJumpToPageInputChange({
+                target: { value: value.toString() },
+              });
+            }}
+            className="h-8 w-8 flex items-center justify-center rounded-md border border-border bg-background text-foreground hover:bg-muted focus:outline-none"
+            tabIndex={-1}
+            aria-label="Increment"
+          >
+            +
+          </button>
           <Button
             variant="outline"
             size="sm"
             onClick={handleJumpToPage}
             className="h-8"
           >
-            Go
+            {t("go")}
           </Button>
         </div>
       </div>
@@ -197,7 +306,7 @@ export const TablePagination = ({
       <div className="flex-shrink-0">
         <div className="flex items-center space-x-2">
           <span className="text-sm text-gray-700 dark:text-gray-200 whitespace-nowrap">
-            Rows per page:
+            {t("rowsPerPage")}:
           </span>
           <Select
             value={rowsPerPage}
@@ -208,16 +317,16 @@ export const TablePagination = ({
             className="h-8 w-16 text-foreground bg-background"
           >
             <option value={10} className="bg-background text-foreground">
-              10
+              {formatNumber(10, locale)}
             </option>
             <option value={25} className="bg-background text-foreground">
-              25
+              {formatNumber(25, locale)}
             </option>
             <option value={50} className="bg-background text-foreground">
-              50
+              {formatNumber(50, locale)}
             </option>
             <option value={100} className="bg-background text-foreground">
-              100
+              {formatNumber(100, locale)}
             </option>
           </Select>
         </div>

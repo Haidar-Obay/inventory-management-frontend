@@ -158,10 +158,13 @@
     "failedToFetchData": "فشل في جلب البيانات",
     "sidebarInfo": "رسالة معلومات الشريط الجانبي.",
     "sidebarSuccess": "تمت العملية بنجاح في الشريط الجانبي.",
-    "sidebarError": "فشلت العملية في الشريط الجانبي."
+    "sidebarError": "فشلت العملية في الشريط الجانبي.",
+    "countryUpdatedSuccessfully": "تم تحديث الدولة بنجاح",
+    "countryCreatedSuccessfully": "تم إنشاء الدولة بنجاح"
   },
   "addressCodes": {
     "title": "إدارة رموز العناوين",
+    "loading": "جاري تحميل رموز العناوين...",
     "tabs": {
       "countries": "الدول",
       "provinces": "المناطق",
@@ -188,10 +191,20 @@
       "updateError": "فشل التحديث",
       "createError": "فشل الإنشاء"
     },
-    "actions": "الإجراءات"
+    "actions": "الإجراءات",
+    "table": {
+      "search": {
+        "placeholder": "البحث في جميع الأعمدة...",
+        "columnPlaceholder": "البحث في {column}...",
+        "clear": "مسح البحث",
+        "clearFilters": "مسح الفلاتر",
+        "activeFilters": "الفلاتر النشطة"
+      }
+    }
   },
   "sections": {
     "title": "إدارة الأقسام",
+    "loading": "جاري تحميل الأقسام...",
     "tabs": {
       "projects": "المشاريع",
       "costCenters": "مراكز التكلفة",
@@ -201,12 +214,21 @@
       "jobs": "الوظائف"
     },
     "management": {
-      "projects": "إدارة المشاريع",
-      "costCenters": "إدارة مراكز التكلفة",
-      "departments": "إدارة الأقسام",
-      "trades": "إدارة الحرف",
-      "companyCodes": "إدارة رموز الشركة",
-      "jobs": "إدارة الوظائف"
+      "project": "المشروع",
+      "projects": "المشاريع",
+      "costCenter": "مركز التكلفة",
+      "costCenters": "مراكز التكلفة",
+      "department": "القسم",
+      "departments": "الأقسام",
+      "trade": "الحرفة",
+      "trades": "الحرف",
+      "companyCode": "رمز الشركة",
+      "companyCodes": "رموز الشركة",
+      "job": "الوظيفة",
+      "jobs": "الوظائف",
+      "description": "الوصف",
+      "add": "إضافة",
+      "edit": "تعديل"
     },
     "messages": {
       "exportSuccess": "تم التصدير بنجاح",
@@ -230,5 +252,109 @@
     "actions": "الإجراءات",
     "createdAt": "تاريخ الإنشاء",
     "updatedAt": "تاريخ التحديث"
+  },
+  "table": {
+    "search": {
+      "placeholder": "البحث في جميع الأعمدة...",
+      "columnPlaceholder": "البحث في {column}...",
+      "clear": "مسح البحث",
+      "clearFilters": "مسح الفلاتر",
+      "activeFilters": "الفلاتر النشطة"
+    },
+    "actions": "الإجراءات",
+    "columns": {
+      "title": "الأعمدة",
+      "modal": {
+        "title": "إظهار الأعمدة",
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "selectAll": "تحديد الكل",
+        "deselectAll": "إلغاء تحديد الكل"
+      }
+    },
+    "filter": {
+      "modal": {
+        "title": "تصفية",
+        "type": "نوع التصفية",
+        "cancel": "إلغاء",
+        "save": "تطبيق",
+        "selectFromValues": "اختر من القيم المتاحة",
+        "selectFilterType": "اختر نوع التصفية"
+      },
+      "types": {
+        "equals": "يساوي",
+        "contains": "يحتوي على",
+        "startsWith": "يبدأ بـ",
+        "endsWith": "ينتهي بـ",
+        "before": "قبل",
+        "after": "بعد",
+        "between": "بين",
+        "greaterThan": "أكبر من",
+        "lessThan": "أقل من"
+      }
+    },
+    "searchColumns": {
+      "title": "اختر أعمدة البحث",
+      "description": "اختر الأعمدة المطلوب تضمينها في البحث",
+      "selectAll": "تحديد الكل",
+      "deselectAll": "إلغاء تحديد الكل",
+      "hidden": "(مخفي)",
+      "cancel": "إلغاء",
+      "saveChanges": "حفظ التغييرات"
+    },
+    "delete": {
+      "modal": {
+        "title": "تأكيد الحذف",
+        "message": "هل أنت متأكد من حذف هذا العنصر؟",
+        "confirm": "حذف",
+        "cancel": "إلغاء"
+      }
+    },
+    "pagination": {
+      "showing": "عرض",
+      "to": "إلى",
+      "of": "من",
+      "entries": "سجلات",
+      "results": "نتائج",
+      "rowsPerPage": "عدد الصفوف في الصفحة",
+      "jumpTo": "انتقل إلى",
+      "go": "انتقل",
+      "page": "صفحة",
+      "next": "التالي",
+      "previous": "السابق",
+      "first": "الأول",
+      "last": "الأخير"
+    },
+    "toolbar": {
+      "add": "إضافة",
+      "exportExcel": "تصدير إلى Excel",
+      "exportPdf": "تصدير إلى PDF",
+      "print": "طباعة",
+      "refresh": "تحديث",
+      "importExcel": "استيراد من Excel",
+      "save": "حفظ",
+      "saveAndNew": "حفظ وإضافة جديد",
+      "saveAndExit": "حفظ وإغلاق",
+      "cancel": "إلغاء",
+      "apply": "تطبيق",
+      "reset": "إعادة تعيين",
+      "close": "إغلاق",
+      "search": "بحث",
+      "filter": "تصفية",
+      "sort": "ترتيب",
+      "actions": "إجراءات",
+      "settings": "إعدادات",
+      "more": "المزيد",
+      "loading": "جاري التحميل...",
+      "noData": "لا توجد بيانات",
+      "error": "خطأ في تحميل البيانات",
+      "success": "تمت العملية بنجاح",
+      "warning": "تحذير",
+      "info": "معلومات"
+    },
+    "noData": {
+      "title": "لم يتم العثور على بيانات",
+      "description": "حاول تعديل البحث أو التصفية للعثور على ما تبحث عنه."
+    }
   }
 }

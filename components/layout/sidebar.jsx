@@ -193,91 +193,137 @@ const GroupHeader = ({
   t,
   isMainFiles = false,
   isRTL,
+  isSupport = false,
 }) => {
+  const [popoverOpen, setPopoverOpen] = useState(false);
+
   if (!isCollapsed) {
     return (
-      <h3
-        className={cn(
-          "text-[15px] font-medium bg-primary-foreground/5 rounded-md",
-          isMainFiles ? "p-2" : "px-6 py-3"
+      <>
+        {isSupport && (
+          <div
+            className={cn(
+              "w-full",
+              isRTL ? "border-b-2 mb-6 mt-2" : "border-t-2 mt-6 mb-2",
+              "border-primary-foreground/20"
+            )}
+          />
         )}
-      >
-        {groupName}
-      </h3>
+        <h3
+          className={cn(
+            "text-[15px] font-medium bg-primary-foreground/5 rounded-md",
+            isMainFiles ? "p-2" : "px-6 py-3"
+          )}
+        >
+          {groupName}
+        </h3>
+      </>
     );
   }
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <button className="w-full flex justify-center p-2 rounded-md transition-colors duration-200 hover:bg-primary-foreground/20 active:bg-primary-foreground/30">
-          <GroupIcon className="h-5 w-5" />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent
-        side="right"
-        align="start"
-        className="w-56 p-2 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
-        sideOffset={11}
-        alignOffset={-8}
-      >
-        <div className="space-y-2">
-          <h3 className="text-[15px] font-medium px-2 py-1 bg-primary-foreground/5 rounded-md">
+    <>
+      {isSupport && (
+        <div
+          className={cn(
+            "w-full",
+            isRTL ? "border-b-2 mb-6 mt-2" : "border-t-2 mt-6 mb-2",
+            "border-primary-foreground/20"
+          )}
+        />
+      )}
+      {!popoverOpen && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              className="w-full flex justify-center p-2 rounded-md transition-colors duration-200 hover:bg-primary-foreground/20 active:bg-primary-foreground/30"
+              onClick={() => setPopoverOpen(true)}
+            >
+              <GroupIcon className="h-5 w-5" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side={isRTL ? "left" : "right"}>
             {groupName}
-          </h3>
-          <div className="space-y-1">
-            {filterItemsByRole(groupItems).map((item) => {
-              if (item.type === "group") {
-                return (
-                  <div key={item.name} className="space-y-1">
-                    <h4 className="text-sm font-medium px-2 py-1 text-primary-foreground/70">
-                      {item.name}
-                    </h4>
-                    {item.items.map((subItem) => {
-                      const SubIcon = iconMap[subItem.icon];
-                      return (
-                        <SidebarItem
-                          key={subItem.name}
-                          name={subItem.name}
-                          icon={SubIcon}
-                          path={subItem.path}
-                          isCollapsed={false}
-                          isBookmarked={bookmarks.includes(subItem.name)}
-                          isActive={activeItem === subItem.name.toLowerCase()}
-                          onNavigate={handleNavigation}
-                          onToggleBookmark={toggleBookmark}
-                          padding="px-2"
-                          t={t}
-                          isRTL={isRTL}
-                        />
-                      );
-                    })}
-                  </div>
-                );
-              }
+          </TooltipContent>
+        </Tooltip>
+      )}
+      <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+        <PopoverTrigger asChild>
+          {popoverOpen && (
+            <button
+              type="button"
+              className="w-full flex justify-center p-2 rounded-md transition-colors duration-200 hover:bg-primary-foreground/20 active:bg-primary-foreground/30"
+            >
+              <GroupIcon className="h-5 w-5" />
+            </button>
+          )}
+        </PopoverTrigger>
+        <PopoverContent
+          side={isRTL ? "left" : "right"}
+          align="start"
+          className="w-56 p-2 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
+          sideOffset={11}
+          alignOffset={-8}
+        >
+          <div className="space-y-2">
+            <h3 className="text-[15px] font-medium px-2 py-1 bg-primary-foreground/5 rounded-md">
+              {groupName}
+            </h3>
+            <div className="space-y-1">
+              {filterItemsByRole(groupItems).map((item) => {
+                if (item.type === "group") {
+                  return (
+                    <div key={item.name} className="space-y-1">
+                      <h4 className="text-sm font-medium px-2 py-1 text-primary-foreground/70">
+                        {item.name}
+                      </h4>
+                      {item.items.map((subItem) => {
+                        const SubIcon = iconMap[subItem.icon];
+                        return (
+                          <SidebarItem
+                            key={subItem.name}
+                            name={subItem.name}
+                            icon={SubIcon}
+                            path={subItem.path}
+                            isCollapsed={false}
+                            isBookmarked={bookmarks.includes(subItem.name)}
+                            isActive={activeItem === subItem.name.toLowerCase()}
+                            onNavigate={handleNavigation}
+                            onToggleBookmark={toggleBookmark}
+                            padding="px-2"
+                            t={t}
+                            isRTL={isRTL}
+                          />
+                        );
+                      })}
+                    </div>
+                  );
+                }
 
-              const Icon = iconMap[item.icon];
-              return (
-                <SidebarItem
-                  key={item.name}
-                  name={item.name}
-                  icon={Icon}
-                  path={item.path}
-                  isCollapsed={false}
-                  isBookmarked={bookmarks.includes(item.name)}
-                  isActive={activeItem === item.name.toLowerCase()}
-                  onNavigate={handleNavigation}
-                  onToggleBookmark={toggleBookmark}
-                  padding="px-2"
-                  t={t}
-                  isRTL={isRTL}
-                />
-              );
-            })}
+                const Icon = iconMap[item.icon];
+                return (
+                  <SidebarItem
+                    key={item.name}
+                    name={item.name}
+                    icon={Icon}
+                    path={item.path}
+                    isCollapsed={false}
+                    isBookmarked={bookmarks.includes(item.name)}
+                    isActive={activeItem === item.name.toLowerCase()}
+                    onNavigate={handleNavigation}
+                    onToggleBookmark={toggleBookmark}
+                    padding="px-2"
+                    t={t}
+                    isRTL={isRTL}
+                  />
+                );
+              })}
+            </div>
           </div>
-        </div>
-      </PopoverContent>
-    </Popover>
+        </PopoverContent>
+      </Popover>
+    </>
   );
 };
 
@@ -476,75 +522,6 @@ const NestedGroup = ({
   return isPopover ? renderPopover() : renderCollapsible();
 };
 
-// Component for rendering support section
-const SupportSection = ({
-  isCollapsed,
-  toggleSidebar,
-  menuItems,
-  bookmarks,
-  activeItem,
-  handleNavigation,
-  toggleBookmark,
-  iconMap,
-  t,
-  isRTL,
-}) => {
-  const supportItems = menuItems.support?.items || [];
-
-  return (
-    <>
-      <div className="border-t border-primary-foreground/10 my-4"></div>
-      <div className={cn("px-4 mb-2", isCollapsed && "mb-6")}>
-        {/* {!isCollapsed && (
-          <h3 className="text-[15px] font-medium p-2 bg-primary-foreground/5 rounded-md">
-            Support
-          </h3>
-        )} */}
-        {isCollapsed && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                className="w-full flex justify-center p-2 rounded-md transition-colors duration-200 hover:bg-primary-foreground/20 active:bg-primary-foreground/30"
-                onClick={() => {
-                  if (isCollapsed) toggleSidebar();
-                }}
-              >
-                <LifeBuoy className="h-5 w-5" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="right">Support</TooltipContent>
-          </Tooltip>
-        )}
-      </div>
-
-      {!isCollapsed && (
-        <ul className="space-y-1 mt-1">
-          {supportItems.map((item) => {
-            const Icon = iconMap[item.icon];
-            return (
-              <li key={item.name}>
-                <SidebarItem
-                  name={item.name}
-                  icon={Icon}
-                  path={item.path}
-                  isCollapsed={isCollapsed}
-                  isBookmarked={bookmarks.includes(item.name)}
-                  isActive={activeItem === item.name.toLowerCase()}
-                  onNavigate={handleNavigation}
-                  onToggleBookmark={toggleBookmark}
-                  padding="px-8"
-                  t={t}
-                  isRTL={isRTL}
-                />
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </>
-  );
-};
-
 export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   const t = useTranslations("sidebar");
   const router = useRouter();
@@ -578,7 +555,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
     getRoleFromCookies();
 
     // Initialize expandedGroups state for all menu categories
-    const groupKeys = Object.keys(menuItems).filter((key) => key !== "support");
+    const groupKeys = Object.keys(menuItems);
     const initialExpandedGroups = groupKeys.reduce((acc, key) => {
       acc[key] = true; // Expand all groups by default
       return acc;
@@ -761,11 +738,10 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
 
           {/* Dynamic Menu Groups */}
           {Object.entries(menuItems).map(([groupName, groupData], index) => {
-            if (groupName === "support") return null;
-
             const groupItems = groupData.items || groupData;
             const GroupIcon = iconMap[groupData.groupIcon] || LayoutDashboard;
             const isMainFiles = groupName.toLowerCase().includes("mainfiles");
+            const isSupport = groupData.groupIcon === "LifeBuoy";
 
             // Filter items based on role
             const filteredItems = filterItemsByRole(groupItems);
@@ -774,51 +750,40 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
             if (filteredItems.length === 0) return null;
 
             return (
-              <div key={groupName} className="mb-4">
-                <GroupHeader
-                  groupName={groupName}
-                  GroupIcon={GroupIcon}
-                  isCollapsed={isCollapsed}
-                  groupItems={filteredItems}
-                  filterItemsByRole={filterItemsByRole}
-                  bookmarks={bookmarks}
-                  activeItem={activeItem}
-                  handleNavigation={handleNavigation}
-                  toggleBookmark={toggleBookmark}
-                  iconMap={iconMap}
-                  t={t}
-                  isMainFiles={isMainFiles}
-                  isRTL={isRTL}
-                />
-                <GroupItems
-                  groupItems={filteredItems}
-                  isCollapsed={isCollapsed}
-                  activeItem={activeItem}
-                  bookmarks={bookmarks}
-                  handleNavigation={handleNavigation}
-                  toggleBookmark={toggleBookmark}
-                  iconMap={iconMap}
-                  t={t}
-                  isMainFiles={isMainFiles}
-                  isRTL={isRTL}
-                />
+              <div key={groupName}>
+                <div className="mb-4">
+                  <GroupHeader
+                    groupName={groupName}
+                    GroupIcon={GroupIcon}
+                    isCollapsed={isCollapsed}
+                    groupItems={filteredItems}
+                    filterItemsByRole={filterItemsByRole}
+                    bookmarks={bookmarks}
+                    activeItem={activeItem}
+                    handleNavigation={handleNavigation}
+                    toggleBookmark={toggleBookmark}
+                    iconMap={iconMap}
+                    t={t}
+                    isMainFiles={isMainFiles}
+                    isRTL={isRTL}
+                    isSupport={isSupport}
+                  />
+                  <GroupItems
+                    groupItems={filteredItems}
+                    isCollapsed={isCollapsed}
+                    activeItem={activeItem}
+                    bookmarks={bookmarks}
+                    handleNavigation={handleNavigation}
+                    toggleBookmark={toggleBookmark}
+                    iconMap={iconMap}
+                    t={t}
+                    isMainFiles={isMainFiles}
+                    isRTL={isRTL}
+                  />
+                </div>
               </div>
             );
           })}
-
-          {/* Support Section */}
-          <SupportSection
-            isCollapsed={isCollapsed}
-            toggleSidebar={toggleSidebar}
-            menuItems={menuItems}
-            bookmarks={bookmarks}
-            activeItem={activeItem}
-            handleNavigation={handleNavigation}
-            toggleBookmark={toggleBookmark}
-            iconMap={iconMap}
-            t={t}
-            isRTL={isRTL}
-          />
         </div>
 
         {/* Logout Section */}

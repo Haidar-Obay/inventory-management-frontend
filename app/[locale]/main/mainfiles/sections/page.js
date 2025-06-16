@@ -6,7 +6,8 @@ import Table from "@/components/ui/table/Table";
 import SectionDrawer from "@/components/ui/drawers/SectionDrawer";
 import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { useTabLinePosition } from "@/hooks/useTabLinePosition";
 import {
   getProjects,
   getCostCenters,
@@ -55,10 +56,11 @@ function TabPanel(props) {
 
 // Loading component for Suspense
 function SectionsPageLoading() {
+  const t = useTranslations("sections");
   return (
     <div className="flex justify-center items-center min-h-screen">
       <CircularProgress />
-      <span className="ml-2">Loading sections...</span>
+      <span className="ml-2">{t("loading")}</span>
     </div>
   );
 }
@@ -76,6 +78,9 @@ export default function SectionsPageWrapper() {
 function SectionsPage() {
   const t = useTranslations("sections");
   const tableT = useTranslations("tableColumns");
+  const locale = useLocale();
+  const isRTL = locale === "ar";
+  const { key, tabStyles } = useTabLinePosition();
   const {
     projectColumns,
     costCenterColumns,
@@ -542,9 +547,14 @@ function SectionsPage() {
       <Box sx={{ width: "100%" }}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
+            key={key}
             value={value}
             onChange={handleChange}
             aria-label="sections tabs"
+            sx={{
+              ...tabStyles,
+              direction: isRTL ? "rtl" : "ltr",
+            }}
           >
             <Tab label={t("tabs.projects")} />
             <Tab label={t("tabs.costCenters")} />

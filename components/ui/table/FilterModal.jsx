@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Button, Select, Input, DatePicker } from "./CustomControls";
+import { useTranslations } from "next-intl";
 
 export const FilterModal = ({
   isOpen,
@@ -15,6 +16,8 @@ export const FilterModal = ({
   onFilterValueChange,
   uniqueValues = [],
 }) => {
+  const t = useTranslations("table.filter");
+
   if (!isOpen) return null;
 
   const handleBackdropClick = (e) => {
@@ -44,31 +47,31 @@ export const FilterModal = ({
 
     if (column.type === "date") {
       options = [
-        { value: "equals", label: "Equals" },
-        { value: "before", label: "Before" },
-        { value: "after", label: "After" },
-        { value: "between", label: "Between" },
+        { value: "equals", label: t("types.equals") },
+        { value: "before", label: t("types.before") },
+        { value: "after", label: t("types.after") },
+        { value: "between", label: t("types.between") },
       ];
     } else if (column.type === "number") {
-      options = [
-        { value: "equals", label: "Equals" },
-        { value: "greaterThan", label: "Greater than" },
-        { value: "lessThan", label: "Less than" },
-        { value: "between", label: "Between" },
+      options = [ 
+        { value: "equals", label: t("types.equals") },
+        { value: "greaterThan", label: t("types.greaterThan") },
+        { value: "lessThan", label: t("types.lessThan") },
+        { value: "between", label: t("types.between") },
       ];
     } else {
       options = [
-        { value: "equals", label: "Equals" },
-        { value: "contains", label: "Contains" },
-        { value: "startsWith", label: "Starts with" },
-        { value: "endsWith", label: "Ends with" },
+        { value: "equals", label: t("types.equals") },
+        { value: "contains", label: t("types.contains") },
+        { value: "startsWith", label: t("types.startsWith") },
+        { value: "endsWith", label: t("types.endsWith") },
       ];
     }
 
     return (
       <div>
         <label className="block text-sm font-medium text-foreground mb-1">
-          Filter Type
+          {t("modal.type")}
         </label>
         <Select
           value={filterType}
@@ -80,7 +83,7 @@ export const FilterModal = ({
           }}
           className="w-full"
         >
-          <option value="">Select filter type</option>
+          <option value="">{t("modal.selectFilterType")}</option>
           {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -191,9 +194,11 @@ export const FilterModal = ({
                 onChange={(e) => onFilterValueChange(columnKey, e.target.value)}
                 className="w-full mt-2"
               >
-                <option value="">Select from available values</option>
+                <option value="">{t("modal.selectFromValues")}</option>
                 {availableValues.map((val, idx) => (
-                  <option key={idx} value={val}>{val}</option>
+                  <option key={idx} value={val}>
+                    {val}
+                  </option>
                 ))}
               </Select>
             )}
@@ -214,9 +219,11 @@ export const FilterModal = ({
                 onChange={(e) => onFilterValueChange(columnKey, e.target.value)}
                 className="w-full mt-2"
               >
-                <option value="">Select from available values</option>
+                <option value="">{t("modal.selectFromValues")}</option>
                 {availableValues.map((val, idx) => (
-                  <option key={idx} value={val}>{val}</option>
+                  <option key={idx} value={val}>
+                    {val}
+                  </option>
                 ))}
               </Select>
             )}
@@ -226,14 +233,14 @@ export const FilterModal = ({
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
       onClick={handleBackdropClick}
     >
       <div className="w-full max-w-md rounded-lg bg-background p-6 shadow-lg border border-border">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-medium text-foreground">
-            Filter {column?.header || selectedColumn}
+            {t("modal.title")} {column?.header || selectedColumn}
           </h3>
           <button
             onClick={onCancel}
@@ -265,14 +272,14 @@ export const FilterModal = ({
             onClick={onCancel}
             className="border-border"
           >
-            Cancel
+            {t("modal.cancel")}
           </Button>
           <Button
             variant="primary"
             onClick={onSave}
             className="bg-primary text-primary-foreground hover:bg-primary/90"
           >
-            Apply Filter
+            {t("modal.save")}
           </Button>
         </div>
       </div>
