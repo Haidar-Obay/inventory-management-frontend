@@ -1,15 +1,24 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Drawer, Box, Typography, TextField, Button, Stack, Grid, Autocomplete } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import {
+  Drawer,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Stack,
+  Grid,
+  Autocomplete,
+} from "@mui/material";
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { getCustomerNames, getCostCenterNames } from '@/API/Customers';
-import { getCostCenterNames as getCostCenterNamesFromSections } from '@/API/Sections';
-import { getDepartmentNames as getDepartmentNamesFromSections } from '@/API/Sections';
-import { getProjectNames as getProjectNamesFromSections } from '@/API/Sections';
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { getCustomerNames, getCostCenterNames } from "@/API/Customers";
+import { getCostCenterNames as getCostCenterNamesFromSections } from "@/API/Sections";
+import { getDepartmentNames as getDepartmentNamesFromSections } from "@/API/Sections";
+import { getProjectNames as getProjectNamesFromSections } from "@/API/Sections";
 import { useTranslations, useLocale } from "next-intl";
 
 const SectionDrawer = ({
@@ -23,7 +32,7 @@ const SectionDrawer = ({
   onFormDataChange,
   isEdit = false,
 }) => {
-  const [expandedAccordion, setExpandedAccordion] = useState('panel1');
+  const [expandedAccordion, setExpandedAccordion] = useState("panel1");
   const [customers, setCustomers] = useState([]);
   const [costCenterOptions, setCostCenterOptions] = useState([]);
   const [departmentOptions, setDepartmentOptions] = useState([]);
@@ -34,16 +43,16 @@ const SectionDrawer = ({
   const isRTL = locale === "ar";
 
   useEffect(() => {
-    if (type === 'project' && isOpen) {
+    if (type === "project" && isOpen) {
       fetchCustomers();
     }
-    if (type === 'costCenter' && isOpen) {
+    if (type === "costCenter" && isOpen) {
       fetchCostCenterNames();
     }
-    if (type === 'department' && isOpen) {
+    if (type === "department" && isOpen) {
       fetchDepartmentNames();
     }
-    if (type === 'job' && isOpen) {
+    if (type === "job" && isOpen) {
       fetchProjectNames();
     }
   }, [type, isOpen]);
@@ -54,7 +63,7 @@ const SectionDrawer = ({
       const response = await getCustomerNames();
       setCustomers(response.data || []);
     } catch (error) {
-      console.error('Error fetching customers:', error);
+      console.error("Error fetching customers:", error);
     } finally {
       setLoading(false);
     }
@@ -66,7 +75,7 @@ const SectionDrawer = ({
       const response = await getCostCenterNamesFromSections();
       setCostCenterOptions(response.data || []);
     } catch (error) {
-      console.error('Error fetching cost center names:', error);
+      console.error("Error fetching cost center names:", error);
     } finally {
       setLoading(false);
     }
@@ -78,7 +87,7 @@ const SectionDrawer = ({
       const response = await getDepartmentNamesFromSections();
       setDepartmentOptions(response.data || []);
     } catch (error) {
-      console.error('Error fetching department names:', error);
+      console.error("Error fetching department names:", error);
     } finally {
       setLoading(false);
     }
@@ -90,7 +99,7 @@ const SectionDrawer = ({
       const response = await getProjectNamesFromSections();
       setProjectOptions(response.data || []);
     } catch (error) {
-      console.error('Error fetching project names:', error);
+      console.error("Error fetching project names:", error);
     } finally {
       setLoading(false);
     }
@@ -103,47 +112,49 @@ const SectionDrawer = ({
   const handleFieldChange = (field) => (event) => {
     onFormDataChange({
       ...formData,
-      [field]: event.target.value
+      [field]: event.target.value,
     });
   };
 
   const handleDateChange = (field) => (date) => {
     onFormDataChange({
       ...formData,
-      [field]: date
+      [field]: date,
     });
   };
 
   const handleCustomerChange = (event, newValue) => {
     onFormDataChange({
       ...formData,
-      customer_id: newValue?.id || '',
-      customer_name: newValue?.name || ''
+      customer_id: newValue?.id || "",
+      customer_name: newValue?.name || "",
     });
   };
 
   const handleSubCostCenterChange = (event, newValue) => {
     onFormDataChange({
       ...formData,
-      sub_cost_center_of: newValue?.id || ''
+      sub_cost_center_of: newValue?.id || "",
     });
   };
 
   const handleSubDepartmentChange = (event, newValue) => {
     onFormDataChange({
       ...formData,
-      sub_department_of: newValue?.id || ''
+      sub_department_of: newValue?.id || "",
     });
   };
 
   const handleProjectChange = (event, newValue) => {
     onFormDataChange({
       ...formData,
-      project_id: newValue?.id || ''
+      project_id: newValue?.id || "",
     });
   };
 
   const getPluralType = (type) => {
+    if (!type) return "";
+
     switch (type) {
       case "project":
         return "projects";
@@ -158,462 +169,516 @@ const SectionDrawer = ({
       case "job":
         return "jobs";
       default:
-        return type;
+        return type + "s";
     }
   };
 
   const getAccordionContent = () => {
-    if (type === 'project') {
-      return [{
-        title: isEdit ? t('management.editProject') : t('management.addProject'),
-        expanded: expandedAccordion === 'panel1',
-        onChange: handleAccordionChange('panel1'),
-        content: (
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label={t('management.projectName')}
-                variant="outlined"
-                size="small"
-                value={formData?.name || ''}
-                onChange={handleFieldChange('name')}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} md={6} sx={{ width: '100%' }}>
-              <Autocomplete
-                fullWidth
-                options={customers}
-                getOptionLabel={(option) => option.name || ''}
-                value={customers.find(c => c.id === formData?.customer_id) || null}
-                onChange={handleCustomerChange}
-                loading={loading}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label={t('management.customer')}
-                    variant="outlined"
-                    size="small"
-                    required
+    if (!type) return [];
+
+    if (type === "project") {
+      return [
+        {
+          title: isEdit
+            ? t("management.editProject")
+            : t("management.addProject"),
+          expanded: expandedAccordion === "panel1",
+          onChange: handleAccordionChange("panel1"),
+          content: (
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  label={t("management.projectName")}
+                  variant="outlined"
+                  size="small"
+                  value={formData?.name || ""}
+                  onChange={handleFieldChange("name")}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={6} sx={{ width: "100%" }}>
+                <Autocomplete
+                  fullWidth
+                  options={customers}
+                  getOptionLabel={(option) => option.name || ""}
+                  value={
+                    customers.find((c) => c.id === formData?.customer_id) ||
+                    null
+                  }
+                  onChange={handleCustomerChange}
+                  loading={loading}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label={t("management.customer")}
+                      variant="outlined"
+                      size="small"
+                      required
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} md={4} sx={{ width: "100%" }}>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label={t("management.startDate")}
+                    value={formData?.start_date || null}
+                    onChange={handleDateChange("start_date")}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        size: "small",
+                        variant: "outlined",
+                      },
+                    }}
                   />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} md={4} sx={{ width: '100%' }}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  label={t('management.startDate')}
-                  value={formData?.start_date || null}
-                  onChange={handleDateChange('start_date')}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      size: "small",
-                      variant: "outlined"
-                    }
-                  }}
-                />
-              </LocalizationProvider>
-            </Grid>
-            <Grid item xs={12} md={4} sx={{ width: '100%' }}  >
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  label={t('management.expectedDate')}
-                  value={formData?.expected_date || null}
-                  onChange={handleDateChange('expected_date')}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      size: "small",
-                      variant: "outlined"
-                    }
-                  }}
-                />
-              </LocalizationProvider>
-            </Grid>
-            <Grid item xs={12} md={4} sx={{ width: '100%' }}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  label={t('management.endDate')}
-                  value={formData?.end_date || null}
-                  onChange={handleDateChange('end_date')}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      size: "small",
-                      variant: "outlined"
-                    }
-                  }}
-                />
-              </LocalizationProvider>
-            </Grid>
-          </Grid>
-        )
-      }];
-    }
-
-    if (type === 'costCenter') {
-      return [{
-        title: isEdit ? t('management.editCostCenter') : t('management.addCostCenter'),
-        expanded: expandedAccordion === 'panel1',
-        onChange: handleAccordionChange('panel1'),
-        content: (
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6} >
-              <TextField
-                fullWidth
-                label={t('management.code')}
-                variant="outlined"
-                size="small"
-                value={formData?.code || ''}
-                onChange={handleFieldChange('code')}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label={t('management.name')}
-                variant="outlined"
-                size="small"
-                value={formData?.name || ''}
-                onChange={handleFieldChange('name')}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sx={{ width: '53%' }}>
-              <Autocomplete
-                fullWidth
-                options={costCenterOptions}
-                getOptionLabel={(option) => option.name || ''}
-                value={costCenterOptions.find(c => c.id === formData?.sub_cost_center_of) || null}
-                onChange={handleSubCostCenterChange}
-                loading={loading}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label={t('management.subCostCenterOf')}
-                    variant="outlined"
-                    size="small"
+                </LocalizationProvider>
+              </Grid>
+              <Grid item xs={12} md={4} sx={{ width: "100%" }}>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label={t("management.expectedDate")}
+                    value={formData?.expected_date || null}
+                    onChange={handleDateChange("expected_date")}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        size: "small",
+                        variant: "outlined",
+                      },
+                    }}
                   />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                select
-                fullWidth
-                label={t('management.active')}
-                variant="outlined"
-                size="small"
-                value={formData?.active === false ? 'false' : 'true'}
-                onChange={(e) => onFormDataChange({
-                  ...formData,
-                  active: e.target.value === 'true'
-                })}
-                SelectProps={{
-                  native: true
-                }}
-              >
-                <option value="true">{t('management.yes')}</option>
-                <option value="false">{t('management.no')}</option>
-              </TextField>
-            </Grid>
-          </Grid>
-        )
-      }];
-    }
-
-    if (type === 'department') {
-      return [{
-        title: isEdit ? t('management.editDepartment') : t('management.addDepartment'),
-        expanded: expandedAccordion === 'panel1',
-        onChange: handleAccordionChange('panel1'),
-        content: (
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label={t('management.code')}
-                variant="outlined"
-                size="small"
-                value={formData?.code || ''}
-                onChange={handleFieldChange('code')}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label={t('management.name')}
-                variant="outlined"
-                size="small"
-                value={formData?.name || ''}
-                onChange={handleFieldChange('name')}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sx={{ width: '53%' }}>
-              <Autocomplete
-                fullWidth
-                options={departmentOptions}
-                getOptionLabel={(option) => option.name || ''}
-                value={departmentOptions.find(d => d.id === formData?.sub_department_of) || null}
-                onChange={handleSubDepartmentChange}
-                loading={loading}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label={t('management.subDepartmentOf')}
-                    variant="outlined"
-                    size="small"
+                </LocalizationProvider>
+              </Grid>
+              <Grid item xs={12} md={4} sx={{ width: "100%" }}>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label={t("management.endDate")}
+                    value={formData?.end_date || null}
+                    onChange={handleDateChange("end_date")}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        size: "small",
+                        variant: "outlined",
+                      },
+                    }}
                   />
-                )}
-              />
+                </LocalizationProvider>
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                select
-                fullWidth
-                label={t('management.active')}
-                variant="outlined"
-                size="small"
-                value={formData?.active === false ? 'false' : 'true'}
-                onChange={(e) => onFormDataChange({
-                  ...formData,
-                  active: e.target.value === 'true'
-                })}
-                SelectProps={{
-                  native: true
-                }}
-              >
-                <option value="true">{t('management.yes')}</option>
-                <option value="false">{t('management.no')}</option>
-              </TextField>
-            </Grid>
-          </Grid>
-        )
-      }];
+          ),
+        },
+      ];
     }
 
-    if (type === 'trade') {
-      return [{
-        title: isEdit ? t('management.editTrade') : t('management.addTrade'),
-        expanded: expandedAccordion === 'panel1',
-        onChange: handleAccordionChange('panel1'),
-        content: (
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label={t('management.code')}
-                variant="outlined"
-                size="small"
-                value={formData?.code || ''}
-                onChange={handleFieldChange('code')}
-                required
-              />
+    if (type === "costCenter") {
+      return [
+        {
+          title: isEdit
+            ? t("management.editCostCenter")
+            : t("management.addCostCenter"),
+          expanded: expandedAccordion === "panel1",
+          onChange: handleAccordionChange("panel1"),
+          content: (
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  label={t("management.code")}
+                  variant="outlined"
+                  size="small"
+                  value={formData?.code || ""}
+                  onChange={handleFieldChange("code")}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  label={t("management.name")}
+                  variant="outlined"
+                  size="small"
+                  value={formData?.name || ""}
+                  onChange={handleFieldChange("name")}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} sx={{ width: "53%" }}>
+                <Autocomplete
+                  fullWidth
+                  options={costCenterOptions}
+                  getOptionLabel={(option) => option.name || ""}
+                  value={
+                    costCenterOptions.find(
+                      (c) => c.id === formData?.sub_cost_center_of
+                    ) || null
+                  }
+                  onChange={handleSubCostCenterChange}
+                  loading={loading}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label={t("management.subCostCenterOf")}
+                      variant="outlined"
+                      size="small"
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  select
+                  fullWidth
+                  label={t("management.active")}
+                  variant="outlined"
+                  size="small"
+                  value={formData?.active === false ? "false" : "true"}
+                  onChange={(e) =>
+                    onFormDataChange({
+                      ...formData,
+                      active: e.target.value === "true",
+                    })
+                  }
+                  SelectProps={{
+                    native: true,
+                  }}
+                >
+                  <option value="true">{t("management.yes")}</option>
+                  <option value="false">{t("management.no")}</option>
+                </TextField>
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label={t('management.name')}
-                variant="outlined"
-                size="small"
-                value={formData?.name || ''}
-                onChange={handleFieldChange('name')}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                select
-                fullWidth
-                label={t('management.active')}
-                variant="outlined"
-                size="small"
-                value={formData?.active === false ? 'false' : 'true'}
-                onChange={(e) => onFormDataChange({
-                  ...formData,
-                  active: e.target.value === 'true'
-                })}
-                SelectProps={{
-                  native: true
-                }}
-              >
-                <option value="true">{t('management.yes')}</option>
-                <option value="false">{t('management.no')}</option>
-              </TextField>
-            </Grid>
-          </Grid>
-        )
-      }];
+          ),
+        },
+      ];
     }
 
-    if (type === 'companyCode') {
-      return [{
-        title: isEdit ? t('management.editCompanyCode') : t('management.addCompanyCode'),
-        expanded: expandedAccordion === 'panel1',
-        onChange: handleAccordionChange('panel1'),
-        content: (
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label={t('management.code')}
-                variant="outlined"
-                size="small"
-                value={formData?.code || ''}
-                onChange={handleFieldChange('code')}
-                required
-              />
+    if (type === "department") {
+      return [
+        {
+          title: isEdit
+            ? t("management.editDepartment")
+            : t("management.addDepartment"),
+          expanded: expandedAccordion === "panel1",
+          onChange: handleAccordionChange("panel1"),
+          content: (
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  label={t("management.code")}
+                  variant="outlined"
+                  size="small"
+                  value={formData?.code || ""}
+                  onChange={handleFieldChange("code")}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  label={t("management.name")}
+                  variant="outlined"
+                  size="small"
+                  value={formData?.name || ""}
+                  onChange={handleFieldChange("name")}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} sx={{ width: "53%" }}>
+                <Autocomplete
+                  fullWidth
+                  options={departmentOptions}
+                  getOptionLabel={(option) => option.name || ""}
+                  value={
+                    departmentOptions.find(
+                      (d) => d.id === formData?.sub_department_of
+                    ) || null
+                  }
+                  onChange={handleSubDepartmentChange}
+                  loading={loading}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label={t("management.subDepartmentOf")}
+                      variant="outlined"
+                      size="small"
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  select
+                  fullWidth
+                  label={t("management.active")}
+                  variant="outlined"
+                  size="small"
+                  value={formData?.active === false ? "false" : "true"}
+                  onChange={(e) =>
+                    onFormDataChange({
+                      ...formData,
+                      active: e.target.value === "true",
+                    })
+                  }
+                  SelectProps={{
+                    native: true,
+                  }}
+                >
+                  <option value="true">{t("management.yes")}</option>
+                  <option value="false">{t("management.no")}</option>
+                </TextField>
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label={t('management.name')}
-                variant="outlined"
-                size="small"
-                value={formData?.name || ''}
-                onChange={handleFieldChange('name')}
-                required
-              />
-            </Grid>
-          </Grid>
-        )
-      }];
+          ),
+        },
+      ];
     }
 
-    if (type === 'job') {
-      return [{
-        title: isEdit ? t('management.editJob') : t('management.addJob'),
-        expanded: expandedAccordion === 'panel1',
-        onChange: handleAccordionChange('panel1'),
-        content: (
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6} sx={{ width: '100%' }}>
-              <TextField
-                fullWidth
-                label={t('management.description')}
-                variant="outlined"
-                size="small"
-                value={formData?.description || ''}
-                onChange={handleFieldChange('description')}
-                required
-              />
+    if (type === "trade") {
+      return [
+        {
+          title: isEdit ? t("management.editTrade") : t("management.addTrade"),
+          expanded: expandedAccordion === "panel1",
+          onChange: handleAccordionChange("panel1"),
+          content: (
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  label={t("management.code")}
+                  variant="outlined"
+                  size="small"
+                  value={formData?.code || ""}
+                  onChange={handleFieldChange("code")}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  label={t("management.name")}
+                  variant="outlined"
+                  size="small"
+                  value={formData?.name || ""}
+                  onChange={handleFieldChange("name")}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  select
+                  fullWidth
+                  label={t("management.active")}
+                  variant="outlined"
+                  size="small"
+                  value={formData?.active === false ? "false" : "true"}
+                  onChange={(e) =>
+                    onFormDataChange({
+                      ...formData,
+                      active: e.target.value === "true",
+                    })
+                  }
+                  SelectProps={{
+                    native: true,
+                  }}
+                >
+                  <option value="true">{t("management.yes")}</option>
+                  <option value="false">{t("management.no")}</option>
+                </TextField>
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={6} sx={{ width: '100%' }}>
-              <Autocomplete
-                fullWidth
-                options={projectOptions}
-                getOptionLabel={(option) => option.name || ''}
-                value={projectOptions.find(p => p.id === formData?.project_id) || null}
-                onChange={handleProjectChange}
-                loading={loading}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label={t('management.project')}
-                    variant="outlined"
-                    size="small"
-                    required
+          ),
+        },
+      ];
+    }
+
+    if (type === "companyCode") {
+      return [
+        {
+          title: isEdit
+            ? t("management.editCompanyCode")
+            : t("management.addCompanyCode"),
+          expanded: expandedAccordion === "panel1",
+          onChange: handleAccordionChange("panel1"),
+          content: (
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  label={t("management.code")}
+                  variant="outlined"
+                  size="small"
+                  value={formData?.code || ""}
+                  onChange={handleFieldChange("code")}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  label={t("management.name")}
+                  variant="outlined"
+                  size="small"
+                  value={formData?.name || ""}
+                  onChange={handleFieldChange("name")}
+                  required
+                />
+              </Grid>
+            </Grid>
+          ),
+        },
+      ];
+    }
+
+    if (type === "job") {
+      return [
+        {
+          title: isEdit ? t("management.editJob") : t("management.addJob"),
+          expanded: expandedAccordion === "panel1",
+          onChange: handleAccordionChange("panel1"),
+          content: (
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6} sx={{ width: "100%" }}>
+                <TextField
+                  fullWidth
+                  label={t("management.description")}
+                  variant="outlined"
+                  size="small"
+                  value={formData?.description || ""}
+                  onChange={handleFieldChange("description")}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={6} sx={{ width: "100%" }}>
+                <Autocomplete
+                  fullWidth
+                  options={projectOptions}
+                  getOptionLabel={(option) => option.name || ""}
+                  value={
+                    projectOptions.find((p) => p.id === formData?.project_id) ||
+                    null
+                  }
+                  onChange={handleProjectChange}
+                  loading={loading}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label={t("management.project")}
+                      variant="outlined"
+                      size="small"
+                      required
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label={t("management.startDate")}
+                    value={formData?.start_date || null}
+                    onChange={handleDateChange("start_date")}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        size: "small",
+                        variant: "outlined",
+                      },
+                    }}
                   />
-                )}
-              />
+                </LocalizationProvider>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label={t("management.expectedDate")}
+                    value={formData?.expected_date || null}
+                    onChange={handleDateChange("expected_date")}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        size: "small",
+                        variant: "outlined",
+                      },
+                    }}
+                  />
+                </LocalizationProvider>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label={t("management.endDate")}
+                    value={formData?.end_date || null}
+                    onChange={handleDateChange("end_date")}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        size: "small",
+                        variant: "outlined",
+                      },
+                    }}
+                  />
+                </LocalizationProvider>
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={4}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  label={t('management.startDate')}
-                  value={formData?.start_date || null}
-                  onChange={handleDateChange('start_date')}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      size: "small",
-                      variant: "outlined"
-                    }
-                  }}
-                />
-              </LocalizationProvider>
-            </Grid>
-            <Grid item xs={12} md={4} >
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  label={t('management.expectedDate')}
-                  value={formData?.expected_date || null}
-                  onChange={handleDateChange('expected_date')}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      size: "small",
-                      variant: "outlined"
-                    }
-                  }}
-                />
-              </LocalizationProvider>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  label={t('management.endDate')}
-                  value={formData?.end_date || null}
-                  onChange={handleDateChange('end_date')}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      size: "small",
-                      variant: "outlined"
-                    }
-                  }}
-                />
-              </LocalizationProvider>
-            </Grid>
-          </Grid>
-        )
-      }];
+          ),
+        },
+      ];
     }
 
     // Default fields for other types
-    return [{
-      title: isEdit ? t(`management.edit${type.charAt(0).toUpperCase() + type.slice(1)}`) : t(`management.add${type.charAt(0).toUpperCase() + type.slice(1)}`),
-      expanded: expandedAccordion === 'panel1',
-      onChange: handleAccordionChange('panel1'),
-      content: (
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label={t(`management.${type}Name`)}
-              variant="outlined"
-              size="small"
-              value={formData?.name || ''}
-              onChange={handleFieldChange('name')}
-              required
-            />
+    return [
+      {
+        title: isEdit
+          ? t("management.edit" + type.charAt(0).toUpperCase() + type.slice(1))
+          : t("management.add" + type.charAt(0).toUpperCase() + type.slice(1)),
+        expanded: expandedAccordion === "panel1",
+        onChange: handleAccordionChange("panel1"),
+        content: (
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label={t("management." + type + "Name")}
+                variant="outlined"
+                size="small"
+                value={formData?.name || ""}
+                onChange={handleFieldChange("name")}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label={t("management.description")}
+                variant="outlined"
+                size="small"
+                multiline
+                rows={4}
+                value={formData?.description || ""}
+                onChange={handleFieldChange("description")}
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label={t('management.description')}
-              variant="outlined"
-              size="small"
-              multiline
-              rows={4}
-              value={formData?.description || ''}
-              onChange={handleFieldChange('description')}
-            />
-          </Grid>
-        </Grid>
-      )
-    }];
+        ),
+      },
+    ];
   };
 
   const pluralType = getPluralType(type);
   const title = isEdit
-    ? `${t("management.edit")} ${t(`management.${pluralType}`)}`
-    : `${t("management.add")} ${t(`management.${pluralType}`)}`;
+    ? t(
+        "management.edit" +
+          pluralType.charAt(0).toUpperCase() +
+          pluralType.slice(1)
+      )
+    : t(
+        "management.add" +
+          pluralType.charAt(0).toUpperCase() +
+          pluralType.slice(1)
+      );
 
   return (
     <DynamicDrawer

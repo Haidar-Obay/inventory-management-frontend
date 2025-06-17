@@ -1,134 +1,132 @@
-import { useMemo } from 'react';
+// Table columns configuration
+export function useTableColumns(t) {
+  return {
+    countryColumns: [
+      { key: "id", header: t("id"), type: "text" },
+      { key: "name", header: t("name"), type: "text" },
+      { key: "created_at", header: t("createdAt"), type: "date" },
+      { key: "updated_at", header: t("updatedAt"), type: "date" },
+    ],
 
-// Table columns configuration for countries
-export const countryColumns = [
-  { key: "id", header: "ID", type: "text" },
-  { key: "name", header: "Name", type: "text" },
-  { key: "created_at", header: "Created At", type: "date" },
-  { key: "updated_at", header: "Updated At", type: "date" }
-];
+    cityColumns: [
+      { key: "id", header: t("id"), type: "text" },
+      { key: "name", header: t("name"), type: "text" },
+      { key: "created_at", header: t("createdAt"), type: "date" },
+      { key: "updated_at", header: t("updatedAt"), type: "date" },
+    ],
 
-// Table columns configuration for cities
-export const cityColumns = [
-  { key: "id", header: "ID", type: "text" },
-  { key: "name", header: "Name", type: "text" },
-  { key: "created_at", header: "Created At", type: "date" },
-  { key: "updated_at", header: "Updated At", type: "date" }
-];
+    provinceColumns: [
+      { key: "id", header: t("id"), type: "text" },
+      { key: "name", header: t("name"), type: "text" },
+      { key: "created_at", header: t("createdAt"), type: "date" },
+      { key: "updated_at", header: t("updatedAt"), type: "date" },
+    ],
 
-// Table columns configuration for provinces
-export const provinceColumns = [
-  { key: "id", header: "ID", type: "text" },
-  { key: "name", header: "Name", type: "text" },
-  { key: "created_at", header: "Created At", type: "date" },
-  { key: "updated_at", header: "Updated At", type: "date" }
-];
+    districtColumns: [
+      { key: "id", header: t("id"), type: "text" },
+      { key: "name", header: t("name"), type: "text" },
+      { key: "created_at", header: t("createdAt"), type: "date" },
+      { key: "updated_at", header: t("updatedAt"), type: "date" },
+    ],
 
-export const districtColumns = [
-  { key: "id", header: "ID", type: "text" },
-  { key: "name", header: "Name", type: "text" },
-  { key: "created_at", header: "Created At", type: "date" },
-  { key: "updated_at", header: "Updated At", type: "date" }
-];
+    projectColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("name"), key: "name" },
+      { header: t("startDate"), key: "start_date", type: "date" },
+      { header: t("endDate"), key: "end_date", type: "date" },
+      { header: t("expectedDate"), key: "expected_date", type: "date" },
+      { header: t("customerId"), key: "customer_id", type: "text" },
+      { header: t("createdAt"), key: "created_at", type: "date" },
+      { header: t("updatedAt"), key: "updated_at", type: "date" },
+    ],
 
+    costCenterColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("code"), key: "code" },
+      { header: t("name"), key: "name" },
+      { header: t("subOf"), key: "sub_cost_center_of", type: "text" },
+      { header: t("active"), key: "active", type: "boolean" },
+      { header: t("createdAt"), key: "created_at", type: "date" },
+      { header: t("updatedAt"), key: "updated_at", type: "date" },
+    ],
 
-export const projectColumns = [
-  { header: "ID", key: "id" },
-  { header: "Name", key: "name" },
-  { header: "Start Date", key: "start_date", type: "date" },
-  { header: "End Date", key: "end_date", type: "date" },
-  { header: "Expected Date", key: "expected_date", type: "date" },
-  { header: "Customer ID", key: "customer_id", type: "text" },
-  { header: "Created At", key: "created_at", type: "date" },
-  { header: "Updated At", key: "updated_at", type: "date" }
-];
+    departmentColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("code"), key: "code" },
+      { header: t("name"), key: "name" },
+      { header: t("subOf"), key: "sub_department_of", type: "text" },
+      { header: t("active"), key: "active", type: "boolean" },
+      { header: t("createdAt"), key: "created_at", type: "date" },
+      { header: t("updatedAt"), key: "updated_at", type: "date" },
+    ],
 
-export const costCenterColumns = [
-  { header: "ID", key: "id" },
-  { header: "Code", key: "code" },
-  { header: "Name", key: "name" },
-  { header: "Sub Of", key: "sub_cost_center_of", type: "text" },
-  { header: "Active", key: "active", type: "boolean" },
-  { header: "Created At", key: "created_at", type: "date" },
-  { header: "Updated At", key: "updated_at", type: "date" }
-];
+    tradesColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("code"), key: "code" },
+      { header: t("name"), key: "name" },
+      { header: t("active"), key: "active", type: "boolean" },
+      { header: t("createdAt"), key: "created_at", type: "date" },
+      { header: t("updatedAt"), key: "updated_at", type: "date" },
+    ],
 
-export const departmentColumns = [
-  { header: "ID", key: "id" },
-  { header: "Code", key: "code" },
-  { header: "Name", key: "name" },
-  { header: "Sub Of", key: "sub_department_of", type: "text" },
-  { header: "Active", key: "active", type: "boolean" },
-  { header: "Created At", key: "created_at", type: "date" },
-  { header: "Updated At", key: "updated_at", type: "date" },
-];
+    companyCodesColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("code"), key: "code" },
+      { header: t("name"), key: "name" },
+      { header: t("createdAt"), key: "created_at", type: "date" },
+      { header: t("updatedAt"), key: "updated_at", type: "date" },
+    ],
 
-export const tradesColumns = [
-  { header: "ID", key: "id" },
-  { header: "Code", key: "code" },
-  { header: "Name", key: "name" },
-  { header: "Active", key: "active", type: "boolean" },
-  { header: "Created At", key: "created_at", type: "date" },
-  { header: "Updated At", key: "updated_at", type: "date" },
-];
+    jobsColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("description"), key: "description" },
+      { header: t("projectId"), key: "project_id" },
+      { header: t("startDate"), key: "start_date", type: "date" },
+      { header: t("expectedDate"), key: "expected_date", type: "date" },
+      { header: t("endDate"), key: "end_date", type: "date" },
+      { header: t("createdAt"), key: "created_at", type: "date" },
+      { header: t("updatedAt"), key: "updated_at", type: "date" },
+    ],
 
-export const companyCodesColumns = [
-  { header: "ID", key: "id" },
-  { header: "Code", key: "code" },
-  { header: "Name", key: "name" },
-  { header: "Created At", key: "created_at", type: "date" },
-  { header: "Updated At", key: "updated_at", type: "date" },
-];
+    productLinesColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("code"), key: "code" },
+      { header: t("name"), key: "name" },
+      { header: t("active"), key: "active", type: "boolean" },
+      { header: t("createdAt"), key: "created_at", type: "date" },
+      { header: t("updatedAt"), key: "updated_at", type: "date" },
+    ],
 
-export const jobsColumns = [
-  { header: "ID", key: "id" },
-  { header: "Description", key: "description" },
-  { header: "Project ID", key: "project_id" },
-  { header: "Start Date", key: "start_date", type: "date" },
-  { header: "Expected Date", key: "expected_date", type: "date" },
-  { header: "End Date", key: "end_date", type: "date" },
-  { header: "Created At", key: "created_at", type: "date" },
-  { header: "Updated At", key: "updated_at", type: "date" },
-];
+    categoriesColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("code"), key: "code" },
+      { header: t("name"), key: "name" },
+      { header: t("subOf"), key: "sub_category_of" },
+      { header: t("active"), key: "active", type: "boolean" },
+      { header: t("createdAt"), key: "created_at", type: "date" },
+      { header: t("updatedAt"), key: "updated_at", type: "date" },
+    ],
 
-export const productLinesColumns = [
-  { header: "ID", key: "id" },
-  { header: "Code", key: "code" },
-  { header: "Name", key: "name" },
-  { header: "Active", key: "active", type: "boolean" },
-  { header: "Created At", key: "created_at", type: "date" },
-  { header: "Updated At", key: "updated_at", type: "date" },
-];
+    brandsColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("code"), key: "code" },
+      { header: t("name"), key: "name" },
+      { header: t("subOf"), key: "sub_brand_of" },
+      { header: t("active"), key: "active", type: "boolean" },
+      { header: t("createdAt"), key: "created_at", type: "date" },
+      { header: t("updatedAt"), key: "updated_at", type: "date" },
+    ],
 
-export const categoriesColumns = [
-  { header: "ID", key: "id" },
-  { header: "Code", key: "code" },
-  { header: "Name", key: "name" },
-  { header: "Sub Of", key: "sub_category_of" },
-  { header: "Active", key: "active", type: "boolean" },
-  { header: "Created At", key: "created_at", type: "date" },
-  { header: "Updated At", key: "updated_at", type: "date" },
-];
-
-export const brandsColumns = [
-  { header: "ID", key: "id" },
-  { header: "Code", key: "code" },
-  { header: "Name", key: "name" },
-  { header: "Sub Of", key: "sub_brand_of" },
-  { header: "Active", key: "active", type: "boolean" },
-  { header: "Created At", key: "created_at", type: "date" },
-  { header: "Updated At", key: "updated_at", type: "date" },
-];
-
-export const itemsColumns = [
-  { header: "ID", key: "id" },
-  { header: "Code", key: "code" },
-  { header: "Name", key: "name" },
-  { header: "Product Line", key: "product_line_name" },
-  { header: "Category", key: "category_name" },
-  { header: "Brand", key: "brand_name" },
-  { header: "Active", key: "active", type: "boolean" },
-  { header: "Created At", key: "created_at", type: "date" },
-  { header: "Updated At", key: "updated_at", type: "date" },
-];
-
+    itemsColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("code"), key: "code" },
+      { header: t("name"), key: "name" },
+      { header: t("productLine"), key: "product_line_name" },
+      { header: t("category"), key: "category_name" },
+      { header: t("brand"), key: "brand_name" },
+      { header: t("active"), key: "active", type: "boolean" },
+      { header: t("createdAt"), key: "created_at", type: "date" },
+      { header: t("updatedAt"), key: "updated_at", type: "date" },
+    ],
+  };
+}

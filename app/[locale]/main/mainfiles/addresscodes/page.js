@@ -35,7 +35,7 @@ import {
   exportDistrictsToPdf,
   importDistrictsFromExcel,
 } from "@/API/AddressCodes";
-import { countryColumns, cityColumns, provinceColumns, districtColumns } from "@/constants/tableColumns";
+import { useTableColumns } from "@/constants/tableColumns";
 import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
 
@@ -78,6 +78,8 @@ export default function AddressCodesPageWrapper() {
 function AddressCodesPage() {
   const t = useTranslations("addressCodes");
   const tableT = useTranslations("tableColumns");
+  const { countryColumns, cityColumns, provinceColumns, districtColumns } =
+    useTableColumns(tableT);
   const searchParams = useSearchParams();
   const router = useRouter();
   const [value, setValue] = useState(0);
@@ -241,21 +243,20 @@ function AddressCodesPage() {
         entityHandlers[type].setData((prev) =>
           prev.filter((item) => item.id !== row.id)
         );
-        // Reset the fetched state for the modified data type
         setDataFetched((prev) => ({
           ...prev,
           [type]: false,
         }));
         toast.success({
-          title: "success",
-          description: response.message || `${type} deleted successfully`,
+          title: t("messages.deleteSuccess"),
+          description: `${type} ${t("messages.deleteSuccess")}`,
           isTranslated: true,
         });
       }
     } catch (error) {
       toast.error({
-        title: "error",
-        description: error.message || `Failed to delete ${type}`,
+        title: t("messages.deleteError"),
+        description: `${type} ${t("messages.deleteError")}`,
         isTranslated: true,
       });
     }
@@ -288,7 +289,6 @@ function AddressCodesPage() {
       if (isEditMode) {
         response = await handler.editFn(formData.id, formData);
         if (response.status) {
-          // Update existing item in the state
           entityHandlers[type].setData((prev) =>
             prev.map((item) =>
               item.id === formData.id ? { ...item, ...formData } : item
@@ -298,28 +298,22 @@ function AddressCodesPage() {
       } else {
         response = await handler.createFn(formData);
         if (response.status) {
-          // Add new item to the state
           entityHandlers[type].setData((prev) => [...prev, response.data]);
         }
       }
 
       if (response.status) {
         toast.success({
-          title: t("toast.success"),
-          description: isEditMode
-            ? t("toast.countryUpdatedSuccessfully")
-            : t("toast.countryCreatedSuccessfully"),
+          title: t("messages.updateSuccess"),
+          description: `${type} ${t(isEditMode ? "messages.updateSuccess" : "messages.createSuccess")}`,
           isTranslated: true,
         });
-
         setIsEditMode(false);
       }
     } catch (error) {
       toast.error({
-        title: "error",
-        description:
-          error.message ||
-          `Failed to ${isEditMode ? "update" : "create"} ${type}`,
+        title: t("messages.updateError"),
+        description: `${type} ${t(isEditMode ? "messages.updateError" : "messages.createError")}`,
         isTranslated: true,
       });
     }

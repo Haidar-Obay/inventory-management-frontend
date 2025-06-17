@@ -1,7 +1,17 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { Tabs, Tab, Box, Typography, CircularProgress, Button, Stack, IconButton, Tooltip } from "@mui/material";
+import {
+  Tabs,
+  Tab,
+  Box,
+  Typography,
+  CircularProgress,
+  Button,
+  Stack,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
@@ -56,7 +66,7 @@ import {
   exportDepartmentsToPdf,
   importDepartmentsFromExcel,
 } from "@/API/Sections";
-import { projectColumns, costCenterColumns, departmentColumns, tradesColumns, companyCodesColumns, jobsColumns } from "@/constants/tableColumns";
+import { useTableColumns } from "@/constants/tableColumns";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -97,6 +107,14 @@ export default function SectionsPageWrapper() {
 function SectionsPage() {
   const t = useTranslations("sections");
   const tableT = useTranslations("tableColumns");
+  const {
+    projectColumns,
+    costCenterColumns,
+    departmentColumns,
+    tradesColumns,
+    companyCodesColumns,
+    jobsColumns,
+  } = useTableColumns(tableT);
   const locale = useLocale();
   const isRTL = locale === "ar";
   const { key, tabStyles } = useTabLinePosition();
@@ -287,7 +305,7 @@ function SectionsPage() {
       start_date: row.start_date ? new Date(row.start_date) : null,
       end_date: row.end_date ? new Date(row.end_date) : null,
       expected_date: row.expected_date ? new Date(row.expected_date) : null,
-      customer_id: row.customer_id || ''
+      customer_id: row.customer_id || "",
     });
     setActiveDrawerType(type);
     setIsEditMode(true);
@@ -306,15 +324,15 @@ function SectionsPage() {
           [type]: false,
         }));
         toast.success({
-          title: "success",
+          title: t("messages.deleteSuccess"),
           description: `${type} ${t("messages.deleteSuccess")}`,
           isTranslated: true,
         });
       }
     } catch (error) {
       toast.error({
-        title: "error",
-        description: `${t("messages.deleteError")} ${type}`,
+        title: t("messages.deleteError"),
+        description: `${type} ${t("messages.deleteError")}`,
         isTranslated: true,
       });
     }
@@ -347,7 +365,7 @@ function SectionsPage() {
       if (isEditMode) {
         response = await handler.editFn(formData.id, formData);
         if (response.status) {
-          handler.setData((prev) =>
+          entityHandlers[type].setData((prev) =>
             prev.map((item) =>
               item.id === formData.id ? { ...item, ...formData } : item
             )
@@ -356,22 +374,22 @@ function SectionsPage() {
       } else {
         response = await handler.createFn(formData);
         if (response.status) {
-          handler.setData((prev) => [...prev, response.data]);
+          entityHandlers[type].setData((prev) => [...prev, response.data]);
         }
       }
 
       if (response.status) {
         toast.success({
-          title: "success",
-          description: `${type} ${isEditMode ? t("messages.updateSuccess") : t("messages.createSuccess")}`,
+          title: t("messages.updateSuccess"),
+          description: `${type} ${t(isEditMode ? "messages.updateSuccess" : "messages.createSuccess")}`,
           isTranslated: true,
         });
         setIsEditMode(false);
       }
     } catch (error) {
       toast.error({
-        title: "error",
-        description: `${isEditMode ? t("messages.updateError") : t("messages.createError")} ${type}`,
+        title: t("messages.updateError"),
+        description: `${type} ${t(isEditMode ? "messages.updateError" : "messages.createError")}`,
         isTranslated: true,
       });
     }
@@ -398,19 +416,19 @@ function SectionsPage() {
         case "project":
           response = await exportProjectsToExcel();
           break;
-        case 'costCenter':
+        case "costCenter":
           response = await exportCostCentersToExcel();
           break;
-        case 'job':
+        case "job":
           response = await exportJobsToExcel();
           break;
-        case 'trade':
+        case "trade":
           response = await exportTradesToExcel();
           break;
-        case 'companyCode':
+        case "companyCode":
           response = await exportCompanyCodesToExcel();
           break;
-        case 'department':
+        case "department":
           response = await exportDepartmentsToExcel();
           break;
         default:
@@ -447,19 +465,19 @@ function SectionsPage() {
         case "project":
           response = await exportProjectsToPdf();
           break;
-        case 'costCenter':
+        case "costCenter":
           response = await exportCostCentersToPdf();
           break;
-        case 'job':
+        case "job":
           response = await exportJobsToPdf();
           break;
-        case 'trade':
+        case "trade":
           response = await exportTradesToPdf();
           break;
-        case 'companyCode':
+        case "companyCode":
           response = await exportCompanyCodesToPdf();
           break;
-        case 'department':
+        case "department":
           response = await exportDepartmentsToPdf();
           break;
         default:
@@ -496,19 +514,19 @@ function SectionsPage() {
         case "project":
           response = await importProjectsFromExcel(file);
           break;
-        case 'costCenter':
+        case "costCenter":
           response = await importCostCentersFromExcel(file);
           break;
-        case 'job':
+        case "job":
           response = await importJobsFromExcel(file);
           break;
-        case 'trade':
+        case "trade":
           response = await importTradesFromExcel(file);
           break;
-        case 'companyCode':
+        case "companyCode":
           response = await importCompanyCodesFromExcel(file);
           break;
-        case 'department':
+        case "department":
           response = await importDepartmentsFromExcel(file);
           break;
         default:
