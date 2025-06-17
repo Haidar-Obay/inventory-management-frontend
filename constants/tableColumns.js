@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 // Table columns configuration for countries
 export const countryColumns = [
   { key: "id", header: "ID", type: "text" },
@@ -89,7 +91,7 @@ export const jobsColumns = [
   { header: "Updated At", key: "updated_at", type: "date" },
 ];
 
-const productLinesColumns = [
+export const productLinesColumns = [
   { header: "ID", key: "id" },
   { header: "Code", key: "code" },
   { header: "Name", key: "name" },
@@ -98,7 +100,7 @@ const productLinesColumns = [
   { header: "Updated At", key: "updated_at", type: "date" },
 ];
 
-const categoriesColumns = [
+export const categoriesColumns = [
   { header: "ID", key: "id" },
   { header: "Code", key: "code" },
   { header: "Name", key: "name" },
@@ -108,7 +110,7 @@ const categoriesColumns = [
   { header: "Updated At", key: "updated_at", type: "date" },
 ];
 
-const brandsColumns = [
+export const brandsColumns = [
   { header: "ID", key: "id" },
   { header: "Code", key: "code" },
   { header: "Name", key: "name" },
@@ -118,7 +120,7 @@ const brandsColumns = [
   { header: "Updated At", key: "updated_at", type: "date" },
 ];
 
-const itemsColumns = [
+export const itemsColumns = [
   { header: "ID", key: "id" },
   { header: "Code", key: "code" },
   { header: "Name", key: "name" },
@@ -129,21 +131,4 @@ const itemsColumns = [
   { header: "Created At", key: "created_at", type: "date" },
   { header: "Updated At", key: "updated_at", type: "date" },
 ];
-
-export {
-  countryColumns,
-  cityColumns,
-  provinceColumns,
-  districtColumns,
-  projectColumns,
-  costCenterColumns,
-  departmentColumns,
-  tradesColumns,
-  companyCodesColumns,
-  jobsColumns,
-  productLinesColumns,
-  categoriesColumns,
-  brandsColumns,
-  itemsColumns,
-};
 

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Button, Checkbox, Input, Badge } from "./CustomControls";
+import { useTranslations, useLocale } from "next-intl";
 
 export const TableHeader = ({
   columnOrder,
@@ -22,9 +23,12 @@ export const TableHeader = ({
   handleColumnSearch,
   handleSelectAll,
   columnWidths,
-  handleResizeStart,
-  resizingColumn,
 }) => {
+  const t = useTranslations("table");
+  const locale = useLocale();
+  const isRTL = locale === "ar";
+  console.log("t is a function:", typeof t === "function");
+
   return (
     <thead
       className="bg-gray-50 dark:bg-muted/50 sticky top-0 z-20"
@@ -44,23 +48,6 @@ export const TableHeader = ({
               disabled={paginatedData.length === 0}
               aria-label="Select all rows on this page"
             />
-          </div>
-          {/* Resize handle for select column */}
-          <div
-            className={`absolute right-0 top-0 h-full w-1 cursor-col-resize transition-all duration-200 ${
-              resizingColumn === "select"
-                ? "bg-blue-500/20"
-                : "hover:bg-blue-500/10"
-            }`}
-            style={{ transform: "translateX(0)" }}
-            onMouseDown={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleResizeStart(e, "select");
-            }}
-          >
-            <div className="absolute right-0 top-0 h-full w-[1px] bg-gradient-to-b from-blue-500/0 via-blue-500/40 to-blue-500/0 group-hover:from-blue-500/40 group-hover:via-blue-500/60 group-hover:to-blue-500/40 transition-all duration-200" />
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[1px] h-8 bg-gradient-to-b from-blue-500/0 via-blue-500/60 to-blue-500/0 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200" />
           </div>
         </th>
         <th
@@ -107,23 +94,6 @@ export const TableHeader = ({
                 </svg>
               )}
             </Button>
-          </div>
-          {/* Resize handle for search column */}
-          <div
-            className={`absolute right-0 top-0 h-full w-1 cursor-col-resize transition-all duration-200 ${
-              resizingColumn === "search"
-                ? "bg-blue-500/20"
-                : "hover:bg-blue-500/10"
-            }`}
-            style={{ transform: "translateX(0)" }}
-            onMouseDown={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleResizeStart(e, "search");
-            }}
-          >
-            <div className="absolute right-0 top-0 h-full w-[1px] bg-gradient-to-b from-blue-500/0 via-blue-500/40 to-blue-500/0 group-hover:from-blue-500/40 group-hover:via-blue-500/60 group-hover:to-blue-500/40 transition-all duration-200" />
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[1px] h-8 bg-gradient-to-b from-blue-500/0 via-blue-500/60 to-blue-500/0 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200" />
           </div>
         </th>
 
@@ -241,30 +211,13 @@ export const TableHeader = ({
                   </div>
                 )}
               </div>
-              {/* Resize handle */}
-              <div
-                className={`absolute right-0 top-0 h-full w-1 cursor-col-resize transition-all duration-200 ${
-                  resizingColumn === key
-                    ? "bg-blue-500/20"
-                    : "hover:bg-blue-500/10"
-                }`}
-                style={{ transform: "translateX(0)" }}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleResizeStart(e, key);
-                }}
-              >
-                <div className="absolute right-0 top-0 h-full w-[1px] bg-gradient-to-b from-blue-500/0 via-blue-500/40 to-blue-500/0 group-hover:from-blue-500/40 group-hover:via-blue-500/60 group-hover:to-blue-500/40 transition-all duration-200" />
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[1px] h-8 bg-gradient-to-b from-blue-500/0 via-blue-500/60 to-blue-500/0 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200" />
-              </div>
             </th>
           );
         })}
 
         {/* Actions column */}
         <th className="w-20 border-b border-border px-4 py-2 text-left">
-          Actions
+          {t("actions")}
         </th>
       </tr>
 
@@ -290,7 +243,9 @@ export const TableHeader = ({
             return (
               <td key={`search-${key}`} className="px-4 py-2">
                 <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2">
+                  <div
+                    className={`pointer-events-none absolute inset-y-0 ${isRTL ? "left-0" : "right-0"} flex items-center ${isRTL ? "pl-2" : "pr-2"}`}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="14"
@@ -308,11 +263,15 @@ export const TableHeader = ({
                     </svg>
                   </div>
                   <Input
-                    type={column.type === "number" ? "number" : "text"}
-                    placeholder={`Search ${column.header}...`}
-                    value={columnSearch[key] || ""}
-                    onChange={(e) => handleColumnSearch(key, e.target.value)}
-                    className="pl-8 w-full"
+                    type="text"
+                    placeholder={t("search.columnPlaceholder", {
+                      column: column.header,
+                    })}
+                    value={columnSearch[column.key] || ""}
+                    onChange={(e) =>
+                      handleColumnSearch(column.key, e.target.value)
+                    }
+                    className="h-8 w-full"
                   />
                 </div>
               </td>

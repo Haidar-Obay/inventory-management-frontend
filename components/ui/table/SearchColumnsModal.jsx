@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Button, Checkbox } from "./CustomControls";
+import { useTranslations } from "next-intl";
 
 export const SearchColumnsModal = ({
   isOpen,
@@ -12,6 +13,7 @@ export const SearchColumnsModal = ({
   handleSelectAllSearchColumns,
   visibleColumns,
 }) => {
+  const t = useTranslations("table.searchColumns");
   const [tempSelectedColumns, setTempSelectedColumns] = useState({});
 
   // Initialize temp state when modal opens
@@ -29,7 +31,7 @@ export const SearchColumnsModal = ({
 
   const handleSave = () => {
     // Update the parent component's state
-    Object.keys(tempSelectedColumns).forEach(key => {
+    Object.keys(tempSelectedColumns).forEach((key) => {
       if (tempSelectedColumns[key] !== selectedSearchColumns[key]) {
         handleSearchColumnToggle(key);
       }
@@ -39,19 +41,19 @@ export const SearchColumnsModal = ({
 
   const handleTempToggle = (columnKey) => {
     if (visibleColumns[columnKey]) {
-      setTempSelectedColumns(prev => ({
+      setTempSelectedColumns((prev) => ({
         ...prev,
-        [columnKey]: !prev[columnKey]
+        [columnKey]: !prev[columnKey],
       }));
     }
   };
 
   const handleTempSelectAll = () => {
-    const allSelected = Object.keys(tempSelectedColumns).every(key => 
-      tempSelectedColumns[key] && visibleColumns[key]
+    const allSelected = Object.keys(tempSelectedColumns).every(
+      (key) => tempSelectedColumns[key] && visibleColumns[key]
     );
     const newSelection = {};
-    columns.forEach(col => {
+    columns.forEach((col) => {
       if (visibleColumns[col.key]) {
         newSelection[col.key] = !allSelected;
       }
@@ -62,15 +64,13 @@ export const SearchColumnsModal = ({
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
       onClick={handleBackdropClick}
     >
       <div className="w-full max-w-md rounded-lg bg-background p-6 shadow-lg border border-border">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-medium text-foreground">
-            Select Search Columns
-          </h3>
+          <h3 className="text-lg font-medium text-foreground">{t("title")}</h3>
           <button
             onClick={onClose}
             className="rounded-full p-1 hover:bg-muted text-muted-foreground"
@@ -93,16 +93,20 @@ export const SearchColumnsModal = ({
         </div>
 
         <div className="mb-4 flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">Select columns to include in search</span>
+          <span className="text-sm text-muted-foreground">
+            {t("description")}
+          </span>
           <Button
             variant="ghost"
             size="sm"
             onClick={handleTempSelectAll}
             className="text-xs"
           >
-            {Object.keys(tempSelectedColumns).every(key => 
-              tempSelectedColumns[key] && visibleColumns[key]
-            ) ? 'Deselect All' : 'Select All'}
+            {Object.keys(tempSelectedColumns).every(
+              (key) => tempSelectedColumns[key] && visibleColumns[key]
+            )
+              ? t("deselectAll")
+              : t("selectAll")}
           </Button>
         </div>
 
@@ -113,7 +117,7 @@ export const SearchColumnsModal = ({
               <div
                 key={column.key}
                 className={`flex items-center space-x-2 py-2 border-b border-border last:border-0 ${
-                  !isVisible ? 'opacity-50' : ''
+                  !isVisible ? "opacity-50" : ""
                 }`}
               >
                 <Checkbox
@@ -124,7 +128,9 @@ export const SearchColumnsModal = ({
                 />
                 <span className="text-foreground">{column.header}</span>
                 {!isVisible && (
-                  <span className="text-xs text-muted-foreground ml-1">(hidden)</span>
+                  <span className="text-xs text-muted-foreground ml-1">
+                    {t("hidden")}
+                  </span>
                 )}
               </div>
             );
@@ -132,22 +138,18 @@ export const SearchColumnsModal = ({
         </div>
 
         <div className="mt-4 flex justify-end space-x-2">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="border-border"
-          >
-            Cancel
+          <Button variant="outline" onClick={onClose} className="border-border">
+            {t("cancel")}
           </Button>
           <Button
             variant="primary"
             onClick={handleSave}
             className="bg-primary text-primary-foreground hover:bg-primary/90"
           >
-            Save Changes
+            {t("saveChanges")}
           </Button>
         </div>
       </div>
     </div>
   );
-}; 
+};

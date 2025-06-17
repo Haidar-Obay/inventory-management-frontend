@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Modal, Button, Checkbox } from "./CustomControls";
+import { useTranslations } from "next-intl";
 
 export const ColumnModal = ({
   isOpen,
@@ -11,6 +12,8 @@ export const ColumnModal = ({
   onCancel,
   onToggleColumn,
 }) => {
+  const t = useTranslations("table");
+
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
       onCancel();
@@ -18,14 +21,14 @@ export const ColumnModal = ({
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
       onClick={handleBackdropClick}
     >
       <div className="w-full max-w-md rounded-lg bg-background p-6 shadow-lg border border-border">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-medium text-foreground">
-            Column Visibility
+            {t("columns.modal.title")}
           </h3>
           <button
             onClick={onCancel}
@@ -68,14 +71,14 @@ export const ColumnModal = ({
             onClick={onCancel}
             className="border-border"
           >
-            Cancel
+            {t("columns.modal.cancel")}
           </Button>
           <Button
             variant="primary"
             onClick={onSave}
             className="bg-primary text-primary-foreground hover:bg-primary/90"
           >
-            Save Changes
+            {t("columns.modal.save")}
           </Button>
         </div>
       </div>

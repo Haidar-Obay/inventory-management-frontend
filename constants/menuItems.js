@@ -1,123 +1,273 @@
-export const menuItems = {
-  dashboard: {
-    groupIcon: "LayoutDashboard",
-    displayType: "popover",
-    items: [
-      { name: "Overview", icon: "Home", path: "/" ,roles: ["admin", "user", "owner"],},
-      { name: "Analytics", icon: "BarChart3", path: "/analytics" ,roles: ["admin", "user", "owner"],},
-      { name: "Reports", icon: "FileText", path: "/reports" ,roles: ["admin", "user", "owner"],},
-    ],
-  },
-  Main_Files: {
-    groupIcon: "FolderOpen",
-    displayType: "collapsible",
-    items: [
-      {
-        name: "Address Codes",
-        icon: "MapPin",
-        type: "group",
-        displayType: "popover",
-        roles: ["admin", "owner"],
-        items: [
-          { name: "Countries", icon: "Flag", path: "main/mainfiles/addresscodes?tab=0" },
-          { name: "Provinces", icon: "Flag", path: "main/mainfiles/addresscodes?tab=1" },
-          { name: "Cities", icon: "Flag", path: "main/mainfiles/addresscodes?tab=2" },
-          { name: "Districts", icon: "Flag", path: "main/mainfiles/addresscodes?tab=3" },
-        ] 
-      },
-      {
-        name: "Sections",
-        icon: "Waypoints",
-        type: "group",
-        displayType: "popover",
-        roles: ["admin", "owner"],
-        items: [
-          { name: "Project", icon: "Presentation", path: "main/mainfiles/sections?tab=0" },
-          { name: "Cost Center", icon: "HandCoins", path: "main/mainfiles/sections?tab=1" },
-          { name: "Department", icon: "Building2", path: "main/mainfiles/sections?tab=2" },
-          { name: "Trades", icon: "Wrench", path: "main/mainfiles/sections?tab=3" },
-          { name: "Company Codes", icon: "Building", path: "main/mainfiles/sections?tab=4" },
-          { name: "Jobs", icon: "Briefcase", path: "main/mainfiles/sections?tab=5" },
-        ]
-      },
-      {
-        name: "Items",
-        icon: "ShoppingBasket",
-        type: "group",
-        displayType: "popover",
-        roles: ["admin", "owner"],
-        items: [
-          { name: "Product Lines", icon: "PackageSearch", path: "main/mainfiles/items?tab=0" },
-          { name: "Categories", icon: "ChartBarStacked", path: "main/mainfiles/items?tab=1" },
-          { name: "Brands", icon: "Tag", path: "main/mainfiles/items?tab=2" },
-          { name: "Items", icon: "Package", path: "main/mainfiles/items?tab=3" },
-        ]
-      },
-      {
-        name: "Customer",
-        icon: "Users",
-        type: "group",
-        displayType: "popover",
-        roles: ["admin", "owner"],
-        items: [
-          { name: "Customer Group", icon: "UserCog", path: "main/customer/customer-group" },
-          { name: "Salesmen", icon: "UserCheck", path: "main/customer/salesmen" },
-          { name: "Customer", icon: "Users", path: "main/customer/customer" },
-        ]
-      },
-      {
-        name: "Supplier",
-        icon: "Truck",
-        type: "group",
-        displayType: "popover",
-        roles: ["admin", "owner"],
-        items: [
-          { name: "Supplier Group", icon: "Users", path: "main/supplier/supplier-group" },
-          { name: "Suppliers", icon: "Truck", path: "main/supplier/suppliers" },
-        ]
-      },
-    ],
-  },
-  General_Files: {
-    groupIcon: "FolderOpen",
-    displayType: "collapsible",
-    items: [],
-  },
-  settings: {
-    groupIcon: "Settings",
-    displayType: "popover",
-    roles: ["admin", "owner"],
-    items: [
-      {
-        name: "User Management",
-        icon: "Users",
-        path: "/main/settings/users",
-        roles: ["admin"]
-      },
-      {
-        name: "System Settings",
-        icon: "Settings",
-        path: "/main/settings/system",
-        roles: ["admin", "owner"]
-      }
-    ],
-  },
-  support: {
-    groupIcon: "LifeBuoy",
-    displayType: "popover",
-    items: [
-      {
-        name: "Help Center",
-        icon: "LifeBuoy",
-        path: "/main/support/help",
-        roles: ["admin", "user", "owner"]
-      },
-      {
-        name: "Contact Support",
-        icon: "Mail",
-        path: "/main/support/contact",
-        roles: ["admin", "user", "owner"]
-      }
-    ],
-  },
-}; 
+"use client";
+
+export function useMenuItems(t) {
+  return {
+    [t("dashboard")]: {
+      key: "dashboard",
+      groupIcon: "LayoutDashboard",
+      displayType: "popover",
+      items: [
+        {
+          key: "overview",
+          name: t("overview"),
+          icon: "Home",
+          path: "/main/dashboard/overview",
+          roles: ["admin", "user", "owner"],
+        },
+        {
+          key: "analytics",
+          name: t("analytics"),
+          icon: "BarChart3",
+          path: "/main/dashboard/analytics",
+          roles: ["admin", "user", "owner"],
+        },
+        {
+          key: "reports",
+          name: t("reports"),
+          icon: "FileText",
+          path: "/main/dashboard/reports",
+          roles: ["admin", "user", "owner"],
+        },
+      ],
+    },
+    [t("mainFiles")]: {
+      key: "mainFiles",
+      groupIcon: "FolderOpen",
+      displayType: "collapsible",
+      items: [
+        {
+          key: "addressCodes",
+          name: t("addressCodes"),
+          icon: "MapPin",
+          type: "group",
+          displayType: "popover",
+          roles: ["admin", "user", "owner"],
+          items: [
+            {
+              key: "countries",
+              name: t("countries"),
+              icon: "Flag",
+              path: "/main/mainfiles/addresscodes?tab=0",
+              roles: ["admin", "user", "owner"],
+            },
+            {
+              key: "provinces",
+              name: t("provinces"),
+              icon: "Flag",
+              path: "/main/mainfiles/addresscodes?tab=1",
+              roles: ["admin", "user", "owner"],
+            },
+            {
+              key: "cities",
+              name: t("cities"),
+              icon: "Flag",
+              path: "/main/mainfiles/addresscodes?tab=2",
+              roles: ["admin", "user", "owner"],
+            },
+            {
+              key: "districts",
+              name: t("districts"),
+              icon: "Flag",
+              path: "/main/mainfiles/addresscodes?tab=3",
+              roles: ["admin", "user", "owner"],
+            },
+          ],
+        },
+        {
+          key: "sections",
+          name: t("sections"),
+          icon: "Waypoints",
+          type: "group",
+          displayType: "popover",
+          roles: ["admin", "user", "owner"],
+          items: [
+            {
+              key: "project",
+              name: t("project"),
+              icon: "Presentation",
+              path: "/main/mainfiles/sections?tab=0",
+              roles: ["admin", "user", "owner"],
+            },
+            {
+              key: "costCenter",
+              name: t("costCenter"),
+              icon: "HandCoins",
+              path: "/main/mainfiles/sections?tab=1",
+              roles: ["admin", "user", "owner"],
+            },
+            {
+              key: "department",
+              name: t("department"),
+              icon: "Building2",
+              path: "/main/mainfiles/sections?tab=2",
+              roles: ["admin", "user", "owner"],
+            },
+            {
+              key: "trades",
+              name: t("trades"),
+              icon: "Wrench",
+              path: "/main/mainfiles/sections?tab=3",
+              roles: ["admin", "user", "owner"],
+            },
+            {
+              key: "companyCodes",
+              name: t("companyCodes"),
+              icon: "Building",
+              path: "/main/mainfiles/sections?tab=4",
+              roles: ["admin", "user", "owner"],
+            },
+            {
+              key: "jobs",
+              name: t("jobs"),
+              icon: "Briefcase",
+              path: "/main/mainfiles/sections?tab=5",
+              roles: ["admin", "user", "owner"],
+            },
+          ],
+        },
+        {
+          key: "items",
+          name: t("items"),
+          icon: "ShoppingBasket",
+          type: "group",
+          displayType: "popover",
+          roles: ["admin", "user", "owner"],
+          items: [
+            {
+              key: "productLines",
+              name: t("productLines"),
+              icon: "PackageSearch",
+              path: "/main/mainfiles/items?tab=0",
+              roles: ["admin", "user", "owner"],
+            },
+            {
+              key: "categories",
+              name: t("categories"),
+              icon: "ChartBarStacked",
+              path: "/main/mainfiles/items?tab=1",
+              roles: ["admin", "user", "owner"],
+            },
+            {
+              key: "brands",
+              name: t("brands"),
+              icon: "Tag",
+              path: "/main/mainfiles/items?tab=2",
+              roles: ["admin", "user", "owner"],
+            },
+            {
+              key: "items_inner",
+              name: t("items"),
+              icon: "Package",
+              path: "/main/mainfiles/items?tab=3",
+              roles: ["admin", "user", "owner"],
+            },
+          ],
+        },
+        {
+          key: "customer",
+          name: t("customer"),
+          icon: "Users",
+          type: "group",
+          displayType: "popover",
+          roles: ["admin", "user", "owner"],
+          items: [
+            {
+              key: "customerGroup",
+              name: t("customerGroup"),
+              icon: "UserCog",
+              path: "/main/customer/customer-group",
+              roles: ["admin", "user", "owner"],
+            },
+            {
+              key: "salesmen",
+              name: t("salesmen"),
+              icon: "UserCheck",
+              path: "/main/customer/salesmen",
+              roles: ["admin", "user", "owner"],
+            },
+            {
+              key: "customer_inner",
+              name: t("customer"),
+              icon: "Users",
+              path: "main/customer/customer",
+              roles: ["admin", "user", "owner"],
+            },
+          ],
+        },
+        {
+          key: "supplier",
+          name: t("supplier"),
+          icon: "Truck",
+          type: "group",
+          displayType: "popover",
+          roles: ["admin", "user", "owner"],
+          items: [
+            {
+              key: "supplierGroup",
+              name: t("supplierGroup"),
+              icon: "Users",
+              path: "/main/supplier/supplier-group",
+              roles: ["admin", "user", "owner"],
+            },
+            {
+              key: "suppliers",
+              name: t("suppliers"),
+              icon: "Truck",
+              path: "/rs",
+              roles: ["admin", "user", "owner"],
+            },
+          ],
+        },
+      ],
+    },
+    [t("generalFiles")]: {
+      key: "generalFiles",
+      groupIcon: "FolderOpen",
+      displayType: "collapsible",
+      items: [],
+    },
+    [t("settings")]: {
+      key: "settings",
+      groupIcon: "Settings",
+      displayType: "popover",
+      roles: ["admin", "user", "owner"],
+      items: [
+        {
+          key: "userManagement",
+          name: t("userManagement"),
+          icon: "Users",
+          path: "/main/settings/users",
+          roles: ["admin", "user", "owner"],
+        },
+        {
+          key: "systemSettings",
+          name: t("systemSettings"),
+          icon: "Settings",
+          path: "/main/settings/system",
+          roles: ["admin", "user", "owner"],
+        },
+      ],
+    },
+    [t("support")]: {
+      key: "support",
+      groupIcon: "LifeBuoy",
+      displayType: "popover",
+      items: [
+        {
+          key: "helpCenter",
+          name: t("helpCenter"),
+          icon: "LifeBuoy",
+          path: "/main/support/help",
+          roles: ["admin", "user", "owner"],
+        },
+        {
+          key: "contactSupport",
+          name: t("contactSupport"),
+          icon: "Mail",
+          path: "/main/support/contact",
+          roles: ["admin", "user", "owner"],
+        },
+      ],
+    },
+  };
+}

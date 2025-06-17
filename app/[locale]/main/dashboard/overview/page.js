@@ -1,5 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import {
   Package,
   BarChart3,
@@ -12,54 +13,47 @@ import {
 } from "lucide-react";
 
 export default function Dashboard() {
+  const t = useTranslations("dashboardOverview");
   const features = [
     {
       icon: Package,
-      title: "Inventory Tracking",
-      description:
-        "Real-time tracking of all your inventory items with detailed stock levels, locations, and movement history.",
+      title: t("inventoryTrackingTitle"),
+      description: t("inventoryTrackingDesc"),
     },
     {
       icon: BarChart3,
-      title: "Analytics Dashboard",
-      description:
-        "Comprehensive analytics and reporting tools to help you make data-driven decisions about your inventory.",
+      title: t("analyticsDashboardTitle"),
+      description: t("analyticsDashboardDesc"),
     },
     {
       icon: Users,
-      title: "User Management",
-      description:
-        "Role-based access control to manage your team's permissions and access to different features.",
+      title: t("userManagementTitle"),
+      description: t("userManagementDesc"),
     },
     {
       icon: Settings,
-      title: "Customizable Settings",
-      description:
-        "Flexible configuration options to tailor the system to your specific business needs.",
+      title: t("customizableSettingsTitle"),
+      description: t("customizableSettingsDesc"),
     },
     {
       icon: AlertCircle,
-      title: "Stock Alerts",
-      description:
-        "Automated notifications for low stock levels, expiring items, and other important inventory events.",
+      title: t("stockAlertsTitle"),
+      description: t("stockAlertsDesc"),
     },
     {
       icon: TrendingUp,
-      title: "Performance Metrics",
-      description:
-        "Track key performance indicators to optimize your inventory management and reduce costs.",
+      title: t("performanceMetricsTitle"),
+      description: t("performanceMetricsDesc"),
     },
     {
       icon: Shield,
-      title: "Security Features",
-      description:
-        "Advanced security measures to protect your inventory data and business operations.",
+      title: t("securityFeaturesTitle"),
+      description: t("securityFeaturesDesc"),
     },
     {
       icon: Clock,
-      title: "Real-time Updates",
-      description:
-        "Instant updates across all devices to ensure everyone has access to the latest inventory information.",
+      title: t("realTimeUpdatesTitle"),
+      description: t("realTimeUpdatesDesc"),
     },
   ];
 
@@ -78,7 +72,7 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            Welcome to Your Inventory Management System
+            {t("welcomeTitle")}
           </motion.h1>
           <motion.p
             className="text-xl text-muted-foreground max-w-3xl mx-auto"
@@ -86,9 +80,7 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            Streamline your inventory operations with our comprehensive
-            management solution. Track, analyze, and optimize your inventory in
-            real-time.
+            {t("welcomeDesc")}
           </motion.p>
         </div>
 
@@ -126,35 +118,26 @@ export default function Dashboard() {
           transition={{ delay: 0.6 }}
         >
           <h2 className="text-2xl font-bold text-foreground mb-4">
-            Getting Started
+            {t("gettingStartedTitle")}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-2">
               <h3 className="text-lg font-semibold text-foreground">
-                1. Set Up Your Inventory
+                {t("step1Title")}
               </h3>
-              <p className="text-muted-foreground">
-                Begin by adding your products and setting up your initial
-                inventory levels.
-              </p>
+              <p className="text-muted-foreground">{t("step1Desc")}</p>
             </div>
             <div className="space-y-2">
               <h3 className="text-lg font-semibold text-foreground">
-                2. Configure Settings
+                {t("step2Title")}
               </h3>
-              <p className="text-muted-foreground">
-                Customize your preferences and set up alerts for important
-                inventory events.
-              </p>
+              <p className="text-muted-foreground">{t("step2Desc")}</p>
             </div>
             <div className="space-y-2">
               <h3 className="text-lg font-semibold text-foreground">
-                3. Invite Your Team
+                {t("step3Title")}
               </h3>
-              <p className="text-muted-foreground">
-                Add team members and assign roles to start collaborating on
-                inventory management.
-              </p>
+              <p className="text-muted-foreground">{t("step3Desc")}</p>
             </div>
           </div>
         </motion.div>

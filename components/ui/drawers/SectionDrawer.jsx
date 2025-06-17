@@ -10,6 +10,7 @@ import { getCustomerNames, getCostCenterNames } from '@/API/Customers';
 import { getCostCenterNames as getCostCenterNamesFromSections } from '@/API/Sections';
 import { getDepartmentNames as getDepartmentNamesFromSections } from '@/API/Sections';
 import { getProjectNames as getProjectNamesFromSections } from '@/API/Sections';
+import { useTranslations, useLocale } from "next-intl";
 
 const SectionDrawer = ({
   isOpen,
@@ -20,7 +21,7 @@ const SectionDrawer = ({
   onSaveAndClose,
   formData,
   onFormDataChange,
-  isEdit = false
+  isEdit = false,
 }) => {
   const [expandedAccordion, setExpandedAccordion] = useState('panel1');
   const [customers, setCustomers] = useState([]);
@@ -28,6 +29,9 @@ const SectionDrawer = ({
   const [departmentOptions, setDepartmentOptions] = useState([]);
   const [projectOptions, setProjectOptions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const t = useTranslations("sections");
+  const locale = useLocale();
+  const isRTL = locale === "ar";
 
   useEffect(() => {
     if (type === 'project' && isOpen) {
@@ -139,10 +143,29 @@ const SectionDrawer = ({
     });
   };
 
+  const getPluralType = (type) => {
+    switch (type) {
+      case "project":
+        return "projects";
+      case "costCenter":
+        return "costCenters";
+      case "department":
+        return "departments";
+      case "trade":
+        return "trades";
+      case "companyCode":
+        return "companyCodes";
+      case "job":
+        return "jobs";
+      default:
+        return type;
+    }
+  };
+
   const getAccordionContent = () => {
     if (type === 'project') {
       return [{
-        title: isEdit ? 'Edit Project' : 'Add Project',
+        title: isEdit ? t('management.editProject') : t('management.addProject'),
         expanded: expandedAccordion === 'panel1',
         onChange: handleAccordionChange('panel1'),
         content: (
@@ -150,7 +173,7 @@ const SectionDrawer = ({
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Project Name"
+                label={t('management.projectName')}
                 variant="outlined"
                 size="small"
                 value={formData?.name || ''}
@@ -169,7 +192,7 @@ const SectionDrawer = ({
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Customer"
+                    label={t('management.customer')}
                     variant="outlined"
                     size="small"
                     required
@@ -180,7 +203,7 @@ const SectionDrawer = ({
             <Grid item xs={12} md={4} sx={{ width: '100%' }}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
-                  label="Start Date"
+                  label={t('management.startDate')}
                   value={formData?.start_date || null}
                   onChange={handleDateChange('start_date')}
                   slotProps={{
@@ -196,7 +219,7 @@ const SectionDrawer = ({
             <Grid item xs={12} md={4} sx={{ width: '100%' }}  >
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
-                  label="Expected Date"
+                  label={t('management.expectedDate')}
                   value={formData?.expected_date || null}
                   onChange={handleDateChange('expected_date')}
                   slotProps={{
@@ -212,7 +235,7 @@ const SectionDrawer = ({
             <Grid item xs={12} md={4} sx={{ width: '100%' }}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
-                  label="End Date"
+                  label={t('management.endDate')}
                   value={formData?.end_date || null}
                   onChange={handleDateChange('end_date')}
                   slotProps={{
@@ -232,7 +255,7 @@ const SectionDrawer = ({
 
     if (type === 'costCenter') {
       return [{
-        title: isEdit ? 'Edit Cost Center' : 'Add Cost Center',
+        title: isEdit ? t('management.editCostCenter') : t('management.addCostCenter'),
         expanded: expandedAccordion === 'panel1',
         onChange: handleAccordionChange('panel1'),
         content: (
@@ -240,7 +263,7 @@ const SectionDrawer = ({
             <Grid item xs={12} md={6} >
               <TextField
                 fullWidth
-                label="Code"
+                label={t('management.code')}
                 variant="outlined"
                 size="small"
                 value={formData?.code || ''}
@@ -251,7 +274,7 @@ const SectionDrawer = ({
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Name"
+                label={t('management.name')}
                 variant="outlined"
                 size="small"
                 value={formData?.name || ''}
@@ -270,7 +293,7 @@ const SectionDrawer = ({
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Sub Cost Center Of"
+                    label={t('management.subCostCenterOf')}
                     variant="outlined"
                     size="small"
                   />
@@ -281,7 +304,7 @@ const SectionDrawer = ({
               <TextField
                 select
                 fullWidth
-                label="Active"
+                label={t('management.active')}
                 variant="outlined"
                 size="small"
                 value={formData?.active === false ? 'false' : 'true'}
@@ -293,8 +316,8 @@ const SectionDrawer = ({
                   native: true
                 }}
               >
-                <option value="true">Yes</option>
-                <option value="false">No</option>
+                <option value="true">{t('management.yes')}</option>
+                <option value="false">{t('management.no')}</option>
               </TextField>
             </Grid>
           </Grid>
@@ -304,7 +327,7 @@ const SectionDrawer = ({
 
     if (type === 'department') {
       return [{
-        title: isEdit ? 'Edit Department' : 'Add Department',
+        title: isEdit ? t('management.editDepartment') : t('management.addDepartment'),
         expanded: expandedAccordion === 'panel1',
         onChange: handleAccordionChange('panel1'),
         content: (
@@ -312,7 +335,7 @@ const SectionDrawer = ({
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Code"
+                label={t('management.code')}
                 variant="outlined"
                 size="small"
                 value={formData?.code || ''}
@@ -323,7 +346,7 @@ const SectionDrawer = ({
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Name"
+                label={t('management.name')}
                 variant="outlined"
                 size="small"
                 value={formData?.name || ''}
@@ -342,7 +365,7 @@ const SectionDrawer = ({
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Sub Department Of"
+                    label={t('management.subDepartmentOf')}
                     variant="outlined"
                     size="small"
                   />
@@ -353,7 +376,7 @@ const SectionDrawer = ({
               <TextField
                 select
                 fullWidth
-                label="Active"
+                label={t('management.active')}
                 variant="outlined"
                 size="small"
                 value={formData?.active === false ? 'false' : 'true'}
@@ -365,8 +388,8 @@ const SectionDrawer = ({
                   native: true
                 }}
               >
-                <option value="true">Yes</option>
-                <option value="false">No</option>
+                <option value="true">{t('management.yes')}</option>
+                <option value="false">{t('management.no')}</option>
               </TextField>
             </Grid>
           </Grid>
@@ -376,7 +399,7 @@ const SectionDrawer = ({
 
     if (type === 'trade') {
       return [{
-        title: isEdit ? 'Edit Trade' : 'Add Trade',
+        title: isEdit ? t('management.editTrade') : t('management.addTrade'),
         expanded: expandedAccordion === 'panel1',
         onChange: handleAccordionChange('panel1'),
         content: (
@@ -384,7 +407,7 @@ const SectionDrawer = ({
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Code"
+                label={t('management.code')}
                 variant="outlined"
                 size="small"
                 value={formData?.code || ''}
@@ -395,7 +418,7 @@ const SectionDrawer = ({
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Name"
+                label={t('management.name')}
                 variant="outlined"
                 size="small"
                 value={formData?.name || ''}
@@ -407,7 +430,7 @@ const SectionDrawer = ({
               <TextField
                 select
                 fullWidth
-                label="Active"
+                label={t('management.active')}
                 variant="outlined"
                 size="small"
                 value={formData?.active === false ? 'false' : 'true'}
@@ -419,8 +442,8 @@ const SectionDrawer = ({
                   native: true
                 }}
               >
-                <option value="true">Yes</option>
-                <option value="false">No</option>
+                <option value="true">{t('management.yes')}</option>
+                <option value="false">{t('management.no')}</option>
               </TextField>
             </Grid>
           </Grid>
@@ -430,7 +453,7 @@ const SectionDrawer = ({
 
     if (type === 'companyCode') {
       return [{
-        title: isEdit ? 'Edit Company Code' : 'Add Company Code',
+        title: isEdit ? t('management.editCompanyCode') : t('management.addCompanyCode'),
         expanded: expandedAccordion === 'panel1',
         onChange: handleAccordionChange('panel1'),
         content: (
@@ -438,7 +461,7 @@ const SectionDrawer = ({
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Code"
+                label={t('management.code')}
                 variant="outlined"
                 size="small"
                 value={formData?.code || ''}
@@ -449,7 +472,7 @@ const SectionDrawer = ({
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Name"
+                label={t('management.name')}
                 variant="outlined"
                 size="small"
                 value={formData?.name || ''}
@@ -464,7 +487,7 @@ const SectionDrawer = ({
 
     if (type === 'job') {
       return [{
-        title: isEdit ? 'Edit Job' : 'Add Job',
+        title: isEdit ? t('management.editJob') : t('management.addJob'),
         expanded: expandedAccordion === 'panel1',
         onChange: handleAccordionChange('panel1'),
         content: (
@@ -472,7 +495,7 @@ const SectionDrawer = ({
             <Grid item xs={12} md={6} sx={{ width: '100%' }}>
               <TextField
                 fullWidth
-                label="Description"
+                label={t('management.description')}
                 variant="outlined"
                 size="small"
                 value={formData?.description || ''}
@@ -491,7 +514,7 @@ const SectionDrawer = ({
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Project"
+                    label={t('management.project')}
                     variant="outlined"
                     size="small"
                     required
@@ -502,7 +525,7 @@ const SectionDrawer = ({
             <Grid item xs={12} md={4}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
-                  label="Start Date"
+                  label={t('management.startDate')}
                   value={formData?.start_date || null}
                   onChange={handleDateChange('start_date')}
                   slotProps={{
@@ -518,7 +541,7 @@ const SectionDrawer = ({
             <Grid item xs={12} md={4} >
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
-                  label="Expected Date"
+                  label={t('management.expectedDate')}
                   value={formData?.expected_date || null}
                   onChange={handleDateChange('expected_date')}
                   slotProps={{
@@ -534,7 +557,7 @@ const SectionDrawer = ({
             <Grid item xs={12} md={4}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
-                  label="End Date"
+                  label={t('management.endDate')}
                   value={formData?.end_date || null}
                   onChange={handleDateChange('end_date')}
                   slotProps={{
@@ -554,7 +577,7 @@ const SectionDrawer = ({
 
     // Default fields for other types
     return [{
-      title: isEdit ? `Edit ${type.charAt(0).toUpperCase() + type.slice(1)}` : `Add ${type.charAt(0).toUpperCase() + type.slice(1)}`,
+      title: isEdit ? t(`management.edit${type.charAt(0).toUpperCase() + type.slice(1)}`) : t(`management.add${type.charAt(0).toUpperCase() + type.slice(1)}`),
       expanded: expandedAccordion === 'panel1',
       onChange: handleAccordionChange('panel1'),
       content: (
@@ -562,7 +585,7 @@ const SectionDrawer = ({
           <Grid item xs={12}>
             <TextField
               fullWidth
-              label={`${type.charAt(0).toUpperCase() + type.slice(1)} Name`}
+              label={t(`management.${type}Name`)}
               variant="outlined"
               size="small"
               value={formData?.name || ''}
@@ -573,7 +596,7 @@ const SectionDrawer = ({
           <Grid item xs={12}>
             <TextField
               fullWidth
-              label="Description"
+              label={t('management.description')}
               variant="outlined"
               size="small"
               multiline
@@ -587,17 +610,23 @@ const SectionDrawer = ({
     }];
   };
 
+  const pluralType = getPluralType(type);
+  const title = isEdit
+    ? `${t("management.edit")} ${t(`management.${pluralType}`)}`
+    : `${t("management.add")} ${t(`management.${pluralType}`)}`;
+
   return (
     <DynamicDrawer
       isOpen={isOpen}
       onClose={onClose}
-      title={isEdit ? `${type.charAt(0).toUpperCase() + type.slice(1)}` : `New ${type.charAt(0).toUpperCase() + type.slice(1)}`}
+      title={title}
       accordions={getAccordionContent()}
       onSave={onSave}
       onSaveAndNew={onSaveAndNew}
       onSaveAndClose={onSaveAndClose}
+      anchor={isRTL ? "left" : "right"}
     />
   );
 };
 
-export default SectionDrawer; 
+export default SectionDrawer;

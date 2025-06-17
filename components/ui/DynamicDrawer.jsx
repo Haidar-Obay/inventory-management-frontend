@@ -1,19 +1,19 @@
-import React from 'react';
-import { 
-  Box, 
-  Typography, 
+import React from "react";
+import {
+  Box,
+  Typography,
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Grid
-} from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+  Grid,
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SidePanelDrawer from "@/components/ui/SidePanelDrawer";
 import { ActionToolbar } from "@/components/ui/action-toolbar";
 
-const DynamicDrawer = ({ 
-  isOpen, 
-  onClose, 
+const DynamicDrawer = ({
+  isOpen,
+  onClose,
   title,
   width = 500,
   zIndex = 1200,
@@ -23,6 +23,7 @@ const DynamicDrawer = ({
   onSaveAndClose,
   onCancel,
   children, // For any additional content
+  anchor = "right", // Add anchor prop with default value
 }) => {
   return (
     <SidePanelDrawer
@@ -30,11 +31,12 @@ const DynamicDrawer = ({
       onClose={onClose}
       width={width}
       zIndex={zIndex}
+      anchor={anchor}
     >
       <Box p={3} className="flex flex-col h-full">
         {/* Header */}
-        <Typography 
-          variant="h6" 
+        <Typography
+          variant="h6"
           className="mb-4 font-semibold text-gray-800 border-b pb-3"
         >
           {title}
@@ -44,7 +46,7 @@ const DynamicDrawer = ({
         <div className="flex-grow">
           {/* Render accordions if provided */}
           {accordions.map((accordion, index) => (
-            <Accordion 
+            <Accordion
               key={index}
               expanded={accordion.expanded}
               onChange={accordion.onChange}
@@ -79,7 +81,7 @@ const DynamicDrawer = ({
             expandDirection="left"
             className="[&_button]:h-10"
             storageKey={`drawer-${title}-last-action`}
-            dropdownDirection = 'up'
+            dropdownDirection="up"
           />
         </div>
       </Box>
@@ -87,4 +89,4 @@ const DynamicDrawer = ({
   );
 };
 
-export default DynamicDrawer; 
+export default DynamicDrawer;
