@@ -3,22 +3,26 @@
 export function useMenuItems(t) {
   return {
     [t("dashboard")]: {
+      key: "dashboard",
       groupIcon: "LayoutDashboard",
       displayType: "popover",
       items: [
         {
+          key: "overview",
           name: t("overview"),
           icon: "Home",
           path: "/main/dashboard/overview",
           roles: ["admin", "user", "owner"],
         },
         {
+          key: "analytics",
           name: t("analytics"),
           icon: "BarChart3",
           path: "/main/dashboard/analytics",
           roles: ["admin", "user", "owner"],
         },
         {
+          key: "reports",
           name: t("reports"),
           icon: "FileText",
           path: "/main/dashboard/reports",
@@ -27,10 +31,12 @@ export function useMenuItems(t) {
       ],
     },
     [t("mainFiles")]: {
+      key: "mainFiles",
       groupIcon: "FolderOpen",
       displayType: "collapsible",
       items: [
         {
+          key: "addressCodes",
           name: t("addressCodes"),
           icon: "MapPin",
           type: "group",
@@ -38,24 +44,28 @@ export function useMenuItems(t) {
           roles: ["admin", "user", "owner"],
           items: [
             {
+              key: "countries",
               name: t("countries"),
               icon: "Flag",
               path: "/main/mainfiles/addresscodes?tab=0",
               roles: ["admin", "user", "owner"],
             },
             {
+              key: "provinces",
               name: t("provinces"),
               icon: "Flag",
               path: "/main/mainfiles/addresscodes?tab=1",
               roles: ["admin", "user", "owner"],
             },
             {
+              key: "cities",
               name: t("cities"),
               icon: "Flag",
               path: "/main/mainfiles/addresscodes?tab=2",
               roles: ["admin", "user", "owner"],
             },
             {
+              key: "districts",
               name: t("districts"),
               icon: "Flag",
               path: "/main/mainfiles/addresscodes?tab=3",
@@ -64,6 +74,7 @@ export function useMenuItems(t) {
           ],
         },
         {
+          key: "sections",
           name: t("sections"),
           icon: "Waypoints",
           type: "group",
@@ -71,36 +82,42 @@ export function useMenuItems(t) {
           roles: ["admin", "user", "owner"],
           items: [
             {
+              key: "project",
               name: t("project"),
               icon: "Presentation",
               path: "/main/mainfiles/sections?tab=0",
               roles: ["admin", "user", "owner"],
             },
             {
+              key: "costCenter",
               name: t("costCenter"),
               icon: "HandCoins",
               path: "/main/mainfiles/sections?tab=1",
               roles: ["admin", "user", "owner"],
             },
             {
+              key: "department",
               name: t("department"),
               icon: "Building2",
               path: "/main/mainfiles/sections?tab=2",
               roles: ["admin", "user", "owner"],
             },
             {
+              key: "trades",
               name: t("trades"),
               icon: "Wrench",
               path: "/main/mainfiles/sections?tab=3",
               roles: ["admin", "user", "owner"],
             },
             {
+              key: "companyCodes",
               name: t("companyCodes"),
               icon: "Building",
               path: "/main/mainfiles/sections?tab=4",
               roles: ["admin", "user", "owner"],
             },
             {
+              key: "jobs",
               name: t("jobs"),
               icon: "Briefcase",
               path: "/main/mainfiles/sections?tab=5",
@@ -109,6 +126,7 @@ export function useMenuItems(t) {
           ],
         },
         {
+          key: "items",
           name: t("items"),
           icon: "ShoppingBasket",
           type: "group",
@@ -116,24 +134,28 @@ export function useMenuItems(t) {
           roles: ["admin", "user", "owner"],
           items: [
             {
+              key: "productLines",
               name: t("productLines"),
               icon: "PackageSearch",
               path: "/main/items/product-lines",
               roles: ["admin", "user", "owner"],
             },
             {
+              key: "categories",
               name: t("categories"),
               icon: "ChartBarStacked",
               path: "/main/items/categories",
               roles: ["admin", "user", "owner"],
             },
             {
+              key: "brands",
               name: t("brands"),
               icon: "Tag",
               path: "main/items/brands",
               roles: ["admin", "user", "owner"],
             },
             {
+              key: "items_inner",
               name: t("items"),
               icon: "Package",
               path: "main/items/items",
@@ -142,6 +164,7 @@ export function useMenuItems(t) {
           ],
         },
         {
+          key: "customer",
           name: t("customer"),
           icon: "Users",
           type: "group",
@@ -149,18 +172,21 @@ export function useMenuItems(t) {
           roles: ["admin", "user", "owner"],
           items: [
             {
+              key: "customerGroup",
               name: t("customerGroup"),
               icon: "UserCog",
               path: "/main/customer/customer-group",
               roles: ["admin", "user", "owner"],
             },
             {
+              key: "salesmen",
               name: t("salesmen"),
               icon: "UserCheck",
               path: "/main/customer/salesmen",
               roles: ["admin", "user", "owner"],
             },
             {
+              key: "customer_inner",
               name: t("customer"),
               icon: "Users",
               path: "main/customer/customer",
@@ -169,6 +195,7 @@ export function useMenuItems(t) {
           ],
         },
         {
+          key: "supplier",
           name: t("supplier"),
           icon: "Truck",
           type: "group",
@@ -176,12 +203,14 @@ export function useMenuItems(t) {
           roles: ["admin", "user", "owner"],
           items: [
             {
+              key: "supplierGroup",
               name: t("supplierGroup"),
               icon: "Users",
               path: "/main/supplier/supplier-group",
               roles: ["admin", "user", "owner"],
             },
             {
+              key: "suppliers",
               name: t("suppliers"),
               icon: "Truck",
               path: "/rs",
@@ -192,22 +221,26 @@ export function useMenuItems(t) {
       ],
     },
     [t("generalFiles")]: {
+      key: "generalFiles",
       groupIcon: "FolderOpen",
       displayType: "collapsible",
       items: [],
     },
     [t("settings")]: {
+      key: "settings",
       groupIcon: "Settings",
       displayType: "popover",
       roles: ["admin", "user", "owner"],
       items: [
         {
+          key: "userManagement",
           name: t("userManagement"),
           icon: "Users",
           path: "/main/settings/users",
           roles: ["admin", "user", "owner"],
         },
         {
+          key: "systemSettings",
           name: t("systemSettings"),
           icon: "Settings",
           path: "/main/settings/system",
@@ -216,16 +249,19 @@ export function useMenuItems(t) {
       ],
     },
     [t("support")]: {
+      key: "support",
       groupIcon: "LifeBuoy",
       displayType: "popover",
       items: [
         {
+          key: "helpCenter",
           name: t("helpCenter"),
           icon: "LifeBuoy",
           path: "/main/support/help",
           roles: ["admin", "user", "owner"],
         },
         {
+          key: "contactSupport",
           name: t("contactSupport"),
           icon: "Mail",
           path: "/main/support/contact",

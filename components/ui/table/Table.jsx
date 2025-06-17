@@ -52,8 +52,6 @@ const Table = (props) => {
     totalPages,
     areAllOnPageSelected,
     columnWidths,
-    handleResizeStart,
-    resizingColumn,
     selectedSearchColumns,
     handleSearchColumnToggle,
     handleSelectAllSearchColumns,
@@ -263,8 +261,6 @@ const Table = (props) => {
                 handleColumnSearch={handleColumnSearch}
                 handleSelectAll={handleSelectAll}
                 columnWidths={columnWidths}
-                handleResizeStart={handleResizeStart}
-                resizingColumn={resizingColumn}
                 t={props.t}
               />
 

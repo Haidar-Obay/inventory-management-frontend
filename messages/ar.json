@@ -167,15 +167,15 @@
     "loading": "جاري تحميل رموز العناوين...",
     "tabs": {
       "countries": "الدول",
-      "provinces": "المناطق",
+      "provinces": "المحافظات",
       "cities": "المدن",
-      "districts": "الأحياء"
+      "districts": "المناطق"
     },
     "management": {
       "countries": "إدارة الدول",
-      "provinces": "إدارة المناطق",
+      "provinces": "إدارة المحافظات",
       "cities": "إدارة المدن",
-      "districts": "إدارة الأحياء"
+      "districts": "إدارة المناطق"
     },
     "messages": {
       "exportSuccess": "تم التصدير بنجاح",

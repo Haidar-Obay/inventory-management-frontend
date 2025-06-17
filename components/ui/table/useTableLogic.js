@@ -123,7 +123,8 @@ export function useTableLogic({
           search: parsedWidths.search || "40px",
         };
         columns.forEach((column) => {
-          validWidths[column.key] = parsedWidths[column.key] || column.width || "100px";
+          validWidths[column.key] =
+            parsedWidths[column.key] || column.width || "100px";
         });
         return validWidths;
       } catch (error) {
@@ -145,13 +146,6 @@ export function useTableLogic({
   useEffect(() => {
     localStorage.setItem("tableColumnWidths", JSON.stringify(columnWidths));
   }, [columnWidths]);
-
-  // Add column resizing state with better precision
-  const [resizingColumn, setResizingColumn] = useState(null);
-  const [resizeStartX, setResizeStartX] = useState(0);
-  const [resizeStartWidth, setResizeStartWidth] = useState(0);
-  const resizeRef = useRef(null);
-  const resizeTimeoutRef = useRef(null);
 
   // Extract unique values for each column
   useEffect(() => {
@@ -727,132 +721,6 @@ export function useTableLogic({
     paginatedData.length > 0 &&
     paginatedData.every((row) => selectedRows.has(row.id));
 
-  // Enhanced column resize start handler
-  const handleResizeStart = (e, columnKey) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const th = e.currentTarget.closest("th");
-    const currentWidth = columnWidths[columnKey];
-    const startWidth =
-      currentWidth === "auto" ? th.offsetWidth : parseInt(currentWidth);
-    const startX = e.clientX;
-
-    setResizingColumn(columnKey);
-    setResizeStartX(startX);
-    setResizeStartWidth(startWidth);
-
-    // Add a temporary overlay to prevent text selection during resize
-    const overlay = document.createElement("div");
-    overlay.style.position = "fixed";
-    overlay.style.top = "0";
-    overlay.style.left = "0";
-    overlay.style.right = "0";
-    overlay.style.bottom = "0";
-    overlay.style.cursor = "col-resize";
-    overlay.style.zIndex = "9999";
-    document.body.appendChild(overlay);
-    resizeRef.current = overlay;
-
-    // Add double-click handler to reset column width
-    const handleDoubleClick = (e) => {
-      if (e.target === overlay) {
-        const defaultWidth =
-          columnKey === "select" || columnKey === "search" ? "40px" : "auto";
-        setColumnWidths((prev) => ({
-          ...prev,
-          [columnKey]: defaultWidth,
-        }));
-        handleResizeEnd();
-      }
-    };
-    overlay.addEventListener("dblclick", handleDoubleClick);
-  };
-
-  // Enhanced column resize handler with debouncing and constraints
-  const handleResize = (e) => {
-    if (!resizingColumn) return;
-
-    // Calculate the new width with better precision
-    const diff = e.clientX - resizeStartX;
-    const minWidth =
-      resizingColumn === "select" || resizingColumn === "search" ? 40 : 100;
-    const newWidth = Math.max(minWidth, resizeStartWidth + diff);
-
-    // Round to nearest pixel for smoother updates
-    const roundedWidth = Math.round(newWidth);
-
-    // Only update if there's actual movement
-    if (Math.abs(diff) > 0) {
-      // Debounce the width updates for better performance
-      if (resizeTimeoutRef.current) {
-        cancelAnimationFrame(resizeTimeoutRef.current);
-      }
-
-      resizeTimeoutRef.current = requestAnimationFrame(() => {
-        setColumnWidths((prev) => ({
-          ...prev,
-          [resizingColumn]: `${roundedWidth}px`,
-        }));
-      });
-    }
-  };
-
-  // Enhanced column resize end handler with cleanup
-  const handleResizeEnd = () => {
-    if (resizeRef.current) {
-      const overlay = resizeRef.current;
-      overlay.removeEventListener("dblclick", handleDoubleClick);
-      document.body.removeChild(overlay);
-      resizeRef.current = null;
-    }
-
-    if (resizeTimeoutRef.current) {
-      cancelAnimationFrame(resizeTimeoutRef.current);
-      resizeTimeoutRef.current = null;
-    }
-
-    setResizingColumn(null);
-    document.body.style.userSelect = "";
-    document.body.style.cursor = "";
-  };
-
-  // Add resize event listeners with better cleanup
-  useEffect(() => {
-    if (resizingColumn) {
-      // Use passive event listeners for better performance
-      window.addEventListener("mousemove", handleResize, { passive: true });
-      window.addEventListener("mouseup", handleResizeEnd);
-      window.addEventListener("mouseleave", handleResizeEnd);
-
-      // Prevent text selection during resize
-      document.body.style.userSelect = "none";
-      document.body.style.cursor = "col-resize";
-    }
-
-    return () => {
-      window.removeEventListener("mousemove", handleResize);
-      window.removeEventListener("mouseup", handleResizeEnd);
-      window.removeEventListener("mouseleave", handleResizeEnd);
-
-      // Restore text selection
-      document.body.style.userSelect = "";
-      document.body.style.cursor = "";
-
-      // Clean up overlay if it exists
-      if (resizeRef.current) {
-        document.body.removeChild(resizeRef.current);
-        resizeRef.current = null;
-      }
-
-      // Clean up animation frame
-      if (resizeTimeoutRef.current) {
-        cancelAnimationFrame(resizeTimeoutRef.current);
-        resizeTimeoutRef.current = null;
-      }
-    };
-  }, [resizingColumn]);
-
   // Reset column widths with animation
   const resetColumnWidths = () => {
     const defaultWidths = {
@@ -935,7 +803,6 @@ export function useTableLogic({
     totalPages,
     areAllOnPageSelected,
     columnWidths,
-    resizingColumn,
     selectedSearchColumns,
 
     // Handlers
@@ -976,9 +843,6 @@ export function useTableLogic({
     handleOpenFilterModal,
     handleSaveFilter,
     handleCancelFilter,
-    handleResizeStart,
-    handleResize,
-    handleResizeEnd,
 
     // Setters
     setTableData,

@@ -233,9 +233,15 @@ export const TablePagination = ({
               }
               // Prevent leading zeros
               value = value.replace(/^0+/, "");
-              // Clamp value
-              if (value && Number(value) > totalPages)
-                value = totalPages.toString();
+              // Clamp value between 1 and totalPages
+              if (value) {
+                const numValue = Number(value);
+                if (numValue > totalPages) {
+                  value = totalPages.toString();
+                } else if (numValue < 1) {
+                  value = "1";
+                }
+              }
               handleJumpToPageInputChange({ target: { value } });
             }}
             onKeyPress={handleJumpToPageKeyPress}
@@ -254,7 +260,6 @@ export const TablePagination = ({
                 : {}
             }
             inputMode="numeric"
-            autoComplete="off"
           />
           {locale === "ar" && (
             <span

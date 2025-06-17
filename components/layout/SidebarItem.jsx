@@ -88,8 +88,8 @@ export function SidebarItem({
         >
           <Star
             className={cn(
-              "h-4 w-4 group-hover:text-yellow-400 group-hover:fill-yellow-400",
-              isBookmarked ? "fill-yellow-400 text-yellow-400" : ""
+              "h-4 w-4 transition-colors duration-200",
+              isBookmarked ? "text-yellow-400 fill-yellow-400" : "text-primary-foreground/50 group-hover:text-yellow-400 group-hover:fill-yellow-400"
             )}
           />
         </Button>
