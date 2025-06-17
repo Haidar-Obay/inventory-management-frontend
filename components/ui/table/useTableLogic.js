@@ -40,21 +40,24 @@ export function useTableLogic({
     // Create a unique key for this table using tableId
     const storageKey = `tableColumnVisibility_${tableId}`;
 
-    // Try to get saved settings from localStorage
-    const savedSettings = localStorage.getItem(storageKey);
-    if (savedSettings) {
-      try {
-        const parsedSettings = JSON.parse(savedSettings);
-        // Validate that all current columns have a visibility setting
-        const validSettings = {};
-        columns.forEach((col) => {
-          validSettings[col.key] =
-            parsedSettings[col.key] ??
-            (col.key !== "created_at" && col.key !== "updated_at");
-        });
-        return validSettings;
-      } catch (error) {
-        console.error("Error parsing saved column visibility settings:", error);
+    // Check if we're in a browser environment
+    if (typeof window !== 'undefined') {
+      // Try to get saved settings from localStorage
+      const savedSettings = localStorage.getItem(storageKey);
+      if (savedSettings) {
+        try {
+          const parsedSettings = JSON.parse(savedSettings);
+          // Validate that all current columns have a visibility setting
+          const validSettings = {};
+          columns.forEach((col) => {
+            validSettings[col.key] =
+              parsedSettings[col.key] ??
+              (col.key !== "created_at" && col.key !== "updated_at");
+          });
+          return validSettings;
+        } catch (error) {
+          console.error("Error parsing saved column visibility settings:", error);
+        }
       }
     }
 
@@ -112,22 +115,25 @@ export function useTableLogic({
 
   // Add column widths state with localStorage
   const [columnWidths, setColumnWidths] = useState(() => {
-    // Try to load saved widths from localStorage
-    const savedWidths = localStorage.getItem("tableColumnWidths");
-    if (savedWidths) {
-      try {
-        const parsedWidths = JSON.parse(savedWidths);
-        // Validate that all columns have a width
-        const validWidths = {
-          select: parsedWidths.select || "40px",
-          search: parsedWidths.search || "40px",
-        };
-        columns.forEach((column) => {
-          validWidths[column.key] = parsedWidths[column.key] || column.width || "100px";
-        });
-        return validWidths;
-      } catch (error) {
-        console.error("Error parsing saved column widths:", error);
+    // Check if we're in a browser environment
+    if (typeof window !== 'undefined') {
+      // Try to load saved widths from localStorage
+      const savedWidths = localStorage.getItem("tableColumnWidths");
+      if (savedWidths) {
+        try {
+          const parsedWidths = JSON.parse(savedWidths);
+          // Validate that all columns have a width
+          const validWidths = {
+            select: parsedWidths.select || "40px",
+            search: parsedWidths.search || "40px",
+          };
+          columns.forEach((column) => {
+            validWidths[column.key] = parsedWidths[column.key] || column.width || "100px";
+          });
+          return validWidths;
+        } catch (error) {
+          console.error("Error parsing saved column widths:", error);
+        }
       }
     }
     // If no saved widths or error, use default widths
@@ -143,7 +149,9 @@ export function useTableLogic({
 
   // Save column widths to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem("tableColumnWidths", JSON.stringify(columnWidths));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("tableColumnWidths", JSON.stringify(columnWidths));
+    }
   }, [columnWidths]);
 
   // Add column resizing state with better precision
@@ -167,9 +175,11 @@ export function useTableLogic({
 
   // Load saved filters from localStorage
   useEffect(() => {
-    const savedFiltersFromStorage = localStorage.getItem("tableFilters");
-    if (savedFiltersFromStorage) {
-      setSavedFilters(JSON.parse(savedFiltersFromStorage));
+    if (typeof window !== 'undefined') {
+      const savedFiltersFromStorage = localStorage.getItem("tableFilters");
+      if (savedFiltersFromStorage) {
+        setSavedFilters(JSON.parse(savedFiltersFromStorage));
+      }
     }
   }, []);
 

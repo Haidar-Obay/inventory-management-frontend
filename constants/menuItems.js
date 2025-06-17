@@ -47,10 +47,10 @@ export const menuItems = {
         displayType: "popover",
         roles: ["admin", "owner"],
         items: [
-          { name: "Product Lines", icon: "PackageSearch", path: "main/items/product-lines" },
-          { name: "Categories", icon: "ChartBarStacked", path: "main/items/categories" },
-          { name: "Brands", icon: "Tag", path: "main/items/brands" },
-          { name: "Items", icon: "Package", path: "main/items/items" },
+          { name: "Product Lines", icon: "PackageSearch", path: "main/mainfiles/items?tab=0" },
+          { name: "Categories", icon: "ChartBarStacked", path: "main/mainfiles/items?tab=1" },
+          { name: "Brands", icon: "Tag", path: "main/mainfiles/items?tab=2" },
+          { name: "Items", icon: "Package", path: "main/mainfiles/items?tab=3" },
         ]
       },
       {

@@ -21,6 +21,34 @@ import {
   exportCostCentersToExcel,
   exportCostCentersToPdf,
   importCostCentersFromExcel,
+  getDepartments,
+  createDepartment,
+  editDepartment,
+  deleteDepartment,
+  exportDepartmentsToExcel,
+  exportDepartmentsToPdf,
+  importDepartmentsFromExcel,
+  getTrades,
+  createTrade,
+  editTrade,
+  deleteTrade,
+  exportTradesToExcel,
+  exportTradesToPdf,
+  importTradesFromExcel,
+  getCompanyCodes,
+  createCompanyCode,
+  editCompanyCode,
+  deleteCompanyCode,
+  exportCompanyCodesToExcel,
+  exportCompanyCodesToPdf,
+  importCompanyCodesFromExcel,
+  getJobs,
+  createJob,
+  editJob,
+  deleteJob,
+  exportJobsToExcel,
+  exportJobsToPdf,
+  importJobsFromExcel,
 } from "@/API/Sections";
 import { projectColumns, costCenterColumns, departmentColumns, tradesColumns, companyCodesColumns, jobsColumns } from "@/constants/tableColumns";
 
@@ -133,7 +161,7 @@ function SectionsPage() {
             return;
           }
           response = await getCostCenters();
-          setCostCentersData(response.data || []);
+          setCostCentersData(Array.isArray(response) ? response : (response.data || []));
           dataType = 'costCenters';
           break;
         case 2: // Departments
@@ -206,47 +234,79 @@ function SectionsPage() {
       deleteFn: deleteProject,
       editFn: editProject,
       createFn: createProject,
+      getInitialFormData: () => ({
+        name: '',
+        start_date: null,
+        end_date: null,
+        expected_date: null,
+        customer_id: ''
+      })
     },
     costCenter: {
       setData: setCostCentersData,
       deleteFn: deleteCostCenter,
       editFn: editCostCenter,
       createFn: createCostCenter,
+      getInitialFormData: () => ({
+        code: '',
+        name: '',
+        sub_cost_center_of: '',
+        active: true
+      })
     },
     department: {
       setData: setDepartmentsData,
-      deleteFn: async () => ({ status: true }),
-      editFn: async () => ({ status: true }),
-      createFn: async () => ({ status: true, data: {} }),
+      deleteFn: deleteDepartment,
+      editFn: editDepartment,
+      createFn: createDepartment,
+      getInitialFormData: () => ({
+        code: '',
+        name: '',
+        sub_department_of: '',
+        active: true
+      })
     },
     trade: {
       setData: setTradesData,
-      deleteFn: async () => ({ status: true }),
-      editFn: async () => ({ status: true }),
-      createFn: async () => ({ status: true, data: {} }),
+      deleteFn: deleteTrade,
+      editFn: editTrade,
+      createFn: createTrade,
+      getInitialFormData: () => ({
+        code: '',
+        name: '',
+        active: true
+      })
     },
     companyCode: {
       setData: setCompanyCodesData,
-      deleteFn: async () => ({ status: true }),
-      editFn: async () => ({ status: true }),
-      createFn: async () => ({ status: true, data: {} }),
+      deleteFn: deleteCompanyCode,
+      editFn: editCompanyCode,
+      createFn: createCompanyCode,
+      getInitialFormData: () => ({
+        code: '',
+        name: ''
+      })
     },
     job: {
       setData: setJobsData,
-      deleteFn: async () => ({ status: true }),
-      editFn: async () => ({ status: true }),
-      createFn: async () => ({ status: true, data: {} }),
-    },
+      deleteFn: deleteJob,
+      editFn: editJob,
+      createFn: createJob,
+      getInitialFormData: () => ({
+        description: '',
+        project_id: '',
+        start_date: null,
+        expected_date: null,
+        end_date: null
+      })
+    }
   };
 
   const handleEdit = (type, row) => {
+    const handler = entityHandlers[type];
     setFormData({
       id: row.id,
-      name: row.name,
-      start_date: row.start_date ? new Date(row.start_date) : null,
-      end_date: row.end_date ? new Date(row.end_date) : null,
-      expected_date: row.expected_date ? new Date(row.expected_date) : null,
-      customer_id: row.customer_id || ''
+      ...row
     });
     setActiveDrawerType(type);
     setIsEditMode(true);
@@ -268,9 +328,13 @@ function SectionsPage() {
         });
       }
     } catch (error) {
+      let errorMessage = error.message;
+      if (error.message === "Internal Server Error") {
+        errorMessage = `Cannot delete this ${type} because it is being used by other records. Please remove all references to this ${type} before deleting.`;
+      }
       toast.error({
         title: "Error",
-        description:  `Failed to delete ${type} , delete ${type} from other tables first` || error.message
+        description: errorMessage
       });
     }
   };
@@ -278,7 +342,7 @@ function SectionsPage() {
   const handleAddNew = (type) => {
     setActiveDrawerType(type);
     setIsEditMode(false);
-    setFormData({});
+    setFormData(entityHandlers[type].getInitialFormData());
     setIsDrawerOpen(true);
   };
 
@@ -339,11 +403,49 @@ function SectionsPage() {
   };
   
   const handleSaveAndNew = async () => {
-    await handleSave();
-    setFormData({});
-    if (isEditMode) {
+    try {
+      const type = activeDrawerType;
+      const handler = entityHandlers[type];
+      let response;
+
+      if (isEditMode) {
+        response = await handler.editFn(formData.id, formData);
+        if (response.status) {
+          entityHandlers[type].setData(prev => 
+            prev.map(item => item.id === formData.id ? response.data : item)
+          );
+          setDataFetched(prev => ({
+            ...prev,
+            [type]: false
+          }));
+          toast.success({
+            title: "Success",
+            description: response.message || `${type} updated successfully`,
+          });
+        }
+      } else {
+        response = await handler.createFn(formData);
+        if (response.status) {
+          entityHandlers[type].setData(prev => [...prev, response.data]);
+          setDataFetched(prev => ({
+            ...prev,
+            [type]: false
+          }));
+          toast.success({
+            title: "Success",
+            description: response.message || `${type} created successfully`,
+          });
+        }
+      }
+
+      // Reset form data and edit mode
+      setFormData(entityHandlers[type].getInitialFormData());
       setIsEditMode(false);
-      setFormData({});
+    } catch (error) {
+      toast.error({
+        title: "Error",
+        description: error.message || `Failed to ${isEditMode ? "update" : "create"} ${activeDrawerType}`,
+      });
     }
   };
 
@@ -361,6 +463,18 @@ function SectionsPage() {
           break;
         case 'costCenter':
           response = await exportCostCentersToExcel();
+          break;
+        case 'department':
+          response = await exportDepartmentsToExcel();
+          break;
+        case 'trade':
+          response = await exportTradesToExcel();
+          break;
+        case 'companyCode':
+          response = await exportCompanyCodesToExcel();
+          break;
+        case 'job':
+          response = await exportJobsToExcel();
           break;
         // Add other cases as they are implemented
         default:
@@ -398,6 +512,18 @@ function SectionsPage() {
         case 'costCenter':
           response = await exportCostCentersToPdf();
           break;
+        case 'department':
+          response = await exportDepartmentsToPdf();
+          break;
+        case 'trade':
+          response = await exportTradesToPdf();
+          break;
+        case 'companyCode':
+          response = await exportCompanyCodesToPdf();
+          break;
+        case 'job':
+          response = await exportJobsToPdf();
+          break;
         // Add other cases as they are implemented
         default:
           return;
@@ -433,6 +559,18 @@ function SectionsPage() {
           break;
         case 'costCenter':
           response = await importCostCentersFromExcel(file);
+          break;
+        case 'department':
+          response = await importDepartmentsFromExcel(file);
+          break;
+        case 'trade':
+          response = await importTradesFromExcel(file);
+          break;
+        case 'companyCode':
+          response = await importCompanyCodesFromExcel(file);
+          break;
+        case 'job':
+          response = await importJobsFromExcel(file);
           break;
         // Add other cases as they are implemented
         default:
