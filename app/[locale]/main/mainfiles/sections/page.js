@@ -36,6 +36,13 @@ import {
   exportProjectsToExcel,
   exportProjectsToPdf,
   importProjectsFromExcel,
+  getCostCenters,
+  createCostCenter,
+  editCostCenter,
+  deleteCostCenter,
+  exportCostCentersToExcel,
+  exportCostCentersToPdf,
+  importCostCentersFromExcel,
 } from "@/API/Sections";
 import { useTableColumns } from "@/constants/tableColumns";
 
@@ -270,7 +277,14 @@ function SectionsPage() {
   };
 
   const handleEdit = (type, row) => {
-    setFormData({ id: row.id, name: row.name });
+    setFormData({
+      id: row.id,
+      name: row.name,
+      start_date: row.start_date ? new Date(row.start_date) : null,
+      end_date: row.end_date ? new Date(row.end_date) : null,
+      expected_date: row.expected_date ? new Date(row.expected_date) : null,
+      customer_id: row.customer_id || ''
+    });
     setActiveDrawerType(type);
     setIsEditMode(true);
     setIsDrawerOpen(true);
@@ -380,6 +394,9 @@ function SectionsPage() {
         case "project":
           response = await exportProjectsToExcel();
           break;
+        case 'costCenter':
+          response = await exportCostCentersToExcel();
+          break;
         // Add other cases as they are implemented
         default:
           return;
@@ -415,6 +432,9 @@ function SectionsPage() {
         case "project":
           response = await exportProjectsToPdf();
           break;
+        case 'costCenter':
+          response = await exportCostCentersToPdf();
+          break;
         // Add other cases as they are implemented
         default:
           return;
@@ -449,6 +469,9 @@ function SectionsPage() {
       switch (type) {
         case "project":
           response = await importProjectsFromExcel(file);
+          break;
+        case 'costCenter':
+          response = await importCostCentersFromExcel(file);
           break;
         // Add other cases as they are implemented
         default:

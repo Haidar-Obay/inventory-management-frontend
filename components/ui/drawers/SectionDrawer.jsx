@@ -12,6 +12,9 @@ import {
 } from "@mui/material";
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
 import { useTranslations, useLocale } from "next-intl";
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 const SectionDrawer = ({
   isOpen,
@@ -33,14 +36,14 @@ const SectionDrawer = ({
     setExpandedAccordion(newExpanded ? panel : false);
   };
 
-  const handleNameChange = (event) => {
+  const handleFieldChange = (field) => (event) => {
     onFormDataChange({
       ...formData,
       name: event.target.value,
     });
   };
 
-  const handleDescriptionChange = (event) => {
+  const handleDateChange = (field) => (date) => {
     onFormDataChange({
       ...formData,
       description: event.target.value,
