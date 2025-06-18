@@ -11,6 +11,7 @@ const nextConfig = {
   },
   skipTrailingSlashRedirect: true,
   output: "standalone",
+  allowedDevOrigins: ["*"],
 };
 
 module.exports = withNextIntl(nextConfig);

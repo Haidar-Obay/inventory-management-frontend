@@ -20,8 +20,11 @@ export const metadata = {
   description: "An inventory management system",
 };
 
-export default async function LocaleLayout({ children, params: { locale } }) {
+export default async function LocaleLayout({ children, params }) {
+  const { locale: localeParam } = await params;
+  
   // Validate that the incoming `locale` parameter is valid
+  let locale = localeParam;
   if (!locales.includes(locale)) {
     locale = defaultLocale;
   }

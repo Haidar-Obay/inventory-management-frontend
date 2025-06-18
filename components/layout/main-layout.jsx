@@ -10,7 +10,6 @@ export function MainLayout({ children }) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [userRole, setUserRole] = useState("user");
   const locale = useLocale();
-  const [key, setKey] = useState(0);
 
   useEffect(() => {
     // Only run on client side
@@ -30,7 +29,6 @@ export function MainLayout({ children }) {
   const toggleSidebar = () => {
     const newState = !isSidebarCollapsed;
     setIsSidebarCollapsed(newState);
-    setKey((prev) => prev + 1); // Force re-render of children
     if (typeof window !== "undefined") {
       localStorage.setItem("sidebarState", newState ? "collapsed" : "expanded");
     }
@@ -92,7 +90,6 @@ export function MainLayout({ children }) {
           <main
             className="flex-1 overflow-y-auto"
             style={mainContentStyle}
-            key={key}
           >
             {children}
           </main>

@@ -527,6 +527,7 @@ const NestedGroup = ({
 export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   const t = useTranslations("sidebar");
   const router = useRouter();
+  const params = useParams();
   const [bookmarks, setBookmarks] = useState([]);
   const [activeItem, setActiveItem] = useState("");
   const [expandedGroups, setExpandedGroups] = useState({});
