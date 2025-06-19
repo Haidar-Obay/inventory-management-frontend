@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { TextField, Grid } from "@mui/material";
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
 import { useTranslations, useLocale } from "next-intl";
@@ -6,7 +6,7 @@ import { useTranslations, useLocale } from "next-intl";
 const AddressCodeDrawer = ({
   isOpen,
   onClose,
-  type, // 'country', 'province', 'city', 'district'
+  type,
   onSave,
   onSaveAndNew,
   onSaveAndClose,
@@ -14,14 +14,9 @@ const AddressCodeDrawer = ({
   onFormDataChange,
   isEdit = false,
 }) => {
-  const [expandedAccordion, setExpandedAccordion] = useState("panel1");
   const t = useTranslations("addressCodes");
   const locale = useLocale();
   const isRTL = locale === "ar";
-
-  const handleAccordionChange = (panel) => (event, newExpanded) => {
-    setExpandedAccordion(newExpanded ? panel : false);
-  };
 
   const handleNameChange = (event) => {
     onFormDataChange({
@@ -30,48 +25,34 @@ const AddressCodeDrawer = ({
     });
   };
 
-  const getPluralType = (type) => {
-    switch (type) {
-      case "country":
-        return "countries";
-      case "province":
-        return "provinces";
-      case "city":
-        return "cities";
-      case "district":
-        return "districts";
-      default:
-        return type;
-    }
-  };
+  const getContent = () => {
+    if (!type) return null;
 
-  const getAccordionContent = () => {
-    if (!type) return [];
-
-    const nameField = (
-      <Grid item xs={12}>
-        <TextField
-          fullWidth
-          label={t(`management.${getPluralType(type)}`)}
-          variant="outlined"
-          size="small"
-          value={formData?.name || ""}
-          onChange={handleNameChange}
-          required
-        />
+    return (
+      <Grid container spacing={2} sx={{ p: 2 }}>
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            label={t(`management.${type}Name`)}
+            variant="outlined"
+            size="small"
+            value={formData?.name || ""}
+            onChange={handleNameChange}
+            required
+            inputProps={{
+              style: { textAlign: isRTL ? "right" : "left" },
+            }}
+            sx={{
+              "& .MuiInputLabel-root": {
+                right: isRTL ? 12 : "unset",
+                left: isRTL ? "unset" : 12,
+                transformOrigin: isRTL ? "right" : "left",
+              },
+            }}
+          />
+        </Grid>
       </Grid>
     );
-
-    return [
-      {
-        title: isEdit
-          ? t(`management.${getPluralType(type)}`)
-          : t(`management.${getPluralType(type)}`),
-        expanded: expandedAccordion === "panel1",
-        onChange: handleAccordionChange("panel1"),
-        content: nameField,
-      },
-    ];
   };
 
   if (!type) return null;
@@ -82,10 +63,10 @@ const AddressCodeDrawer = ({
       onClose={onClose}
       title={
         isEdit
-          ? t(`management.${getPluralType(type)}`)
-          : t(`management.${getPluralType(type)}`)
+          ? t(`management.${type}`)
+          : t(`management.add${type.charAt(0).toUpperCase() + type.slice(1)}`)
       }
-      accordions={getAccordionContent()}
+      content={getContent()}
       onSave={onSave}
       onSaveAndNew={onSaveAndNew}
       onSaveAndClose={onSaveAndClose}

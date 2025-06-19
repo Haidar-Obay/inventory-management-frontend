@@ -33,26 +33,33 @@ import { useRouter, usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
 
 // Sub-components
-const SearchBar = ({ searchQuery, setSearchQuery, handleSearch, t }) => (
-  <form onSubmit={handleSearch} className="relative w-full max-w-2xl mx-auto">
-    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-    <Input
-      type="search"
-      placeholder={t("searchPlaceholder")}
-      className="w-full pl-10 pr-4 h-10 bg-background/50 backdrop-blur-sm border-border/50 focus:border-primary/50 focus:bg-background transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg"
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-    />
-    <Button
-      type="submit"
-      size="sm"
-      className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 px-3 text-xs"
-      disabled={!searchQuery.trim()}
-    >
-      {t("search")}
-    </Button>
-  </form>
-);
+const SearchBar = ({ searchQuery, setSearchQuery, handleSearch, t }) => {
+  const currentLocale = useLocale();
+  const isRTL = currentLocale === "ar";
+
+  return (
+    <form onSubmit={handleSearch} className="relative w-full max-w-2xl mx-auto">
+      <Search
+        className={`absolute top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground ${isRTL ? "right-3" : "left-3"}`}
+      />
+      <Input
+        type="search"
+        placeholder={t("searchPlaceholder")}
+        className={`w-full h-10 bg-background/50 backdrop-blur-sm border-border/50 focus:border-primary/50 focus:bg-background transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg ${isRTL ? "pr-14 pl-8" : "pl-10 pr-4"}`}
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+      <Button
+        type="submit"
+        size="sm"
+        className={`absolute top-1/2 transform -translate-y-1/2 h-8 px-3 text-xs ${isRTL ? "left-1" : "right-1"}`}
+        disabled={!searchQuery.trim()}
+      >
+        {t("search")}
+      </Button>
+    </form>
+  );
+};
 
 const NotificationCenter = ({
   notifications,
@@ -260,7 +267,10 @@ export function Header({ toggleSidebar }) {
 
   return (
     <header className="w-full h-16 border-b bg-background/95 backdrop-blur-sm sticky top-0 z-50">
-      <div className="flex h-full items-center px-4 gap-4" style={{ transition: "all 0.3s ease-in-out" }}>
+      <div
+        className="flex h-full items-center px-4 gap-4"
+        style={{ transition: "all 0.3s ease-in-out" }}
+      >
         {/* Left Section - Logo */}
         <div className="flex items-center gap-4 flex-shrink-0">
           <Link

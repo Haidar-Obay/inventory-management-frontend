@@ -212,7 +212,7 @@
   },
   "addressCodes": {
     "title": "Address Codes",
-    "loading": "Loading address codes...",
+    "loading": "Loading Address Codes...",
     "table": {
       "search": {
         "placeholder": "Search all columns...",
@@ -229,10 +229,22 @@
       "districts": "Districts"
     },
     "management": {
-      "countries": "Countries Management",
-      "provinces": "Provinces Management",
-      "cities": "Cities Management",
-      "districts": "Districts Management"
+      "countries": "Countries",
+      "country": "Country",
+      "countryName": "Country Name",
+      "addCountry": "Add Country",
+      "provinces": "Provinces",
+      "province": "Province",
+      "provinceName": "Province Name",
+      "addProvince": "Add Province",
+      "cities": "Cities",
+      "city": "City",
+      "cityName": "City Name",
+      "addCity": "Add City",
+      "districts": "Districts",
+      "district": "District",
+      "districtName": "District Name",
+      "addDistrict": "Add District"
     },
     "messages": {
       "exportSuccess": "exported successfully",
@@ -439,7 +451,7 @@
       "exportExcel": "Export to Excel",
       "exportPdf": "Export to PDF",
       "print": "Print",
-      "refresh": "Refresh",
+      "refresh": "Reload",
       "importExcel": "Import from Excel",
       "save": "Save",
       "saveAndNew": "Save & New",
