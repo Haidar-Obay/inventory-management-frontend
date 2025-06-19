@@ -62,11 +62,11 @@ export function SidebarItem({
   }
 
   return (
-    <div className="flex w-full items-center h-12">
+    <div className="group flex w-full items-center h-12 min-w-0">
       <Link
         href={getFullPath()}
         className={cn(
-          "flex items-center gap-2 flex-1 h-full rounded-md hover:bg-primary-foreground/10 transition-colors duration-200",
+          "flex items-center flex-1 h-full rounded-md hover:bg-primary-foreground/10 transition-colors duration-200 min-w-0 overflow-x-auto scrollbar-hide",
           isActive && "bg-primary-foreground/10 font-medium",
           padding,
           className
@@ -74,25 +74,30 @@ export function SidebarItem({
         style={isRTL ? { paddingRight: 24 } : { paddingLeft: 24 }}
         onClick={() => onNavigate && onNavigate(name)}
       >
-        <Icon className="h-4 w-4" />
+        <Icon className="h-4 w-4 flex-shrink-0 mr-2" />
         <span className="whitespace-nowrap">{label}</span>
       </Link>
       {onToggleBookmark && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-primary-foreground hover:bg-transparent focus:ring-0 focus:ring-offset-0 group w-10 h-10 flex items-center justify-center"
-          onClick={() => onToggleBookmark(name)}
-          tabIndex={-1}
-          style={{ minHeight: 0, padding: 0, margin: 0 }}
-        >
-          <Star
+        <div className="flex-shrink-0 flex items-center justify-center" style={{ width: 40 }}>
+          <Button
+            variant="ghost"
+            size="icon"
             className={cn(
-              "h-4 w-4 transition-colors duration-200",
-              isBookmarked ? "text-yellow-400 fill-yellow-400" : "text-primary-foreground/50 group-hover:text-yellow-400 group-hover:fill-yellow-400"
+              "text-primary-foreground hover:bg-transparent focus:ring-0 focus:ring-offset-0 w-10 h-10 flex items-center justify-center transition-opacity duration-200",
+              isBookmarked ? "opacity-100" : "opacity-0 group-hover:opacity-100"
             )}
-          />
-        </Button>
+            onClick={() => onToggleBookmark(name)}
+            tabIndex={-1}
+            style={{ minHeight: 0, padding: 0, margin: 0 }}
+          >
+            <Star
+              className={cn(
+                "h-4 w-4 transition-colors duration-200",
+                isBookmarked ? "text-yellow-400 fill-yellow-400" : "text-primary-foreground/50 hover:text-yellow-400 hover:fill-yellow-400"
+              )}
+            />
+          </Button>
+        </div>
       )}
     </div>
   );

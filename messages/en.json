@@ -2,6 +2,7 @@
   "header": {
     "appName": "Inventory Management",
     "searchPlaceholder": "Search...",
+    "search": "Search",
     "notifications": "Notifications",
     "markAllAsRead": "Mark all as read",
     "clearAll": "Clear all",
@@ -361,11 +362,23 @@
     "columns": {
       "title": "Columns",
       "modal": {
-        "title": "Column Visibility",
+        "title": "Column Settings",
         "save": "Save",
         "cancel": "Cancel",
         "selectAll": "Select All",
-        "deselectAll": "Deselect All"
+        "deselectAll": "Deselect All",
+        "visibility": "Visibility",
+        "size": "Size",
+        "order": "Order",
+        "width": "Width",
+        "moveUp": "Move Up",
+        "moveDown": "Move Down",
+        "reset": "Reset to Defaults",
+        "columnWidth": "Column Width",
+        "columnOrder": "Column Order",
+        "dragToReorder": "Drag to reorder columns",
+        "px": "px",
+        "auto": "Auto"
       }
     },
     "filter": {

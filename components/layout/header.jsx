@@ -34,15 +34,23 @@ import { useLocale } from "next-intl";
 
 // Sub-components
 const SearchBar = ({ searchQuery, setSearchQuery, handleSearch, t }) => (
-  <form onSubmit={handleSearch} className="relative hidden md:block">
-    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+  <form onSubmit={handleSearch} className="relative w-full max-w-2xl mx-auto">
+    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
     <Input
       type="search"
       placeholder={t("searchPlaceholder")}
-      className="w-[300px] lg:w-[400px] pl-8"
+      className="w-full pl-10 pr-4 h-10 bg-background/50 backdrop-blur-sm border-border/50 focus:border-primary/50 focus:bg-background transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg"
       value={searchQuery}
       onChange={(e) => setSearchQuery(e.target.value)}
     />
+    <Button
+      type="submit"
+      size="sm"
+      className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 px-3 text-xs"
+      disabled={!searchQuery.trim()}
+    >
+      {t("search")}
+    </Button>
   </form>
 );
 
@@ -251,20 +259,25 @@ export function Header({ toggleSidebar }) {
   };
 
   return (
-    <header className="w-full h-16 border-b bg-background">
-      <div className="flex h-full items-center justify-between px-4" style={{ transition: "all 0.3s ease-in-out" }}>
-        <div className="flex items-center gap-4">
+    <header className="w-full h-16 border-b bg-background/95 backdrop-blur-sm sticky top-0 z-50">
+      <div className="flex h-full items-center px-4 gap-4" style={{ transition: "all 0.3s ease-in-out" }}>
+        {/* Left Section - Logo */}
+        <div className="flex items-center gap-4 flex-shrink-0">
           <Link
             href="/"
-            className="flex items-center gap-2 hover:text-primary transition-all duration-300"
+            className="flex items-center gap-2 hover:text-primary transition-all duration-300 group"
           >
-            <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center text-primary-foreground font-bold">
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold shadow-sm group-hover:shadow-md transition-all duration-300">
               I
             </div>
-            <span className="font-bold text-lg hidden md:inline-block">
+            <span className="font-bold text-lg hidden md:inline-block group-hover:scale-105 transition-transform duration-300">
               {t("appName")}
             </span>
           </Link>
+        </div>
+
+        {/* Center Section - Search Bar */}
+        <div className="flex-1 flex justify-center px-4">
           <SearchBar
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
@@ -272,7 +285,9 @@ export function Header({ toggleSidebar }) {
             t={t}
           />
         </div>
-        <div className="flex items-center gap-2" style={{ transition: "all 0.3s ease-in-out" }}>
+
+        {/* Right Section - User Controls */}
+        <div className="flex items-center gap-2 flex-shrink-0">
           <LanguageSelector />
           <ThemeToggle theme={theme} setTheme={setTheme} />
           <NotificationCenter

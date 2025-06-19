@@ -72,7 +72,33 @@ export function useTableLogic({
   const [selectedSearchColumns, setSelectedSearchColumns] = useState({});
   const [tempVisibleColumns, setTempVisibleColumns] = useState({});
   const [showColumnModal, setShowColumnModal] = useState(false);
-  const [columnOrder, setColumnOrder] = useState(columns.map((col) => col.key));
+  const [columnOrder, setColumnOrder] = useState(() => {
+    // Check if we're in a browser environment
+    if (typeof window !== 'undefined') {
+      // Try to load saved order from localStorage
+      const storageKey = `tableColumnOrder_${tableId}`;
+      const savedOrder = localStorage.getItem(storageKey);
+      if (savedOrder) {
+        try {
+          const parsedOrder = JSON.parse(savedOrder);
+          // Validate that all current columns are in the order
+          const currentColumnKeys = columns.map(col => col.key);
+          const validOrder = parsedOrder.filter(key => currentColumnKeys.includes(key));
+          // Add any missing columns at the end
+          currentColumnKeys.forEach(key => {
+            if (!validOrder.includes(key)) {
+              validOrder.push(key);
+            }
+          });
+          return validOrder;
+        } catch (error) {
+          console.error("Error parsing saved column order:", error);
+        }
+      }
+    }
+    // If no saved order or error, use default order
+    return columns.map((col) => col.key);
+  });
   const [draggedColumn, setDraggedColumn] = useState(null);
   const [draggedRow, setDraggedRow] = useState(null);
   const [editingCell, setEditingCell] = useState(null);
@@ -93,6 +119,8 @@ export function useTableLogic({
   const [rowToDelete, setRowToDelete] = useState(null);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [tempFilterConfig, setTempFilterConfig] = useState(null);
+  const [tempColumnWidths, setTempColumnWidths] = useState({});
+  const [tempColumnOrder, setTempColumnOrder] = useState([]);
 
   // Initialize filter types for each column
   const [columnFilterTypes, setColumnFilterTypes] = useState(() => {
@@ -118,7 +146,8 @@ export function useTableLogic({
     // Check if we're in a browser environment
     if (typeof window !== 'undefined') {
       // Try to load saved widths from localStorage
-      const savedWidths = localStorage.getItem("tableColumnWidths");
+      const storageKey = `tableColumnWidths_${tableId}`;
+      const savedWidths = localStorage.getItem(storageKey);
       if (savedWidths) {
         try {
           const parsedWidths = JSON.parse(savedWidths);
@@ -669,19 +698,92 @@ export function useTableLogic({
 
   const handleOpenColumnModal = () => {
     setTempVisibleColumns({ ...visibleColumns });
+    setTempColumnWidths({ ...columnWidths });
+    setTempColumnOrder([...columnOrder]);
     setShowColumnModal(true);
   };
 
   const handleSaveColumnVisibility = () => {
     setVisibleColumns(tempVisibleColumns);
-    // Save to localStorage with table-specific key
-    const storageKey = `tableColumnVisibility_${tableId}`;
-    localStorage.setItem(storageKey, JSON.stringify(tempVisibleColumns));
+    setColumnWidths(tempColumnWidths);
+    setColumnOrder(tempColumnOrder);
+    
+    // Save to localStorage with table-specific keys
+    const visibilityKey = `tableColumnVisibility_${tableId}`;
+    const widthsKey = `tableColumnWidths_${tableId}`;
+    const orderKey = `tableColumnOrder_${tableId}`;
+    
+    localStorage.setItem(visibilityKey, JSON.stringify(tempVisibleColumns));
+    localStorage.setItem(widthsKey, JSON.stringify(tempColumnWidths));
+    localStorage.setItem(orderKey, JSON.stringify(tempColumnOrder));
+    
     setShowColumnModal(false);
   };
 
   const handleCancelColumnVisibility = () => {
     setShowColumnModal(false);
+  };
+
+  // New handlers for column width and order management
+  const handleColumnWidthChange = (columnKey, newWidth) => {
+    setTempColumnWidths(prev => ({
+      ...prev,
+      [columnKey]: newWidth
+    }));
+  };
+
+  const handleColumnOrderChange = (newOrder) => {
+    setTempColumnOrder(newOrder);
+  };
+
+  const handleMoveColumnUp = (columnKey) => {
+    const currentIndex = tempColumnOrder.indexOf(columnKey);
+    if (currentIndex > 0) {
+      const newOrder = [...tempColumnOrder];
+      [newOrder[currentIndex], newOrder[currentIndex - 1]] = [newOrder[currentIndex - 1], newOrder[currentIndex]];
+      setTempColumnOrder(newOrder);
+    }
+  };
+
+  const handleMoveColumnDown = (columnKey) => {
+    const currentIndex = tempColumnOrder.indexOf(columnKey);
+    if (currentIndex < tempColumnOrder.length - 1) {
+      const newOrder = [...tempColumnOrder];
+      [newOrder[currentIndex], newOrder[currentIndex + 1]] = [newOrder[currentIndex + 1], newOrder[currentIndex]];
+      setTempColumnOrder(newOrder);
+    }
+  };
+
+  const handleResetColumnSettings = (tab) => {
+    if (tab === "visibility") {
+      const defaultSettings = {};
+      columns.forEach((col) => {
+        defaultSettings[col.key] = col.key !== "created_at" && col.key !== "updated_at";
+      });
+      setTempVisibleColumns(defaultSettings);
+      setVisibleColumns(defaultSettings);
+      const visibilityKey = `tableColumnVisibility_${tableId}`;
+      localStorage.setItem(visibilityKey, JSON.stringify(defaultSettings));
+    } else if (tab === "size") {
+      const defaultWidths = {
+        select: "40px",
+        search: "40px",
+        ...columns.reduce((acc, column) => {
+          acc[column.key] = column.width || "100px";
+          return acc;
+        }, {}),
+      };
+      setTempColumnWidths(defaultWidths);
+      setColumnWidths(defaultWidths);
+      const widthsKey = `tableColumnWidths_${tableId}`;
+      localStorage.setItem(widthsKey, JSON.stringify(defaultWidths));
+    } else if (tab === "order") {
+      const defaultOrder = columns.map((col) => col.key);
+      setTempColumnOrder(defaultOrder);
+      setColumnOrder(defaultOrder);
+      const orderKey = `tableColumnOrder_${tableId}`;
+      localStorage.setItem(orderKey, JSON.stringify(defaultOrder));
+    }
   };
 
   const handleOpenFilterModal = (columnKey) => {
@@ -813,6 +915,8 @@ export function useTableLogic({
     areAllOnPageSelected,
     columnWidths,
     selectedSearchColumns,
+    tempColumnWidths,
+    tempColumnOrder,
 
     // Handlers
     handleToggleSearchRow,
@@ -852,6 +956,11 @@ export function useTableLogic({
     handleOpenFilterModal,
     handleSaveFilter,
     handleCancelFilter,
+    handleColumnWidthChange,
+    handleColumnOrderChange,
+    handleMoveColumnUp,
+    handleMoveColumnDown,
+    handleResetColumnSettings,
 
     // Setters
     setTableData,

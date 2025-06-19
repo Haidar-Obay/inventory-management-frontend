@@ -53,6 +53,8 @@ const Table = (props) => {
     areAllOnPageSelected,
     columnWidths,
     selectedSearchColumns,
+    tempColumnWidths,
+    tempColumnOrder,
     handleSearchColumnToggle,
     handleSelectAllSearchColumns,
 
@@ -92,6 +94,11 @@ const Table = (props) => {
     handleOpenFilterModal,
     handleSaveFilter,
     handleCancelFilter,
+    handleColumnWidthChange,
+    handleColumnOrderChange,
+    handleMoveColumnUp,
+    handleMoveColumnDown,
+    handleResetColumnSettings,
 
     // Setters
     setTableData,
@@ -137,6 +144,11 @@ const Table = (props) => {
     ? props.columns
     : Object.values(props.columns);
 
+  // Use temp states for live preview when modal is open
+  const effectiveVisibleColumns = showColumnModal ? tempVisibleColumns : visibleColumns;
+  const effectiveColumnWidths = showColumnModal ? tempColumnWidths : columnWidths;
+  const effectiveColumnOrder = showColumnModal ? tempColumnOrder : columnOrder;
+
   return (
     <div className="w-full rounded-lg border border-border bg-background shadow-sm">
       <DeleteModal
@@ -150,14 +162,25 @@ const Table = (props) => {
           isOpen={showColumnModal}
           columns={columnsArray}
           visibleColumns={tempVisibleColumns}
+          columnWidths={tempColumnWidths}
+          columnOrder={tempColumnOrder}
           onSave={handleSaveColumnVisibility}
           onCancel={handleCancelColumnVisibility}
-          onToggleColumn={(columnKey, checked) => {
-            setTempVisibleColumns((prev) => ({
-              ...prev,
-              [columnKey]: checked,
-            }));
+          onToggleColumn={(columnKey, checked, newVisibleColumns) => {
+            if (newVisibleColumns) {
+              setTempVisibleColumns(newVisibleColumns);
+            } else {
+              setTempVisibleColumns((prev) => ({
+                ...prev,
+                [columnKey]: checked,
+              }));
+            }
           }}
+          onColumnWidthChange={handleColumnWidthChange}
+          onColumnOrderChange={handleColumnOrderChange}
+          onMoveColumnUp={handleMoveColumnUp}
+          onMoveColumnDown={handleMoveColumnDown}
+          onResetSettings={handleResetColumnSettings}
         />
       )}
 
@@ -243,9 +266,9 @@ const Table = (props) => {
           <div style={{ minWidth: "max-content", width: "100%" }}>
             <table className="w-full border-collapse">
               <TableHeader
-                columnOrder={columnOrder}
+                columnOrder={effectiveColumnOrder}
                 columns={columnsArray}
-                visibleColumns={visibleColumns}
+                visibleColumns={effectiveVisibleColumns}
                 sortConfig={sortConfig}
                 activeColumnFilters={activeColumnFilters}
                 columnFilterTypes={columnFilterTypes}
@@ -260,15 +283,15 @@ const Table = (props) => {
                 handleOpenFilterModal={handleOpenFilterModal}
                 handleColumnSearch={handleColumnSearch}
                 handleSelectAll={handleSelectAll}
-                columnWidths={columnWidths}
+                columnWidths={effectiveColumnWidths}
                 t={props.t}
               />
 
               <TableBody
                 paginatedData={paginatedData}
                 columns={columnsArray}
-                columnOrder={columnOrder}
-                visibleColumns={visibleColumns}
+                columnOrder={effectiveColumnOrder}
+                visibleColumns={effectiveVisibleColumns}
                 currentPage={currentPage}
                 rowsPerPage={rowsPerPage}
                 selectedRows={selectedRows}
@@ -283,7 +306,7 @@ const Table = (props) => {
                 handleRowSelect={handleRowSelect}
                 handleDeleteClick={handleDeleteClick}
                 onEdit={props.onEdit}
-                columnWidths={columnWidths}
+                columnWidths={effectiveColumnWidths}
               />
             </table>
           </div>

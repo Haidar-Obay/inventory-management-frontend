@@ -10,10 +10,7 @@ export const metadata = {
 
 export default function TenantLayout({ children }) {
   return (
-    <div
-      className="h-screen w-full overflow-hidden"
-      style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0 }}
-    >
+    <div className="h-screen w-full overflow-hidden">
       <MainLayout>{children}</MainLayout>
     </div>
   );

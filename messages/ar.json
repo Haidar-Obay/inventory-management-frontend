@@ -2,6 +2,7 @@
   "header": {
     "appName": "نظام إدارة المخزون",
     "searchPlaceholder": "بحث...",
+    "search": "بحث",
     "notifications": "الإشعارات",
     "markAllAsRead": "تحديد الكل كمقروء",
     "clearAll": "مسح الكل",
@@ -303,7 +304,7 @@
       "addTrade": "إضافة حرفة",
       "editTrade": "تعديل الحرفة",
       "addCompanyCode": "إضافة رمز شركة",
-      "editCompanyCode": "تعديل رمز الشركة",
+      "editCompanyCode": "تعديل رموز الشركة",
       "addJob": "إضافة وظيفة",
       "editJob": "تعديل الوظيفة",
       "projectName": "اسم المشروع",
@@ -369,11 +370,23 @@
     "columns": {
       "title": "الأعمدة",
       "modal": {
-        "title": "إظهار الأعمدة",
+        "title": "إعدادات الأعمدة",
         "save": "حفظ",
         "cancel": "إلغاء",
         "selectAll": "تحديد الكل",
-        "deselectAll": "إلغاء تحديد الكل"
+        "deselectAll": "إلغاء تحديد الكل",
+        "visibility": "الرؤية",
+        "size": "الحجم",
+        "order": "الترتيب",
+        "width": "العرض",
+        "moveUp": "تحريك لأعلى",
+        "moveDown": "تحريك لأسفل",
+        "reset": "إعادة تعيين للافتراضي",
+        "columnWidth": "عرض العمود",
+        "columnOrder": "ترتيب الأعمدة",
+        "dragToReorder": "اسحب لإعادة ترتيب الأعمدة",
+        "px": "بكسل",
+        "auto": "تلقائي"
       }
     },
     "filter": {
