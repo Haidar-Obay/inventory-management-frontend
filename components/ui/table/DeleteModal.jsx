@@ -2,11 +2,13 @@
 
 import React from "react";
 import { Button } from "./CustomControls";
-import { useTranslations } from "next-intl";
-import Portal from '../Portal';
+import { useTranslations, useLocale } from "next-intl";
+import Portal from "../Portal";
 
 export const DeleteModal = ({ isOpen, onConfirm, onCancel }) => {
   const t = useTranslations("table");
+  const locale = useLocale();
+  const isRTL = locale === "ar";
 
   if (!isOpen) return null;
 
@@ -49,7 +51,13 @@ export const DeleteModal = ({ isOpen, onConfirm, onCancel }) => {
           </div>
           <div className="space-y-4">
             <p className="text-muted-foreground">{t("delete.modal.message")}</p>
-            <div className="flex justify-end space-x-2">
+            <div
+              className="flex justify-end"
+              style={{
+                gap: "0.5rem",
+                flexDirection: isRTL ? "row-reverse" : "row",
+              }}
+            >
               <Button
                 variant="outline"
                 onClick={onCancel}

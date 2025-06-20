@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { Button, Checkbox } from "./CustomControls";
-import { useTranslations } from "next-intl";
-import Portal from '../Portal';
+import { useTranslations, useLocale } from "next-intl";
+import Portal from "../Portal";
 
 export const SearchColumnsModal = ({
   isOpen,
@@ -15,6 +15,8 @@ export const SearchColumnsModal = ({
   visibleColumns,
 }) => {
   const t = useTranslations("table.searchColumns");
+  const locale = useLocale();
+  const isRTL = locale === "ar";
   const [tempSelectedColumns, setTempSelectedColumns] = useState({});
 
   // Initialize temp state when modal opens
@@ -66,10 +68,15 @@ export const SearchColumnsModal = ({
 
   return (
     <Portal>
-      <div className="fixed inset-0 z-[2147483647] pointer-events-auto flex items-center justify-center bg-black/50" onClick={handleBackdropClick}>
+      <div
+        className="fixed inset-0 z-[2147483647] pointer-events-auto flex items-center justify-center bg-black/50"
+        onClick={handleBackdropClick}
+      >
         <div className="w-full max-w-md rounded-lg bg-background p-6 shadow-lg border border-border">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-lg font-medium text-foreground">{t("title")}</h3>
+            <h3 className="text-lg font-medium text-foreground">
+              {t("title")}
+            </h3>
             <button
               onClick={onClose}
               className="rounded-full p-1 hover:bg-muted text-muted-foreground"
@@ -115,15 +122,16 @@ export const SearchColumnsModal = ({
               return (
                 <div
                   key={column.key}
-                  className={`flex items-center space-x-2 py-2 border-b border-border last:border-0 ${
+                  className={`flex items-center py-2 border-b border-border last:border-0 ${
                     !isVisible ? "opacity-50" : ""
                   }`}
+                  style={{ gap: "0.5rem" }}
                 >
                   <Checkbox
                     checked={tempSelectedColumns[column.key] || false}
                     onChange={() => handleTempToggle(column.key)}
                     disabled={!isVisible}
-                    className="mr-2"
+                    className={isRTL ? "ml-2" : "mr-2"}
                   />
                   <span className="text-foreground">{column.header}</span>
                   {!isVisible && (
@@ -136,8 +144,18 @@ export const SearchColumnsModal = ({
             })}
           </div>
 
-          <div className="mt-4 flex justify-end space-x-2">
-            <Button variant="outline" onClick={onClose} className="border-border">
+          <div
+            className="mt-4 flex justify-end"
+            style={{
+              gap: "0.5rem",
+              flexDirection: isRTL ? "row-reverse" : "row",
+            }}
+          >
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="border-border"
+            >
               {t("cancel")}
             </Button>
             <Button

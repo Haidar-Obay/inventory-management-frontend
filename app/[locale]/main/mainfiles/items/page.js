@@ -42,6 +42,7 @@ import {
 } from "@/constants/tableColumns";
 import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useTranslations } from "use-intl";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -95,8 +96,12 @@ function ItemsPage() {
     productLines: false,
     categories: false,
     brands: false,
-    items: false
+    items: false,
   });
+
+  const t = useTranslations("items");
+  const tableT = useTranslations("tableColumns");
+  const toastT = useTranslations("toast");
 
   // Initialize tab value from URL or localStorage
   useEffect(() => {
@@ -142,7 +147,7 @@ function ItemsPage() {
           }
           response = await getProductLines();
           setProductLinesData(response.data || []);
-          dataType = 'productLines';
+          dataType = "productLines";
           break;
         case 1: // Categories
           if (!force && dataFetched.categories) {
@@ -151,7 +156,7 @@ function ItemsPage() {
           }
           response = await getCategories();
           setCategoriesData(response.data || []);
-          dataType = 'categories';
+          dataType = "categories";
           break;
         case 2: // Brands
           if (!force && dataFetched.brands) {
@@ -160,7 +165,7 @@ function ItemsPage() {
           }
           response = await getBrands();
           setBrandsData(response.data || []);
-          dataType = 'brands';
+          dataType = "brands";
           break;
         case 3: // Items
           if (!force && dataFetched.items) {
@@ -169,25 +174,25 @@ function ItemsPage() {
           }
           response = await getItems();
           setItemsData(response.data || []);
-          dataType = 'items';
+          dataType = "items";
           break;
       }
 
       if (dataType) {
-        setDataFetched(prev => ({
+        setDataFetched((prev) => ({
           ...prev,
-          [dataType]: true
+          [dataType]: true,
         }));
       }
 
       toast.success({
-        title: "Success",
-        description: "Data fetched successfully",
+        title: toastT("success"),
+        description: toastT("dataFetchedSuccessfully"),
       });
     } catch (error) {
       toast.error({
-        title: "Error",
-        description: error.message || "Failed to fetch data",
+        title: toastT("error"),
+        description: error.message || toastT("failedToFetchData"),
       });
     } finally {
       setLoading(false);
@@ -232,26 +237,28 @@ function ItemsPage() {
     setIsEditMode(true);
     setIsDrawerOpen(true);
   };
-  
+
   const handleDelete = async (type, row) => {
     try {
       const response = await entityHandlers[type].deleteFn(row.id);
       if (response.status) {
-        entityHandlers[type].setData(prev => prev.filter(item => item.id !== row.id));
+        entityHandlers[type].setData((prev) =>
+          prev.filter((item) => item.id !== row.id)
+        );
         // Reset the fetched state for the modified data type
-        setDataFetched(prev => ({
+        setDataFetched((prev) => ({
           ...prev,
-          [type]: false
+          [type]: false,
         }));
         toast.success({
-          title: "Success",
-          description: response.message || `${type} deleted successfully`,
+          title: toastT("success"),
+          description: toastT(`${type}.deleteSuccess`),
         });
       }
     } catch (error) {
       toast.error({
-        title: "Error",
-        description: error.message || `Failed to delete ${type}`,
+        title: toastT("error"),
+        description: error.message || toastT(`${type}.deleteError`),
       });
     }
   };
@@ -277,41 +284,47 @@ function ItemsPage() {
   const handleSave = async () => {
     const type = activeDrawerType;
     const handler = entityHandlers[type];
-  
+
     try {
       let response;
       if (isEditMode) {
         response = await handler.editFn(formData.id, formData);
         if (response.status) {
           // Update existing item in the state
-          entityHandlers[type].setData(prev => 
-            prev.map(item => item.id === formData.id ? { ...item, ...formData } : item)
+          entityHandlers[type].setData((prev) =>
+            prev.map((item) =>
+              item.id === formData.id ? { ...item, ...formData } : item
+            )
           );
         }
       } else {
         response = await handler.createFn(formData);
         if (response.status) {
           // Add new item to the state
-          entityHandlers[type].setData(prev => [...prev, response.data]);
+          entityHandlers[type].setData((prev) => [...prev, response.data]);
         }
       }
-  
+
       if (response.status) {
         toast.success({
-          title: "Success",
-          description: response.message || `${type} ${isEditMode ? "updated" : "created"} successfully`,
+          title: toastT("success"),
+          description: toastT(
+            isEditMode ? `${type}.updateSuccess` : `${type}.createSuccess`
+          ),
         });
-  
+
         setIsEditMode(false);
       }
     } catch (error) {
       toast.error({
-        title: "Error",
-        description: error.message || `Failed to ${isEditMode ? "update" : "create"} ${type}`,
+        title: toastT("error"),
+        description:
+          error.message ||
+          toastT(isEditMode ? `${type}.updateError` : `${type}.createError`),
       });
     }
   };
-  
+
   const handleSaveAndNew = async () => {
     await handleSave();
     setFormData({});
@@ -330,39 +343,39 @@ function ItemsPage() {
     try {
       let response;
       switch (type) {
-        case 'productLine':
+        case "productLine":
           response = await exportProductLinesToExcel();
           break;
-        case 'category':
+        case "category":
           response = await exportCategoriesToExcel();
           break;
-        case 'brand':
+        case "brand":
           response = await exportBrandsToExcel();
           break;
-        case 'item':
+        case "item":
           response = await exportItemsToExcel();
           break;
         default:
           return;
       }
-      
+
       // Create a download link for the Excel file
       const url = window.URL.createObjectURL(new Blob([response]));
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `${type}s.xlsx`);
+      link.setAttribute("download", `${type}s.xlsx`);
       document.body.appendChild(link);
       link.click();
       link.remove();
-      
+
       toast.success({
-        title: "Success",
-        description: `${type} exported successfully`,
+        title: toastT("success"),
+        description: toastT(`${type}.exportSuccess`),
       });
     } catch (error) {
       toast.error({
-        title: "Error",
-        description: error.message || `Failed to export ${type}`,
+        title: toastT("error"),
+        description: error.message || toastT(`${type}.exportError`),
       });
     }
   };
@@ -371,39 +384,39 @@ function ItemsPage() {
     try {
       let response;
       switch (type) {
-        case 'productLine':
+        case "productLine":
           response = await exportProductLinesToPdf();
           break;
-        case 'category':
+        case "category":
           response = await exportCategoriesToPdf();
           break;
-        case 'brand':
+        case "brand":
           response = await exportBrandsToPdf();
           break;
-        case 'item':
+        case "item":
           response = await exportItemsToPdf();
           break;
         default:
           return;
       }
-      
+
       // Create a download link for the PDF file
       const url = window.URL.createObjectURL(new Blob([response]));
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `${type}s.pdf`);
+      link.setAttribute("download", `${type}s.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
-      
+
       toast.success({
-        title: "Success",
-        description: `${type} exported successfully`,
+        title: toastT("success"),
+        description: toastT(`${type}.exportSuccess`),
       });
     } catch (error) {
       toast.error({
-        title: "Error",
-        description: error.message || `Failed to export ${type}`,
+        title: toastT("error"),
+        description: error.message || toastT(`${type}.exportError`),
       });
     }
   };
@@ -412,34 +425,34 @@ function ItemsPage() {
     try {
       let response;
       switch (type) {
-        case 'productLine':
+        case "productLine":
           response = await importProductLinesFromExcel(file);
           break;
-        case 'category':
+        case "category":
           response = await importCategoriesFromExcel(file);
           break;
-        case 'brand':
+        case "brand":
           response = await importBrandsFromExcel(file);
           break;
-        case 'item':
+        case "item":
           response = await importItemsFromExcel(file);
           break;
         default:
           return;
       }
-      
+
       if (response.status) {
         // Refresh the data after successful import
         fetchData(value, true);
         toast.success({
-          title: "Success",
-          description: `${type} imported successfully`,
+          title: toastT("success"),
+          description: toastT(`${type}.importSuccess`),
         });
       }
     } catch (error) {
       toast.error({
-        title: "Error",
-        description: error.message || `Failed to import ${type}`,
+        title: toastT("error"),
+        description: error.message || toastT(`${type}.importError`),
       });
     }
   };
@@ -447,8 +460,8 @@ function ItemsPage() {
   const handlePrint = (type, data, columns) => {
     try {
       // Create a new window for printing
-      const printWindow = window.open('', '_blank');
-      
+      const printWindow = window.open("", "_blank");
+
       // Create the HTML content for printing
       const content = `
         <html>
@@ -472,15 +485,19 @@ function ItemsPage() {
             <table>
               <thead>
                 <tr>
-                  ${columns.map(col => `<th>${col.header}</th>`).join('')}
+                  ${columns.map((col) => `<th>${col.header}</th>`).join("")}
                 </tr>
               </thead>
               <tbody>
-                ${data.map(row => `
+                ${data
+                  .map(
+                    (row) => `
                   <tr>
-                    ${columns.map(col => `<td>${row[col.key] || ''}</td>`).join('')}
+                    ${columns.map((col) => `<td>${row[col.key] || ""}</td>`).join("")}
                   </tr>
-                `).join('')}
+                `
+                  )
+                  .join("")}
               </tbody>
             </table>
           </body>
@@ -492,22 +509,22 @@ function ItemsPage() {
       printWindow.document.close();
 
       // Wait for content to load then print
-      printWindow.onload = function() {
+      printWindow.onload = function () {
         printWindow.print();
         // Close the window after printing
-        printWindow.onafterprint = function() {
+        printWindow.onafterprint = function () {
           printWindow.close();
         };
       };
 
       toast.success({
-        title: "Success",
-        description: `${type} list prepared for printing`,
+        title: toastT("success"),
+        description: toastT(`${type}.printSuccess`),
       });
     } catch (error) {
       toast.error({
-        title: "Error",
-        description: error.message || `Failed to print ${type} list`,
+        title: toastT("error"),
+        description: error.message || toastT(`${type}.printError`),
       });
     }
   };
@@ -516,11 +533,7 @@ function ItemsPage() {
     <div className="p-4">
       <Box sx={{ width: "100%" }}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs
-            value={value}
-            onChange={handleChange}
-            aria-label="items tabs"
-          >
+          <Tabs value={value} onChange={handleChange} aria-label="items tabs">
             <Tab label="Product Lines" />
             <Tab label="Categories" />
             <Tab label="Brands" />
@@ -542,11 +555,17 @@ function ItemsPage() {
               onAdd={() => handleAddNew("productLine")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => handleExportExcel('productLine')}
-              onExportPdf={() => handleExportPdf('productLine')}
-              onPrint={() => handlePrint('productLine', productLinesData, productLinesColumns)}
+              onExportExcel={() => handleExportExcel("productLine")}
+              onExportPdf={() => handleExportPdf("productLine")}
+              onPrint={() =>
+                handlePrint(
+                  "productLine",
+                  productLinesData,
+                  productLinesColumns
+                )
+              }
               onRefresh={() => fetchData(0, true)}
-              onImportExcel={(file) => handleImportExcel('productLine', file)}
+              onImportExcel={(file) => handleImportExcel("productLine", file)}
               tableId="productLines"
             />
           </Box>
@@ -566,11 +585,13 @@ function ItemsPage() {
               onAdd={() => handleAddNew("category")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => handleExportExcel('category')}
-              onExportPdf={() => handleExportPdf('category')}
-              onPrint={() => handlePrint('category', categoriesData, categoriesColumns)}
+              onExportExcel={() => handleExportExcel("category")}
+              onExportPdf={() => handleExportPdf("category")}
+              onPrint={() =>
+                handlePrint("category", categoriesData, categoriesColumns)
+              }
               onRefresh={() => fetchData(1, true)}
-              onImportExcel={(file) => handleImportExcel('category', file)}
+              onImportExcel={(file) => handleImportExcel("category", file)}
               tableId="categories"
             />
           </Box>
@@ -590,11 +611,11 @@ function ItemsPage() {
               onAdd={() => handleAddNew("brand")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => handleExportExcel('brand')}
-              onExportPdf={() => handleExportPdf('brand')}
-              onPrint={() => handlePrint('brand', brandsData, brandsColumns)}
+              onExportExcel={() => handleExportExcel("brand")}
+              onExportPdf={() => handleExportPdf("brand")}
+              onPrint={() => handlePrint("brand", brandsData, brandsColumns)}
               onRefresh={() => fetchData(2, true)}
-              onImportExcel={(file) => handleImportExcel('brand', file)}
+              onImportExcel={(file) => handleImportExcel("brand", file)}
               tableId="brands"
             />
           </Box>
@@ -614,11 +635,11 @@ function ItemsPage() {
               onAdd={() => handleAddNew("item")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => handleExportExcel('item')}
-              onExportPdf={() => handleExportPdf('item')}
-              onPrint={() => handlePrint('item', itemsData, itemsColumns)}
+              onExportExcel={() => handleExportExcel("item")}
+              onExportPdf={() => handleExportPdf("item")}
+              onPrint={() => handlePrint("item", itemsData, itemsColumns)}
               onRefresh={() => fetchData(3, true)}
-              onImportExcel={(file) => handleImportExcel('item', file)}
+              onImportExcel={(file) => handleImportExcel("item", file)}
               tableId="items"
             />
           </Box>

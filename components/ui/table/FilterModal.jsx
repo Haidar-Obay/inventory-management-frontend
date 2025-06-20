@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button, Select, Input, DatePicker } from "./CustomControls";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 export const FilterModal = ({
   isOpen,
@@ -17,6 +17,8 @@ export const FilterModal = ({
   uniqueValues = [],
 }) => {
   const t = useTranslations("table.filter");
+  const locale = useLocale();
+  const isRTL = locale === "ar";
 
   if (!isOpen) return null;
 
@@ -53,7 +55,7 @@ export const FilterModal = ({
         { value: "between", label: t("types.between") },
       ];
     } else if (column.type === "number") {
-      options = [ 
+      options = [
         { value: "equals", label: t("types.equals") },
         { value: "greaterThan", label: t("types.greaterThan") },
         { value: "lessThan", label: t("types.lessThan") },
@@ -266,7 +268,13 @@ export const FilterModal = ({
           {renderFilterTypeSelector(column, selectedColumn)}
           {renderFilterInput(column, selectedColumn)}
         </div>
-        <div className="mt-4 flex justify-end space-x-2">
+        <div
+          className="mt-4 flex justify-end"
+          style={{
+            gap: "0.5rem",
+            flexDirection: isRTL ? "row-reverse" : "row",
+          }}
+        >
           <Button
             variant="outline"
             onClick={onCancel}

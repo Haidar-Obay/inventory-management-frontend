@@ -48,6 +48,9 @@ const RTLTextField = ({
           "& .MuiOutlinedInput-notchedOutline": {
             textAlign: "right",
           },
+          "& .MuiInputBase-adornedEnd": {
+            paddingLeft: "12px",
+          },
         }),
       }}
       {...props}
