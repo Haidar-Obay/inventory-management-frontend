@@ -76,14 +76,6 @@ export default function ItemsPageWrapper() {
 
 // The actual component that uses useSearchParams
 function ItemsPage() {
-  const t = useTranslations("items");
-  const tableT = useTranslations("tableColumns");
-  const {
-    productLinesColumns,
-    categoriesColumns,
-    brandsColumns,
-    itemsColumns,
-  } = useTableColumns(tableT);
   const searchParams = useSearchParams();
   const router = useRouter();
   const [value, setValue] = useState(0);
@@ -106,6 +98,13 @@ function ItemsPage() {
   const t = useTranslations("items");
   const tableT = useTranslations("tableColumns");
   const toastT = useTranslations("toast");
+
+  const {
+    productLinesColumns,
+    categoriesColumns,
+    brandsColumns,
+    itemsColumns,
+  } = useTableColumns(tableT);
 
   // Initialize tab value from URL or localStorage
   useEffect(() => {
