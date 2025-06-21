@@ -544,6 +544,17 @@ const SectionDrawer = ({
               <Grid item xs={12} md={6} sx={{ width: "100%" }}>
                 <TextField
                   fullWidth
+                  label={t("management.code")}
+                  variant="outlined"
+                  size="small"
+                  value={formData?.code || ""}
+                  onChange={handleFieldChange("code")}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={6} sx={{ width: "100%" }}>
+                <TextField
+                  fullWidth
                   label={t("management.description")}
                   variant="outlined"
                   size="small"

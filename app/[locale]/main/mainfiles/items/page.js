@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { Tabs, Tab, Box, Typography, CircularProgress } from "@mui/material";
+import { useTranslations, useLocale } from "next-intl";
 import Table from "@/components/ui/table/Table";
 import ItemDrawer from "@/components/ui/drawers/ItemDrawer";
 import {
@@ -34,12 +35,7 @@ import {
   exportItemsToPdf,
   importItemsFromExcel,
 } from "@/API/Items";
-import {
-  productLinesColumns,
-  categoriesColumns,
-  brandsColumns,
-  itemsColumns,
-} from "@/constants/tableColumns";
+import { useTableColumns } from "@/constants/tableColumns";
 import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
 
@@ -79,6 +75,14 @@ export default function ItemsPageWrapper() {
 
 // The actual component that uses useSearchParams
 function ItemsPage() {
+  const t = useTranslations("items");
+  const tableT = useTranslations("tableColumns");
+  const {
+    productLinesColumns,
+    categoriesColumns,
+    brandsColumns,
+    itemsColumns,
+  } = useTableColumns(tableT);
   const searchParams = useSearchParams();
   const router = useRouter();
   const [value, setValue] = useState(0);
@@ -227,7 +231,17 @@ function ItemsPage() {
   };
 
   const handleEdit = (type, row) => {
-    setFormData({ id: row.id, name: row.name });
+    setFormData({ 
+      id: row.id, 
+      name: row.name,
+      code: row.code,
+      active: row.active,
+      subcategory_of: row.subcategory_of,
+      sub_brand_of: row.sub_brand_of,
+      product_line_id: row.product_line_id,
+      category_id: row.category_id,
+      brand_id: row.brand_id
+    });
     setActiveDrawerType(type);
     setIsEditMode(true);
     setIsDrawerOpen(true);
@@ -259,7 +273,13 @@ function ItemsPage() {
   const handleAddNew = (type) => {
     setActiveDrawerType(type);
     setIsEditMode(false);
-    setFormData({});
+    // Set default values for new items
+    const defaultData = {
+      active: true, // Default to active for new items
+      subcategory_of: '', // Default empty for categories
+      sub_brand_of: '', // Default empty for brands
+    };
+    setFormData(defaultData);
     setIsDrawerOpen(true);
   };
 
@@ -279,17 +299,26 @@ function ItemsPage() {
     const handler = entityHandlers[type];
   
     try {
+      // Prepare the data with proper types
+      const preparedData = {
+        ...formData,
+        active: formData.active === 'true' || formData.active === true,
+        // Ensure subcategory_of and sub_brand_of are properly set
+        subcategory_of: formData.subcategory_of || null,
+        sub_brand_of: formData.sub_brand_of || null,
+      };
+
       let response;
       if (isEditMode) {
-        response = await handler.editFn(formData.id, formData);
+        response = await handler.editFn(formData.id, preparedData);
         if (response.status) {
           // Update existing item in the state
           entityHandlers[type].setData(prev => 
-            prev.map(item => item.id === formData.id ? { ...item, ...formData } : item)
+            prev.map(item => item.id === formData.id ? { ...item, ...preparedData } : item)
           );
         }
       } else {
-        response = await handler.createFn(formData);
+        response = await handler.createFn(preparedData);
         if (response.status) {
           // Add new item to the state
           entityHandlers[type].setData(prev => [...prev, response.data]);

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, TextField, Autocomplete } from "@mui/material";
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
-import { getProductLineNames } from '@/API/Items';
+// import { getProductLineNames } from '@/API/Items';
 import { getCategoryNames } from '@/API/Items';
 import { getBrandNames } from '@/API/Items';
 
@@ -38,23 +38,24 @@ const ItemDrawer = ({
     }
   }, [type, isOpen]);
 
-  const fetchProductLineNames = async () => {
-    try {
-      setLoading(true);
-      const response = await getProductLineNames();
-      setProductLineOptions(response.data || []);
-    } catch (error) {
-      console.error('Error fetching product line names:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const fetchProductLineNames = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await getProductLineNames();
+  //     setProductLineOptions(response.data || []);
+  //   } catch (error) {
+  //     console.error('Error fetching product line names:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const fetchCategoryNames = async () => {
     try {
       setLoading(true);
       const response = await getCategoryNames();
       setCategoryOptions(response.data || []);
+      console.log(response.data)
     } catch (error) {
       console.error('Error fetching category names:', error);
     } finally {
@@ -206,10 +207,10 @@ const ItemDrawer = ({
                 fullWidth
                 options={categoryOptions}
                 getOptionLabel={(option) => option.name || ''}
-                value={categoryOptions.find(c => c.id === formData?.sub_category_of) || null}
+                value={categoryOptions.find(c => c.id === formData?.subcategory_of) || null}
                 onChange={(e, newValue) => onFormDataChange({
                   ...formData,
-                  sub_category_of: newValue?.id || ''
+                  subcategory_of: newValue?.id || ''
                 })}
                 loading={loading}
                 renderInput={(params) => (
@@ -281,10 +282,10 @@ const ItemDrawer = ({
                 fullWidth
                 options={brandOptions}
                 getOptionLabel={(option) => option.name || ''}
-                value={brandOptions.find(b => b.id === formData?.sub_brand_of) || null}
+                value={brandOptions.find(b => b.id === formData?.subbrand_of) || null}
                 onChange={(e, newValue) => onFormDataChange({
                   ...formData,
-                  sub_brand_of: newValue?.id || ''
+                  subbrand_of: newValue?.id || ''
                 })}
                 loading={loading}
                 renderInput={(params) => (

@@ -83,16 +83,16 @@ export const importProductLinesFromExcel = async (file) => {
   }
 };
 
-// Function to get only product line names for dropdowns
-export const getProductLineNames = async () => {
-  try {
-    const response = await tenantApiService('GET', 'names/product-lines');
-    return response;
-  } catch (error) {
-    console.error('Error fetching product line names:', error);
-    throw error;
-  }
-};
+// // Function to get only product line names for dropdowns
+// export const getProductLineNames = async () => {
+//   try {
+//     const response = await tenantApiService('GET', 'names/product-lines');
+//     return response;
+//   } catch (error) {
+//     console.error('Error fetching product line names:', error);
+//     throw error;
+//   }
+// };
 
 // Categories API functions
 export const getCategories = async () => {

@@ -79,6 +79,7 @@ export function useTableColumns(t) {
 
     jobsColumns: [
       { header: t("id"), key: "id" },
+      { header: t("code"), key: "code" },
       { header: t("description"), key: "description" },
       { header: t("projectId"), key: "project_id" },
       { header: t("startDate"), key: "start_date", type: "date" },
@@ -95,13 +96,13 @@ export function useTableColumns(t) {
       { header: t("active"), key: "active", type: "boolean" },
       { header: t("createdAt"), key: "created_at", type: "date" },
       { header: t("updatedAt"), key: "updated_at", type: "date" },
-    ],
+    ],  
 
     categoriesColumns: [
       { header: t("id"), key: "id" },
       { header: t("code"), key: "code" },
       { header: t("name"), key: "name" },
-      { header: t("subOf"), key: "sub_category_of" },
+      { header: t("subOf"), key: "subcategory_of" },
       { header: t("active"), key: "active", type: "boolean" },
       { header: t("createdAt"), key: "created_at", type: "date" },
       { header: t("updatedAt"), key: "updated_at", type: "date" },
@@ -111,7 +112,7 @@ export function useTableColumns(t) {
       { header: t("id"), key: "id" },
       { header: t("code"), key: "code" },
       { header: t("name"), key: "name" },
-      { header: t("subOf"), key: "sub_brand_of" },
+      { header: t("subOf"), key: "subbrand_of" },
       { header: t("active"), key: "active", type: "boolean" },
       { header: t("createdAt"), key: "created_at", type: "date" },
       { header: t("updatedAt"), key: "updated_at", type: "date" },
