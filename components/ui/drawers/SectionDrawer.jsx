@@ -12,10 +12,9 @@ import {
   Autocomplete,
 } from "@mui/material";
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
+import RTLTextField from "@/components/ui/RTLTextField";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { getCustomerNames, getCostCenterNames } from "@/API/Customers";
+import { getCustomerNames } from "@/API/Customers";
 import { getCostCenterNames as getCostCenterNamesFromSections } from "@/API/Sections";
 import { getDepartmentNames as getDepartmentNamesFromSections } from "@/API/Sections";
 import { getProjectNames as getProjectNamesFromSections } from "@/API/Sections";
@@ -187,11 +186,8 @@ const SectionDrawer = ({
           content: (
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
+                <RTLTextField
                   label={t("management.projectName")}
-                  variant="outlined"
-                  size="small"
                   value={formData?.name || ""}
                   onChange={handleFieldChange("name")}
                   required
@@ -209,63 +205,61 @@ const SectionDrawer = ({
                   onChange={handleCustomerChange}
                   loading={loading}
                   renderInput={(params) => (
-                    <TextField
+                    <RTLTextField
                       {...params}
                       label={t("management.customer")}
-                      variant="outlined"
-                      size="small"
                       required
                     />
                   )}
                 />
               </Grid>
               <Grid item xs={12} md={4} sx={{ width: "100%" }}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    label={t("management.startDate")}
-                    value={formData?.start_date || null}
-                    onChange={handleDateChange("start_date")}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        size: "small",
-                        variant: "outlined",
-                      },
-                    }}
-                  />
-                </LocalizationProvider>
+                <DatePicker
+                  label={t("management.startDate")}
+                  value={formData?.start_date || null}
+                  onChange={handleDateChange("start_date")}
+                  slots={{ textField: RTLTextField }}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      size: "small",
+                      variant: "outlined",
+                    },
+                  }}
+                  enableAccessibleFieldDOMStructure={false}
+                />
               </Grid>
               <Grid item xs={12} md={4} sx={{ width: "100%" }}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    label={t("management.expectedDate")}
-                    value={formData?.expected_date || null}
-                    onChange={handleDateChange("expected_date")}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        size: "small",
-                        variant: "outlined",
-                      },
-                    }}
-                  />
-                </LocalizationProvider>
+                <DatePicker
+                  label={t("management.expectedDate")}
+                  value={formData?.expected_date || null}
+                  onChange={handleDateChange("expected_date")}
+                  slots={{ textField: RTLTextField }}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      size: "small",
+                      variant: "outlined",
+                    },
+                  }}
+                  enableAccessibleFieldDOMStructure={false}
+                />
               </Grid>
               <Grid item xs={12} md={4} sx={{ width: "100%" }}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    label={t("management.endDate")}
-                    value={formData?.end_date || null}
-                    onChange={handleDateChange("end_date")}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        size: "small",
-                        variant: "outlined",
-                      },
-                    }}
-                  />
-                </LocalizationProvider>
+                <DatePicker
+                  label={t("management.endDate")}
+                  value={formData?.end_date || null}
+                  onChange={handleDateChange("end_date")}
+                  slots={{ textField: RTLTextField }}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      size: "small",
+                      variant: "outlined",
+                    },
+                  }}
+                  enableAccessibleFieldDOMStructure={false}
+                />
               </Grid>
             </Grid>
           ),
@@ -284,22 +278,16 @@ const SectionDrawer = ({
           content: (
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
+                <RTLTextField
                   label={t("management.code")}
-                  variant="outlined"
-                  size="small"
                   value={formData?.code || ""}
                   onChange={handleFieldChange("code")}
                   required
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
+                <RTLTextField
                   label={t("management.name")}
-                  variant="outlined"
-                  size="small"
                   value={formData?.name || ""}
                   onChange={handleFieldChange("name")}
                   required
@@ -318,22 +306,17 @@ const SectionDrawer = ({
                   onChange={handleSubCostCenterChange}
                   loading={loading}
                   renderInput={(params) => (
-                    <TextField
+                    <RTLTextField
                       {...params}
                       label={t("management.subCostCenterOf")}
-                      variant="outlined"
-                      size="small"
                     />
                   )}
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField
+                <RTLTextField
                   select
-                  fullWidth
                   label={t("management.active")}
-                  variant="outlined"
-                  size="small"
                   value={formData?.active === false ? "false" : "true"}
                   onChange={(e) =>
                     onFormDataChange({
@@ -347,7 +330,7 @@ const SectionDrawer = ({
                 >
                   <option value="true">{t("management.yes")}</option>
                   <option value="false">{t("management.no")}</option>
-                </TextField>
+                </RTLTextField>
               </Grid>
             </Grid>
           ),
@@ -366,22 +349,16 @@ const SectionDrawer = ({
           content: (
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
+                <RTLTextField
                   label={t("management.code")}
-                  variant="outlined"
-                  size="small"
                   value={formData?.code || ""}
                   onChange={handleFieldChange("code")}
                   required
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
+                <RTLTextField
                   label={t("management.name")}
-                  variant="outlined"
-                  size="small"
                   value={formData?.name || ""}
                   onChange={handleFieldChange("name")}
                   required
@@ -400,22 +377,17 @@ const SectionDrawer = ({
                   onChange={handleSubDepartmentChange}
                   loading={loading}
                   renderInput={(params) => (
-                    <TextField
+                    <RTLTextField
                       {...params}
                       label={t("management.subDepartmentOf")}
-                      variant="outlined"
-                      size="small"
                     />
                   )}
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField
+                <RTLTextField
                   select
-                  fullWidth
                   label={t("management.active")}
-                  variant="outlined"
-                  size="small"
                   value={formData?.active === false ? "false" : "true"}
                   onChange={(e) =>
                     onFormDataChange({
@@ -429,7 +401,7 @@ const SectionDrawer = ({
                 >
                   <option value="true">{t("management.yes")}</option>
                   <option value="false">{t("management.no")}</option>
-                </TextField>
+                </RTLTextField>
               </Grid>
             </Grid>
           ),
@@ -446,34 +418,25 @@ const SectionDrawer = ({
           content: (
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
+                <RTLTextField
                   label={t("management.code")}
-                  variant="outlined"
-                  size="small"
                   value={formData?.code || ""}
                   onChange={handleFieldChange("code")}
                   required
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
+                <RTLTextField
                   label={t("management.name")}
-                  variant="outlined"
-                  size="small"
                   value={formData?.name || ""}
                   onChange={handleFieldChange("name")}
                   required
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField
+                <RTLTextField
                   select
-                  fullWidth
                   label={t("management.active")}
-                  variant="outlined"
-                  size="small"
                   value={formData?.active === false ? "false" : "true"}
                   onChange={(e) =>
                     onFormDataChange({
@@ -487,7 +450,7 @@ const SectionDrawer = ({
                 >
                   <option value="true">{t("management.yes")}</option>
                   <option value="false">{t("management.no")}</option>
-                </TextField>
+                </RTLTextField>
               </Grid>
             </Grid>
           ),
@@ -506,22 +469,16 @@ const SectionDrawer = ({
           content: (
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
+                <RTLTextField
                   label={t("management.code")}
-                  variant="outlined"
-                  size="small"
                   value={formData?.code || ""}
                   onChange={handleFieldChange("code")}
                   required
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
+                <RTLTextField
                   label={t("management.name")}
-                  variant="outlined"
-                  size="small"
                   value={formData?.name || ""}
                   onChange={handleFieldChange("name")}
                   required
@@ -542,7 +499,7 @@ const SectionDrawer = ({
           content: (
             <Grid container spacing={2}>
               <Grid item xs={12} md={6} sx={{ width: "100%" }}>
-                <TextField
+                <RTLTextField
                   fullWidth
                   label={t("management.code")}
                   variant="outlined"
@@ -556,11 +513,10 @@ const SectionDrawer = ({
                 <TextField
                   fullWidth
                   label={t("management.description")}
-                  variant="outlined"
-                  size="small"
                   value={formData?.description || ""}
                   onChange={handleFieldChange("description")}
-                  required
+                  multiline
+                  rows={4}
                 />
               </Grid>
               <Grid item xs={12} md={6} sx={{ width: "100%" }}>
@@ -575,7 +531,7 @@ const SectionDrawer = ({
                   onChange={handleProjectChange}
                   loading={loading}
                   renderInput={(params) => (
-                    <TextField
+                    <RTLTextField
                       {...params}
                       label={t("management.project")}
                       variant="outlined"
@@ -586,52 +542,52 @@ const SectionDrawer = ({
                 />
               </Grid>
               <Grid item xs={12} md={4}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    label={t("management.startDate")}
-                    value={formData?.start_date || null}
-                    onChange={handleDateChange("start_date")}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        size: "small",
-                        variant: "outlined",
-                      },
-                    }}
-                  />
-                </LocalizationProvider>
+                <DatePicker
+                  label={t("management.startDate")}
+                  value={formData?.start_date || null}
+                  onChange={handleDateChange("start_date")}
+                  slots={{ textField: RTLTextField }}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      size: "small",
+                      variant: "outlined",
+                    },
+                  }}
+                  enableAccessibleFieldDOMStructure={false}
+                />
               </Grid>
               <Grid item xs={12} md={4}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    label={t("management.expectedDate")}
-                    value={formData?.expected_date || null}
-                    onChange={handleDateChange("expected_date")}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        size: "small",
-                        variant: "outlined",
-                      },
-                    }}
-                  />
-                </LocalizationProvider>
+                <DatePicker
+                  label={t("management.expectedDate")}
+                  value={formData?.expected_date || null}
+                  onChange={handleDateChange("expected_date")}
+                  slots={{ textField: RTLTextField }}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      size: "small",
+                      variant: "outlined",
+                    },
+                  }}
+                  enableAccessibleFieldDOMStructure={false}
+                />
               </Grid>
               <Grid item xs={12} md={4}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    label={t("management.endDate")}
-                    value={formData?.end_date || null}
-                    onChange={handleDateChange("end_date")}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        size: "small",
-                        variant: "outlined",
-                      },
-                    }}
-                  />
-                </LocalizationProvider>
+                <DatePicker
+                  label={t("management.endDate")}
+                  value={formData?.end_date || null}
+                  onChange={handleDateChange("end_date")}
+                  slots={{ textField: RTLTextField }}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      size: "small",
+                      variant: "outlined",
+                    },
+                  }}
+                  enableAccessibleFieldDOMStructure={false}
+                />
               </Grid>
             </Grid>
           ),
@@ -650,26 +606,22 @@ const SectionDrawer = ({
         content: (
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <TextField
+              <RTLTextField
                 fullWidth
                 label={t("management." + type + "Name")}
-                variant="outlined"
-                size="small"
                 value={formData?.name || ""}
                 onChange={handleFieldChange("name")}
                 required
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
+              <RTLTextField
                 fullWidth
                 label={t("management.description")}
-                variant="outlined"
-                size="small"
-                multiline
-                rows={4}
                 value={formData?.description || ""}
                 onChange={handleFieldChange("description")}
+                multiline
+                rows={4}
               />
             </Grid>
           </Grid>

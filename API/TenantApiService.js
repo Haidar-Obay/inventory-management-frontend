@@ -6,46 +6,51 @@ const tenantApiService = async (method, endpoint, data = null) => {
   if (typeof window === "undefined") return;
 
   const hostname = window.location.hostname;
-  
+
   // Extract tenant name from subdomain (part before .localhost)
-  const tenantName = hostname.split('.')[0];
-  
+  const tenantName = hostname.split(".")[0];
+
   // Construct the URL with tenant name and app.localhost
   const url = `http://${tenantName}.${CENTRAL_DOMAIN}:${TENANT_API_PORT}/${endpoint}`;
-  
+
   // Get token from cookies instead of localStorage
   const token = document.cookie
-    .split('; ')
-    .find(row => row.startsWith(`${TENANT_TOKEN_KEY}=`))
-    ?.split('=')[1];
+    .split("; ")
+    .find((row) => row.startsWith(`${TENANT_TOKEN_KEY}=`))
+    ?.split("=")[1];
 
   const headers = {
     "Content-Type": "application/json",
     Accept: "application/json",
     ...(token && { Authorization: `Bearer ${token}` }),
   };
-  
+
   console.log("Tenant Name:", tenantName);
   console.log("Request URL:", url);
   console.log("Token in Cookie: ", token);
   console.log("Request Headers: ", headers);
-  
+
   try {
     const response = await fetch(url, {
       method: method.toUpperCase(),
       headers,
       credentials: "include",
       mode: "cors",
-      ...(data && { body: data instanceof FormData ? data : JSON.stringify(data) }),
+      ...(data && {
+        body: data instanceof FormData ? data : JSON.stringify(data),
+      }),
     });
 
     // Check if the response is a file download (Excel or PDF)
     const contentType = response.headers.get("content-type");
-    if (contentType && (
-      contentType.includes("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") || // Excel
-      contentType.includes("application/pdf") || // PDF
-      contentType.includes("application/octet-stream") // Generic binary
-    )) {
+    if (
+      contentType &&
+      (contentType.includes(
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      ) || // Excel
+        contentType.includes("application/pdf") || // PDF
+        contentType.includes("application/octet-stream")) // Generic binary
+    ) {
       if (!response.ok) {
         throw new Error(response.statusText);
       }

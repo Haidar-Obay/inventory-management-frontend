@@ -18,6 +18,7 @@ const DynamicDrawer = ({
   width = 500,
   zIndex = 1200,
   accordions = [], // Array of accordion configurations
+  content = null, // Direct content without accordions
   onSave,
   onSaveAndNew,
   onSaveAndClose,
@@ -44,28 +45,32 @@ const DynamicDrawer = ({
 
         {/* Main Content */}
         <div className="flex-grow">
-          {/* Render accordions if provided */}
-          {accordions.map((accordion, index) => (
-            <Accordion
-              key={index}
-              expanded={accordion.expanded}
-              onChange={accordion.onChange}
-              className="mb-2"
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls={`panel${index}-content`}
-                id={`panel${index}-header`}
+          {/* Render direct content if provided */}
+          {content}
+
+          {/* Render accordions if provided and no direct content */}
+          {!content &&
+            accordions.map((accordion, index) => (
+              <Accordion
+                key={index}
+                expanded={accordion.expanded}
+                onChange={accordion.onChange}
+                className="mb-2"
               >
-                <Typography>{accordion.title}</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Grid container spacing={2}>
-                  {accordion.content}
-                </Grid>
-              </AccordionDetails>
-            </Accordion>
-          ))}
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls={`panel${index}-content`}
+                  id={`panel${index}-header`}
+                >
+                  <Typography>{accordion.title}</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Grid container spacing={2}>
+                    {accordion.content}
+                  </Grid>
+                </AccordionDetails>
+              </Accordion>
+            ))}
 
           {/* Additional content */}
           {children}

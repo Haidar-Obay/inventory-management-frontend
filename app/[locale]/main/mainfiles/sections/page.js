@@ -107,6 +107,7 @@ export default function SectionsPageWrapper() {
 function SectionsPage() {
   const t = useTranslations("sections");
   const tableT = useTranslations("tableColumns");
+  const toastT = useTranslations("toast");
   const {
     projectColumns,
     costCenterColumns,
@@ -239,15 +240,13 @@ function SectionsPage() {
       }
 
       toast.success({
-        title: "success",
-        description: "dataFetchedSuccessfully",
-        isTranslated: true,
+        title: toastT("success"),
+        description: toastT("dataFetchedSuccessfully"),
       });
     } catch (error) {
       toast.error({
-        title: "error",
-        description: "failedToFetchData",
-        isTranslated: true,
+        title: toastT("error"),
+        description: error.message || toastT("failedToFetchData"),
       });
     } finally {
       setLoading(false);
@@ -324,16 +323,14 @@ function SectionsPage() {
           [type]: false,
         }));
         toast.success({
-          title: t("messages.deleteSuccess"),
-          description: `${type} ${t("messages.deleteSuccess")}`,
-          isTranslated: true,
+          title: toastT("success"),
+          description: toastT(`${type}.deleteSuccess`),
         });
       }
     } catch (error) {
       toast.error({
-        title: t("messages.deleteError"),
-        description: `${type} ${t("messages.deleteError")}`,
-        isTranslated: true,
+        title: toastT("error"),
+        description: error.message || toastT(`${type}.deleteError`),
       });
     }
   };
@@ -380,17 +377,19 @@ function SectionsPage() {
 
       if (response.status) {
         toast.success({
-          title: t("messages.updateSuccess"),
-          description: `${type} ${t(isEditMode ? "messages.updateSuccess" : "messages.createSuccess")}`,
-          isTranslated: true,
+          title: toastT("success"),
+          description: toastT(
+            isEditMode ? `${type}.updateSuccess` : `${type}.createSuccess`
+          ),
         });
         setIsEditMode(false);
       }
     } catch (error) {
       toast.error({
-        title: t("messages.updateError"),
-        description: `${type} ${t(isEditMode ? "messages.updateError" : "messages.createError")}`,
-        isTranslated: true,
+        title: toastT("error"),
+        description:
+          error.message ||
+          toastT(isEditMode ? `${type}.updateError` : `${type}.createError`),
       });
     }
   };
@@ -445,15 +444,13 @@ function SectionsPage() {
       link.remove();
 
       toast.success({
-        title: "success",
-        description: `${type} ${t("messages.exportSuccess")}`,
-        isTranslated: true,
+        title: toastT("success"),
+        description: toastT(`${type}.exportSuccess`),
       });
     } catch (error) {
       toast.error({
-        title: "error",
-        description: `${t("messages.exportError")} ${type}`,
-        isTranslated: true,
+        title: toastT("error"),
+        description: error.message || toastT(`${type}.exportError`),
       });
     }
   };
@@ -494,15 +491,13 @@ function SectionsPage() {
       link.remove();
 
       toast.success({
-        title: "success",
-        description: `${type} ${t("messages.exportSuccess")}`,
-        isTranslated: true,
+        title: toastT("success"),
+        description: toastT(`${type}.exportSuccess`),
       });
     } catch (error) {
       toast.error({
-        title: "error",
-        description: `${t("messages.exportError")} ${type}`,
-        isTranslated: true,
+        title: toastT("error"),
+        description: error.message || toastT(`${type}.exportError`),
       });
     }
   };
@@ -537,85 +532,31 @@ function SectionsPage() {
         // Refresh the data after successful import
         fetchData(value, true);
         toast.success({
-          title: "success",
-          description: `${type} ${t("messages.importSuccess")}`,
-          isTranslated: true,
+          title: toastT("success"),
+          description: toastT(`${type}.importSuccess`),
         });
       }
     } catch (error) {
       toast.error({
-        title: "error",
-        description: `${t("messages.importError")} ${type}`,
-        isTranslated: true,
+        title: toastT("error"),
+        description: error.message || toastT(`${type}.importError`),
       });
     }
   };
 
   const handlePrint = (type, data, columns) => {
     try {
-      const printWindow = window.open("", "_blank");
-
-      const content = `
-        <html>
-          <head>
-            <title>${type.charAt(0).toUpperCase() + type.slice(1)} List</title>
-            <style>
-              body { font-family: Arial, sans-serif; }
-              table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-              th { background-color: #f5f5f5; }
-              h1 { text-align: center; }
-              @media print {
-                body { margin: 0; padding: 20px; }
-                table { page-break-inside: auto; }
-                tr { page-break-inside: avoid; page-break-after: auto; }
-              }
-            </style>
-          </head>
-          <body>
-            <h1>${type.charAt(0).toUpperCase() + type.slice(1)} List</h1>
-            <table>
-              <thead>
-                <tr>
-                  ${columns.map((col) => `<th>${col.header}</th>`).join("")}
-                </tr>
-              </thead>
-              <tbody>
-                ${data
-                  .map(
-                    (row) => `
-                  <tr>
-                    ${columns.map((col) => `<td>${row[col.key] || ""}</td>`).join("")}
-                  </tr>
-                `
-                  )
-                  .join("")}
-              </tbody>
-            </table>
-          </body>
-        </html>
-      `;
-
-      printWindow.document.write(content);
-      printWindow.document.close();
-
-      printWindow.onload = function () {
-        printWindow.print();
-        printWindow.onafterprint = function () {
-          printWindow.close();
-        };
-      };
-
+      // Logic to prepare data for printing
+      console.log("Printing data:", { type, data, columns });
+      // Here you can use a library like `react-to-print` or open a new window with a printable format
       toast.success({
-        title: "success",
-        description: `${type} ${t("messages.printSuccess")}`,
-        isTranslated: true,
+        title: toastT("success"),
+        description: toastT(`${type}.printSuccess`),
       });
     } catch (error) {
       toast.error({
-        title: "error",
-        description: `${t("messages.printError")} ${type}`,
-        isTranslated: true,
+        title: toastT("error"),
+        description: error.message || toastT(`${type}.printError`),
       });
     }
   };

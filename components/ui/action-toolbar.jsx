@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Button } from "./button.tsx";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import {
   PlusIcon,
   FileSpreadsheetIcon,
@@ -117,6 +117,8 @@ export function ActionToolbar({
   const t = useTranslations("table.toolbar");
   const [groupStates, setGroupStates] = useState({});
   const [loadingActions, setLoadingActions] = useState({});
+  const locale = useLocale();
+  const isRTL = locale === "ar";
 
   // Memoize available actions
   const availableActions = useMemo(() => {
@@ -318,8 +320,17 @@ export function ActionToolbar({
   );
 
   return (
-    <div className={`flex flex-wrap items-center gap-2 ${className}`}>
-      {Object.values(ACTION_GROUPS).map((group) => renderGroup(group))}
+    <div
+      className={`flex items-center justify-end ${className}`}
+      style={{
+        gap: "0.5rem",
+      }}
+    >
+      {Object.values(ACTION_GROUPS)
+        .filter((group) =>
+          group.actions.some((action) => availableActions[action])
+        )
+        .map((group) => renderGroup(group))}
     </div>
   );
 }

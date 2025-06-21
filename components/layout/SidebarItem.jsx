@@ -74,11 +74,16 @@ export function SidebarItem({
         style={isRTL ? { paddingRight: 24 } : { paddingLeft: 24 }}
         onClick={() => onNavigate && onNavigate(name)}
       >
-        <Icon className="h-4 w-4 flex-shrink-0 mr-2" />
+        <Icon
+          className={cn("h-4 w-4 flex-shrink-0", isRTL ? "ml-2" : "mr-2")}
+        />
         <span className="whitespace-nowrap">{label}</span>
       </Link>
       {onToggleBookmark && (
-        <div className="flex-shrink-0 flex items-center justify-center" style={{ width: 40 }}>
+        <div
+          className="flex-shrink-0 flex items-center justify-center"
+          style={{ width: 40 }}
+        >
           <Button
             variant="ghost"
             size="icon"
@@ -93,7 +98,9 @@ export function SidebarItem({
             <Star
               className={cn(
                 "h-4 w-4 transition-colors duration-200",
-                isBookmarked ? "text-yellow-400 fill-yellow-400" : "text-primary-foreground/50 hover:text-yellow-400 hover:fill-yellow-400"
+                isBookmarked
+                  ? "text-yellow-400 fill-yellow-400"
+                  : "text-primary-foreground/50 hover:text-yellow-400 hover:fill-yellow-400"
               )}
             />
           </Button>

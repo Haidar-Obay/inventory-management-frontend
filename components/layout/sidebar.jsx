@@ -129,6 +129,8 @@ const BookmarksSection = ({
   t,
   isRTL,
   onToggleBookmark,
+  isExpanded,
+  onToggle,
 }) => {
   if (bookmarks.length === 0) return null;
 
@@ -140,7 +142,20 @@ const BookmarksSection = ({
       <div className={cn("px-4 mb-2", isCollapsed ? "text-center" : "")}>
         {!isCollapsed && (
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium">{t("bookmarks")}</h3>
+            <button
+              onClick={onToggle}
+              className="flex items-center gap-2 text-sm font-medium hover:text-primary-foreground/80 transition-colors duration-200"
+            >
+              <BookMarked className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")} />
+              <h3 className="text-sm font-medium">{t("bookmarks")}</h3>
+              <ChevronRight
+                className={cn(
+                  "h-4 w-4 transition-transform duration-200",
+                  isRTL ? "rotate-180" : "",
+                  isExpanded ? "rotate-90" : ""
+                )}
+              />
+            </button>
             <Button
               variant="ghost"
               size="sm"
@@ -153,32 +168,36 @@ const BookmarksSection = ({
         )}
         {isCollapsed && <BookMarked className="h-5 w-5 mx-auto" />}
       </div>
-      <ul className="space-y-1">
-        {bookmarks.map((bookmarkId) => {
-          const item = allItems.find((i) => i.uniqueId === bookmarkId);
-          if (!item) return null;
+      <Collapsible open={isExpanded}>
+        <CollapsibleContent>
+          <ul className="space-y-1">
+            {bookmarks.map((bookmarkId) => {
+              const item = allItems.find((i) => i.uniqueId === bookmarkId);
+              if (!item) return null;
 
-          const Icon = iconMap[item.icon];
+              const Icon = iconMap[item.icon];
 
-          return (
-            <li key={bookmarkId}>
-              <SidebarItem
-                name={item.name}
-                icon={Icon}
-                path={item.path}
-                uniqueId={item.uniqueId}
-                isCollapsed={isCollapsed}
-                isActive={activeItem === item.name.toLowerCase()}
-                onNavigate={handleNavigation}
-                onToggleBookmark={onToggleBookmark}
-                isBookmarked={bookmarks.includes(item.uniqueId)}
-                t={t}
-                isRTL={isRTL}
-              />
-            </li>
-          );
-        })}
-      </ul>
+              return (
+                <li key={bookmarkId}>
+                  <SidebarItem
+                    name={item.name}
+                    icon={Icon}
+                    path={item.path}
+                    uniqueId={item.uniqueId}
+                    isCollapsed={isCollapsed}
+                    isActive={activeItem === item.name.toLowerCase()}
+                    onNavigate={handleNavigation}
+                    onToggleBookmark={onToggleBookmark}
+                    isBookmarked={bookmarks.includes(item.uniqueId)}
+                    t={t}
+                    isRTL={isRTL}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        </CollapsibleContent>
+      </Collapsible>
       <div className="border-t border-primary-foreground/10 my-4"></div>
     </div>
   );
@@ -229,7 +248,7 @@ const GroupHeader = ({
             onClick={() => onToggleGroup(groupName)}
             className="flex items-center gap-2 text-sm font-medium hover:text-primary-foreground/80 transition-colors duration-200"
           >
-            <GroupIcon className="h-4 w-4" />
+            <GroupIcon className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")} />
             <span>{groupName}</span>
             <ChevronRight
               className={cn(
@@ -301,9 +320,14 @@ const GroupHeader = ({
                           {item.items.map((subItem) => {
                             const SubIcon = iconMap[subItem.icon];
                             // Find the subItem with proper uniqueId from allItems
-                            const processedSubItem = allItems.find((i) => i.name === subItem.name && i.path === subItem.path);
-                            const uniqueId = processedSubItem?.uniqueId || subItem.key;
-                            
+                            const processedSubItem = allItems.find(
+                              (i) =>
+                                i.name === subItem.name &&
+                                i.path === subItem.path
+                            );
+                            const uniqueId =
+                              processedSubItem?.uniqueId || subItem.key;
+
                             return (
                               <SidebarItem
                                 key={subItem.name}
@@ -313,13 +337,17 @@ const GroupHeader = ({
                                 uniqueId={uniqueId}
                                 isCollapsed={false}
                                 isBookmarked={bookmarks.includes(uniqueId)}
-                                isActive={activeItem === subItem.name.toLowerCase()}
+                                isActive={
+                                  activeItem === subItem.name.toLowerCase()
+                                }
                                 onNavigate={() => {
                                   handleNavigation(subItem.name);
                                   setPopoverOpen(false);
                                   setNestedPopoverOpen(null);
                                 }}
-                                onToggleBookmark={() => toggleBookmark(subItem.name)}
+                                onToggleBookmark={() =>
+                                  toggleBookmark(subItem.name)
+                                }
                                 padding="px-2"
                                 className="whitespace-nowrap"
                                 t={t}
@@ -335,9 +363,11 @@ const GroupHeader = ({
 
                 const Icon = iconMap[item.icon];
                 // Find the item with proper uniqueId from allItems
-                const processedItem = allItems.find((i) => i.name === item.name && i.path === item.path);
+                const processedItem = allItems.find(
+                  (i) => i.name === item.name && i.path === item.path
+                );
                 const uniqueId = processedItem?.uniqueId || item.key;
-                
+
                 return (
                   <SidebarItem
                     key={item.name}
@@ -410,9 +440,11 @@ const GroupItems = ({
 
         const Icon = iconMap[item.icon];
         // Find the item with proper uniqueId from allItems
-        const processedItem = allItems.find((i) => i.name === item.name && i.path === item.path);
+        const processedItem = allItems.find(
+          (i) => i.name === item.name && i.path === item.path
+        );
         const uniqueId = processedItem?.uniqueId || item.key;
-        
+
         return (
           <li key={item.name}>
             <SidebarItem
@@ -501,9 +533,11 @@ const NestedGroup = ({
           {item.items.map((subItem) => {
             const SubIcon = iconMap[subItem.icon];
             // Find the subItem with proper uniqueId from allItems
-            const processedSubItem = allItems.find((i) => i.name === subItem.name && i.path === subItem.path);
+            const processedSubItem = allItems.find(
+              (i) => i.name === subItem.name && i.path === subItem.path
+            );
             const uniqueId = processedSubItem?.uniqueId || subItem.key;
-            
+
             return (
               <SidebarItem
                 key={subItem.name}
@@ -530,31 +564,42 @@ const NestedGroup = ({
 
   const renderCollapsible = () => (
     <div>
-      <button
+      <CollapsibleTrigger
+        className="group flex w-full items-center h-12 min-w-0"
         onClick={() => setIsOpen(!isOpen)}
-        className={cn(
-          "flex items-center gap-2 w-full text-[15px] font-medium hover:bg-primary-foreground/10 rounded-md",
-          isMainFiles ? "p-2" : "px-6 py-3"
-        )}
       >
-        <Icon className="h-5 w-5" />
-        <span>{item.name}</span>
+        <div
+          className={cn(
+            "flex items-center flex-1 h-full rounded-md hover:bg-primary-foreground/10 transition-colors duration-200 min-w-0 overflow-x-auto scrollbar-hide",
+            activeItem === item.name.toLowerCase() &&
+              "bg-primary-foreground/10 font-medium",
+            padding,
+            isRTL ? "pr-24" : "pl-24"
+          )}
+        >
+          <Icon
+            className={cn("h-4 w-4 flex-shrink-0", isRTL ? "ml-2" : "mr-2")}
+          />
+          <span className="whitespace-nowrap">{item.name}</span>
+        </div>
         <ChevronRight
           className={cn(
             "h-4 w-4 transition-transform",
             isRTL ? "mr-auto scale-x-[-1]" : "ml-auto",
-            isOpen ? "rotate-90" : ""
+            isOpen ? "rotate-180" : ""
           )}
         />
-      </button>
+      </CollapsibleTrigger>
       {isOpen && (
         <ul className="space-y-1 mt-1">
           {item.items.map((subItem) => {
             const SubIcon = iconMap[subItem.icon];
             // Find the subItem with proper uniqueId from allItems
-            const processedSubItem = allItems.find((i) => i.name === subItem.name && i.path === subItem.path);
+            const processedSubItem = allItems.find(
+              (i) => i.name === subItem.name && i.path === subItem.path
+            );
             const uniqueId = processedSubItem?.uniqueId || subItem.key;
-            
+
             return (
               <li key={subItem.name}>
                 <SidebarItem
@@ -594,6 +639,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   const [expandedGroups, setExpandedGroups] = useState({});
   const [userRole, setUserRole] = useState("user");
   const menuItems = useMenuItems(t);
+  const [isBookmarksExpanded, setIsBookmarksExpanded] = useState(true);
 
   useEffect(() => {
     // Load bookmarks from localStorage
@@ -671,6 +717,10 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
 
       setExpandedGroups(updatedGroups);
     }
+  };
+
+  const toggleBookmarks = () => {
+    setIsBookmarksExpanded(!isBookmarksExpanded);
   };
 
   const handleNavigation = (itemName) => {
@@ -815,6 +865,8 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
             t={t}
             isRTL={isRTL}
             onToggleBookmark={toggleBookmark}
+            isExpanded={isBookmarksExpanded}
+            onToggle={toggleBookmarks}
           />
 
           {/* Dynamic Menu Groups */}
@@ -892,7 +944,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
               className="w-full text-primary-foreground hover:bg-primary-foreground/10 justify-start"
               onClick={handleLogout}
             >
-              <LogOut className="h-5 w-5 mr-2" />
+              <LogOut className={`h-5 w-5 ${isRTL ? "ml-2" : "mr-2"}`} />
               {t("logout")}
             </Button>
           )}

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import {
   Button,
   Checkbox,
@@ -33,6 +33,8 @@ export const TableBody = ({
   columnWidths,
 }) => {
   const t = useTranslations("table.noData");
+  const locale = useLocale();
+  const isRTL = locale === "ar";
 
   return (
     <tbody>
@@ -271,8 +273,14 @@ export const TableBody = ({
               })}
 
               {/* Actions */}
-              <td className="border-b border-border px-4 py-2">
-                <div className="flex space-x-2">
+              <td className="w-20 border-b border-border px-4 py-2">
+                <div
+                  className="flex"
+                  style={{
+                    gap: "0.5rem",
+                    flexDirection: isRTL ? "row-reverse" : "row",
+                  }}
+                >
                   {/* Enhanced Edit Button */}
                   <Tooltip content="Edit">
                     <Button

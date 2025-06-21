@@ -5,11 +5,16 @@ import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { useLocale } from "next-intl";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { arSA, enUS } from "date-fns/locale";
+import { MUIThemeWrapper } from "@/lib/themes/mui-theme-provider";
 
 export function MainLayout({ children }) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [userRole, setUserRole] = useState("user");
   const locale = useLocale();
+  const dateAdapterLocale = locale === "ar" ? arSA : enUS;
 
   useEffect(() => {
     // Only run on client side
@@ -57,7 +62,6 @@ export function MainLayout({ children }) {
     transition: "all 0.3s ease-in-out",
     transform: "translateZ(0)",
     willChange: "left, right",
-    direction: isRTL ? "rtl" : "ltr",
   };
 
   const mainContentStyle = {
@@ -69,32 +73,38 @@ export function MainLayout({ children }) {
     width: `calc(100% - ${contentMargin})`,
     transform: "translateZ(0)",
     willChange: "margin-left, margin-right, width",
-    direction: isRTL ? "rtl" : "ltr",
   };
 
   return (
-    <SidebarProvider>
-      <div className="flex h-screen overflow-hidden w-full">
-        <div style={sidebarStyle}>
-          <Sidebar
-            userRole={userRole}
-            isCollapsed={isSidebarCollapsed}
-            toggleSidebar={toggleSidebar}
-            isRTL={isRTL}
-          />
-        </div>
-        <div className="flex flex-col flex-1 w-full">
-          <div style={headerStyle} className="bg-background">
-            <Header toggleSidebar={toggleSidebar} />
+    <MUIThemeWrapper>
+      <LocalizationProvider
+        dateAdapter={AdapterDateFns}
+        adapterLocale={dateAdapterLocale}
+      >
+        <SidebarProvider>
+          <div className="flex h-screen overflow-hidden w-full">
+            <div style={sidebarStyle}>
+              <Sidebar
+                userRole={userRole}
+                isCollapsed={isSidebarCollapsed}
+                toggleSidebar={toggleSidebar}
+                isRTL={isRTL}
+              />
+            </div>
+            <div className="flex flex-col flex-1 w-full">
+              <div style={headerStyle} className="bg-background">
+                <Header toggleSidebar={toggleSidebar} />
+              </div>
+              <main
+                className="flex-1 overflow-y-auto"
+                style={mainContentStyle}
+              >
+                {children}
+              </main>
+            </div>
           </div>
-          <main
-            className="flex-1 overflow-y-auto"
-            style={mainContentStyle}
-          >
-            {children}
-          </main>
-        </div>
-      </div>
-    </SidebarProvider>
+        </SidebarProvider>
+      </LocalizationProvider>
+    </MUIThemeWrapper>
   );
 }

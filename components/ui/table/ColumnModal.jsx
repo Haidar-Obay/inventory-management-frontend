@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { Modal, Button, Checkbox, Input } from "./CustomControls";
-import { useTranslations } from "next-intl";
-import Portal from '../Portal';
+import { useTranslations, useLocale } from "next-intl";
+import Portal from "../Portal";
 
 export const ColumnModal = ({
   isOpen,
@@ -22,6 +22,8 @@ export const ColumnModal = ({
 }) => {
   const t = useTranslations("table");
   const [activeTab, setActiveTab] = useState("visibility");
+  const locale = useLocale();
+  const isRTL = locale === "ar";
 
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -60,23 +62,26 @@ export const ColumnModal = ({
       const newOrder = [...columnOrder];
       const draggedIndex = newOrder.indexOf(draggedColumnKey);
       const targetIndex = newOrder.indexOf(targetColumnKey);
-      
+
       newOrder.splice(draggedIndex, 1);
       newOrder.splice(targetIndex, 0, draggedColumnKey);
-      
+
       onColumnOrderChange(newOrder);
     }
   };
 
   const getOrderedColumns = () => {
     return columnOrder
-      .map(key => columns.find(col => col.key === key))
+      .map((key) => columns.find((col) => col.key === key))
       .filter(Boolean);
   };
 
   return (
     <Portal>
-      <div className="fixed inset-0 z-[2147483647] pointer-events-auto flex items-center justify-center bg-black/50" onClick={handleBackdropClick}>
+      <div
+        className="fixed inset-0 z-[2147483647] pointer-events-auto flex items-center justify-center bg-black/50"
+        onClick={handleBackdropClick}
+      >
         <div className="w-full max-w-4xl rounded-lg bg-background p-6 shadow-lg border border-border">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-lg font-medium text-foreground">
@@ -105,7 +110,12 @@ export const ColumnModal = ({
 
           {/* Tabs */}
           <div className="mb-4 border-b border-border">
-            <div className="flex space-x-8">
+            <div
+              className="flex"
+              style={{
+                gap: "2rem",
+              }}
+            >
               <button
                 onClick={() => setActiveTab("visibility")}
                 className={`pb-2 px-1 border-b-2 font-medium text-sm transition-colors ${
@@ -143,7 +153,12 @@ export const ColumnModal = ({
           <div className="max-h-[60vh] overflow-y-auto">
             {activeTab === "visibility" && (
               <div>
-                <div className="mb-4 flex space-x-2">
+                <div
+                  className="mb-4 flex"
+                  style={{
+                    gap: "0.5rem",
+                  }}
+                >
                   <Button
                     variant="outline"
                     size="sm"
@@ -164,14 +179,20 @@ export const ColumnModal = ({
                 {getOrderedColumns().map((column) => (
                   <div
                     key={column.key}
-                    className="flex items-center space-x-2 py-2 border-b border-border last:border-0"
+                    className="flex items-center py-2 border-b border-border last:border-0"
+                    style={{
+                      gap: "0.5rem",
+                    }}
                   >
                     <Checkbox
                       checked={visibleColumns[column.key]}
-                      onChange={(e) => onToggleColumn(column.key, e.target.checked)}
-                      className="mr-2"
+                      onChange={(e) =>
+                        onToggleColumn(column.key, e.target.checked)
+                      }
                     />
-                    <span className="text-foreground flex-1">{column.header}</span>
+                    <span className="text-foreground flex-1">
+                      {column.header}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -187,22 +208,38 @@ export const ColumnModal = ({
                 {getOrderedColumns().map((column) => (
                   <div
                     key={column.key}
-                    className="flex items-center space-x-4 py-3 border-b border-border last:border-0"
+                    className="flex items-center py-3 border-b border-border last:border-0"
+                    style={{
+                      gap: "1rem",
+                    }}
                   >
                     <span className="text-foreground flex-1 flex items-center gap-2">
                       {column.header}
-                      <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">20–500 px</span>
+                      <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                        20–500 px
+                      </span>
                     </span>
-                    <div className="flex items-center space-x-2">
+                    <div
+                      className="flex items-center"
+                      style={{
+                        gap: "0.5rem",
+                      }}
+                    >
                       <Input
                         type="number"
                         min="20"
                         max="500"
-                        value={parseInt(columnWidths[column.key]?.replace('px', '') || '100')}
-                        onChange={(e) => onColumnWidthChange(column.key, `${e.target.value}px`)}
+                        value={parseInt(
+                          columnWidths[column.key]?.replace("px", "") || "100"
+                        )}
+                        onChange={(e) =>
+                          onColumnWidthChange(column.key, `${e.target.value}px`)
+                        }
                         className="w-20 text-center"
                       />
-                      <span className="text-sm text-muted-foreground">{t("columns.modal.px")}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {t("columns.modal.px")}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -219,19 +256,32 @@ export const ColumnModal = ({
                 {getOrderedColumns().map((column, index) => (
                   <div
                     key={column.key}
-                    className="flex items-center space-x-2 py-2 border-b border-border last:border-0"
+                    className="flex items-center py-2 border-b border-border last:border-0"
                     draggable
                     onDragStart={(e) => handleDragStart(e, column.key)}
                     onDragOver={handleDragOver}
                     onDrop={(e) => handleDrop(e, column.key)}
+                    style={{
+                      gap: "0.5rem",
+                    }}
                   >
-                    <div className="flex items-center space-x-2 flex-1">
+                    <div
+                      className="flex items-center flex-1"
+                      style={{
+                        gap: "0.5rem",
+                      }}
+                    >
                       <div className="w-6 h-6 flex items-center justify-center text-xs text-muted-foreground bg-muted rounded">
                         {index + 1}
                       </div>
                       <span className="text-foreground">{column.header}</span>
                     </div>
-                    <div className="flex space-x-1">
+                    <div
+                      className="flex"
+                      style={{
+                        gap: "0.25rem",
+                      }}
+                    >
                       <button
                         onClick={() => onMoveColumnUp(column.key)}
                         disabled={index === 0}
@@ -286,7 +336,12 @@ export const ColumnModal = ({
             >
               {t("columns.modal.reset")}
             </Button>
-            <div className="flex space-x-2">
+            <div
+              className="flex"
+              style={{
+                gap: "0.5rem",
+              }}
+            >
               <Button
                 variant="outline"
                 onClick={onCancel}

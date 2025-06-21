@@ -33,26 +33,33 @@ import { useRouter, usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
 
 // Sub-components
-const SearchBar = ({ searchQuery, setSearchQuery, handleSearch, t }) => (
-  <form onSubmit={handleSearch} className="relative w-full max-w-2xl mx-auto">
-    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-    <Input
-      type="search"
-      placeholder={t("searchPlaceholder")}
-      className="w-full pl-10 pr-4 h-10 bg-background/50 backdrop-blur-sm border-border/50 focus:border-primary/50 focus:bg-background transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg"
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-    />
-    <Button
-      type="submit"
-      size="sm"
-      className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 px-3 text-xs"
-      disabled={!searchQuery.trim()}
-    >
-      {t("search")}
-    </Button>
-  </form>
-);
+const SearchBar = ({ searchQuery, setSearchQuery, handleSearch, t }) => {
+  const currentLocale = useLocale();
+  const isRTL = currentLocale === "ar";
+
+  return (
+    <form onSubmit={handleSearch} className="relative w-full max-w-2xl mx-auto">
+      <Search
+        className={`absolute top-1/2 transform -translate-y-1/2 h-5 w-5 text-foreground ${isRTL ? "right-3" : "left-3"}`}
+      />
+      <Input
+        type="search"
+        placeholder={t("searchPlaceholder")}
+        className={`w-full h-10 bg-background/50 backdrop-blur-sm border-border/50 focus:border-primary/50 focus:bg-background transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg ${isRTL ? "pr-14 pl-8" : "pl-10 pr-4"}`}
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+      <Button
+        type="submit"
+        size="sm"
+        className={`absolute top-1/2 transform -translate-y-1/2 h-8 px-3 text-xs ${isRTL ? "left-1" : "right-1"}`}
+        disabled={!searchQuery.trim()}
+      >
+        {t("search")}
+      </Button>
+    </form>
+  );
+};
 
 const NotificationCenter = ({
   notifications,
@@ -60,85 +67,95 @@ const NotificationCenter = ({
   markAllAsRead,
   clearNotifications,
   t,
-}) => (
-  <DropdownMenu>
-    <DropdownMenuTrigger asChild>
-      <Button variant="outline" size="icon" className="relative">
-        <Bell className="h-[1.2rem] w-[1.2rem]" />
-        {unreadCount > 0 && (
-          <Badge
-            className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-            variant="destructive"
-          >
-            {unreadCount}
-          </Badge>
-        )}
-      </Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent align="end" className="w-[300px] bg-background">
-      <DropdownMenuLabel className="flex items-center justify-between">
-        <span>{t("notifications")}</span>
-        <div className="flex gap-1">
+}) => {
+  const currentLocale = useLocale();
+  const isRTL = currentLocale === "ar";
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="icon" className="relative">
+          <Bell className="h-[1.2rem] w-[1.2rem]" />
           {unreadCount > 0 && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={markAllAsRead}
-              title={t("markAllAsRead")}
+            <Badge
+              className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+              variant="destructive"
             >
-              <Check className="h-4 w-4" />
-            </Button>
+              {unreadCount}
+            </Badge>
           )}
-          {notifications.length > 0 && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={clearNotifications}
-              title={t("clearAll")}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-[300px] bg-background">
+        <DropdownMenuLabel
+          className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}
+        >
+          <span>{t("notifications")}</span>
+          <div className="flex gap-1">
+            {unreadCount > 0 && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={markAllAsRead}
+                title={t("markAllAsRead")}
+              >
+                <Check className="h-4 w-4" />
+              </Button>
+            )}
+            {notifications.length > 0 && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={clearNotifications}
+                title={t("clearAll")}
+              >
+                <Trash className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {notifications.length > 0 ? (
+          notifications.map((notification) => (
+            <DropdownMenuItem
+              key={notification.id}
+              className="flex flex-col items-start py-2"
             >
-              <Trash className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
-      </DropdownMenuLabel>
-      <DropdownMenuSeparator />
-      {notifications.length > 0 ? (
-        notifications.map((notification) => (
-          <DropdownMenuItem
-            key={notification.id}
-            className="flex flex-col items-start py-2"
-          >
-            <div className="flex items-start gap-2 w-full">
               <div
-                className={`w-2 h-2 rounded-full mt-1.5 ${notification.read ? "bg-muted-foreground" : "bg-primary"}`}
-              />
-              <div className="flex-1">
-                <p
-                  className={`text-sm ${notification.read ? "font-normal" : "font-medium"}`}
-                >
-                  {notification.message}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {notification.time}
-                </p>
+                className={`flex items-start gap-2 w-full ${isRTL ? "flex-row-reverse" : ""}`}
+              >
+                <div
+                  className={`w-2 h-2 rounded-full mt-1.5 ${notification.read ? "bg-muted-foreground" : "bg-primary"}`}
+                />
+                <div className="flex-1">
+                  <p
+                    className={`text-sm ${notification.read ? "font-normal" : "font-medium"}`}
+                  >
+                    {notification.message}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {notification.time}
+                  </p>
+                </div>
               </div>
-            </div>
-          </DropdownMenuItem>
-        ))
-      ) : (
-        <div className="py-4 text-center text-muted-foreground">
-          {t("noNotifications")}
-        </div>
-      )}
-    </DropdownMenuContent>
-  </DropdownMenu>
-);
+            </DropdownMenuItem>
+          ))
+        ) : (
+          <div className="py-4 text-center text-muted-foreground">
+            {t("noNotifications")}
+          </div>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 
 const LanguageSelector = () => {
   const router = useRouter();
   const pathname = usePathname();
   const currentLocale = useLocale();
   const t = useTranslations("header");
+  const isRTL = currentLocale === "ar";
 
   const languages = [
     { code: "en", name: "English", direction: "ltr" },
@@ -159,15 +176,16 @@ const LanguageSelector = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[200px] bg-background">
-        <DropdownMenuLabel>{t("selectLanguage")}</DropdownMenuLabel>
+        <DropdownMenuLabel className={isRTL ? "text-right" : ""}>
+          {t("selectLanguage")}
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {languages.map((language) => (
           <DropdownMenuItem
             key={language.code}
             onClick={() => changeLanguage(language)}
-            className={`flex items-center gap-2 ${currentLocale === language.code ? "bg-muted" : ""}`}
+            className={`flex items-center gap-2 ${currentLocale === language.code ? "bg-muted" : ""} ${isRTL ? "flex-row-reverse" : ""}`}
           >
-            <span className="text-lg">{language.flag}</span>
             <span>{language.name}</span>
             {currentLocale === language.code && (
               <Check className="ml-auto h-4 w-4" />
@@ -192,31 +210,41 @@ const ThemeToggle = ({ theme, setTheme }) => (
   </Button>
 );
 
-const UserMenu = () => (
-  <DropdownMenu>
-    <DropdownMenuTrigger asChild>
-      <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-        <Avatar className="h-8 w-8">
-          <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-          <AvatarFallback>U</AvatarFallback>
-        </Avatar>
-      </Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent align="end" className="bg-background">
-      <DropdownMenuLabel>My Account</DropdownMenuLabel>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem>
-        <User className="mr-2 h-4 w-4" />
-        <span>Profile</span>
-      </DropdownMenuItem>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem>
-        <LogOut className="mr-2 h-4 w-4" />
-        <span>Log out</span>
-      </DropdownMenuItem>
-    </DropdownMenuContent>
-  </DropdownMenu>
-);
+const UserMenu = ({ t }) => {
+  const currentLocale = useLocale();
+  const isRTL = currentLocale === "ar";
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="icon" className="relative">
+          <User className="h-[1.2rem] w-[1.2rem]" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="bg-background">
+        <DropdownMenuLabel
+          className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}
+        >
+          <span>{t("myAccount")}</span>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}
+        >
+          <User className="h-4 w-4" />
+          <span>{t("profile")}</span>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}
+        >
+          <LogOut className="h-4 w-4" />
+          <span>{t("logout")}</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 
 export function Header({ toggleSidebar }) {
   const { theme, setTheme } = useTheme();
@@ -260,7 +288,10 @@ export function Header({ toggleSidebar }) {
 
   return (
     <header className="w-full h-16 border-b bg-background/95 backdrop-blur-sm sticky top-0 z-50">
-      <div className="flex h-full items-center px-4 gap-4" style={{ transition: "all 0.3s ease-in-out" }}>
+      <div
+        className="flex h-full items-center px-4 gap-4"
+        style={{ transition: "all 0.3s ease-in-out" }}
+      >
         {/* Left Section - Logo */}
         <div className="flex items-center gap-4 flex-shrink-0">
           <Link
@@ -297,7 +328,7 @@ export function Header({ toggleSidebar }) {
             clearNotifications={clearNotifications}
             t={t}
           />
-          <UserMenu />
+          <UserMenu t={t} />
         </div>
       </div>
     </header>
