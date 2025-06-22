@@ -571,9 +571,6 @@ function ItemsPage() {
         {/* Product Lines Management Tab*/}
         <TabPanel value={value} index={0}>
           <Box className="p-0">
-            <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Product Lines Management
-            </Typography>
             <Table
               data={productLinesData}
               columns={productLinesColumns}
@@ -601,9 +598,6 @@ function ItemsPage() {
         {/* Categories Management Tab*/}
         <TabPanel value={value} index={1}>
           <Box className="p-0">
-            <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Categories Management
-            </Typography>
             <Table
               data={categoriesData}
               columns={categoriesColumns}
@@ -627,9 +621,6 @@ function ItemsPage() {
         {/* Brands Management Tab*/}
         <TabPanel value={value} index={2}>
           <Box className="p-0">
-            <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Brands Management
-            </Typography>
             <Table
               data={brandsData}
               columns={brandsColumns}
@@ -651,9 +642,6 @@ function ItemsPage() {
         {/* Items Management Tab*/}
         <TabPanel value={value} index={3}>
           <Box className="p-0">
-            <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Items Management
-            </Typography>
             <Table
               data={itemsData}
               columns={itemsColumns}

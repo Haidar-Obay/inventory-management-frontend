@@ -587,9 +587,6 @@ function SectionsPage() {
         {/* Projects Tab */}
         <TabPanel value={value} index={0}>
           <Box className="p-0">
-            <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              {t("management.projects")}
-            </Typography>
             <Table
               data={projectsData}
               columns={projectColumns}
@@ -613,9 +610,6 @@ function SectionsPage() {
         {/* Cost Centers Tab */}
         <TabPanel value={value} index={1}>
           <Box className="p-0">
-            <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              {t("management.costCenters")}
-            </Typography>
             <Table
               data={costCentersData}
               columns={costCenterColumns}
@@ -639,9 +633,6 @@ function SectionsPage() {
         {/* Departments Tab */}
         <TabPanel value={value} index={2}>
           <Box className="p-0">
-            <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              {t("management.departments")}
-            </Typography>
             <Table
               data={departmentsData}
               columns={departmentColumns}
@@ -665,9 +656,6 @@ function SectionsPage() {
         {/* Trades Tab */}
         <TabPanel value={value} index={3}>
           <Box className="p-0">
-            <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              {t("management.trades")}
-            </Typography>
             <Table
               data={tradesData}
               columns={tradesColumns}
@@ -689,9 +677,6 @@ function SectionsPage() {
         {/* Company Codes Tab */}
         <TabPanel value={value} index={4}>
           <Box className="p-0">
-            <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              {t("management.companyCodes")}
-            </Typography>
             <Table
               data={companyCodesData}
               columns={companyCodesColumns}
@@ -719,9 +704,6 @@ function SectionsPage() {
         {/* Jobs Tab */}
         <TabPanel value={value} index={5}>
           <Box className="p-0">
-            <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              {t("management.jobs")}
-            </Typography>
             <Table
               data={jobsData}
               columns={jobsColumns}

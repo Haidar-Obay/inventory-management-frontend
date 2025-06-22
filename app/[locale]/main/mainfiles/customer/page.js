@@ -546,9 +546,6 @@ function CustomerPage() {
         {/* Customer Groups Management Tab*/}
         <TabPanel value={value} index={0}>
           <Box className="p-0">
-            <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Customer Groups Management
-            </Typography>
             <Table
               data={customerGroupsData}
               columns={customerGroupColumns}
@@ -576,9 +573,6 @@ function CustomerPage() {
         {/* Salesmen Management Tab*/}
         <TabPanel value={value} index={1}>
           <Box className="p-0">
-            <Typography variant="h5" component="h2" className="mb-1 pb-0">
-              Salesmen Management
-            </Typography>
             <Table
               data={salesmenData}
               columns={salesmenColumns}
@@ -602,9 +596,6 @@ function CustomerPage() {
         {/* Customers Management Tab*/}
         <TabPanel value={value} index={2}>
           <Box className="p-0">
-            <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Customers Management
-            </Typography>
             <Table
               data={customersData}
               columns={customerColumns}

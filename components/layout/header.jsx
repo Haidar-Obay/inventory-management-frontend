@@ -31,6 +31,7 @@ import { toast } from "@/components/ui/simple-toast";
 import { useTranslations } from "next-intl";
 import { useRouter, usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 
 // Sub-components
 const SearchBar = ({ searchQuery, setSearchQuery, handleSearch, t }) => {
@@ -292,19 +293,9 @@ export function Header({ toggleSidebar }) {
         className="flex h-full items-center px-4 gap-4"
         style={{ transition: "all 0.3s ease-in-out" }}
       >
-        {/* Left Section - Logo */}
+        {/* Left Section - Breadcrumbs */}
         <div className="flex items-center gap-4 flex-shrink-0">
-          <Link
-            href="/"
-            className="flex items-center gap-2 hover:text-primary transition-all duration-300 group"
-          >
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold shadow-sm group-hover:shadow-md transition-all duration-300">
-              I
-            </div>
-            <span className="font-bold text-lg hidden md:inline-block group-hover:scale-105 transition-transform duration-300">
-              {t("appName")}
-            </span>
-          </Link>
+          <Breadcrumbs className="font-medium" />
         </div>
 
         {/* Center Section - Search Bar */}
