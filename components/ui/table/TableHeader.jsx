@@ -271,7 +271,7 @@ export const TableHeader = ({
                   </div>
                   <Input
                     type="text"
-                    placeholder={t("search.columnPlaceholder", {
+                    placeholder={t("search.columnNamePlaceholder", {
                       column: column.header,
                     })}
                     value={columnSearch[column.key] || ""}

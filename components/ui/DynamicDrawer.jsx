@@ -36,25 +36,28 @@ const DynamicDrawer = ({
     >
       <Box className="flex flex-col h-full">
         {/* Header - Fixed at top */}
-        <Box p={2} className="flex-shrink-0 border-b bg-white">
+        <Box
+          p={2}
+          className="flex-shrink-0 border-b border-border bg-gray-50 dark:bg-muted/50"
+        >
           <Typography
             variant="subtitle1"
-            className="font-semibold text-gray-800"
+            className="font-semibold text-gray-800 dark:text-foreground"
           >
             {title}
           </Typography>
         </Box>
 
         {/* Main Content - Scrollable */}
-        <Box 
-          className="flex-grow overflow-y-scroll"
+        <Box
+          className="flex-grow overflow-y-scroll bg-background"
           sx={{
-            '&::-webkit-scrollbar': {
-              display: 'none',
+            "&::-webkit-scrollbar": {
+              display: "none",
             },
-            '&': {
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
+            "&": {
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
             },
           }}
         >
@@ -69,16 +72,19 @@ const DynamicDrawer = ({
                   key={index}
                   expanded={accordion.expanded}
                   onChange={accordion.onChange}
-                  className="mb-2"
+                  className="mb-2 bg-gray-50 dark:bg-muted/50 border border-border"
                 >
                   <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
+                    expandIcon={<ExpandMoreIcon className="text-foreground" />}
                     aria-controls={`panel${index}-content`}
                     id={`panel${index}-header`}
+                    className="text-foreground"
                   >
-                    <Typography>{accordion.title}</Typography>
+                    <Typography className="text-foreground">
+                      {accordion.title}
+                    </Typography>
                   </AccordionSummary>
-                  <AccordionDetails>
+                  <AccordionDetails className="bg-background">
                     {accordion.content}
                   </AccordionDetails>
                 </Accordion>
@@ -90,7 +96,7 @@ const DynamicDrawer = ({
         </Box>
 
         {/* Action Toolbar - Fixed at bottom */}
-        <Box className="flex-shrink-0 border-t bg-white">
+        <Box className="flex-shrink-0 border-t border-border bg-gray-50 dark:bg-muted/50">
           <Box p={3}>
             <ActionToolbar
               onSave={onSave}

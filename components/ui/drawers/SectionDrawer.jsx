@@ -224,6 +224,20 @@ const SectionDrawer = ({
                       fullWidth: true,
                       size: "small",
                       variant: "outlined",
+                      sx: {
+                        ...(isRTL && {
+                          "& .MuiInputLabel-root": {
+                            right: "28px",
+                            left: "auto",
+                          },
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            textAlign: "right",
+                          },
+                          "& .MuiInputLabel-outlined.MuiInputLabel-shrink": {
+                            transform: "translate(28px, -9px) scale(0.75)",
+                          },
+                        }),
+                      },
                     },
                   }}
                   enableAccessibleFieldDOMStructure={false}
@@ -240,6 +254,20 @@ const SectionDrawer = ({
                       fullWidth: true,
                       size: "small",
                       variant: "outlined",
+                      sx: {
+                        ...(isRTL && {
+                          "& .MuiInputLabel-root": {
+                            right: "28px",
+                            left: "auto",
+                          },
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            textAlign: "right",
+                          },
+                          "& .MuiInputLabel-outlined.MuiInputLabel-shrink": {
+                            transform: "translate(28px, -9px) scale(0.75)",
+                          },
+                        }),
+                      },
                     },
                   }}
                   enableAccessibleFieldDOMStructure={false}
@@ -256,6 +284,20 @@ const SectionDrawer = ({
                       fullWidth: true,
                       size: "small",
                       variant: "outlined",
+                      sx: {
+                        ...(isRTL && {
+                          "& .MuiInputLabel-root": {
+                            right: "28px",
+                            left: "auto",
+                          },
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            textAlign: "right",
+                          },
+                          "& .MuiInputLabel-outlined.MuiInputLabel-shrink": {
+                            transform: "translate(28px, -9px) scale(0.75)",
+                          },
+                        }),
+                      },
                     },
                   }}
                   enableAccessibleFieldDOMStructure={false}
@@ -552,6 +594,20 @@ const SectionDrawer = ({
                       fullWidth: true,
                       size: "small",
                       variant: "outlined",
+                      sx: {
+                        ...(isRTL && {
+                          "& .MuiInputLabel-root": {
+                            right: "28px",
+                            left: "auto",
+                          },
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            textAlign: "right",
+                          },
+                          "& .MuiInputLabel-outlined.MuiInputLabel-shrink": {
+                            transform: "translate(28px, -9px) scale(0.75)",
+                          },
+                        }),
+                      },
                     },
                   }}
                   enableAccessibleFieldDOMStructure={false}
@@ -568,6 +624,20 @@ const SectionDrawer = ({
                       fullWidth: true,
                       size: "small",
                       variant: "outlined",
+                      sx: {
+                        ...(isRTL && {
+                          "& .MuiInputLabel-root": {
+                            right: "28px",
+                            left: "auto",
+                          },
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            textAlign: "right",
+                          },
+                          "& .MuiInputLabel-outlined.MuiInputLabel-shrink": {
+                            transform: "translate(28px, -9px) scale(0.75)",
+                          },
+                        }),
+                      },
                     },
                   }}
                   enableAccessibleFieldDOMStructure={false}
@@ -584,6 +654,20 @@ const SectionDrawer = ({
                       fullWidth: true,
                       size: "small",
                       variant: "outlined",
+                      sx: {
+                        ...(isRTL && {
+                          "& .MuiInputLabel-root": {
+                            right: "28px",
+                            left: "auto",
+                          },
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            textAlign: "right",
+                          },
+                          "& .MuiInputLabel-outlined.MuiInputLabel-shrink": {
+                            transform: "translate(28px, -9px) scale(0.75)",
+                          },
+                        }),
+                      },
                     },
                   }}
                   enableAccessibleFieldDOMStructure={false}

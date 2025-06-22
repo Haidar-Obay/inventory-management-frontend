@@ -467,6 +467,7 @@
       "search": {
         "placeholder": "البحث في جميع الأعمدة...",
         "columnPlaceholder": "البحث في {column}...",
+        "columnNamePlaceholder": "{column}",
         "clear": "مسح البحث",
         "clearFilters": "مسح الفلاتر",
         "activeFilters": "الفلاتر النشطة"
@@ -595,6 +596,7 @@
     "search": {
       "placeholder": "البحث في جميع الأعمدة...",
       "columnPlaceholder": "البحث في {column}...",
+      "columnNamePlaceholder": "{column}",
       "clear": "مسح البحث",
       "clearFilters": "مسح الفلاتر",
       "activeFilters": "الفلاتر النشطة"
