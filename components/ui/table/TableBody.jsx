@@ -273,7 +273,13 @@ export const TableBody = ({
               })}
 
               {/* Actions */}
-              <td className="w-20 border-b border-border px-4 py-2">
+              <td className={`w-20 border-b border-border px-4 py-2 sticky right-0 z-10 filter drop-shadow-[-6px_0_5px_rgba(0,0,0,0.1)] border-l border-gray-200 dark:border-gray-700 transition-colors duration-200 ${
+                selectedRows.has(row.id)
+                  ? "bg-primary/10 hover:bg-primary/20"
+                  : rowIndex % 2 === 0
+                    ? "bg-white dark:bg-background hover:bg-gray-100 dark:hover:bg-muted"
+                    : "bg-gray-50 dark:bg-muted/50 hover:bg-gray-100 dark:hover:bg-muted"
+              }`}>
                 <div
                   className="flex"
                   style={{
@@ -286,8 +292,9 @@ export const TableBody = ({
                     <Button
                       variant="primary"
                       size="sm"
-                      className="h-9 w-9 p-0 flex items-center justify-center text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200 ease-in-out rounded-full shadow-md"
+                      className="h-9 w-9 p-0 flex items-center justify-center text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200 ease-in-out rounded-md shadow-sm hover:shadow-md"
                       onClick={() => onEdit && onEdit(row)}
+                      aria-label={`Edit ${row.name || row.code || 'item'}`}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -311,8 +318,9 @@ export const TableBody = ({
                     <Button
                       variant="destructive"
                       size="sm"
-                      className="h-9 w-9 p-0 flex items-center justify-center text-white bg-red-600 hover:bg-red-700 transition-all duration-200 ease-in-out rounded-full shadow-md"
+                      className="h-9 w-9 p-0 flex items-center justify-center text-white bg-red-600 hover:bg-red-700 transition-all duration-200 ease-in-out rounded-md shadow-sm hover:shadow-md"
                       onClick={() => handleDeleteClick(row)}
+                      aria-label={`Delete ${row.name || row.code || 'item'}`}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"

@@ -186,8 +186,11 @@ export function useTableLogic({
   // Extract unique values for each column
   useEffect(() => {
     const uniqueValues = {};
+    // Ensure data is an array before processing
+    const safeData = Array.isArray(data) ? data : [];
+    
     columns.forEach((column) => {
-      const values = [...new Set(data.map((row) => row[column.key]))].filter(
+      const values = [...new Set(safeData.map((row) => row[column.key]))].filter(
         (value) => value !== undefined && value !== null
       );
       uniqueValues[column.key] = values;
@@ -243,7 +246,9 @@ export function useTableLogic({
 
   // Apply sorting
   const sortedData = useMemo(() => {
-    const sortableData = [...tableData];
+    // Ensure tableData is an array before processing
+    const safeTableData = Array.isArray(tableData) ? tableData : [];
+    const sortableData = [...safeTableData];
     if (sortConfig.key) {
       sortableData.sort((a, b) => {
         const aValue = a[sortConfig.key];
@@ -270,7 +275,10 @@ export function useTableLogic({
 
   // Apply filters and search
   const filteredData = useMemo(() => {
-    return sortedData.filter((row) => {
+    // Ensure sortedData is an array before processing
+    const safeSortedData = Array.isArray(sortedData) ? sortedData : [];
+    
+    return safeSortedData.filter((row) => {
       // Apply global search
       if (globalSearch) {
         const matchesGlobalSearch = Object.keys(row).some((key) => {
@@ -478,7 +486,9 @@ export function useTableLogic({
   const handleRowDragOver = (e, index) => {
     e.preventDefault();
     if (draggedRow !== null && draggedRow !== index) {
-      const newData = [...tableData];
+      // Ensure tableData is an array before processing
+      const safeTableData = Array.isArray(tableData) ? tableData : [];
+      const newData = [...safeTableData];
       const draggedRowData = newData[draggedRow];
 
       newData.splice(draggedRow, 1);
@@ -494,7 +504,9 @@ export function useTableLogic({
   };
 
   const handleCellEdit = (e, rowIndex, columnKey) => {
-    const newData = [...tableData];
+    // Ensure tableData is an array before processing
+    const safeTableData = Array.isArray(tableData) ? tableData : [];
+    const newData = [...safeTableData];
     const column = columns.find((col) => col.key === columnKey);
 
     let value = e.target.value;
@@ -511,7 +523,9 @@ export function useTableLogic({
   const handleCellEditFinish = () => {
     setEditingCell(null);
     if (onEdit) {
-      onEdit(tableData);
+      // Ensure tableData is an array before passing to onEdit
+      const safeTableData = Array.isArray(tableData) ? tableData : [];
+      onEdit(safeTableData);
     }
   };
 
@@ -662,9 +676,11 @@ export function useTableLogic({
   };
 
   const handleSelectAll = () => {
-    const allCurrentPageRowIds = paginatedData.map((row) => row.id);
+    // Ensure paginatedData is an array before processing
+    const safePaginatedData = Array.isArray(paginatedData) ? paginatedData : [];
+    const allCurrentPageRowIds = safePaginatedData.map((row) => row.id);
     const areAllCurrentlySelectedOnPage =
-      paginatedData.length > 0 &&
+      safePaginatedData.length > 0 &&
       allCurrentPageRowIds.every((id) => selectedRows.has(id));
 
     setSelectedRows((prevSelectedRows) => {
@@ -829,7 +845,7 @@ export function useTableLogic({
   };
 
   const areAllOnPageSelected =
-    paginatedData.length > 0 &&
+    Array.isArray(paginatedData) && paginatedData.length > 0 &&
     paginatedData.every((row) => selectedRows.has(row.id));
 
   // Reset column widths with animation

@@ -4,37 +4,30 @@ import { useState, useEffect, Suspense } from "react";
 import { Tabs, Tab, Box, Typography, CircularProgress } from "@mui/material";
 import { useTranslations, useLocale } from "next-intl";
 import Table from "@/components/ui/table/Table";
-import ItemDrawer from "@/components/ui/drawers/ItemDrawer";
+import CustomerDrawer from "@/components/ui/drawers/CustomerDrawer";
 import {
-  getProductLines,
-  getCategories,
-  getBrands,
-  getItems,
-  deleteProductLine,
-  deleteCategory,
-  deleteBrand,
-  deleteItem,
-  editProductLine,
-  editCategory,
-  editBrand,
-  editItem,
-  createProductLine,
-  createCategory,
-  createBrand,
-  createItem,
-  exportProductLinesToExcel,
-  exportProductLinesToPdf,
-  importProductLinesFromExcel,
-  exportCategoriesToExcel,
-  exportCategoriesToPdf,
-  importCategoriesFromExcel,
-  exportBrandsToExcel,
-  exportBrandsToPdf,
-  importBrandsFromExcel,
-  exportItemsToExcel,
-  exportItemsToPdf,
-  importItemsFromExcel,
-} from "@/API/Items";
+  getCustomerGroups,
+  getSalesmen,
+  getCustomers,
+  deleteCustomerGroup,
+  deleteSalesman,
+  deleteCustomer,
+  editCustomerGroup,
+  editSalesman,
+  editCustomer,
+  createCustomerGroup,
+  createSalesman,
+  createCustomer,
+  exportCustomerGroupsToExcel,
+  exportCustomerGroupsToPdf,
+  importCustomerGroupsFromExcel,
+  exportSalesmenToExcel,
+  exportSalesmenToPdf,
+  importSalesmenFromExcel,
+  exportCustomersToExcel,
+  exportCustomersToPdf,
+  importCustomersFromExcel,
+} from "@/API/Customers";
 import { useTableColumns } from "@/constants/tableColumns";
 import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -55,54 +48,51 @@ function TabPanel(props) {
 }
 
 // Loading component for Suspense
-function ItemsPageLoading() {
+function CustomerPageLoading() {
   return (
     <div className="flex justify-center items-center min-h-screen">
       <CircularProgress />
-      <span className="ml-2">Loading items...</span>
+      <span className="ml-2">Loading customers...</span>
     </div>
   );
 }
 
 // Main component wrapped with Suspense
-export default function ItemsPageWrapper() {
+export default function CustomerPageWrapper() {
   return (
-    <Suspense fallback={<ItemsPageLoading />}>
-      <ItemsPage />
+    <Suspense fallback={<CustomerPageLoading />}>
+      <CustomerPage />
     </Suspense>
   );
 }
 
 // The actual component that uses useSearchParams
-function ItemsPage() {
+function CustomerPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [value, setValue] = useState(0);
-  const [productLinesData, setProductLinesData] = useState([]);
-  const [categoriesData, setCategoriesData] = useState([]);
-  const [brandsData, setBrandsData] = useState([]);
-  const [itemsData, setItemsData] = useState([]);
+  const [customerGroupsData, setCustomerGroupsData] = useState([]);
+  const [salesmenData, setSalesmenData] = useState([]);
+  const [customersData, setCustomersData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeDrawerType, setActiveDrawerType] = useState("");
   const [formData, setFormData] = useState({});
   const [isEditMode, setIsEditMode] = useState(false);
   const [dataFetched, setDataFetched] = useState({
-    productLines: false,
-    categories: false,
-    brands: false,
-    items: false,
+    customerGroups: false,
+    salesmen: false,
+    customers: false,
   });
 
-  const t = useTranslations("items");
+  const t = useTranslations("customers");
   const tableT = useTranslations("tableColumns");
   const toastT = useTranslations("toast");
 
   const {
-    productLinesColumns,
-    categoriesColumns,
-    brandsColumns,
-    itemsColumns,
+    customerGroupColumns,
+    salesmenColumns,
+    customerColumns,
   } = useTableColumns(tableT);
 
   // Initialize tab value from URL or localStorage
@@ -111,10 +101,10 @@ function ItemsPage() {
     if (tab !== null) {
       const tabValue = parseInt(tab);
       setValue(tabValue);
-      localStorage.setItem("itemsLastTab", tabValue.toString());
+      localStorage.setItem("customersLastTab", tabValue.toString());
     } else {
       // If no URL parameter, try to get from localStorage
-      const savedTab = localStorage.getItem("itemsLastTab");
+      const savedTab = localStorage.getItem("customersLastTab");
       if (savedTab) {
         const tabValue = parseInt(savedTab);
         setValue(tabValue);
@@ -128,7 +118,7 @@ function ItemsPage() {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    localStorage.setItem("itemsLastTab", newValue.toString());
+    localStorage.setItem("customersLastTab", newValue.toString());
     // Update URL with new tab value
     const params = new URLSearchParams(searchParams.toString());
     params.set("tab", newValue.toString());
@@ -142,41 +132,32 @@ function ItemsPage() {
       let dataType;
 
       switch (tabIndex) {
-        case 0: // Product Lines
-          if (!force && dataFetched.productLines) {
+        case 0: // Customer Groups
+          if (!force && dataFetched.customerGroups) {
             setLoading(false);
             return;
           }
-          response = await getProductLines();
-          setProductLinesData(response.data || []);
-          dataType = "productLines";
+          response = await getCustomerGroups();
+          setCustomerGroupsData(response.data || []);
+          dataType = "customerGroups";
           break;
-        case 1: // Categories
-          if (!force && dataFetched.categories) {
+        case 1: // Salesmen
+          if (!force && dataFetched.salesmen) {
             setLoading(false);
             return;
           }
-          response = await getCategories();
-          setCategoriesData(response.data || []);
-          dataType = "categories";
+          response = await getSalesmen();
+          setSalesmenData(response.data || []);
+          dataType = "salesmen";
           break;
-        case 2: // Brands
-          if (!force && dataFetched.brands) {
+        case 2: // Customers
+          if (!force && dataFetched.customers) {
             setLoading(false);
             return;
           }
-          response = await getBrands();
-          setBrandsData(response.data || []);
-          dataType = "brands";
-          break;
-        case 3: // Items
-          if (!force && dataFetched.items) {
-            setLoading(false);
-            return;
-          }
-          response = await getItems();
-          setItemsData(response.data || []);
-          dataType = "items";
+          response = await getCustomers();
+          setCustomersData(response.data || []);
+          dataType = "customers";
           break;
       }
 
@@ -207,29 +188,23 @@ function ItemsPage() {
   }, [value]);
 
   const entityHandlers = {
-    productLine: {
-      setData: setProductLinesData,
-      deleteFn: deleteProductLine,
-      editFn: editProductLine,
-      createFn: createProductLine,
+    customerGroup: {
+      setData: setCustomerGroupsData,
+      deleteFn: deleteCustomerGroup,
+      editFn: editCustomerGroup,
+      createFn: createCustomerGroup,
     },
-    category: {
-      setData: setCategoriesData,
-      deleteFn: deleteCategory,
-      editFn: editCategory,
-      createFn: createCategory,
+    salesman: {
+      setData: setSalesmenData,
+      deleteFn: deleteSalesman,
+      editFn: editSalesman,
+      createFn: createSalesman,
     },
-    brand: {
-      setData: setBrandsData,
-      deleteFn: deleteBrand,
-      editFn: editBrand,
-      createFn: createBrand,
-    },
-    item: {
-      setData: setItemsData,
-      deleteFn: deleteItem,
-      editFn: editItem,
-      createFn: createItem,
+    customer: {
+      setData: setCustomersData,
+      deleteFn: deleteCustomer,
+      editFn: editCustomer,
+      createFn: createCustomer,
     },
   };
 
@@ -239,11 +214,23 @@ function ItemsPage() {
       name: row.name,
       code: row.code,
       active: row.active,
-      subcategory_of: row.subcategory_of,
-      sub_brand_of: row.sub_brand_of,
-      product_line_id: row.product_line_id,
-      category_id: row.category_id,
-      brand_id: row.brand_id
+      address: row.address,
+      phone1: row.phone1,
+      phone2: row.phone2,
+      fax: row.fax,
+      email: row.email,
+      website: row.website,
+      tax_number: row.tax_number,
+      tax_office: row.tax_office,
+      customer_group_id: row.customer_group_id,
+      salesman_id: row.salesman_id,
+      is_manager: row.is_manager,
+      is_supervisor: row.is_supervisor,
+      is_collector: row.is_collector,
+      fix_commission: row.fix_commission,
+      commission_percent: row.commission_percent,
+      commission_by_item: row.commission_by_item,
+      commission_by_turnover: row.commission_by_turnover,
     });
     setActiveDrawerType(type);
     setIsEditMode(true);
@@ -281,8 +268,6 @@ function ItemsPage() {
     // Set default values for new items
     const defaultData = {
       active: true, // Default to active for new items
-      subcategory_of: '', // Default empty for categories
-      sub_brand_of: '', // Default empty for brands
     };
     setFormData(defaultData);
     setIsDrawerOpen(true);
@@ -308,9 +293,9 @@ function ItemsPage() {
       const preparedData = {
         ...formData,
         active: formData.active === 'true' || formData.active === true,
-        // Ensure subcategory_of and sub_brand_of are properly set
-        subcategory_of: formData.subcategory_of || null,
-        sub_brand_of: formData.sub_brand_of || null,
+        is_manager: formData.is_manager === 'true' || formData.is_manager === true,
+        is_supervisor: formData.is_supervisor === 'true' || formData.is_supervisor === true,
+        is_collector: formData.is_collector === 'true' || formData.is_collector === true,
       };
 
       let response;
@@ -370,17 +355,14 @@ function ItemsPage() {
     try {
       let response;
       switch (type) {
-        case "productLine":
-          response = await exportProductLinesToExcel();
+        case "customerGroup":
+          response = await exportCustomerGroupsToExcel();
           break;
-        case "category":
-          response = await exportCategoriesToExcel();
+        case "salesman":
+          response = await exportSalesmenToExcel();
           break;
-        case "brand":
-          response = await exportBrandsToExcel();
-          break;
-        case "item":
-          response = await exportItemsToExcel();
+        case "customer":
+          response = await exportCustomersToExcel();
           break;
         default:
           return;
@@ -411,17 +393,14 @@ function ItemsPage() {
     try {
       let response;
       switch (type) {
-        case "productLine":
-          response = await exportProductLinesToPdf();
+        case "customerGroup":
+          response = await exportCustomerGroupsToPdf();
           break;
-        case "category":
-          response = await exportCategoriesToPdf();
+        case "salesman":
+          response = await exportSalesmenToPdf();
           break;
-        case "brand":
-          response = await exportBrandsToPdf();
-          break;
-        case "item":
-          response = await exportItemsToPdf();
+        case "customer":
+          response = await exportCustomersToPdf();
           break;
         default:
           return;
@@ -452,17 +431,14 @@ function ItemsPage() {
     try {
       let response;
       switch (type) {
-        case "productLine":
-          response = await importProductLinesFromExcel(file);
+        case "customerGroup":
+          response = await importCustomerGroupsFromExcel(file);
           break;
-        case "category":
-          response = await importCategoriesFromExcel(file);
+        case "salesman":
+          response = await importSalesmenFromExcel(file);
           break;
-        case "brand":
-          response = await importBrandsFromExcel(file);
-          break;
-        case "item":
-          response = await importItemsFromExcel(file);
+        case "customer":
+          response = await importCustomersFromExcel(file);
           break;
         default:
           return;
@@ -560,120 +536,95 @@ function ItemsPage() {
     <div className="p-4">
       <Box sx={{ width: "100%" }}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs value={value} onChange={handleChange} aria-label="items tabs">
-            <Tab label="Product Lines" />
-            <Tab label="Categories" />
-            <Tab label="Brands" />
-            <Tab label="Items" />
+          <Tabs value={value} onChange={handleChange} aria-label="customer tabs">
+            <Tab label="Customer Groups" />
+            <Tab label="Salesmen" />
+            <Tab label="Customers" />
           </Tabs>
         </Box>
 
-        {/* Product Lines Management Tab*/}
+        {/* Customer Groups Management Tab*/}
         <TabPanel value={value} index={0}>
           <Box className="p-0">
             <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Product Lines Management
+              Customer Groups Management
             </Typography>
             <Table
-              data={productLinesData}
-              columns={productLinesColumns}
-              onEdit={(row) => handleEdit("productLine", row)}
-              onDelete={(row) => handleDelete("productLine", row)}
-              onAdd={() => handleAddNew("productLine")}
+              data={customerGroupsData}
+              columns={customerGroupColumns}
+              onEdit={(row) => handleEdit("customerGroup", row)}
+              onDelete={(row) => handleDelete("customerGroup", row)}
+              onAdd={() => handleAddNew("customerGroup")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => handleExportExcel("productLine")}
-              onExportPdf={() => handleExportPdf("productLine")}
+              onExportExcel={() => handleExportExcel("customerGroup")}
+              onExportPdf={() => handleExportPdf("customerGroup")}
               onPrint={() =>
                 handlePrint(
-                  "productLine",
-                  productLinesData,
-                  productLinesColumns
+                  "customerGroup",
+                  customerGroupsData,
+                  customerGroupColumns
                 )
               }
               onRefresh={() => fetchData(0, true)}
-              onImportExcel={(file) => handleImportExcel("productLine", file)}
-              tableId="productLines"
+              onImportExcel={(file) => handleImportExcel("customerGroup", file)}
+              tableId="customerGroups"
             />
           </Box>
         </TabPanel>
 
-        {/* Categories Management Tab*/}
+        {/* Salesmen Management Tab*/}
         <TabPanel value={value} index={1}>
           <Box className="p-0">
             <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Categories Management
+              Salesmen Management
             </Typography>
             <Table
-              data={categoriesData}
-              columns={categoriesColumns}
-              onEdit={(row) => handleEdit("category", row)}
-              onDelete={(row) => handleDelete("category", row)}
-              onAdd={() => handleAddNew("category")}
+              data={salesmenData}
+              columns={salesmenColumns}
+              onEdit={(row) => handleEdit("salesman", row)}
+              onDelete={(row) => handleDelete("salesman", row)}
+              onAdd={() => handleAddNew("salesman")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => handleExportExcel("category")}
-              onExportPdf={() => handleExportPdf("category")}
+              onExportExcel={() => handleExportExcel("salesman")}
+              onExportPdf={() => handleExportPdf("salesman")}
               onPrint={() =>
-                handlePrint("category", categoriesData, categoriesColumns)
+                handlePrint("salesman", salesmenData, salesmenColumns)
               }
               onRefresh={() => fetchData(1, true)}
-              onImportExcel={(file) => handleImportExcel("category", file)}
-              tableId="categories"
+              onImportExcel={(file) => handleImportExcel("salesman", file)}
+              tableId="salesmen"
             />
           </Box>
         </TabPanel>
 
-        {/* Brands Management Tab*/}
+        {/* Customers Management Tab*/}
         <TabPanel value={value} index={2}>
           <Box className="p-0">
             <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Brands Management
+              Customers Management
             </Typography>
             <Table
-              data={brandsData}
-              columns={brandsColumns}
-              onEdit={(row) => handleEdit("brand", row)}
-              onDelete={(row) => handleDelete("brand", row)}
-              onAdd={() => handleAddNew("brand")}
+              data={customersData}
+              columns={customerColumns}
+              onEdit={(row) => handleEdit("customer", row)}
+              onDelete={(row) => handleDelete("customer", row)}
+              onAdd={() => handleAddNew("customer")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => handleExportExcel("brand")}
-              onExportPdf={() => handleExportPdf("brand")}
-              onPrint={() => handlePrint("brand", brandsData, brandsColumns)}
+              onExportExcel={() => handleExportExcel("customer")}
+              onExportPdf={() => handleExportPdf("customer")}
+              onPrint={() => handlePrint("customer", customersData, customerColumns)}
               onRefresh={() => fetchData(2, true)}
-              onImportExcel={(file) => handleImportExcel("brand", file)}
-              tableId="brands"
+              onImportExcel={(file) => handleImportExcel("customer", file)}
+              tableId="customers"
             />
           </Box>
         </TabPanel>
 
-        {/* Items Management Tab*/}
-        <TabPanel value={value} index={3}>
-          <Box className="p-0">
-            <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              Items Management
-            </Typography>
-            <Table
-              data={itemsData}
-              columns={itemsColumns}
-              onEdit={(row) => handleEdit("item", row)}
-              onDelete={(row) => handleDelete("item", row)}
-              onAdd={() => handleAddNew("item")}
-              loading={loading}
-              enableCellEditing={false}
-              onExportExcel={() => handleExportExcel("item")}
-              onExportPdf={() => handleExportPdf("item")}
-              onPrint={() => handlePrint("item", itemsData, itemsColumns)}
-              onRefresh={() => fetchData(3, true)}
-              onImportExcel={(file) => handleImportExcel("item", file)}
-              tableId="items"
-            />
-          </Box>
-        </TabPanel>
-
-        {/* Item Drawer */}
-        <ItemDrawer
+        {/* Customer Drawer */}
+        <CustomerDrawer
           isOpen={isDrawerOpen}
           onClose={handleCloseDrawer}
           type={activeDrawerType}
