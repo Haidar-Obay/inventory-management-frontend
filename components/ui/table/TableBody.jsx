@@ -31,6 +31,7 @@ export const TableBody = ({
   handleDeleteClick,
   onEdit,
   columnWidths,
+  isOverflowing,
 }) => {
   const t = useTranslations("table.noData");
   const locale = useLocale();
@@ -273,13 +274,19 @@ export const TableBody = ({
               })}
 
               {/* Actions */}
-              <td className={`w-20 border-b border-border px-4 py-2 sticky right-0 z-10 filter drop-shadow-[-6px_0_5px_rgba(0,0,0,0.1)] border-l border-gray-200 dark:border-gray-700 transition-colors duration-200 ${
-                selectedRows.has(row.id)
-                  ? "bg-primary/10 hover:bg-primary/20"
-                  : rowIndex % 2 === 0
+              <td
+                className={`w-20 border-b border-border px-4 py-2 transition-colors duration-200 ${
+                  isOverflowing
+                    ? "sticky right-0 z-10 filter drop-shadow-[-6px_0_5px_rgba(0,0,0,0.1)] border-l border-gray-200 dark:border-gray-700"
+                    : ""
+                } ${
+                  selectedRows.has(row.id)
+                    ? "bg-primary/10 hover:bg-primary/20"
+                    : rowIndex % 2 === 0
                     ? "bg-white dark:bg-background hover:bg-gray-100 dark:hover:bg-muted"
                     : "bg-gray-50 dark:bg-muted/50 hover:bg-gray-100 dark:hover:bg-muted"
-              }`}>
+                }`}
+              >
                 <div
                   className="flex"
                   style={{

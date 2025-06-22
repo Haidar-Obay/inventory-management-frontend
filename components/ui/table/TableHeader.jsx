@@ -23,6 +23,7 @@ export const TableHeader = ({
   handleColumnSearch,
   handleSelectAll,
   columnWidths,
+  isOverflowing,
 }) => {
   const t = useTranslations("table");
   const locale = useLocale();
@@ -216,7 +217,13 @@ export const TableHeader = ({
         })}
 
         {/* Actions column */}
-        <th className="w-20 border-b border-border px-4 py-2 text-left sticky right-0 bg-gray-50 dark:bg-muted/50 z-20 filter drop-shadow-[-6px_0_5px_rgba(0,0,0,0.1)] border-l border-gray-200 dark:border-gray-700">
+        <th
+          className={`w-20 border-b border-border px-4 py-2 text-left bg-gray-50 dark:bg-muted/50 ${
+            isOverflowing
+              ? "sticky right-0 z-20 filter drop-shadow-[-6px_0_5px_rgba(0,0,0,0.1)] border-l border-gray-200 dark:border-gray-700"
+              : ""
+          }`}
+        >
           {t("actions")}
         </th>
       </tr>
@@ -277,7 +284,13 @@ export const TableHeader = ({
               </td>
             );
           })}
-          <td className="w-20 border-b border-border px-4 py-2 sticky right-0 bg-gray-50 dark:bg-muted/50 z-10 filter drop-shadow-[-6px_0_5px_rgba(0,0,0,0.1)] border-l border-gray-200 dark:border-gray-700"></td>
+          <td
+            className={`w-20 border-b border-border px-4 py-2 bg-gray-50 dark:bg-muted/50 ${
+              isOverflowing
+                ? "sticky right-0 z-10 filter drop-shadow-[-6px_0_5px_rgba(0,0,0,0.1)] border-l border-gray-200 dark:border-gray-700"
+                : ""
+            }`}
+          ></td>
         </tr>
       )}
     </thead>

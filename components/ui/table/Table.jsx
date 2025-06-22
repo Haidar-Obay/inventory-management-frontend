@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
 import { useTableLogic } from "./useTableLogic";
 import { TableHeader } from "./TableHeader";
@@ -139,6 +139,9 @@ const Table = (props) => {
     tableId: props.tableId || "default",
   });
 
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const scrollContainerRef = useRef(null);
+
   // Convert columns object to array if needed
   const columnsArray = Array.isArray(props.columns)
     ? props.columns
@@ -148,6 +151,38 @@ const Table = (props) => {
   const effectiveVisibleColumns = showColumnModal ? tempVisibleColumns : visibleColumns;
   const effectiveColumnWidths = showColumnModal ? tempColumnWidths : columnWidths;
   const effectiveColumnOrder = showColumnModal ? tempColumnOrder : columnOrder;
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const checkOverflow = () => {
+      // Check if the content width is greater than the container width
+      const hasOverflow = container.scrollWidth > container.clientWidth;
+      setIsOverflowing(hasOverflow);
+    };
+
+    // Initial check
+    checkOverflow();
+
+    // Debounced check on resize
+    let timeoutId;
+    const handleResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(checkOverflow, 150);
+    };
+
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(container);
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener("resize", handleResize);
+      resizeObserver.disconnect();
+    };
+  }, [tableData, visibleColumns]); // Re-check when data or columns change
 
   return (
     <div className="w-full rounded-lg border border-border bg-background shadow-sm">
@@ -262,7 +297,7 @@ const Table = (props) => {
       )}
 
       <div className="w-full">
-        <div className="overflow-x-auto" style={{ scrollbarWidth: "thin" }}>
+        <div className="overflow-x-auto" style={{ scrollbarWidth: "thin" }} ref={scrollContainerRef}>
           <div style={{ minWidth: "max-content", width: "100%" }}>
             <table className="w-full border-collapse">
               <TableHeader
@@ -285,6 +320,7 @@ const Table = (props) => {
                 handleSelectAll={handleSelectAll}
                 columnWidths={effectiveColumnWidths}
                 t={props.t}
+                isOverflowing={isOverflowing}
               />
 
               <TableBody
@@ -307,6 +343,7 @@ const Table = (props) => {
                 handleDeleteClick={handleDeleteClick}
                 onEdit={props.onEdit}
                 columnWidths={effectiveColumnWidths}
+                isOverflowing={isOverflowing}
               />
             </table>
           </div>

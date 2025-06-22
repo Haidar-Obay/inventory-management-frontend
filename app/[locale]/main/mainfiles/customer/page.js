@@ -576,7 +576,7 @@ function CustomerPage() {
         {/* Salesmen Management Tab*/}
         <TabPanel value={value} index={1}>
           <Box className="p-0">
-            <Typography variant="h5" component="h2" className="mb-4 pb-3">
+            <Typography variant="h5" component="h2" className="mb-1 pb-0">
               Salesmen Management
             </Typography>
             <Table
