@@ -51,6 +51,11 @@ const RTLTextField = ({
           "& .MuiInputBase-adornedEnd": {
             paddingLeft: "12px",
           },
+          "& .MuiInputBase-input::placeholder": {
+            textAlign: "right",
+            paddingRight: "8px",
+            paddingLeft: "0px",
+          },
         }),
       }}
       {...props}

@@ -415,6 +415,7 @@
       "search": {
         "placeholder": "Search all columns...",
         "columnPlaceholder": "Search {column}...",
+        "columnNamePlaceholder": "{column}",
         "clear": "Clear Search",
         "clearFilters": "Clear Filters",
         "activeFilters": "Active Filters"
@@ -581,6 +582,7 @@
     "search": {
       "placeholder": "Search all columns...",
       "columnPlaceholder": "Search {column}...",
+      "columnNamePlaceholder": "{column}",
       "clear": "Clear Search",
       "clearFilters": "Clear Filters",
       "activeFilters": "Active Filters"
