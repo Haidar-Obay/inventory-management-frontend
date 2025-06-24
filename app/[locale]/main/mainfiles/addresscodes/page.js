@@ -486,9 +486,6 @@ function AddressCodesPage() {
         {/* Countries Management Tab*/}
         <TabPanel value={value} index={0}>
           <Box className="p-0">
-            <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              {t("management.countries")}
-            </Typography>
             <Table
               columns={countryColumns}
               data={countriesData}
@@ -513,9 +510,6 @@ function AddressCodesPage() {
         {/* Provinces Management Tab*/}
         <TabPanel value={value} index={1}>
           <Box className="p-0">
-            <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              {t("management.provinces")}
-            </Typography>
             <Table
               data={provincesData}
               columns={provinceColumns}
@@ -540,9 +534,6 @@ function AddressCodesPage() {
         {/* Cities Management Tab*/}
         <TabPanel value={value} index={2}>
           <Box className="p-0">
-            <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              {t("management.cities")}
-            </Typography>
             <Table
               data={citiesData}
               columns={cityColumns}
@@ -565,9 +556,6 @@ function AddressCodesPage() {
         {/* Districts Management Tab*/}
         <TabPanel value={value} index={3}>
           <Box className="p-0">
-            <Typography variant="h5" component="h2" className="mb-4 pb-3">
-              {t("management.districts")}
-            </Typography>
             <Table
               data={districtsData}
               columns={districtColumns}
