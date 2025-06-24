@@ -10,6 +10,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SidePanelDrawer from "@/components/ui/SidePanelDrawer";
 import { ActionToolbar } from "@/components/ui/action-toolbar";
+import { useLocale } from "next-intl";
 
 const DynamicDrawer = ({
   isOpen,
@@ -26,6 +27,9 @@ const DynamicDrawer = ({
   children, // For any additional content
   anchor = "right", // Add anchor prop with default value
 }) => {
+  const locale = useLocale();
+  const isRTL = locale === "ar";
+
   return (
     <SidePanelDrawer
       isOpen={isOpen}
@@ -95,19 +99,34 @@ const DynamicDrawer = ({
           </Box>
         </Box>
 
-        {/* Action Toolbar - Fixed at bottom */}
+        {/* Action Toolbar - Fixed at bottom with custom layout */}
         <Box className="flex-shrink-0 border-t border-border bg-gray-50 dark:bg-muted/50">
           <Box p={3}>
-            <ActionToolbar
-              onSave={onSave}
-              onSaveAndNew={onSaveAndNew}
-              onSaveAndExit={onSaveAndClose}
-              onCancel={onCancel || onClose}
-              expandDirection="left"
-              className="[&_button]:h-10"
-              storageKey={`drawer-${title}-last-action`}
-              dropdownDirection="up"
-            />
+            <div className="flex justify-between items-center">
+              {/* Cancel button - Left side in LTR, Right side in RTL */}
+              <div className={isRTL ? "order-2" : "order-1"}>
+                <ActionToolbar
+                  onCancel={onCancel || onClose}
+                  expandDirection="right"
+                  className="[&_button]:h-10"
+                  storageKey={`drawer-${title}-cancel-action`}
+                  dropdownDirection="up"
+                />
+              </div>
+
+              {/* Save buttons - Right side in LTR, Left side in RTL */}
+              <div className={isRTL ? "order-1" : "order-2"}>
+                <ActionToolbar
+                  onSave={onSave}
+                  onSaveAndNew={onSaveAndNew}
+                  onSaveAndExit={onSaveAndClose}
+                  expandDirection="left"
+                  className="[&_button]:h-10"
+                  storageKey={`drawer-${title}-save-action`}
+                  dropdownDirection="up"
+                />
+              </div>
+            </div>
           </Box>
         </Box>
       </Box>

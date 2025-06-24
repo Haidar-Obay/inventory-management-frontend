@@ -56,10 +56,11 @@ function TabPanel(props) {
 
 // Loading component for Suspense
 function ItemsPageLoading() {
+  const t = useTranslations("items");
   return (
     <div className="flex justify-center items-center min-h-screen">
       <CircularProgress />
-      <span className="ml-2">Loading items...</span>
+      <span className="ml-2">{t("loading")}</span>
     </div>
   );
 }
@@ -234,8 +235,8 @@ function ItemsPage() {
   };
 
   const handleEdit = (type, row) => {
-    setFormData({ 
-      id: row.id, 
+    setFormData({
+      id: row.id,
       name: row.name,
       code: row.code,
       active: row.active,
@@ -243,7 +244,7 @@ function ItemsPage() {
       sub_brand_of: row.sub_brand_of,
       product_line_id: row.product_line_id,
       category_id: row.category_id,
-      brand_id: row.brand_id
+      brand_id: row.brand_id,
     });
     setActiveDrawerType(type);
     setIsEditMode(true);
@@ -281,8 +282,8 @@ function ItemsPage() {
     // Set default values for new items
     const defaultData = {
       active: true, // Default to active for new items
-      subcategory_of: '', // Default empty for categories
-      sub_brand_of: '', // Default empty for brands
+      subcategory_of: "", // Default empty for categories
+      sub_brand_of: "", // Default empty for brands
     };
     setFormData(defaultData);
     setIsDrawerOpen(true);
@@ -307,7 +308,7 @@ function ItemsPage() {
       // Prepare the data with proper types
       const preparedData = {
         ...formData,
-        active: formData.active === 'true' || formData.active === true,
+        active: formData.active === "true" || formData.active === true,
         // Ensure subcategory_of and sub_brand_of are properly set
         subcategory_of: formData.subcategory_of || null,
         sub_brand_of: formData.sub_brand_of || null,
@@ -489,11 +490,16 @@ function ItemsPage() {
       // Create a new window for printing
       const printWindow = window.open("", "_blank");
 
+      // Get the translated title for the type
+      const typeTitle = t(
+        `management.${type === "productLine" ? "productLines" : type === "category" ? "categories" : type === "brand" ? "brands" : "items"}`
+      );
+
       // Create the HTML content for printing
       const content = `
         <html>
           <head>
-            <title>${type.charAt(0).toUpperCase() + type.slice(1)} List</title>
+            <title>${typeTitle} List</title>
             <style>
               body { font-family: Arial, sans-serif; }
               table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -508,7 +514,7 @@ function ItemsPage() {
             </style>
           </head>
           <body>
-            <h1>${type.charAt(0).toUpperCase() + type.slice(1)} List</h1>
+            <h1>${typeTitle} List</h1>
             <table>
               <thead>
                 <tr>
@@ -561,10 +567,10 @@ function ItemsPage() {
       <Box sx={{ width: "100%" }}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs value={value} onChange={handleChange} aria-label="items tabs">
-            <Tab label="Product Lines" />
-            <Tab label="Categories" />
-            <Tab label="Brands" />
-            <Tab label="Items" />
+            <Tab label={t("tabs.productLines")} />
+            <Tab label={t("tabs.categories")} />
+            <Tab label={t("tabs.brands")} />
+            <Tab label={t("tabs.items")} />
           </Tabs>
         </Box>
 

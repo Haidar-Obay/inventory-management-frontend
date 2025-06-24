@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   BarChart3,
@@ -50,13 +50,17 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { toast } from "@/components/ui/simple-toast";
-import { SidebarItem } from "@/components/layout/SidebarItem";
+import {
+  SidebarItem,
+  SidebarTooltipItem,
+} from "@/components/layout/SidebarItem";
 import { useMenuItems } from "@/constants/menuItems";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { createPortal } from "react-dom";
 
 import tenantApiService from "@/API/TenantApiService";
 import { useRouter, useParams } from "next/navigation";
@@ -118,6 +122,47 @@ const GetAllMenuItems = (t) => {
   });
 };
 
+// Custom Tooltip Component using Portal
+const PortalTooltip = ({ children, content, isRTL, isVisible }) => {
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    if (isVisible && children?.current) {
+      const childElement = children.current;
+      if (
+        childElement &&
+        typeof childElement.getBoundingClientRect === "function"
+      ) {
+        const rect = childElement.getBoundingClientRect();
+        const newPosition = {
+          top: rect.top + rect.height / 2,
+          [isRTL ? "right" : "left"]: isRTL
+            ? window.innerWidth - rect.left + 8
+            : rect.right + 8,
+        };
+        setPosition(newPosition);
+      }
+    }
+  }, [isVisible, isRTL, children]);
+
+  if (!isVisible) return null;
+
+  const tooltip = (
+    <div
+      className="fixed z-[999999] px-2 py-1 text-sm text-primary-foreground bg-primary rounded-md border border-white dark:border-black shadow-lg pointer-events-none whitespace-nowrap"
+      style={{
+        top: position.top,
+        [isRTL ? "right" : "left"]: position[isRTL ? "right" : "left"],
+        transform: "translateY(-50%)",
+      }}
+    >
+      {content}
+    </div>
+  );
+
+  return createPortal(tooltip, document.body);
+};
+
 // Component for rendering bookmarks section
 const BookmarksSection = ({
   bookmarks,
@@ -132,6 +177,9 @@ const BookmarksSection = ({
   isExpanded,
   onToggle,
 }) => {
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const buttonRef = useRef(null);
+
   if (bookmarks.length === 0) return null;
 
   // Use the GetAllMenuItems helper
@@ -144,10 +192,14 @@ const BookmarksSection = ({
           <div className="flex items-center justify-between">
             <button
               onClick={onToggle}
-              className="flex items-center gap-2 text-sm font-medium hover:text-primary-foreground/80 transition-colors duration-200"
+              className="flex items-center justify-between w-full text-sm font-medium hover:text-primary-foreground/80 transition-colors duration-200"
             >
-              <BookMarked className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")} />
+              <div className="flex items-center gap-2">
+                <BookMarked
+                  className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")}
+                />
               <h3 className="text-sm font-medium">{t("bookmarks")}</h3>
+              </div>
               <ChevronRight
                 className={cn(
                   "h-4 w-4 transition-transform duration-200",
@@ -166,7 +218,25 @@ const BookmarksSection = ({
             </Button>
           </div>
         )}
-        {isCollapsed && <BookMarked className="h-5 w-5 mx-auto" />}
+        {isCollapsed && (
+          <div className="relative group">
+            <div
+              ref={buttonRef}
+              className="flex flex-col items-center gap-1"
+              onMouseEnter={() => setTooltipVisible(true)}
+              onMouseLeave={() => setTooltipVisible(false)}
+            >
+              <BookMarked className="h-5 w-5 mx-auto" />
+            </div>
+            {/* Portal Tooltip */}
+            <PortalTooltip
+              children={buttonRef}
+              content={t("bookmarks")}
+              isRTL={isRTL}
+              isVisible={tooltipVisible}
+            />
+          </div>
+        )}
       </div>
       <Collapsible open={isExpanded}>
         <CollapsibleContent>
@@ -224,6 +294,8 @@ const GroupHeader = ({
 }) => {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [nestedPopoverOpen, setNestedPopoverOpen] = useState(null);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const buttonRef = useRef(null);
   const params = useParams();
   const router = useRouter();
 
@@ -240,16 +312,25 @@ const GroupHeader = ({
     return `/${params?.route}/${path}`;
   };
 
+  // Hide tooltip when popover opens
+  useEffect(() => {
+    if (popoverOpen) {
+      setTooltipVisible(false);
+    }
+  }, [popoverOpen]);
+
   if (!isCollapsed) {
     return (
       <div className="px-4 mb-2">
         <div className="flex items-center justify-between">
           <button
             onClick={() => onToggleGroup(groupName)}
-            className="flex items-center gap-2 text-sm font-medium hover:text-primary-foreground/80 transition-colors duration-200"
+            className="flex items-center justify-between w-full text-sm font-medium hover:text-primary-foreground/80 transition-colors duration-200"
           >
+            <div className="flex items-center gap-2">
             <GroupIcon className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")} />
             <span>{groupName}</span>
+            </div>
             <ChevronRight
               className={cn(
                 "h-4 w-4 transition-transform duration-200",
@@ -264,12 +345,17 @@ const GroupHeader = ({
   }
 
   return (
-    <>
+    <div className="flex flex-col items-center gap-1">
+      {/* Single button with tooltip and popover */}
+      <div className="relative group">
       <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
         <PopoverTrigger asChild>
           <button
+              ref={buttonRef}
             type="button"
             className="w-full flex justify-center p-2 rounded-md transition-colors duration-200 hover:bg-primary-foreground/20 active:bg-primary-foreground/30"
+              onMouseEnter={() => setTooltipVisible(true)}
+              onMouseLeave={() => setTooltipVisible(false)}
           >
             <GroupIcon className="h-5 w-5" />
           </button>
@@ -277,15 +363,15 @@ const GroupHeader = ({
         <PopoverContent
           side={isRTL ? "left" : "right"}
           align="start"
-          className="w-56 p-2 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
+            className="w-48 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
           sideOffset={-2}
           alignOffset={-8}
         >
-          <div className="space-y-2">
+            <div className="space-y-1">
             <h3 className="text-[15px] font-medium px-2 py-1 bg-primary-foreground/5 rounded-md">
               {groupName}
             </h3>
-            <div className="space-y-1">
+              <div className="space-y-0.5">
               {filterItemsByRole(groupItems).map((item) => {
                 if (item.type === "group") {
                   const ItemIcon = iconMap[item.icon];
@@ -298,12 +384,14 @@ const GroupHeader = ({
                       }
                     >
                       <PopoverTrigger asChild>
-                        <button className="w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-md hover:bg-primary-foreground/10 transition-colors duration-200">
+                          <button className="w-full flex items-center justify-between px-2 py-1 text-sm rounded-md hover:bg-primary-foreground/10 transition-colors duration-200">
+                            <div className="flex items-center gap-2">
                           {ItemIcon && <ItemIcon className="h-4 w-4" />}
                           <span>{item.name}</span>
+                            </div>
                           <ChevronRight
                             className={cn(
-                              "h-4 w-4 ml-auto",
+                                "h-4 w-4",
                               isRTL ? "rotate-180" : ""
                             )}
                           />
@@ -312,11 +400,11 @@ const GroupHeader = ({
                       <PopoverContent
                         side={isRTL ? "left" : "right"}
                         align="start"
-                        className="w-56 p-2 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
+                          className="w-48 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
                         sideOffset={-1}
                         alignOffset={8}
                       >
-                        <div className="space-y-1">
+                          <div className="space-y-0.5">
                           {item.items.map((subItem) => {
                             const SubIcon = iconMap[subItem.icon];
                             // Find the subItem with proper uniqueId from allItems
@@ -352,6 +440,7 @@ const GroupHeader = ({
                                 className="whitespace-nowrap"
                                 t={t}
                                 isRTL={isRTL}
+                                  compact={true}
                               />
                             );
                           })}
@@ -387,6 +476,7 @@ const GroupHeader = ({
                     className="whitespace-nowrap"
                     t={t}
                     isRTL={isRTL}
+                      compact={true}
                   />
                 );
               })}
@@ -394,7 +484,16 @@ const GroupHeader = ({
           </div>
         </PopoverContent>
       </Popover>
-    </>
+
+        {/* Portal Tooltip */}
+        <PortalTooltip
+          children={buttonRef}
+          content={groupName}
+          isRTL={isRTL}
+          isVisible={tooltipVisible}
+        />
+      </div>
+    </div>
   );
 };
 
@@ -457,7 +556,15 @@ const GroupItems = ({
               isActive={activeItem === item.name.toLowerCase()}
               onNavigate={handleNavigation}
               onToggleBookmark={toggleBookmark}
-              padding={isMainFiles ? "pl-8" : "pl-20"}
+              padding={
+                isMainFiles
+                  ? isRTL
+                    ? "pr-8"
+                    : "pl-8"
+                  : isRTL
+                    ? "pr-20"
+                    : "pl-20"
+              }
               t={t}
               isRTL={isRTL}
             />
@@ -482,10 +589,13 @@ const NestedGroup = ({
   isRTL,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const buttonRef = useRef(null);
 
   const handlePopoverOpen = (e) => {
     e.preventDefault();
     setIsOpen(true);
+    setTooltipVisible(false); // Hide tooltip when popover opens
   };
 
   const handlePopoverClose = (e) => {
@@ -505,18 +615,23 @@ const NestedGroup = ({
     <Popover>
       <PopoverTrigger asChild>
         <button
+          ref={buttonRef}
           className={cn(
-            "flex items-center gap-2 w-full text-[15px] font-medium hover:bg-primary-foreground/10 rounded-md",
+            "flex items-center justify-between w-full text-[15px] font-medium hover:bg-primary-foreground/10 rounded-md",
             isMainFiles ? "p-2" : "px-6 py-3"
           )}
+          onMouseEnter={() => setTooltipVisible(true)}
+          onMouseLeave={() => setTooltipVisible(false)}
         >
+          <div className="flex items-center gap-2">
           <Icon className="h-5 w-5" />
           <span>{item.name}</span>
+          </div>
           <ChevronRight
             className={cn(
               "h-4 w-4 transition-transform",
-              isRTL ? "mr-auto scale-x-[-1]" : "ml-auto",
-              isOpen ? "rotate-180" : ""
+              isRTL ? "rotate-180" : "",
+              isOpen ? "rotate-90" : ""
             )}
           />
         </button>
@@ -524,12 +639,12 @@ const NestedGroup = ({
       <PopoverContent
         side="right"
         align="start"
-        className="w-56 p-2 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
+        className="w-48 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
         sideOffset={-10}
         onOpenAutoFocus={handlePopoverOpen}
         onCloseAutoFocus={handlePopoverClose}
       >
-        <div className="space-y-1">
+        <div className="space-y-0.5">
           {item.items.map((subItem) => {
             const SubIcon = iconMap[subItem.icon];
             // Find the subItem with proper uniqueId from allItems
@@ -550,10 +665,19 @@ const NestedGroup = ({
                 isActive={activeItem === subItem.name.toLowerCase()}
                 onNavigate={() => handleNavigate(subItem.name)}
                 onToggleBookmark={() => onToggleBookmark(subItem.name)}
-                padding={isMainFiles ? "px-8" : "px-12"}
+                padding={
+                  isMainFiles
+                    ? isRTL
+                      ? "pr-8"
+                      : "pl-8"
+                    : isRTL
+                      ? "pr-12"
+                      : "pl-12"
+                }
                 className="whitespace-nowrap"
                 t={t}
                 isRTL={isRTL}
+                compact={true}
               />
             );
           })}
@@ -562,7 +686,43 @@ const NestedGroup = ({
     </Popover>
   );
 
-  const renderCollapsible = () => (
+  const Icon = iconMap[item.icon];
+  const isPopover = item.displayType === "popover";
+
+  if (isCollapsed) {
+    return (
+      <div className="flex flex-col items-center gap-1">
+        {/* Single button with tooltip and popover */}
+        <div className="relative group">
+          {isPopover ? (
+            renderPopover()
+          ) : (
+            <button
+              ref={buttonRef}
+              className="w-full flex justify-center p-2 rounded-md transition-colors duration-200 hover:bg-primary-foreground/20 active:bg-primary-foreground/30"
+              onClick={() => setIsOpen(!isOpen)}
+              onMouseEnter={() => setTooltipVisible(true)}
+              onMouseLeave={() => setTooltipVisible(false)}
+            >
+              <Icon className="h-5 w-5" />
+            </button>
+          )}
+
+          {/* Portal Tooltip */}
+          <PortalTooltip
+            children={buttonRef}
+            content={item.name}
+            isRTL={isRTL}
+            isVisible={tooltipVisible}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  return isPopover ? (
+    renderPopover()
+  ) : (
     <div>
       <CollapsibleTrigger
         className="group flex w-full items-center h-12 min-w-0"
@@ -574,7 +734,7 @@ const NestedGroup = ({
             activeItem === item.name.toLowerCase() &&
               "bg-primary-foreground/10 font-medium",
             padding,
-            isRTL ? "pr-24" : "pl-24"
+            isRTL ? "pr-6" : "pl-6"
           )}
         >
           <Icon
@@ -584,9 +744,9 @@ const NestedGroup = ({
         </div>
         <ChevronRight
           className={cn(
-            "h-4 w-4 transition-transform",
-            isRTL ? "mr-auto scale-x-[-1]" : "ml-auto",
-            isOpen ? "rotate-180" : ""
+            "h-4 w-4 transition-transform flex-shrink-0",
+            isRTL ? "rotate-180" : "",
+            isOpen ? "rotate-90" : ""
           )}
         />
       </CollapsibleTrigger>
@@ -612,7 +772,15 @@ const NestedGroup = ({
                   isActive={activeItem === subItem.name.toLowerCase()}
                   onNavigate={onNavigate}
                   onToggleBookmark={onToggleBookmark}
-                  padding={isMainFiles ? "px-8" : "px-12"}
+                  padding={
+                    isMainFiles
+                      ? isRTL
+                        ? "pr-8"
+                        : "pl-8"
+                      : isRTL
+                        ? "pr-12"
+                        : "pl-12"
+                  }
                   t={t}
                   isRTL={isRTL}
                 />
@@ -623,11 +791,6 @@ const NestedGroup = ({
       )}
     </div>
   );
-
-  const Icon = iconMap[item.icon];
-  const isPopover = item.displayType === "popover";
-
-  return isPopover ? renderPopover() : renderCollapsible();
 };
 
 export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
@@ -638,6 +801,8 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   const [activeItem, setActiveItem] = useState("");
   const [expandedGroups, setExpandedGroups] = useState({});
   const [userRole, setUserRole] = useState("user");
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const logoutButtonRef = useRef(null);
   const menuItems = useMenuItems(t);
   const [isBookmarksExpanded, setIsBookmarksExpanded] = useState(true);
 
@@ -884,6 +1049,10 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
 
             return (
               <div key={groupName}>
+                {/* Add separator before support section */}
+                {isSupport && (
+                  <div className="border-t border-primary-foreground/10 my-4"></div>
+                )}
                 <div className="mb-4">
                   <GroupHeader
                     groupName={groupName}
@@ -925,19 +1094,26 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
         {/* Logout Section */}
         <div className="border-t border-primary-foreground/10 p-4">
           {isCollapsed ? (
-            <Tooltip>
-              <TooltipTrigger asChild>
+            <div className="relative group">
                 <Button
+                ref={logoutButtonRef}
                   variant="ghost"
                   size="icon"
                   className="w-full text-primary-foreground hover:bg-primary-foreground/10"
                   onClick={handleLogout}
+                onMouseEnter={() => setTooltipVisible(true)}
+                onMouseLeave={() => setTooltipVisible(false)}
                 >
                   <LogOut className="h-5 w-5" />
                 </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right">{t("logout")}</TooltipContent>
-            </Tooltip>
+              {/* Portal Tooltip */}
+              <PortalTooltip
+                children={logoutButtonRef}
+                content={t("logout")}
+                isRTL={isRTL}
+                isVisible={tooltipVisible}
+              />
+            </div>
           ) : (
             <Button
               variant="ghost"
