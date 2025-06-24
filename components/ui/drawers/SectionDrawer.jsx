@@ -552,7 +552,7 @@ const SectionDrawer = ({
                 />
               </Grid>
               <Grid item xs={12} md={6} sx={{ width: "100%" }}>
-                <TextField
+                <RTLTextField
                   fullWidth
                   label={t("management.description")}
                   value={formData?.description || ""}

@@ -10,6 +10,7 @@ const RTLTextField = ({
   size = "small",
   sectionListRef,
   areAllSectionsEmpty,
+  multiline,
   ...props
 }) => {
   const locale = useLocale();
@@ -27,6 +28,7 @@ const RTLTextField = ({
       fullWidth={fullWidth}
       variant={variant}
       size={size}
+      multiline={multiline}
       InputProps={updatedInputProps}
       sx={{
         ...(isRTL && {
@@ -56,6 +58,34 @@ const RTLTextField = ({
             paddingRight: "8px",
             paddingLeft: "0px",
           },
+          ...(multiline && {
+            "& .MuiInputBase-input": {
+              textAlign: "right",
+              direction: "rtl",
+            },
+            "& .MuiInputBase-input::placeholder": {
+              textAlign: "right",
+              direction: "rtl",
+              paddingRight: "8px",
+              paddingLeft: "0px",
+            },
+            "& .MuiInputLabel-outlined:not(.MuiInputLabel-shrink)": {
+              transform: "translate(-14px, 14px) scale(1)",
+              right: "0px",
+              left: "auto",
+            },
+            "& .MuiInputLabel-outlined.MuiInputLabel-shrink": {
+              transform: "translate(-14px, -9px) scale(0.75)",
+              right: "0px",
+              left: "auto",
+            },
+            "& .MuiOutlinedInput-notchedOutline": {
+              textAlign: "right",
+            },
+            "& .MuiOutlinedInput-root": {
+              direction: "rtl",
+            },
+          }),
         }),
       }}
       {...props}
