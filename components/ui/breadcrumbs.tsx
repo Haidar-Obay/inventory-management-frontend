@@ -25,13 +25,14 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
   const isRTL = currentLocale === "ar";
 
   const generateBreadcrumbs = (): BreadcrumbItem[] => {
-    const segments = pathname.split('/').filter(Boolean);
+    const segments = pathname.split("/").filter(Boolean);
     const breadcrumbs: BreadcrumbItem[] = [];
-    
+
     // Remove locale from segments if present
-    const localeIndex = segments.findIndex(seg => ['en', 'ar'].includes(seg));
-    const pathSegments = localeIndex !== -1 ? segments.slice(localeIndex + 1) : segments;
-    
+    const localeIndex = segments.findIndex((seg) => ["en", "ar"].includes(seg));
+    const pathSegments =
+      localeIndex !== -1 ? segments.slice(localeIndex + 1) : segments;
+
     // Add home breadcrumb - redirect to dashboard/overview
     breadcrumbs.push({
       label: t("home"),
@@ -41,52 +42,69 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
     // Map path segments to breadcrumb items
     let currentPath = `/${currentLocale}`;
     let skipNext = false;
-    
+
     for (let i = 0; i < pathSegments.length; i++) {
       const segment = pathSegments[i];
       currentPath += `/${segment}`;
-      
+
       // Skip if we're supposed to skip this segment (to avoid duplicates)
       if (skipNext) {
         skipNext = false;
         continue;
       }
-      
+
       // Map segments to readable labels
       let label = segment;
-      
+
       // Map main sections
-      if (segment === 'main') {
+      if (segment === "main") {
         label = t("mainFiles");
         // Skip the next 'mainfiles' segment to avoid duplication
-        if (i + 1 < pathSegments.length && pathSegments[i + 1] === 'mainfiles') {
+        if (
+          i + 1 < pathSegments.length &&
+          pathSegments[i + 1] === "mainfiles"
+        ) {
           skipNext = true;
         }
-      } else if (segment === 'mainfiles') {
+      } else if (segment === "mainfiles") {
         label = t("mainFiles");
-      } else if (segment === 'dashboard') {
+      } else if (segment === "dashboard") {
         label = t("dashboard");
-      } else if (segment === 'customer') {
+      } else if (segment === "overview") {
+        label = t("overview");
+      } else if (segment === "analytics") {
+        label = t("analytics");
+      } else if (segment === "reports") {
+        label = t("reports");
+      } else if (segment === "customer") {
         label = t("customer");
-      } else if (segment === 'addresscodes') {
+      } else if (segment === "addresscodes") {
         label = t("addressCodes");
-      } else if (segment === 'sections') {
+      } else if (segment === "sections") {
         label = t("sections");
-      } else if (segment === 'items') {
+      } else if (segment === "items") {
         label = t("items");
       }
-      
+
       // Check if this is the last segment (current page)
       const isLast = i === pathSegments.length - 1;
-      
+
       // Determine if this breadcrumb should be clickable
       // Parent sections without their own pages should not be clickable
-      const isParentSection = ['main', 'mainfiles', 'dashboard', 'customer', 'addresscodes', 'sections', 'items'].includes(segment);
-      const hasTab = searchParams.get('tab') !== null;
-      
+      const isParentSection = [
+        "main",
+        "mainfiles",
+        "dashboard",
+        "customer",
+        "addresscodes",
+        "sections",
+        "items",
+      ].includes(segment);
+      const hasTab = searchParams.get("tab") !== null;
+
       // Only make clickable if it's not a parent section or if it's the last item
       const shouldBeClickable = !isParentSection || isLast;
-      
+
       breadcrumbs.push({
         label,
         href: shouldBeClickable && !isLast ? currentPath : undefined,
@@ -95,23 +113,47 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
     }
 
     // Add tab information if present
-    const tab = searchParams.get('tab');
+    const tab = searchParams.get("tab");
     if (tab !== null) {
       const tabIndex = parseInt(tab);
-      let tabLabel = '';
-      
+      let tabLabel = "";
+
       // Map tab indices to labels based on current page
-      if (pathSegments.includes('customer')) {
-        const customerTabs = [t("customerGroups"), t("salesmen"), t("customers")];
-        tabLabel = customerTabs[tabIndex] || '';
-      } else if (pathSegments.includes('addresscodes')) {
-        const addressTabs = [t("countries"), t("provinces"), t("cities"), t("districts")];
-        tabLabel = addressTabs[tabIndex] || '';
-      } else if (pathSegments.includes('sections')) {
-        const sectionTabs = [t("projects"), t("costCenters"), t("departments"), t("trades"), t("companyCodes"), t("jobs")];
-        tabLabel = sectionTabs[tabIndex] || '';
+      if (pathSegments.includes("customer")) {
+        const customerTabs = [
+          t("customerGroups"),
+          t("salesmen"),
+          t("customers"),
+        ];
+        tabLabel = customerTabs[tabIndex] || "";
+      } else if (pathSegments.includes("addresscodes")) {
+        const addressTabs = [
+          t("countries"),
+          t("provinces"),
+          t("cities"),
+          t("districts"),
+        ];
+        tabLabel = addressTabs[tabIndex] || "";
+      } else if (pathSegments.includes("sections")) {
+        const sectionTabs = [
+          t("projects"),
+          t("costCenters"),
+          t("departments"),
+          t("trades"),
+          t("companyCodes"),
+          t("jobs"),
+        ];
+        tabLabel = sectionTabs[tabIndex] || "";
+      } else if (pathSegments.includes("items")) {
+        const itemsTabs = [
+          t("productLines"),
+          t("categories"),
+          t("brands"),
+          t("items"),
+        ];
+        tabLabel = itemsTabs[tabIndex] || "";
       }
-      
+
       if (tabLabel) {
         breadcrumbs.push({
           label: tabLabel,
@@ -132,19 +174,22 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
   return (
     <nav
       aria-label="Breadcrumb"
-      className={cn("flex items-center space-x-1 text-base text-muted-foreground", className)}
+      className={cn(
+        "flex items-center space-x-1 text-base text-muted-foreground",
+        className
+      )}
     >
       {breadcrumbs.map((breadcrumb, index) => (
         <div key={index} className="flex items-center">
           {index > 0 && (
-            <ChevronRight 
+            <ChevronRight
               className={cn(
                 "h-4 w-4 mx-1 text-muted-foreground/50",
                 isRTL ? "rotate-180" : ""
-              )} 
+              )}
             />
           )}
-          
+
           {breadcrumb.href ? (
             <Link
               href={breadcrumb.href}
@@ -153,11 +198,7 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
                 breadcrumb.isActive && "text-foreground font-medium"
               )}
             >
-              {index === 0 ? (
-                <Home className="h-4 w-4" />
-              ) : (
-                breadcrumb.label
-              )}
+              {index === 0 ? <Home className="h-4 w-4" /> : breadcrumb.label}
             </Link>
           ) : (
             <span
@@ -173,4 +214,4 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
       ))}
     </nav>
   );
-} 
+}

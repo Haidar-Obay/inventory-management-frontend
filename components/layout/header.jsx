@@ -40,9 +40,21 @@ const SearchBar = ({ searchQuery, setSearchQuery, handleSearch, t }) => {
 
   return (
     <form onSubmit={handleSearch} className="relative w-full max-w-2xl mx-auto">
-      <Search
-        className={`absolute top-1/2 transform -translate-y-1/2 h-5 w-5 text-foreground ${isRTL ? "right-3" : "left-3"}`}
-      />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={`absolute top-1/2 transform -translate-y-1/2 text-foreground ${isRTL ? "right-3" : "left-3"}`}
+      >
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
       <Input
         type="search"
         placeholder={t("searchPlaceholder")}
@@ -218,8 +230,13 @@ const UserMenu = ({ t }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" className="relative">
-          <User className="h-[1.2rem] w-[1.2rem]" />
+        <Button
+          variant="ghost"
+          className="relative h-8 w-8 rounded-full p-0 hover:bg-muted"
+        >
+          <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
+            <User className="h-4 w-4 text-primary-foreground" />
+          </div>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="bg-background">
@@ -294,12 +311,12 @@ export function Header({ toggleSidebar }) {
         style={{ transition: "all 0.3s ease-in-out" }}
       >
         {/* Left Section - Breadcrumbs */}
-        <div className="flex items-center gap-4 flex-shrink-0">
+        <div className="flex items-center gap-4 flex-shrink-0 w-80">
           <Breadcrumbs className="font-medium" />
         </div>
 
         {/* Center Section - Search Bar */}
-        <div className="flex-1 flex justify-center px-4">
+        <div className="flex-1 flex justify-center px-4 min-w-0">
           <SearchBar
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
@@ -309,7 +326,7 @@ export function Header({ toggleSidebar }) {
         </div>
 
         {/* Right Section - User Controls */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 flex-shrink-0 w-48">
           <LanguageSelector />
           <ThemeToggle theme={theme} setTheme={setTheme} />
           <NotificationCenter

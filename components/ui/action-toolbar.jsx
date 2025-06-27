@@ -1,5 +1,11 @@
 "use client";
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import { Button } from "./button.tsx";
 import { useTranslations, useLocale } from "next-intl";
 import {
@@ -112,6 +118,7 @@ export function ActionToolbar({
   onCancel,
   onImportExcel,
   dropdownDirection = "down",
+  expandDirection = "right",
   className = "",
 }) {
   const t = useTranslations("table.toolbar");
@@ -119,6 +126,7 @@ export function ActionToolbar({
   const [loadingActions, setLoadingActions] = useState({});
   const locale = useLocale();
   const isRTL = locale === "ar";
+  const dropdownRefs = useRef({});
 
   // Memoize available actions
   const availableActions = useMemo(() => {
@@ -249,6 +257,32 @@ export function ActionToolbar({
     [handleAction, loadingActions, availableActions, t]
   );
 
+  // Handle click outside to close dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      Object.keys(groupStates).forEach((key) => {
+        if (key.endsWith("Open") && groupStates[key]) {
+          const groupId = key.replace("Open", "");
+          const dropdownRef = dropdownRefs.current[groupId];
+          if (dropdownRef && !dropdownRef.contains(event.target)) {
+            setGroupStates((prev) => ({
+              ...prev,
+              [key]: false,
+            }));
+          }
+        }
+      });
+    };
+
+    // Add event listener
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [groupStates]);
+
   const renderGroup = useCallback(
     (group) => {
       const isOpen = groupStates[`${group.id}Open`];
@@ -268,11 +302,24 @@ export function ActionToolbar({
         );
       }
 
+      // Determine dropdown position based on expandDirection and RTL
+      const shouldExpandLeft =
+        expandDirection === "left" || (isRTL && expandDirection !== "right");
+      const dropdownPosition = shouldExpandLeft ? "right-0" : "left-0";
+
       return (
-        <div className="relative inline-block" key={group.id}>
+        <div
+          className="relative inline-block"
+          key={group.id}
+          ref={(el) => {
+            dropdownRefs.current[group.id] = el;
+          }}
+        >
           <div className="flex flex-col">
             {isOpen && dropdownDirection === "up" && (
-              <div className="absolute bottom-full mb-2 flex flex-col gap-1 min-w-[180px] bg-background border border-border rounded-md shadow-lg p-1 z-50 backdrop-blur-sm bg-opacity-95">
+              <div
+                className={`absolute bottom-full mb-2 flex flex-col gap-1 min-w-[180px] bg-background border border-border rounded-md shadow-lg p-1 z-50 backdrop-blur-sm bg-opacity-95 ${dropdownPosition}`}
+              >
                 {availableGroupActions.map((action) => (
                   <div key={action} className="w-full">
                     {renderActionButton(action, group.id)}
@@ -282,29 +329,63 @@ export function ActionToolbar({
             )}
 
             <div className="flex items-center">
-              <Button
-                onClick={() => toggleGroup(group.id)}
-                className="flex items-center justify-center bg-background hover:bg-muted text-foreground border border-border px-2 py-2 text-sm h-9 w-8 rounded-r-none transition-all duration-200 shadow-sm"
-              >
-                <div
-                  className={`transform transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
-                >
-                  {dropdownDirection === "down" ? (
-                    <ChevronDownIcon size={16} />
-                  ) : (
-                    <ChevronUpIcon size={16} />
+              {isRTL ? (
+                // Arabic mode: Arrow on the left, main button on the right
+                <>
+                  <Button
+                    onClick={() => toggleGroup(group.id)}
+                    className={`flex items-center justify-center bg-background hover:bg-muted text-foreground border border-border px-2 py-2 text-sm h-9 w-8 transition-all duration-200 shadow-sm rounded-r-none`}
+                  >
+                    <div
+                      className={`transform transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                    >
+                      {dropdownDirection === "down" ? (
+                        <ChevronDownIcon size={16} />
+                      ) : (
+                        <ChevronUpIcon size={16} />
+                      )}
+                    </div>
+                  </Button>
+                  {lastUsedAction && (
+                    <div className="rounded-l-none">
+                      {renderActionButton(lastUsedAction, group.id)}
+                    </div>
                   )}
-                </div>
-              </Button>
-              {lastUsedAction && (
-                <div className="rounded-l-none">
-                  {renderActionButton(lastUsedAction, group.id)}
-                </div>
+                </>
+              ) : (
+                // English mode: Arrow on the right, main button on the left
+                <>
+                  {lastUsedAction && (
+                    <div
+                      className={
+                        shouldExpandLeft ? "rounded-r-none" : "rounded-l-none"
+                      }
+                    >
+                      {renderActionButton(lastUsedAction, group.id)}
+                    </div>
+                  )}
+                  <Button
+                    onClick={() => toggleGroup(group.id)}
+                    className={`flex items-center justify-center bg-background hover:bg-muted text-foreground border border-border px-2 py-2 text-sm h-9 w-8 transition-all duration-200 shadow-sm ${shouldExpandLeft ? "rounded-l-none" : "rounded-r-none"}`}
+                  >
+                    <div
+                      className={`transform transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                    >
+                      {dropdownDirection === "down" ? (
+                        <ChevronDownIcon size={16} />
+                      ) : (
+                        <ChevronUpIcon size={16} />
+                      )}
+                    </div>
+                  </Button>
+                </>
               )}
             </div>
 
             {isOpen && dropdownDirection === "down" && (
-              <div className="absolute top-full mt-2 flex flex-col gap-1 min-w-[180px] bg-background border border-border rounded-md shadow-lg p-1 z-50 backdrop-blur-sm bg-opacity-95">
+              <div
+                className={`absolute top-full mt-2 flex flex-col gap-1 min-w-[180px] bg-background border border-border rounded-md shadow-lg p-1 z-50 backdrop-blur-sm bg-opacity-95 ${dropdownPosition}`}
+              >
                 {availableGroupActions.map((action) => (
                   <div key={action} className="w-full">
                     {renderActionButton(action, group.id)}
@@ -316,7 +397,14 @@ export function ActionToolbar({
         </div>
       );
     },
-    [renderActionButton, toggleGroup, groupStates, dropdownDirection]
+    [
+      renderActionButton,
+      toggleGroup,
+      groupStates,
+      dropdownDirection,
+      expandDirection,
+      isRTL,
+    ]
   );
 
   return (

@@ -49,10 +49,11 @@ function TabPanel(props) {
 
 // Loading component for Suspense
 function CustomerPageLoading() {
+  const t = useTranslations("customers");
   return (
     <div className="flex justify-center items-center min-h-screen">
       <CircularProgress />
-      <span className="ml-2">Loading customers...</span>
+      <span className="ml-2">{t("loading")}</span>
     </div>
   );
 }
@@ -89,11 +90,8 @@ function CustomerPage() {
   const tableT = useTranslations("tableColumns");
   const toastT = useTranslations("toast");
 
-  const {
-    customerGroupColumns,
-    salesmenColumns,
-    customerColumns,
-  } = useTableColumns(tableT);
+  const { customerGroupColumns, salesmenColumns, customerColumns } =
+    useTableColumns(tableT);
 
   // Initialize tab value from URL or localStorage
   useEffect(() => {
@@ -209,8 +207,8 @@ function CustomerPage() {
   };
 
   const handleEdit = (type, row) => {
-    setFormData({ 
-      id: row.id, 
+    setFormData({
+      id: row.id,
       name: row.name,
       code: row.code,
       active: row.active,
@@ -292,10 +290,13 @@ function CustomerPage() {
       // Prepare the data with proper types
       const preparedData = {
         ...formData,
-        active: formData.active === 'true' || formData.active === true,
-        is_manager: formData.is_manager === 'true' || formData.is_manager === true,
-        is_supervisor: formData.is_supervisor === 'true' || formData.is_supervisor === true,
-        is_collector: formData.is_collector === 'true' || formData.is_collector === true,
+        active: formData.active === "true" || formData.active === true,
+        is_manager:
+          formData.is_manager === "true" || formData.is_manager === true,
+        is_supervisor:
+          formData.is_supervisor === "true" || formData.is_supervisor === true,
+        is_collector:
+          formData.is_collector === "true" || formData.is_collector === true,
       };
 
       let response;
@@ -465,11 +466,16 @@ function CustomerPage() {
       // Create a new window for printing
       const printWindow = window.open("", "_blank");
 
+      // Get the translated title for the type
+      const typeTitle = t(
+        `management.${type === "customerGroup" ? "customerGroup" : type === "salesman" ? "salesman" : "customer"}`
+      );
+
       // Create the HTML content for printing
       const content = `
         <html>
           <head>
-            <title>${type.charAt(0).toUpperCase() + type.slice(1)} List</title>
+            <title>${typeTitle} List</title>
             <style>
               body { font-family: Arial, sans-serif; }
               table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -484,7 +490,7 @@ function CustomerPage() {
             </style>
           </head>
           <body>
-            <h1>${type.charAt(0).toUpperCase() + type.slice(1)} List</h1>
+            <h1>${typeTitle} List</h1>
             <table>
               <thead>
                 <tr>
@@ -536,10 +542,14 @@ function CustomerPage() {
     <div className="p-4">
       <Box sx={{ width: "100%" }}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs value={value} onChange={handleChange} aria-label="customer tabs">
-            <Tab label="Customer Groups" />
-            <Tab label="Salesmen" />
-            <Tab label="Customers" />
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="customer tabs"
+          >
+            <Tab label={t("tabs.customerGroups")} />
+            <Tab label={t("tabs.salesmen")} />
+            <Tab label={t("tabs.customers")} />
           </Tabs>
         </Box>
 
@@ -606,7 +616,9 @@ function CustomerPage() {
               enableCellEditing={false}
               onExportExcel={() => handleExportExcel("customer")}
               onExportPdf={() => handleExportPdf("customer")}
-              onPrint={() => handlePrint("customer", customersData, customerColumns)}
+              onPrint={() =>
+                handlePrint("customer", customersData, customerColumns)
+              }
               onRefresh={() => fetchData(2, true)}
               onImportExcel={(file) => handleImportExcel("customer", file)}
               tableId="customers"

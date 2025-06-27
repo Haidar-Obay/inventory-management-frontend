@@ -22,10 +22,16 @@
     "home": "الرئيسية",
     "mainFiles": "الملفات الرئيسية",
     "dashboard": "لوحة التحكم",
+    "overview": "نظرة عامة",
+    "analytics": "التحليلات",
+    "reports": "التقارير",
     "customer": "العملاء",
     "addressCodes": "أكواد العناوين",
     "sections": "الأقسام",
     "items": "العناصر",
+    "productLines": "خطوط المنتجات",
+    "categories": "الفئات",
+    "brands": "العلامات التجارية",
     "customerGroups": "مجموعات العملاء",
     "salesmen": "مندوبو المبيعات",
     "customers": "العملاء",
@@ -121,6 +127,40 @@
     "step3Title": "٣. دعوة فريقك",
     "step3Desc": "أضف أعضاء الفريق وعيّن الأدوار لبدء التعاون في إدارة المخزون."
   },
+  "dashboardAnalytics": {
+    "title": "لوحة تحكم التحليلات",
+    "description": "تحليلات شاملة ورؤى لإدارة المخزون الخاصة بك",
+    "comingSoon": "لوحة تحكم التحليلات قريباً",
+    "comingSoonDesc": "نحن نعمل على تقديم أدوات تحليل قوية لك. ترقب التحديثات!",
+    "features": {
+      "title": "الميزات القادمة",
+      "inventoryTrends": "اتجاهات المخزون",
+      "inventoryTrendsDesc": "تتبع أنماط حركة المخزون وتحديد الاتجاهات بمرور الوقت",
+      "salesAnalytics": "تحليلات المبيعات",
+      "salesAnalyticsDesc": "تحليل أداء المبيعات وأنماط سلوك العملاء",
+      "stockPredictions": "توقعات المخزون",
+      "stockPredictionsDesc": "توقعات مدعومة بالذكاء الاصطناعي لمستويات المخزون المثلى",
+      "performanceMetrics": "مقاييس الأداء",
+      "performanceMetricsDesc": "مؤشرات الأداء الرئيسية ورؤى الأعمال"
+    }
+  },
+  "dashboardReports": {
+    "title": "لوحة تحكم التقارير",
+    "description": "إنشاء وعرض تقارير شاملة لمخزونك",
+    "comingSoon": "لوحة تحكم التقارير قريباً",
+    "comingSoonDesc": "نحن نطور أدوات تقارير شاملة. تحقق مرة أخرى قريباً!",
+    "features": {
+      "title": "الميزات القادمة",
+      "inventoryReports": "تقارير المخزون",
+      "inventoryReportsDesc": "تقارير مفصلة عن مستويات المخزون والحركات والحالة",
+      "salesReports": "تقارير المبيعات",
+      "salesReportsDesc": "تقارير شاملة عن أداء المبيعات والإيرادات",
+      "customReports": "تقارير مخصصة",
+      "customReportsDesc": "إنشاء وتخصيص التقارير بناءً على احتياجاتك المحددة",
+      "exportOptions": "خيارات التصدير",
+      "exportOptionsDesc": "تصدير التقارير بصيغ مختلفة (PDF، Excel، CSV)"
+    }
+  },
   "sidebar": {
     "dashboard": "لوحة التحكم",
     "overview": "نظرة عامة",
@@ -140,10 +180,12 @@
     "companyCodes": "أكواد الشركة",
     "jobs": "الوظائف",
     "items": "العناصر",
+    "items_inner": "العناصر",
     "productLines": "خطوط المنتجات",
     "categories": "الفئات",
     "brands": "العلامات التجارية",
     "customer": "العملاء",
+    "customer_inner": "العملاء",
     "customerGroup": "مجموعة العملاء",
     "salesmen": "مندوبو المبيعات",
     "supplier": "الموردون",
@@ -431,6 +473,8 @@
       "districts": "المناطق"
     },
     "management": {
+      "add": "إضافة",
+      "edit": "تعديل",
       "countries": "الدول",
       "country": "الدولة",
       "countryName": "اسم الدولة",
@@ -482,7 +526,7 @@
       "costCenters": "مراكز التكلفة",
       "departments": "الأقسام",
       "trades": "الحرف",
-      "companyCodes": "رموز الشركة",
+      "companyCodes": "أكواد الشركة",
       "jobs": "الوظائف"
     },
     "management": {
@@ -710,6 +754,8 @@
     }
   },
   "customers": {
+    "title": "إدارة العملاء",
+    "loading": "جاري تحميل العملاء...",
     "code": "الرمز",
     "name": "الاسم",
     "address": "العنوان",
@@ -737,6 +783,11 @@
     "selectSalesman": "اختر مندوب المبيعات",
     "add": "إضافة",
     "edit": "تعديل",
+    "tabs": {
+      "customerGroups": "مجموعات العملاء",
+      "salesmen": "مندوبو المبيعات",
+      "customers": "العملاء"
+    },
     "management": {
       "add": "إضافة",
       "edit": "تعديل",
