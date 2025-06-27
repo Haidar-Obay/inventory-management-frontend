@@ -9,6 +9,8 @@ import {
   Select,
   DatePicker,
   Tooltip,
+  Dropdown,
+  DropdownItem,
 } from "./CustomControls";
 
 export const TableBody = ({
@@ -32,8 +34,10 @@ export const TableBody = ({
   onEdit,
   columnWidths,
   isOverflowing,
+  openDropdownRowId,
+  setOpenDropdownRowId,
 }) => {
-  const t = useTranslations("table.noData");
+  const t = useTranslations("table");
   const locale = useLocale();
   const isRTL = locale === "ar";
 
@@ -102,7 +106,10 @@ export const TableBody = ({
               {/* Row selection checkbox */}
               <td
                 className="border-b border-border px-4 py-2"
-                style={{ width: columnWidths["select"] || "28px", minWidth: "15px" }}
+                style={{
+                  width: columnWidths["select"] || "28px",
+                  minWidth: "15px",
+                }}
               >
                 <div className="flex items-center justify-center w-full">
                   <Checkbox
@@ -115,7 +122,10 @@ export const TableBody = ({
               {/* Row handle */}
               <td
                 className="border-b border-border px-4 py-2"
-                style={{ width: columnWidths["search"] || "28px", minWidth: "15px" }}
+                style={{
+                  width: columnWidths["search"] || "28px",
+                  minWidth: "15px",
+                }}
               >
                 <div className="flex h-full cursor-move items-center justify-center">
                   <svg
@@ -275,64 +285,102 @@ export const TableBody = ({
 
               {/* Actions */}
               <td
-                className={`w-20 border-b border-border px-4 py-2 transition-colors duration-200 ${
+                className={`w-8 border-b border-border px-1 py-2 transition-colors duration-200 ${
                   isOverflowing
-                    ? "sticky right-0 z-10 filter drop-shadow-[-6px_0_5px_rgba(0,0,0,0.1)] border-l border-gray-200 dark:border-gray-700"
+                    ? "sticky right-0 z-10 backdrop-blur-sm border-l border-gray-200 dark:border-gray-700"
                     : ""
                 } ${
                   selectedRows.has(row.id)
                     ? "bg-primary/10 hover:bg-primary/20"
                     : rowIndex % 2 === 0
-                    ? "bg-white dark:bg-background hover:bg-gray-100 dark:hover:bg-muted"
-                    : "bg-gray-50 dark:bg-muted/50 hover:bg-gray-100 dark:hover:bg-muted"
+                      ? "bg-white dark:bg-background hover:bg-gray-100 dark:hover:bg-muted"
+                      : "bg-gray-50 dark:bg-muted/50 hover:bg-gray-100 dark:hover:bg-muted"
+                } ${
+                  isOverflowing
+                    ? rowIndex % 2 === 0
+                      ? "bg-white/95 dark:bg-background/95"
+                      : "bg-gray-50/95 dark:bg-muted/95"
+                    : ""
                 }`}
               >
                 <div
-                  className="flex"
+                  className="flex justify-center"
                   style={{
-                    gap: "0.5rem",
                     flexDirection: isRTL ? "row-reverse" : "row",
                   }}
                 >
-                  {/* Enhanced Edit Button */}
-                  <Tooltip content="Edit">
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      className="h-9 w-9 p-0 flex items-center justify-center text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200 ease-in-out rounded-md shadow-sm hover:shadow-md"
-                      onClick={() => onEdit && onEdit(row)}
-                      aria-label={`Edit ${row.name || row.code || 'item'}`}
+                  <Dropdown
+                    isOpen={openDropdownRowId === row.id}
+                    setIsOpen={(open) =>
+                      setOpenDropdownRowId(open ? row.id : null)
+                    }
+                    trigger={
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 hover:bg-muted"
+                        aria-label="Actions"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenDropdownRowId(
+                            openDropdownRowId === row.id ? null : row.id
+                          );
+                        }}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <circle cx="12" cy="12" r="1"></circle>
+                          <circle cx="19" cy="12" r="1"></circle>
+                          <circle cx="5" cy="12" r="1"></circle>
+                        </svg>
+                      </Button>
+                    }
+                    align="right"
+                  >
+                    <DropdownItem
+                      onClick={() => {
+                        setOpenDropdownRowId(null);
+                        onEdit && onEdit(row);
+                      }}
+                      className="flex items-center gap-2"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
+                        width="13"
+                        height="13"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
+                        className="text-blue-600"
                       >
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                       </svg>
-                    </Button>
-                  </Tooltip>
-
-                  {/* Enhanced Delete Button */}
-                  <Tooltip content="Delete">
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="h-9 w-9 p-0 flex items-center justify-center text-white bg-red-600 hover:bg-red-700 transition-all duration-200 ease-in-out rounded-md shadow-sm hover:shadow-md"
-                      onClick={() => handleDeleteClick(row)}
-                      aria-label={`Delete ${row.name || row.code || 'item'}`}
+                      {t("editLabel")}
+                    </DropdownItem>
+                    <DropdownItem
+                      onClick={() => {
+                        setOpenDropdownRowId(null);
+                        handleDeleteClick(row);
+                      }}
+                      className="flex items-center gap-2 text-red-600 hover:text-red-700"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
+                        width="13"
+                        height="13"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -343,8 +391,9 @@ export const TableBody = ({
                         <path d="M3 6h18"></path>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                       </svg>
-                    </Button>
-                  </Tooltip>
+                      {t("deleteLabel")}
+                    </DropdownItem>
+                  </Dropdown>
                 </div>
               </td>
             </tr>

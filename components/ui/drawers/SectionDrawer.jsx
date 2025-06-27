@@ -19,6 +19,7 @@ import { getCostCenterNames as getCostCenterNamesFromSections } from "@/API/Sect
 import { getDepartmentNames as getDepartmentNamesFromSections } from "@/API/Sections";
 import { getProjectNames as getProjectNamesFromSections } from "@/API/Sections";
 import { useTranslations, useLocale } from "next-intl";
+import { useSimpleToast } from "@/components/ui/simple-toast";
 
 const SectionDrawer = ({
   isOpen,
@@ -39,6 +40,9 @@ const SectionDrawer = ({
   const t = useTranslations("sections");
   const locale = useLocale();
   const isRTL = locale === "ar";
+  const [originalName, setOriginalName] = useState("");
+  const [originalData, setOriginalData] = useState({});
+  const { addToast } = useSimpleToast();
 
   useEffect(() => {
     if (type === "project" && isOpen) {
@@ -53,7 +57,11 @@ const SectionDrawer = ({
     if (type === "job" && isOpen) {
       fetchProjectNames();
     }
-  }, [type, isOpen]);
+    if (isOpen && isEdit) {
+      setOriginalName(formData?.name || "");
+      setOriginalData(JSON.parse(JSON.stringify(formData)));
+    }
+  }, [type, isOpen, isEdit]);
 
   const fetchCustomers = async () => {
     try {
@@ -144,6 +152,22 @@ const SectionDrawer = ({
       ...formData,
       project_id: newValue?.id || "",
     });
+  };
+
+  function isDataChanged() {
+    return JSON.stringify(formData) !== JSON.stringify(originalData);
+  }
+
+  const handleSave = () => {
+    if (isEdit && !isDataChanged()) {
+      addToast({
+        type: "error",
+        title: t("noChangesTitle") || "No changes detected",
+        description: t("noChangesDesc") || "Please modify at least one field before saving."
+      });
+      return;
+    }
+    onSave && onSave();
   };
 
   const getContent = () => {
@@ -905,8 +929,7 @@ const SectionDrawer = ({
 
   const getTitle = () => {
     if (isEdit) {
-      const itemName = formData?.name || "";
-      return `${t("management.edit")} ${t(`management.${type}`)}${itemName ? ` / ${itemName}` : ""}`;
+      return `${t("management.edit")} ${t(`management.${type}`)}${originalName ? ` / ${originalName}` : ""}`;
     } else {
       return t(`management.add${type.charAt(0).toUpperCase() + type.slice(1)}`);
     }
@@ -918,7 +941,7 @@ const SectionDrawer = ({
       onClose={onClose}
       title={getTitle()}
       content={getContent()}
-      onSave={onSave}
+      onSave={handleSave}
       onSaveAndNew={onSaveAndNew}
       onSaveAndClose={onSaveAndClose}
       anchor={isRTL ? "left" : "right"}

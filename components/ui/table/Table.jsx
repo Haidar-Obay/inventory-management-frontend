@@ -141,6 +141,7 @@ const Table = (props) => {
 
   const [isOverflowing, setIsOverflowing] = useState(false);
   const scrollContainerRef = useRef(null);
+  const [openDropdownRowId, setOpenDropdownRowId] = useState(null);
 
   // Convert columns object to array if needed
   const columnsArray = Array.isArray(props.columns)
@@ -148,8 +149,12 @@ const Table = (props) => {
     : Object.values(props.columns);
 
   // Use temp states for live preview when modal is open
-  const effectiveVisibleColumns = showColumnModal ? tempVisibleColumns : visibleColumns;
-  const effectiveColumnWidths = showColumnModal ? tempColumnWidths : columnWidths;
+  const effectiveVisibleColumns = showColumnModal
+    ? tempVisibleColumns
+    : visibleColumns;
+  const effectiveColumnWidths = showColumnModal
+    ? tempColumnWidths
+    : columnWidths;
   const effectiveColumnOrder = showColumnModal ? tempColumnOrder : columnOrder;
 
   useEffect(() => {
@@ -297,7 +302,11 @@ const Table = (props) => {
       )}
 
       <div className="w-full">
-        <div className="overflow-x-auto" style={{ scrollbarWidth: "thin" }} ref={scrollContainerRef}>
+        <div
+          className="overflow-x-auto"
+          style={{ scrollbarWidth: "thin" }}
+          ref={scrollContainerRef}
+        >
           <div style={{ minWidth: "max-content", width: "100%" }}>
             <table className="w-full border-collapse">
               <TableHeader
@@ -344,6 +353,8 @@ const Table = (props) => {
                 onEdit={props.onEdit}
                 columnWidths={effectiveColumnWidths}
                 isOverflowing={isOverflowing}
+                openDropdownRowId={openDropdownRowId}
+                setOpenDropdownRowId={setOpenDropdownRowId}
               />
             </table>
           </div>

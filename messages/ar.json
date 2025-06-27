@@ -419,7 +419,9 @@
       "importSuccess": "تم استيراد العناصر بنجاح",
       "importError": "فشل في استيراد العناصر",
       "printSuccess": "تم تجهيز قائمة العناصر للطباعة",
-      "printError": "فشل في طباعة قائمة العناصر"
+      "printError": "فشل في طباعة قائمة العناصر",
+      "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
+      "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."
     },
     "customer": {
       "deleteSuccess": "تم حذف العميل بنجاح",
@@ -462,7 +464,9 @@
       "importError": "فشل في استيراد مندوبي المبيعات",
       "printSuccess": "تم تجهيز قائمة مندوبي المبيعات للطباعة",
       "printError": "فشل في طباعة قائمة مندوبي المبيعات"
-    }
+    },
+    "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
+    "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."
   },
   "addressCodes": {
     "title": "إدارة رموز العناوين",
@@ -510,7 +514,9 @@
       "printError": "فشل طباعة القائمة",
       "deleteError": "فشل الحذف",
       "updateError": "فشل التحديث",
-      "createError": "فشل الإنشاء"
+      "createError": "فشل الإنشاء",
+      "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
+      "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."
     },
     "actions": "الإجراءات",
     "table": {
@@ -522,7 +528,9 @@
         "clearFilters": "مسح الفلاتر",
         "activeFilters": "الفلاتر النشطة"
       }
-    }
+    },
+    "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
+    "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."
   },
   "sections": {
     "title": "إدارة الأقسام",
@@ -586,7 +594,10 @@
       "category": "الفئة",
       "brand": "العلامة التجارية",
       "createdAt": "تاريخ الإنشاء",
-      "updatedAt": "تاريخ التحديث"
+      "updatedAt": "تاريخ التحديث",
+      "createError": "فشل الإنشاء",
+      "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
+      "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."
     },
     "messages": {
       "exportSuccess": "تم التصدير بنجاح",
@@ -601,7 +612,9 @@
       "deleteError": "فشل الحذف",
       "updateError": "فشل التحديث",
       "createError": "فشل الإنشاء"
-    }
+    },
+    "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
+    "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."
   },
   "tableColumns": {
     "id": "الرمز",
@@ -643,6 +656,12 @@
     "commissionByTurnover": "العمولة حسب المبيعات"
   },
   "table": {
+    "title": "الجدول",
+    "description": "وصف الجدول",
+    "editLabel": "تعديل",
+    "deleteLabel": "حذف",
+    "edit": "تعديل",
+    "delete": "حذف",
     "search": {
       "placeholder": "البحث في جميع الأعمدة...",
       "columnPlaceholder": "البحث في {column}...",
@@ -831,7 +850,9 @@
       "commissionByTurnover": "العمولة حسب المبيعات",
       "yes": "نعم",
       "no": "لا"
-    }
+    },
+    "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
+    "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."
   },
   "items": {
     "title": "إدارة العناصر",
@@ -889,7 +910,11 @@
       "printError": "فشل طباعة القائمة",
       "deleteError": "فشل الحذف",
       "updateError": "فشل التحديث",
-      "createError": "فشل الإنشاء"
-    }
+      "createError": "فشل الإنشاء",
+      "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
+      "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."
+    },
+    "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
+    "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."
   }
 }

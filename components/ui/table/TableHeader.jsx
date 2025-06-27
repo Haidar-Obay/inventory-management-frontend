@@ -218,13 +218,15 @@ export const TableHeader = ({
 
         {/* Actions column */}
         <th
-          className={`w-20 border-b border-border px-4 py-2 text-left bg-gray-50 dark:bg-muted/50 ${
+          className={`w-8 border-b border-border px-1 py-2 text-center bg-gray-50 dark:bg-muted/50 ${
             isOverflowing
-              ? "sticky right-0 z-20 filter drop-shadow-[-6px_0_5px_rgba(0,0,0,0.1)] border-l border-gray-200 dark:border-gray-700"
+              ? "sticky right-0 z-20 backdrop-blur-sm border-l border-gray-200 dark:border-gray-700 bg-gray-50/95 dark:bg-muted/95"
               : ""
           }`}
         >
-          {t("actions")}
+          <span className="flex items-center justify-center w-full">
+            {t("actions")}
+          </span>
         </th>
       </tr>
 
@@ -285,9 +287,9 @@ export const TableHeader = ({
             );
           })}
           <td
-            className={`w-20 border-b border-border px-4 py-2 bg-gray-50 dark:bg-muted/50 ${
+            className={`w-8 border-b border-border px-1 py-2 bg-gray-50 dark:bg-muted/50 ${
               isOverflowing
-                ? "sticky right-0 z-10 filter drop-shadow-[-6px_0_5px_rgba(0,0,0,0.1)] border-l border-gray-200 dark:border-gray-700"
+                ? "sticky right-0 z-10 backdrop-blur-sm border-l border-gray-200 dark:border-gray-700 bg-gray-50/95 dark:bg-muted/95"
                 : ""
             }`}
           ></td>

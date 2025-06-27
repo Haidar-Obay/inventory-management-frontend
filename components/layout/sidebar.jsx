@@ -198,7 +198,7 @@ const BookmarksSection = ({
                 <BookMarked
                   className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")}
                 />
-              <h3 className="text-sm font-medium">{t("bookmarks")}</h3>
+                <h3 className="text-sm font-medium">{t("bookmarks")}</h3>
               </div>
               <ChevronRight
                 className={cn(
@@ -212,7 +212,7 @@ const BookmarksSection = ({
               variant="ghost"
               size="sm"
               onClick={clearAllBookmarks}
-              className="h-6 text-xs text-primary-foreground/70 hover:text-primary-foreground"
+              className="h-6 text-xs text-primary-foreground/70 hover:text-primary-foreground whitespace-nowrap"
             >
               {t("clearAll")}
             </Button>
@@ -328,8 +328,8 @@ const GroupHeader = ({
             className="flex items-center justify-between w-full text-sm font-medium hover:text-primary-foreground/80 transition-colors duration-200"
           >
             <div className="flex items-center gap-2">
-            <GroupIcon className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")} />
-            <span>{groupName}</span>
+              <GroupIcon className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")} />
+              <span>{groupName}</span>
             </div>
             <ChevronRight
               className={cn(
@@ -348,142 +348,142 @@ const GroupHeader = ({
     <div className="flex flex-col items-center gap-1">
       {/* Single button with tooltip and popover */}
       <div className="relative group">
-      <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-        <PopoverTrigger asChild>
-          <button
+        <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+          <PopoverTrigger asChild>
+            <button
               ref={buttonRef}
-            type="button"
-            className="w-full flex justify-center p-2 rounded-md transition-colors duration-200 hover:bg-primary-foreground/20 active:bg-primary-foreground/30"
+              type="button"
+              className="w-full flex justify-center p-2 rounded-md transition-colors duration-200 hover:bg-primary-foreground/20 active:bg-primary-foreground/30"
               onMouseEnter={() => setTooltipVisible(true)}
               onMouseLeave={() => setTooltipVisible(false)}
-          >
-            <GroupIcon className="h-5 w-5" />
-          </button>
-        </PopoverTrigger>
-        <PopoverContent
-          side={isRTL ? "left" : "right"}
-          align="start"
+            >
+              <GroupIcon className="h-5 w-5" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            side={isRTL ? "left" : "right"}
+            align="start"
             className="w-48 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
-          sideOffset={-2}
-          alignOffset={-8}
-        >
+            sideOffset={-2}
+            alignOffset={-8}
+          >
             <div className="space-y-1">
-            <h3 className="text-[15px] font-medium px-2 py-1 bg-primary-foreground/5 rounded-md">
-              {groupName}
-            </h3>
+              <h3 className="text-[15px] font-medium px-2 py-1 bg-primary-foreground/5 rounded-md">
+                {groupName}
+              </h3>
               <div className="space-y-0.5">
-              {filterItemsByRole(groupItems).map((item) => {
-                if (item.type === "group") {
-                  const ItemIcon = iconMap[item.icon];
-                  return (
-                    <Popover
-                      key={item.name}
-                      open={nestedPopoverOpen === item.name}
-                      onOpenChange={(open) =>
-                        setNestedPopoverOpen(open ? item.name : null)
-                      }
-                    >
-                      <PopoverTrigger asChild>
+                {filterItemsByRole(groupItems).map((item) => {
+                  if (item.type === "group") {
+                    const ItemIcon = iconMap[item.icon];
+                    return (
+                      <Popover
+                        key={item.name}
+                        open={nestedPopoverOpen === item.name}
+                        onOpenChange={(open) =>
+                          setNestedPopoverOpen(open ? item.name : null)
+                        }
+                      >
+                        <PopoverTrigger asChild>
                           <button className="w-full flex items-center justify-between px-2 py-1 text-sm rounded-md hover:bg-primary-foreground/10 transition-colors duration-200">
                             <div className="flex items-center gap-2">
-                          {ItemIcon && <ItemIcon className="h-4 w-4" />}
-                          <span>{item.name}</span>
+                              {ItemIcon && <ItemIcon className="h-4 w-4" />}
+                              <span>{item.name}</span>
                             </div>
-                          <ChevronRight
-                            className={cn(
+                            <ChevronRight
+                              className={cn(
                                 "h-4 w-4",
-                              isRTL ? "rotate-180" : ""
-                            )}
-                          />
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        side={isRTL ? "left" : "right"}
-                        align="start"
+                                isRTL ? "rotate-180" : ""
+                              )}
+                            />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          side={isRTL ? "left" : "right"}
+                          align="start"
                           className="w-48 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
-                        sideOffset={-1}
-                        alignOffset={8}
-                      >
+                          sideOffset={-1}
+                          alignOffset={8}
+                        >
                           <div className="space-y-0.5">
-                          {item.items.map((subItem) => {
-                            const SubIcon = iconMap[subItem.icon];
-                            // Find the subItem with proper uniqueId from allItems
-                            const processedSubItem = allItems.find(
-                              (i) =>
-                                i.name === subItem.name &&
-                                i.path === subItem.path
-                            );
-                            const uniqueId =
-                              processedSubItem?.uniqueId || subItem.key;
+                            {item.items.map((subItem) => {
+                              const SubIcon = iconMap[subItem.icon];
+                              // Find the subItem with proper uniqueId from allItems
+                              const processedSubItem = allItems.find(
+                                (i) =>
+                                  i.name === subItem.name &&
+                                  i.path === subItem.path
+                              );
+                              const uniqueId =
+                                processedSubItem?.uniqueId || subItem.key;
 
-                            return (
-                              <SidebarItem
-                                key={subItem.name}
-                                name={subItem.name}
-                                icon={SubIcon}
-                                path={subItem.path}
-                                uniqueId={uniqueId}
-                                isCollapsed={false}
-                                isBookmarked={bookmarks.includes(uniqueId)}
-                                isActive={
-                                  activeItem === subItem.name.toLowerCase()
-                                }
-                                onNavigate={() => {
-                                  handleNavigation(subItem.name);
-                                  setPopoverOpen(false);
-                                  setNestedPopoverOpen(null);
-                                }}
-                                onToggleBookmark={() =>
-                                  toggleBookmark(subItem.name)
-                                }
-                                padding="px-2"
-                                className="whitespace-nowrap"
-                                t={t}
-                                isRTL={isRTL}
+                              return (
+                                <SidebarItem
+                                  key={subItem.name}
+                                  name={subItem.name}
+                                  icon={SubIcon}
+                                  path={subItem.path}
+                                  uniqueId={uniqueId}
+                                  isCollapsed={false}
+                                  isBookmarked={bookmarks.includes(uniqueId)}
+                                  isActive={
+                                    activeItem === subItem.name.toLowerCase()
+                                  }
+                                  onNavigate={() => {
+                                    handleNavigation(subItem.name);
+                                    setPopoverOpen(false);
+                                    setNestedPopoverOpen(null);
+                                  }}
+                                  onToggleBookmark={() =>
+                                    toggleBookmark(subItem.name)
+                                  }
+                                  padding="px-2"
+                                  className="whitespace-nowrap"
+                                  t={t}
+                                  isRTL={isRTL}
                                   compact={true}
-                              />
-                            );
-                          })}
-                        </div>
-                      </PopoverContent>
-                    </Popover>
+                                />
+                              );
+                            })}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    );
+                  }
+
+                  const Icon = iconMap[item.icon];
+                  // Find the item with proper uniqueId from allItems
+                  const processedItem = allItems.find(
+                    (i) => i.name === item.name && i.path === item.path
                   );
-                }
+                  const uniqueId = processedItem?.uniqueId || item.key;
 
-                const Icon = iconMap[item.icon];
-                // Find the item with proper uniqueId from allItems
-                const processedItem = allItems.find(
-                  (i) => i.name === item.name && i.path === item.path
-                );
-                const uniqueId = processedItem?.uniqueId || item.key;
-
-                return (
-                  <SidebarItem
-                    key={item.name}
-                    name={item.name}
-                    icon={Icon}
-                    path={item.path}
-                    uniqueId={uniqueId}
-                    isCollapsed={false}
-                    isBookmarked={bookmarks.includes(uniqueId)}
-                    isActive={activeItem === item.name.toLowerCase()}
-                    onNavigate={() => {
-                      handleNavigation(item.name);
-                      setPopoverOpen(false);
-                    }}
-                    onToggleBookmark={() => toggleBookmark(item.name)}
-                    padding="px-2"
-                    className="whitespace-nowrap"
-                    t={t}
-                    isRTL={isRTL}
+                  return (
+                    <SidebarItem
+                      key={item.name}
+                      name={item.name}
+                      icon={Icon}
+                      path={item.path}
+                      uniqueId={uniqueId}
+                      isCollapsed={false}
+                      isBookmarked={bookmarks.includes(uniqueId)}
+                      isActive={activeItem === item.name.toLowerCase()}
+                      onNavigate={() => {
+                        handleNavigation(item.name);
+                        setPopoverOpen(false);
+                      }}
+                      onToggleBookmark={() => toggleBookmark(item.name)}
+                      padding="px-2"
+                      className="whitespace-nowrap"
+                      t={t}
+                      isRTL={isRTL}
                       compact={true}
-                  />
-                );
-              })}
+                    />
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        </PopoverContent>
-      </Popover>
+          </PopoverContent>
+        </Popover>
 
         {/* Portal Tooltip */}
         <PortalTooltip
@@ -624,8 +624,8 @@ const NestedGroup = ({
           onMouseLeave={() => setTooltipVisible(false)}
         >
           <div className="flex items-center gap-2">
-          <Icon className="h-5 w-5" />
-          <span>{item.name}</span>
+            <Icon className="h-5 w-5" />
+            <span>{item.name}</span>
           </div>
           <ChevronRight
             className={cn(
@@ -1095,17 +1095,17 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
         <div className="border-t border-primary-foreground/10 p-4">
           {isCollapsed ? (
             <div className="relative group">
-                <Button
+              <Button
                 ref={logoutButtonRef}
-                  variant="ghost"
-                  size="icon"
-                  className="w-full text-primary-foreground hover:bg-primary-foreground/10"
-                  onClick={handleLogout}
+                variant="ghost"
+                size="icon"
+                className="w-full text-primary-foreground hover:bg-primary-foreground/10"
+                onClick={handleLogout}
                 onMouseEnter={() => setTooltipVisible(true)}
                 onMouseLeave={() => setTooltipVisible(false)}
-                >
-                  <LogOut className="h-5 w-5" />
-                </Button>
+              >
+                <LogOut className="h-5 w-5" />
+              </Button>
               {/* Portal Tooltip */}
               <PortalTooltip
                 children={logoutButtonRef}

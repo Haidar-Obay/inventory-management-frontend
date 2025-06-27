@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
+import Portal from "../Portal";
 
 // Utility function to check if an element is a descendant of another
 const isDescendant = (parent, child) => {
@@ -132,42 +133,96 @@ export const Tooltip = ({ children, content, position = "top" }) => {
   );
 };
 
-export const Dropdown = ({ trigger, children, align = "left" }) => {
+export const Dropdown = ({
+  trigger,
+  children,
+  align = "left",
+  isOpen: controlledIsOpen,
+  setIsOpen: controlledSetIsOpen,
+}) => {
   const { theme } = useTheme();
-  const [isOpen, setIsOpen] = useState(false);
+  const [uncontrolledIsOpen, setUncontrolledIsOpen] = useState(false);
+  const isControlled =
+    controlledIsOpen !== undefined && controlledSetIsOpen !== undefined;
+  const isOpen = isControlled ? controlledIsOpen : uncontrolledIsOpen;
+  const setIsOpen = isControlled ? controlledSetIsOpen : setUncontrolledIsOpen;
   const dropdownRef = useRef(null);
+  const triggerRef = useRef(null);
+  const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
 
   const alignments = {
-    left: "left-0",
-    right: "right-0",
-    center: "left-1/2 -translate-x-1/2",
+    left: (triggerRect, dropdownWidth) => triggerRect.left,
+    right: (triggerRect, dropdownWidth) => triggerRect.right - dropdownWidth,
+    center: (triggerRect, dropdownWidth) =>
+      triggerRect.left + triggerRect.width / 2 - dropdownWidth / 2,
   };
 
   useEffect(() => {
+    if (isOpen && triggerRef.current) {
+      const updatePosition = () => {
+        const triggerRect = triggerRef.current.getBoundingClientRect();
+        let dropdownWidth = 192;
+        if (dropdownRef.current) {
+          dropdownRef.current.style.width = "auto";
+          dropdownWidth = dropdownRef.current.offsetWidth || dropdownWidth;
+        }
+        let left = alignments[align](triggerRect, dropdownWidth);
+        const maxLeft = window.innerWidth - dropdownWidth - 8;
+        if (left > maxLeft) left = maxLeft;
+        if (left < 8) left = 8;
+        setPosition({
+          top: triggerRect.bottom + 4,
+          left,
+          width: dropdownWidth,
+        });
+      };
+      updatePosition();
+      window.addEventListener("scroll", updatePosition, true);
+      window.addEventListener("resize", updatePosition);
+      return () => {
+        window.removeEventListener("scroll", updatePosition, true);
+        window.removeEventListener("resize", updatePosition);
+      };
+    }
+  }, [isOpen, align]);
+
+  useEffect(() => {
+    if (!isOpen) return;
     const handleClickOutside = (event) => {
       if (
         dropdownRef.current &&
-        !isDescendant(dropdownRef.current, event.target)
+        !isDescendant(dropdownRef.current, event.target) &&
+        triggerRef.current &&
+        !isDescendant(triggerRef.current, event.target)
       ) {
         setIsOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [isOpen, setIsOpen]);
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      <div onClick={() => setIsOpen(!isOpen)}>{trigger}</div>
+    <div className="relative">
+      <div ref={triggerRef} onClick={() => setIsOpen(!isOpen)}>
+        {trigger}
+      </div>
       {isOpen && (
-        <div
-          className={`absolute z-50 mt-1 min-w-[12rem] rounded-md border border-border bg-background p-1 shadow-md ${alignments[align]}`}
-        >
-          {children}
-        </div>
+        <Portal>
+          <div
+            ref={dropdownRef}
+            className="z-[9999] min-w-[7rem] rounded-md border border-border bg-background p-0.5 shadow-lg fixed"
+            style={{
+              top: position.top,
+              left: position.left,
+              width: position.width > 112 ? position.width : undefined,
+            }}
+          >
+            {children}
+          </div>
+        </Portal>
       )}
     </div>
   );
@@ -177,8 +232,9 @@ export const DropdownItem = ({ children, onClick }) => {
   const { theme } = useTheme();
   return (
     <div
-      className="flex cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground hover:bg-muted"
+      className="flex cursor-pointer items-center rounded-sm px-2 py-1 text-sm text-foreground hover:bg-muted gap-2 min-h-[28px]"
       onClick={onClick}
+      style={{ fontSize: '13px' }}
     >
       {children}
     </div>

@@ -6,6 +6,7 @@ import DynamicDrawer from "@/components/ui/DynamicDrawer";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { useTranslations, useLocale } from "next-intl";
 import { getCustomerGroupNames, getSalesmanNames } from "@/API/Customers";
+import { useSimpleToast } from "@/components/ui/simple-toast";
 
 const CustomerDrawer = ({
   isOpen,
@@ -24,6 +25,9 @@ const CustomerDrawer = ({
   const t = useTranslations("customers");
   const locale = useLocale();
   const isRTL = locale === "ar";
+  const [originalName, setOriginalName] = useState("");
+  const [originalData, setOriginalData] = useState({});
+  const { addToast } = useSimpleToast();
 
   useEffect(() => {
     if (isOpen) {
@@ -32,6 +36,13 @@ const CustomerDrawer = ({
       }
     }
   }, [type, isOpen]);
+
+  useEffect(() => {
+    if (isOpen && isEdit) {
+      setOriginalName(formData?.name || "");
+      setOriginalData(JSON.parse(JSON.stringify(formData)));
+    }
+  }, [isOpen, isEdit]);
 
   const fetchDropdownData = async () => {
     try {
@@ -68,6 +79,22 @@ const CustomerDrawer = ({
       ...formData,
       salesman_id: newValue?.id || "",
     });
+  };
+
+  function isDataChanged() {
+    return JSON.stringify(formData) !== JSON.stringify(originalData);
+  }
+
+  const handleSave = () => {
+    if (isEdit && !isDataChanged()) {
+      addToast({
+        type: "error",
+        title: t("noChangesTitle") || "No changes detected",
+        description: t("noChangesDesc") || "Please modify at least one field before saving."
+      });
+      return;
+    }
+    onSave && onSave();
   };
 
   const getContent = () => {
@@ -742,8 +769,7 @@ const CustomerDrawer = ({
 
   const getTitle = () => {
     if (isEdit) {
-      const itemName = formData?.name || "";
-      return `${t("management.edit")} ${t(`management.${type}`)}${itemName ? ` / ${itemName}` : ""}`;
+      return `${t("management.edit")} ${t(`management.${type}`)}${originalName ? ` / ${originalName}` : ""}`;
     } else {
       return t(`management.add${type.charAt(0).toUpperCase() + type.slice(1)}`);
     }
@@ -755,7 +781,7 @@ const CustomerDrawer = ({
       onClose={onClose}
       title={getTitle()}
       content={getContent()}
-      onSave={onSave}
+      onSave={handleSave}
       onSaveAndNew={onSaveAndNew}
       onSaveAndClose={onSaveAndClose}
       anchor={isRTL ? "left" : "right"}

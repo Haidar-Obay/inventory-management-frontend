@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Grid, TextField, Autocomplete, Typography } from "@mui/material";
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
 import RTLTextField from "@/components/ui/RTLTextField";
+import { useSimpleToast } from "@/components/ui/simple-toast";
 
 import { getCategoryNames } from "@/API/Items";
 import { getBrandNames } from "@/API/Items";
@@ -26,10 +27,13 @@ const ItemDrawer = ({
   const t = useTranslations("items");
   const locale = useLocale();
   const isRTL = locale === "ar";
+  const [originalName, setOriginalName] = useState("");
+  const [originalData, setOriginalData] = useState({});
+  const { addToast } = useSimpleToast();
 
   useEffect(() => {
     if (isOpen) {
-     if (type === "category") {
+      if (type === "category") {
         fetchCategoryNames();
       } else if (type === "brand") {
         fetchBrandNames();
@@ -39,6 +43,12 @@ const ItemDrawer = ({
     }
   }, [type, isOpen]);
 
+  useEffect(() => {
+    if (isOpen && isEdit) {
+      setOriginalName(formData?.name || "");
+      setOriginalData(JSON.parse(JSON.stringify(formData)));
+    }
+  }, [isOpen, isEdit]);
 
   const fetchCategoryNames = async () => {
     try {
@@ -66,10 +76,7 @@ const ItemDrawer = ({
   };
 
   const fetchAllOptions = async () => {
-    await Promise.all([
-      fetchCategoryNames(),
-      fetchBrandNames(),
-    ]);
+    await Promise.all([fetchCategoryNames(), fetchBrandNames()]);
   };
 
   const handleFieldChange = (field) => (event) => {
@@ -101,6 +108,24 @@ const ItemDrawer = ({
       brand_id: newValue?.id || "",
       brand_name: newValue?.name || "",
     });
+  };
+
+  function isDataChanged() {
+    return JSON.stringify(formData) !== JSON.stringify(originalData);
+  }
+
+  const handleSave = () => {
+    if (isEdit && !isDataChanged()) {
+      addToast({
+        type: "error",
+        title: t("noChangesTitle") || "No changes detected",
+        description:
+          t("noChangesDesc") ||
+          "Please modify at least one field before saving.",
+      });
+      return;
+    }
+    onSave && onSave();
   };
 
   const getContent = () => {
@@ -540,8 +565,7 @@ const ItemDrawer = ({
 
   const getTitle = () => {
     if (isEdit) {
-      const itemName = formData?.name || "";
-      return `${t("management.edit")} ${t(`management.${type}`)}${itemName ? ` / ${itemName}` : ""}`;
+      return `${t("management.edit")} ${t(`management.${type}`)}${originalName ? ` / ${originalName}` : ""}`;
     } else {
       return t(`management.add${type.charAt(0).toUpperCase() + type.slice(1)}`);
     }
@@ -553,7 +577,7 @@ const ItemDrawer = ({
       onClose={onClose}
       title={getTitle()}
       content={getContent()}
-      onSave={onSave}
+      onSave={handleSave}
       onSaveAndNew={onSaveAndNew}
       onSaveAndClose={onSaveAndClose}
       anchor={isRTL ? "left" : "right"}

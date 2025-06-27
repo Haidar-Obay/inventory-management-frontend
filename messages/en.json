@@ -314,7 +314,9 @@
       "importError": "Failed to import salesmen",
       "printSuccess": "Salesmen list prepared for printing",
       "printError": "Failed to print salesmen list"
-    }
+    },
+    "noChangesTitle": "No changes detected",
+    "noChangesDesc": "Please modify at least one field before saving."
   },
   "login": {
     "title": "Sign in to your account",
@@ -529,8 +531,12 @@
       "printError": "Failed to print list",
       "deleteError": "Failed to delete",
       "updateError": "Failed to update",
-      "createError": "Failed to create"
-    }
+      "createError": "Failed to create",
+      "noChangesTitle": "No changes detected",
+      "noChangesDesc": "Please modify at least one field before saving."
+    },
+    "noChangesTitle": "No changes detected",
+    "noChangesDesc": "Please modify at least one field before saving."
   },
   "sections": {
     "title": "Sections Management",
@@ -608,8 +614,12 @@
       "printError": "Failed to print list",
       "deleteError": "Failed to delete",
       "updateError": "Failed to update",
-      "createError": "Failed to create"
-    }
+      "createError": "Failed to create",
+      "noChangesTitle": "No changes detected",
+      "noChangesDesc": "Please modify at least one field before saving."
+    },
+    "noChangesTitle": "No changes detected",
+    "noChangesDesc": "Please modify at least one field before saving."
   },
   "tableColumns": {
     "id": "ID",
@@ -651,6 +661,10 @@
     "commissionByTurnover": "Commission by Turnover"
   },
   "table": {
+    "title": "Table",
+    "description": "Table description",
+    "editLabel": "Edit",
+    "deleteLabel": "Delete",
     "search": {
       "placeholder": "Search all columns...",
       "columnPlaceholder": "Search {column}...",
@@ -765,7 +779,9 @@
     "noData": {
       "title": "No data found",
       "description": "Try adjusting your search or filter to find what you're looking for."
-    }
+    },
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "customers": {
     "title": "Customer Management",
@@ -839,7 +855,9 @@
       "commissionByTurnover": "Commission by Turnover",
       "yes": "Yes",
       "no": "No"
-    }
+    },
+    "noChangesTitle": "No changes detected",
+    "noChangesDesc": "Please modify at least one field before saving."
   },
   "items": {
     "title": "Items Management",
@@ -897,7 +915,11 @@
       "printError": "Failed to print list",
       "deleteError": "Failed to delete",
       "updateError": "Failed to update",
-      "createError": "Failed to create"
-    }
+      "createError": "Failed to create",
+      "noChangesTitle": "No changes detected",
+      "noChangesDesc": "Please modify at least one field before saving."
+    },
+    "noChangesTitle": "No changes detected",
+    "noChangesDesc": "Please modify at least one field before saving."
   }
 }
