@@ -7,19 +7,19 @@ import AddressCodeDrawer from "@/components/ui/drawers/AddressCodeDrawer";
 import { useTranslations } from "next-intl";
 import {
   getCountries,
-  getProvinces,
+  getZones,
   getCities,
   getDistricts,
   deleteCountry,
   deleteCity,
-  deleteProvince,
+  deleteZone,
   editCountry,
-  editProvince,
+  editZone,
   editCity,
   editDistrict,
   deleteDistrict,
   createCountry,
-  createProvince,
+  createZone,
   createCity,
   createDistrict,
   exportCitiesToExcel,
@@ -28,9 +28,9 @@ import {
   exportCountriesToExcel,
   exportCountriesToPdf,
   importCountriesFromExcel,
-  exportProvincesToExcel,
-  exportProvincesToPdf,
-  importProvincesFromExcel,
+  exportZonesToExcel,
+  exportZonesToPdf,
+  importZonesFromExcel,
   exportDistrictsToExcel,
   exportDistrictsToPdf,
   importDistrictsFromExcel,
@@ -79,13 +79,13 @@ function AddressCodesPage() {
   const t = useTranslations("addressCodes");
   const tableT = useTranslations("tableColumns");
   const toastT = useTranslations("toast");
-  const { countryColumns, cityColumns, provinceColumns, districtColumns } =
+  const { countryColumns, cityColumns, zoneColumns, districtColumns } =
     useTableColumns(tableT);
   const searchParams = useSearchParams();
   const router = useRouter();
   const [value, setValue] = useState(0);
   const [countriesData, setCountriesData] = useState([]);
-  const [provincesData, setProvincesData] = useState([]);
+  const [zonesData, setZonesData] = useState([]);
   const [citiesData, setCitiesData] = useState([]);
   const [districtsData, setDistrictsData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -95,7 +95,7 @@ function AddressCodesPage() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [dataFetched, setDataFetched] = useState({
     countries: false,
-    provinces: false,
+    zones: false,
     cities: false,
     districts: false,
   });
@@ -146,14 +146,14 @@ function AddressCodesPage() {
           setCountriesData(response.data || []);
           dataType = "countries";
           break;
-        case 1: // Provinces
-          if (!force && dataFetched.provinces) {
+        case 1: // Zones
+          if (!force && dataFetched.zones) {
             setLoading(false);
             return;
           }
-          response = await getProvinces();
-          setProvincesData(response.data || []);
-          dataType = "provinces";
+          response = await getZones();
+          setZonesData(response.data || []);
+          dataType = "zones";
           break;
         case 2: // Cities
           if (!force && dataFetched.cities) {
@@ -208,11 +208,11 @@ function AddressCodesPage() {
       editFn: editCountry,
       createFn: createCountry,
     },
-    province: {
-      setData: setProvincesData,
-      deleteFn: deleteProvince,
-      editFn: editProvince,
-      createFn: createProvince,
+    zone: {
+      setData: setZonesData,
+      deleteFn: deleteZone,
+      editFn: editZone,
+      createFn: createZone,
     },
     city: {
       setData: setCitiesData,
@@ -339,8 +339,8 @@ function AddressCodesPage() {
         case "country":
           response = await exportCountriesToExcel();
           break;
-        case "province":
-          response = await exportProvincesToExcel();
+        case "zone":
+          response = await exportZonesToExcel();
           break;
         case "city":
           response = await exportCitiesToExcel();
@@ -380,8 +380,8 @@ function AddressCodesPage() {
         case "country":
           response = await exportCountriesToPdf();
           break;
-        case "province":
-          response = await exportProvincesToPdf();
+          case "zone":
+          response = await exportZonesToPdf();
           break;
         case "city":
           response = await exportCitiesToPdf();
@@ -421,8 +421,8 @@ function AddressCodesPage() {
         case "country":
           response = await importCountriesFromExcel(file);
           break;
-        case "province":
-          response = await importProvincesFromExcel(file);
+        case "zone":
+          response = await importZonesFromExcel(file);
           break;
         case "city":
           response = await importCitiesFromExcel(file);
@@ -477,7 +477,7 @@ function AddressCodesPage() {
             aria-label="address code tabs"
           >
             <Tab label={t("tabs.countries")} />
-            <Tab label={t("tabs.provinces")} />
+            <Tab label={t("tabs.zones")} />
             <Tab label={t("tabs.cities")} />
             <Tab label={t("tabs.districts")} />
           </Tabs>
@@ -507,26 +507,26 @@ function AddressCodesPage() {
           </Box>
         </TabPanel>
 
-        {/* Provinces Management Tab*/}
+        {/* Zones Management Tab*/}
         <TabPanel value={value} index={1}>
           <Box className="p-0">
             <Table
-              data={provincesData}
-              columns={provinceColumns}
+              data={zonesData}
+              columns={zoneColumns}
               t={t}
-              onEdit={(row) => handleEdit("province", row)}
-              onDelete={(row) => handleDelete("province", row)}
-              onAdd={() => handleAddNew("province")}
+              onEdit={(row) => handleEdit("zone", row)}
+              onDelete={(row) => handleDelete("zone", row)}
+              onAdd={() => handleAddNew("zone")}
               loading={loading}
               enableCellEditing={false}
-              onExportExcel={() => handleExportExcel("province")}
-              onExportPdf={() => handleExportPdf("province")}
+              onExportExcel={() => handleExportExcel("zone")}
+              onExportPdf={() => handleExportPdf("zone")}
               onPrint={() =>
-                handlePrint("province", provincesData, provinceColumns)
+                handlePrint("zone", zonesData, zoneColumns)
               }
               onRefresh={() => fetchData(1, true)}
-              onImportExcel={(file) => handleImportExcel("province", file)}
-              tableId="provinces"
+              onImportExcel={(file) => handleImportExcel("zone", file)}
+              tableId="zones"
             />
           </Box>
         </TabPanel>

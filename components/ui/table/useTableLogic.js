@@ -153,8 +153,8 @@ export function useTableLogic({
           const parsedWidths = JSON.parse(savedWidths);
           // Validate that all columns have a width
           const validWidths = {
-            select: parsedWidths.select || "40px",
-            search: parsedWidths.search || "40px",
+            select: Math.max(parseInt(parsedWidths.select || 28), 15) + "px",
+            search: Math.max(parseInt(parsedWidths.search || 28), 15) + "px",
           };
           columns.forEach((column) => {
             validWidths[column.key] = parsedWidths[column.key] || column.width || "100px";
@@ -167,8 +167,8 @@ export function useTableLogic({
     }
     // If no saved widths or error, use default widths
     return {
-      select: "40px",
-      search: "40px",
+      select: "28px",
+      search: "28px",
       ...columns.reduce((acc, column) => {
         acc[column.key] = column.width || "100px";
         return acc;
@@ -782,8 +782,8 @@ export function useTableLogic({
       localStorage.setItem(visibilityKey, JSON.stringify(defaultSettings));
     } else if (tab === "size") {
       const defaultWidths = {
-        select: "40px",
-        search: "40px",
+        select: "28px",
+        search: "28px",
         ...columns.reduce((acc, column) => {
           acc[column.key] = column.width || "100px";
           return acc;
@@ -851,8 +851,8 @@ export function useTableLogic({
   // Reset column widths with animation
   const resetColumnWidths = () => {
     const defaultWidths = {
-      select: "40px",
-      search: "40px",
+      select: "28px",
+      search: "28px",
       ...columns.reduce((acc, column) => {
         acc[column.key] = column.width || "auto";
         return acc;

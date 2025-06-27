@@ -102,7 +102,7 @@ export const TableBody = ({
               {/* Row selection checkbox */}
               <td
                 className="border-b border-border px-4 py-2"
-                style={{ width: columnWidths["select"] || "40px" }}
+                style={{ width: columnWidths["select"] || "28px", minWidth: "15px" }}
               >
                 <div className="flex items-center justify-center w-full">
                   <Checkbox
@@ -115,7 +115,7 @@ export const TableBody = ({
               {/* Row handle */}
               <td
                 className="border-b border-border px-4 py-2"
-                style={{ width: columnWidths["search"] || "40px" }}
+                style={{ width: columnWidths["search"] || "28px", minWidth: "15px" }}
               >
                 <div className="flex h-full cursor-move items-center justify-center">
                   <svg

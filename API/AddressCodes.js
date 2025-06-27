@@ -11,21 +11,20 @@ export const getCountries = async () => {
   }
 };
 
-// Function to get provinces by country ID
-export const getProvinces = async (countryId) => {
+export const getZones = async (countryId) => {
   try {
-    const response = await tenantApiService('GET', `provinces`);
+    const response = await tenantApiService('GET', `zones`);
     return response;
   } catch (error) {
-    console.error('Error fetching provinces:', error);
+    console.error('Error fetching zones:', error);
     throw error;
   }
 };
 
-// Function to get cities by province ID
-export const getCities = async (provinceId) => {
+// Function to get cities by zone ID
+export const getCities = async (zoneId) => {
   try {
-    const response = await tenantApiService('GET', `cities`);
+    const response = await tenantApiService('GET', `cities?zoneId=${zoneId}`);
     return response;
   } catch (error) {
     console.error('Error fetching cities:', error);
@@ -33,7 +32,7 @@ export const getCities = async (provinceId) => {
   }
 };
 
-// Function to get districts by city ID
+// Function to get districts 
 export const getDistricts = async (cityId) => {
   try {
     const response = await tenantApiService('GET', `districts`);
@@ -65,12 +64,12 @@ export const deleteCity = async (id) => {
   }
 };
 
-export const deleteProvince = async (id) => {
+export const deleteZone = async (id) => {
   try {
-    const response = await tenantApiService('DELETE', `provinces/${id}`);
+    const response = await tenantApiService('DELETE', `zones/${id}`);
     return response;
   } catch (error) {
-    console.error('Error deleting province:', error);
+    console.error('Error deleting zone:', error);
     throw error;
   }
 };
@@ -106,12 +105,12 @@ export const editCity = async (id, data) => {
   }
 };
 
-export const editProvince = async (id, data) => {
+export const editZone = async (id, data) => {
   try {
-    const response = await tenantApiService('PUT', `provinces/${id}`, data);
+    const response = await tenantApiService('PUT', `zones/${id}`, data);
     return response;
   } catch (error) {
-    console.error('Error editing province:', error);
+    console.error('Error editing zone:', error);
     throw error;
   }
 }; 
@@ -137,12 +136,12 @@ export const createCountry = async (data) => {
   }
 };
 
-export const createProvince = async (data) => {
+export const createZone = async (data) => {
   try {
-    const response = await tenantApiService('POST', 'provinces', data);
+    const response = await tenantApiService('POST', 'zones', data);
     return response;
   } catch (error) {
-    console.error('Error creating province:', error);
+    console.error('Error creating zone:', error);
     throw error;
   }
 };
@@ -235,36 +234,36 @@ export const importCountriesFromExcel = async (file) => {
   }
 };
 
-// Export and Import functions for Provinces
-export const exportProvincesToExcel = async () => {
+// Export and Import functions for Zones
+export const exportZonesToExcel = async () => {
   try {
-    const response = await tenantApiService('GET', 'exportExcell/provinces');
+    const response = await tenantApiService('GET', 'exportExcell/zones');
     return response;
   } catch (error) {
-    console.error('Error exporting provinces to Excel:', error);
+    console.error('Error exporting zones to Excel:', error);
     throw error;
   }
 };
 
-export const exportProvincesToPdf = async () => {
+export const exportZonesToPdf = async () => {
   try {
-    const response = await tenantApiService('GET', 'exportPdf/provinces');
+    const response = await tenantApiService('GET', 'exportPdf/zones');
     return response;
   } catch (error) {
-    console.error('Error exporting provinces to PDF:', error);
+    console.error('Error exporting zones to PDF:', error);
     throw error;
   }
 };
 
-export const importProvincesFromExcel = async (file) => {
+export const importZonesFromExcel = async (file) => {
   try {
     const formData = new FormData();
     formData.append('file', file);
     
-    const response = await tenantApiService('POST', 'importFromExcel/provinces', formData);
+    const response = await tenantApiService('POST', 'importFromExcel/zones', formData);
     return response;
   } catch (error) {
-    console.error('Error importing provinces from Excel:', error);
+    console.error('Error importing zones from Excel:', error);
     throw error;
   }
 };

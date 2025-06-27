@@ -51,8 +51,8 @@ export function useMenuItems(t) {
               roles: ["admin", "user", "owner"],
             },
             {
-              key: "provinces",
-              name: t("provinces"),
+              key: "zones",
+              name: t("zones"),
               icon: "Flag",
               path: "/main/mainfiles/addresscodes?tab=1",
               roles: ["admin", "user", "owner"],

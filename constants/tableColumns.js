@@ -15,7 +15,7 @@ export function useTableColumns(t) {
       { key: "updated_at", header: t("updatedAt"), type: "date" },
     ],
 
-    provinceColumns: [
+    zoneColumns: [
       { key: "id", header: t("id"), type: "text" },
       { key: "name", header: t("name"), type: "text" },
       { key: "created_at", header: t("createdAt"), type: "date" },

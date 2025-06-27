@@ -316,45 +316,50 @@ const GroupHeader = ({
                         sideOffset={-1}
                         alignOffset={8}
                       >
-                        <div className="space-y-1">
-                          {item.items.map((subItem) => {
-                            const SubIcon = iconMap[subItem.icon];
-                            // Find the subItem with proper uniqueId from allItems
-                            const processedSubItem = allItems.find(
-                              (i) =>
-                                i.name === subItem.name &&
-                                i.path === subItem.path
-                            );
-                            const uniqueId =
-                              processedSubItem?.uniqueId || subItem.key;
+                        <div className="space-y-2">
+                          <h3 className="text-[15px] font-medium px-2 py-1 bg-primary-foreground/5 rounded-md">
+                            {item.name}
+                          </h3>
+                          <div className="space-y-1">
+                            {item.items.map((subItem) => {
+                              const SubIcon = iconMap[subItem.icon];
+                              // Find the subItem with proper uniqueId from allItems
+                              const processedSubItem = allItems.find(
+                                (i) =>
+                                  i.name === subItem.name &&
+                                  i.path === subItem.path
+                              );
+                              const uniqueId =
+                                processedSubItem?.uniqueId || subItem.key;
 
-                            return (
-                              <SidebarItem
-                                key={subItem.name}
-                                name={subItem.name}
-                                icon={SubIcon}
-                                path={subItem.path}
-                                uniqueId={uniqueId}
-                                isCollapsed={false}
-                                isBookmarked={bookmarks.includes(uniqueId)}
-                                isActive={
-                                  activeItem === subItem.name.toLowerCase()
-                                }
-                                onNavigate={() => {
-                                  handleNavigation(subItem.name);
-                                  setPopoverOpen(false);
-                                  setNestedPopoverOpen(null);
-                                }}
-                                onToggleBookmark={() =>
-                                  toggleBookmark(subItem.name)
-                                }
-                                padding="px-2"
-                                className="whitespace-nowrap"
-                                t={t}
-                                isRTL={isRTL}
-                              />
-                            );
-                          })}
+                              return (
+                                <SidebarItem
+                                  key={subItem.name}
+                                  name={subItem.name}
+                                  icon={SubIcon}
+                                  path={subItem.path}
+                                  uniqueId={uniqueId}
+                                  isCollapsed={false}
+                                  isBookmarked={bookmarks.includes(uniqueId)}
+                                  isActive={
+                                    activeItem === subItem.name.toLowerCase()
+                                  }
+                                  onNavigate={() => {
+                                    handleNavigation(subItem.name);
+                                    setPopoverOpen(false);
+                                    setNestedPopoverOpen(null);
+                                  }}
+                                  onToggleBookmark={() =>
+                                    toggleBookmark(subItem.name)
+                                  }
+                                  padding="px-2"
+                                  className="whitespace-nowrap"
+                                  t={t}
+                                  isRTL={isRTL}
+                                />
+                              );
+                            })}
+                          </div>
                         </div>
                       </PopoverContent>
                     </Popover>
@@ -529,34 +534,39 @@ const NestedGroup = ({
         onOpenAutoFocus={handlePopoverOpen}
         onCloseAutoFocus={handlePopoverClose}
       >
-        <div className="space-y-1">
-          {item.items.map((subItem) => {
-            const SubIcon = iconMap[subItem.icon];
-            // Find the subItem with proper uniqueId from allItems
-            const processedSubItem = allItems.find(
-              (i) => i.name === subItem.name && i.path === subItem.path
-            );
-            const uniqueId = processedSubItem?.uniqueId || subItem.key;
+        <div className="space-y-2">
+          <h3 className="text-[15px] font-medium px-2 py-1 bg-primary-foreground/5 rounded-md">
+            {item.name}
+          </h3>
+          <div className="space-y-1">
+            {item.items.map((subItem) => {
+              const SubIcon = iconMap[subItem.icon];
+              // Find the subItem with proper uniqueId from allItems
+              const processedSubItem = allItems.find(
+                (i) => i.name === subItem.name && i.path === subItem.path
+              );
+              const uniqueId = processedSubItem?.uniqueId || subItem.key;
 
-            return (
-              <SidebarItem
-                key={subItem.name}
-                name={subItem.name}
-                icon={SubIcon}
-                path={subItem.path}
-                uniqueId={uniqueId}
-                isCollapsed={false}
-                isBookmarked={bookmarks.includes(uniqueId)}
-                isActive={activeItem === subItem.name.toLowerCase()}
-                onNavigate={() => handleNavigate(subItem.name)}
-                onToggleBookmark={() => onToggleBookmark(subItem.name)}
-                padding={isMainFiles ? "px-8" : "px-12"}
-                className="whitespace-nowrap"
-                t={t}
-                isRTL={isRTL}
-              />
-            );
-          })}
+              return (
+                <SidebarItem
+                  key={subItem.name}
+                  name={subItem.name}
+                  icon={SubIcon}
+                  path={subItem.path}
+                  uniqueId={uniqueId}
+                  isCollapsed={false}
+                  isBookmarked={bookmarks.includes(uniqueId)}
+                  isActive={activeItem === subItem.name.toLowerCase()}
+                  onNavigate={() => handleNavigate(subItem.name)}
+                  onToggleBookmark={() => onToggleBookmark(subItem.name)}
+                  padding={isMainFiles ? "px-8" : "px-12"}
+                  className="whitespace-nowrap"
+                  t={t}
+                  isRTL={isRTL}
+                />
+              );
+            })}
+          </div>
         </div>
       </PopoverContent>
     </Popover>

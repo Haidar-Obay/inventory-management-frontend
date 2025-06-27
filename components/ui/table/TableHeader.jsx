@@ -40,7 +40,7 @@ export const TableHeader = ({
         <th
           className="border-b border-border px-4 py-2 relative group"
           data-column="select"
-          style={{ width: columnWidths["select"] || "40px" }}
+          style={{ width: columnWidths["select"] || "28px", minWidth: "15px" }}
         >
           <div className="flex items-center justify-center w-full">
             <Checkbox
@@ -54,7 +54,7 @@ export const TableHeader = ({
         <th
           className="border-b border-border px-4 py-2 relative group"
           data-column="search"
-          style={{ width: columnWidths["search"] || "40px" }}
+          style={{ width: columnWidths["search"] || "28px", minWidth: "15px" }}
         >
           <div className="flex items-center justify-center w-full">
             <Button
