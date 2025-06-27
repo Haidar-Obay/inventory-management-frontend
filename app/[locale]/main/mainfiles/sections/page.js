@@ -18,10 +18,10 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import PrintIcon from "@mui/icons-material/Print";
 import Table from "@/components/ui/table/Table";
 import SectionDrawer from "@/components/ui/drawers/SectionDrawer";
+import CustomTabs from "@/components/ui/CustomTabs";
 import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import { useTabLinePosition } from "@/hooks/useTabLinePosition";
 import {
   getProjects,
   getCostCenters,
@@ -118,7 +118,6 @@ function SectionsPage() {
   } = useTableColumns(tableT);
   const locale = useLocale();
   const isRTL = locale === "ar";
-  const { key, tabStyles } = useTabLinePosition();
   const searchParams = useSearchParams();
   const router = useRouter();
   const [value, setValue] = useState(0);
@@ -565,13 +564,11 @@ function SectionsPage() {
     <div className="p-4">
       <Box sx={{ width: "100%" }}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs
-            key={key}
+          <CustomTabs
             value={value}
             onChange={handleChange}
             aria-label="sections tabs"
             sx={{
-              ...tabStyles,
               direction: isRTL ? "rtl" : "ltr",
             }}
           >
@@ -581,7 +578,7 @@ function SectionsPage() {
             <Tab label={t("tabs.trades")} />
             <Tab label={t("tabs.companyCodes")} />
             <Tab label={t("tabs.jobs")} />
-          </Tabs>
+          </CustomTabs>
         </Box>
 
         {/* Projects Tab */}

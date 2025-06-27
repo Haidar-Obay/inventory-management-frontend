@@ -39,37 +39,27 @@ const SearchBar = ({ searchQuery, setSearchQuery, handleSearch, t }) => {
   const isRTL = currentLocale === "ar";
 
   return (
-    <form onSubmit={handleSearch} className="relative w-full max-w-2xl mx-auto">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={`absolute top-1/2 transform -translate-y-1/2 text-foreground ${isRTL ? "right-3" : "left-3"}`}
-      >
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
-      <Input
-        type="search"
-        placeholder={t("searchPlaceholder")}
-        className={`w-full h-10 bg-background/50 backdrop-blur-sm border-border/50 focus:border-primary/50 focus:bg-background transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg ${isRTL ? "pr-14 pl-8" : "pl-10 pr-4"}`}
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-      <Button
-        type="submit"
-        size="sm"
-        className={`absolute top-1/2 transform -translate-y-1/2 h-8 px-3 text-xs ${isRTL ? "left-1" : "right-1"}`}
-        disabled={!searchQuery.trim()}
-      >
-        {t("search")}
-      </Button>
+    <form onSubmit={handleSearch} className="relative w-full max-w-lg mx-auto">
+      <div className="relative">
+        <Search
+          className={`absolute top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground ${isRTL ? "right-3" : "left-3"}`}
+        />
+        <Input
+          type="search"
+          placeholder={t("searchPlaceholder")}
+          className={`w-full h-10 bg-background/50 backdrop-blur-sm border-border/50 focus:border-primary/50 focus:bg-background transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg ${isRTL ? "pr-14 pl-8" : "pl-10 pr-4"}`}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <Button
+          type="submit"
+          size="sm"
+          className={`absolute top-1/2 transform -translate-y-1/2 h-8 px-3 text-xs ${isRTL ? "left-1" : "right-1"}`}
+          disabled={!searchQuery.trim()}
+        >
+          {t("search")}
+        </Button>
+      </div>
     </form>
   );
 };
@@ -311,7 +301,7 @@ export function Header({ toggleSidebar }) {
         style={{ transition: "all 0.3s ease-in-out" }}
       >
         {/* Left Section - Breadcrumbs */}
-        <div className="flex items-center gap-4 flex-shrink-0 w-80">
+        <div className="flex items-center gap-4 flex-shrink-0 w-96">
           <Breadcrumbs className="font-medium" />
         </div>
 

@@ -99,10 +99,10 @@ const DynamicDrawer = ({
           </Box>
         </Box>
 
-        {/* Action Toolbar - Fixed at bottom with custom layout */}
+        {/* Action Toolbar - Fixed at bottom with buttons beside each other */}
         <Box className="flex-shrink-0 border-t border-border bg-gray-50 dark:bg-muted/50">
           <Box p={3}>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-end items-center gap-3">
               {/* Cancel button - Left side in LTR, Right side in RTL */}
               <div className={isRTL ? "order-2" : "order-1"}>
                 <ActionToolbar

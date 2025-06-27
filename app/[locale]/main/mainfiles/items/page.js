@@ -5,6 +5,7 @@ import { Tabs, Tab, Box, Typography, CircularProgress } from "@mui/material";
 import { useTranslations, useLocale } from "next-intl";
 import Table from "@/components/ui/table/Table";
 import ItemDrawer from "@/components/ui/drawers/ItemDrawer";
+import CustomTabs from "@/components/ui/CustomTabs";
 import {
   getProductLines,
   getCategories,
@@ -566,12 +567,16 @@ function ItemsPage() {
     <div className="p-4">
       <Box sx={{ width: "100%" }}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs value={value} onChange={handleChange} aria-label="items tabs">
+          <CustomTabs
+            value={value}
+            onChange={handleChange}
+            aria-label="items tabs"
+          >
             <Tab label={t("tabs.productLines")} />
             <Tab label={t("tabs.categories")} />
             <Tab label={t("tabs.brands")} />
             <Tab label={t("tabs.items")} />
-          </Tabs>
+          </CustomTabs>
         </Box>
 
         {/* Product Lines Management Tab*/}

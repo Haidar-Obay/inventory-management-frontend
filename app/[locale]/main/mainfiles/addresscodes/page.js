@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { Tabs, Tab, Box, Typography, CircularProgress } from "@mui/material";
 import Table from "@/components/ui/table/Table";
 import AddressCodeDrawer from "@/components/ui/drawers/AddressCodeDrawer";
+import CustomTabs from "@/components/ui/CustomTabs";
 import { useTranslations } from "next-intl";
 import {
   getCountries,
@@ -380,7 +381,7 @@ function AddressCodesPage() {
         case "country":
           response = await exportCountriesToPdf();
           break;
-          case "zone":
+        case "zone":
           response = await exportZonesToPdf();
           break;
         case "city":
@@ -471,7 +472,7 @@ function AddressCodesPage() {
     <div className="p-4">
       <Box sx={{ width: "100%" }}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs
+          <CustomTabs
             value={value}
             onChange={handleChange}
             aria-label="address code tabs"
@@ -480,7 +481,7 @@ function AddressCodesPage() {
             <Tab label={t("tabs.zones")} />
             <Tab label={t("tabs.cities")} />
             <Tab label={t("tabs.districts")} />
-          </Tabs>
+          </CustomTabs>
         </Box>
 
         {/* Countries Management Tab*/}
@@ -521,9 +522,7 @@ function AddressCodesPage() {
               enableCellEditing={false}
               onExportExcel={() => handleExportExcel("zone")}
               onExportPdf={() => handleExportPdf("zone")}
-              onPrint={() =>
-                handlePrint("zone", zonesData, zoneColumns)
-              }
+              onPrint={() => handlePrint("zone", zonesData, zoneColumns)}
               onRefresh={() => fetchData(1, true)}
               onImportExcel={(file) => handleImportExcel("zone", file)}
               tableId="zones"

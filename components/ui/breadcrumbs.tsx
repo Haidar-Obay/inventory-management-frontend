@@ -6,6 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
 
 interface BreadcrumbItem {
   label: string;
@@ -23,6 +24,7 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
   const t = useTranslations("breadcrumbs");
   const currentLocale = useLocale();
   const isRTL = currentLocale === "ar";
+  const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([]);
 
   const generateBreadcrumbs = (): BreadcrumbItem[] => {
     const segments = pathname.split("/").filter(Boolean);
@@ -129,7 +131,7 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
       } else if (pathSegments.includes("addresscodes")) {
         const addressTabs = [
           t("countries"),
-          t("provinces"),
+          t("zones"),
           t("cities"),
           t("districts"),
         ];
@@ -165,7 +167,11 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
     return breadcrumbs;
   };
 
-  const breadcrumbs = generateBreadcrumbs();
+  // Update breadcrumbs when pathname or searchParams change
+  useEffect(() => {
+    const newBreadcrumbs = generateBreadcrumbs();
+    setBreadcrumbs(newBreadcrumbs);
+  }, [pathname, searchParams, currentLocale, t]);
 
   if (breadcrumbs.length <= 1) {
     return null;

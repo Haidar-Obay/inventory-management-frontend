@@ -5,7 +5,7 @@ export function useMenuItems(t) {
     [t("dashboard")]: {
       key: "dashboard",
       groupIcon: "LayoutDashboard",
-      displayType: "popover",
+      displayType: "collapsible",
       items: [
         {
           key: "overview",
@@ -32,8 +32,9 @@ export function useMenuItems(t) {
     },
     [t("mainFiles")]: {
       key: "mainFiles",
-      groupIcon: "FolderOpen",
+      groupIcon: "File",
       displayType: "collapsible",
+      roles: ["admin", "user", "owner"],
       items: [
         {
           key: "addressCodes",
@@ -156,7 +157,7 @@ export function useMenuItems(t) {
             },
             {
               key: "items_inner",
-              name: t("items"),
+              name: t("items_inner"),
               icon: "Package",
               path: "/main/mainfiles/items?tab=3",
               roles: ["admin", "user", "owner"],
@@ -187,7 +188,7 @@ export function useMenuItems(t) {
             },
             {
               key: "customer_inner",
-              name: t("customer"),
+              name: t("customer_inner"),
               icon: "Users",
               path: "/main/mainfiles/customer?tab=2",
               roles: ["admin", "user", "owner"],
@@ -252,6 +253,7 @@ export function useMenuItems(t) {
       key: "support",
       groupIcon: "LifeBuoy",
       displayType: "popover",
+      roles: ["admin", "user", "owner"],
       items: [
         {
           key: "helpCenter",

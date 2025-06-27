@@ -5,6 +5,7 @@ import { Tabs, Tab, Box, Typography, CircularProgress } from "@mui/material";
 import { useTranslations, useLocale } from "next-intl";
 import Table from "@/components/ui/table/Table";
 import CustomerDrawer from "@/components/ui/drawers/CustomerDrawer";
+import CustomTabs from "@/components/ui/CustomTabs";
 import {
   getCustomerGroups,
   getSalesmen,
@@ -542,7 +543,7 @@ function CustomerPage() {
     <div className="p-4">
       <Box sx={{ width: "100%" }}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs
+          <CustomTabs
             value={value}
             onChange={handleChange}
             aria-label="customer tabs"
@@ -550,7 +551,7 @@ function CustomerPage() {
             <Tab label={t("tabs.customerGroups")} />
             <Tab label={t("tabs.salesmen")} />
             <Tab label={t("tabs.customers")} />
-          </Tabs>
+          </CustomTabs>
         </Box>
 
         {/* Customer Groups Management Tab*/}
