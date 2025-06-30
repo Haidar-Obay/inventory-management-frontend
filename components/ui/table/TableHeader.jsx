@@ -218,11 +218,12 @@ export const TableHeader = ({
 
         {/* Actions column */}
         <th
-          className={`w-8 border-b border-border px-1 py-2 text-center bg-gray-50 dark:bg-muted/50 ${
+          className={`border-b border-border px-1 py-2 text-center bg-gray-50 dark:bg-muted/50 ${
             isOverflowing
               ? "sticky right-0 z-20 backdrop-blur-sm border-l border-gray-200 dark:border-gray-700 bg-gray-50/95 dark:bg-muted/95"
               : ""
           }`}
+          style={{ width: "70px", minWidth: "70px", maxWidth: "70px" }}
         >
           <span className="flex items-center justify-center w-full">
             {t("actions")}
@@ -287,11 +288,12 @@ export const TableHeader = ({
             );
           })}
           <td
-            className={`w-8 border-b border-border px-1 py-2 bg-gray-50 dark:bg-muted/50 ${
+            className={`border-b border-border px-1 py-2 bg-gray-50 dark:bg-muted/50 ${
               isOverflowing
                 ? "sticky right-0 z-10 backdrop-blur-sm border-l border-gray-200 dark:border-gray-700 bg-gray-50/95 dark:bg-muted/95"
                 : ""
             }`}
+            style={{ width: "70px", minWidth: "70px", maxWidth: "70px" }}
           ></td>
         </tr>
       )}

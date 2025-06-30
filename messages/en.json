@@ -665,6 +665,8 @@
     "description": "Table description",
     "editLabel": "Edit",
     "deleteLabel": "Delete",
+    "edit": "Edit",
+    "delete": "Delete",
     "search": {
       "placeholder": "Search all columns...",
       "columnPlaceholder": "Search {column}...",
@@ -779,9 +781,7 @@
     "noData": {
       "title": "No data found",
       "description": "Try adjusting your search or filter to find what you're looking for."
-    },
-    "edit": "Edit",
-    "delete": "Delete"
+    }
   },
   "customers": {
     "title": "Customer Management",

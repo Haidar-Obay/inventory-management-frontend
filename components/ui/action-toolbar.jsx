@@ -332,20 +332,22 @@ export function ActionToolbar({
               {isRTL ? (
                 // Arabic mode: Arrow on the left, main button on the right
                 <>
-                  <Button
-                    onClick={() => toggleGroup(group.id)}
-                    className={`flex items-center justify-center bg-background hover:bg-muted text-foreground border border-border px-2 py-2 text-sm h-9 w-8 transition-all duration-200 shadow-sm rounded-r-none`}
-                  >
-                    <div
-                      className={`transform transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                  <div className="scale-x-[-1]">
+                    <Button
+                      onClick={() => toggleGroup(group.id)}
+                      className={`flex items-center justify-center bg-background hover:bg-muted text-foreground border border-border px-2 py-2 text-sm h-9 w-8 transition-all duration-200 shadow-sm rounded-r-none`}
                     >
-                      {dropdownDirection === "down" ? (
-                        <ChevronDownIcon size={16} />
-                      ) : (
-                        <ChevronUpIcon size={16} />
-                      )}
-                    </div>
-                  </Button>
+                      <div
+                        className={`transform transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                      >
+                        {dropdownDirection === "down" ? (
+                          <ChevronDownIcon size={16} />
+                        ) : (
+                          <ChevronUpIcon size={16} />
+                        )}
+                      </div>
+                    </Button>
+                  </div>
                   {lastUsedAction && (
                     <div className="rounded-l-none">
                       {renderActionButton(lastUsedAction, group.id)}
@@ -364,20 +366,22 @@ export function ActionToolbar({
                       {renderActionButton(lastUsedAction, group.id)}
                     </div>
                   )}
-                  <Button
-                    onClick={() => toggleGroup(group.id)}
-                    className={`flex items-center justify-center bg-background hover:bg-muted text-foreground border border-border px-2 py-2 text-sm h-9 w-8 transition-all duration-200 shadow-sm ${shouldExpandLeft ? "rounded-l-none" : "rounded-r-none"}`}
-                  >
-                    <div
-                      className={`transform transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                  <div className="scale-x-[-1]">
+                    <Button
+                      onClick={() => toggleGroup(group.id)}
+                      className={`flex items-center justify-center bg-background hover:bg-muted text-foreground border border-border px-2 py-2 text-sm h-9 w-8 transition-all duration-200 shadow-sm ${shouldExpandLeft ? "rounded-l-none" : "rounded-r-none"}`}
                     >
-                      {dropdownDirection === "down" ? (
-                        <ChevronDownIcon size={16} />
-                      ) : (
-                        <ChevronUpIcon size={16} />
-                      )}
-                    </div>
-                  </Button>
+                      <div
+                        className={`transform transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                      >
+                        {dropdownDirection === "down" ? (
+                          <ChevronDownIcon size={16} />
+                        ) : (
+                          <ChevronUpIcon size={16} />
+                        )}
+                      </div>
+                    </Button>
+                  </div>
                 </>
               )}
             </div>

@@ -319,6 +319,14 @@ const GroupHeader = ({
     }
   }, [popoverOpen]);
 
+  // Enhanced navigation handler for popovers
+  const handlePopoverNavigation = (itemName) => {
+    handleNavigation(itemName);
+    // Always close popovers when navigating
+    setPopoverOpen(false);
+    setNestedPopoverOpen(null);
+  };
+
   if (!isCollapsed) {
     return (
       <div className="px-4 mb-2">
@@ -391,8 +399,11 @@ const GroupHeader = ({
                             </div>
                             <ChevronRight
                               className={cn(
-                                "h-4 w-4",
-                                isRTL ? "rotate-180" : ""
+                                "h-4 w-4 transition-transform duration-200",
+                                isRTL ? "rotate-180" : "",
+                                nestedPopoverOpen === item.name
+                                  ? "rotate-90"
+                                  : ""
                               )}
                             />
                           </button>
@@ -428,11 +439,9 @@ const GroupHeader = ({
                                   isActive={
                                     activeItem === subItem.name.toLowerCase()
                                   }
-                                  onNavigate={() => {
-                                    handleNavigation(subItem.name);
-                                    setPopoverOpen(false);
-                                    setNestedPopoverOpen(null);
-                                  }}
+                                  onNavigate={() =>
+                                    handlePopoverNavigation(subItem.name)
+                                  }
                                   onToggleBookmark={() =>
                                     toggleBookmark(subItem.name)
                                   }
@@ -467,10 +476,7 @@ const GroupHeader = ({
                       isCollapsed={false}
                       isBookmarked={bookmarks.includes(uniqueId)}
                       isActive={activeItem === item.name.toLowerCase()}
-                      onNavigate={() => {
-                        handleNavigation(item.name);
-                        setPopoverOpen(false);
-                      }}
+                      onNavigate={() => handlePopoverNavigation(item.name)}
                       onToggleBookmark={() => toggleBookmark(item.name)}
                       padding="px-2"
                       className="whitespace-nowrap"
@@ -590,6 +596,7 @@ const NestedGroup = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const buttonRef = useRef(null);
 
   const handlePopoverOpen = (e) => {
@@ -605,14 +612,16 @@ const NestedGroup = ({
 
   const handleNavigate = (itemName) => {
     onNavigate(itemName);
+    // Always close popovers when navigating
     setIsOpen(false);
+    setPopoverOpen(false);
   };
 
   // Get all items with proper uniqueId
   const allItems = GetAllMenuItems(t);
 
   const renderPopover = () => (
-    <Popover>
+    <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger asChild>
         <button
           ref={buttonRef}
@@ -900,6 +909,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
       const fullPath = item.path.startsWith("/")
         ? item.path
         : `/${params?.route}/${item.path}`;
+
       router.push(fullPath);
     }
 

@@ -285,7 +285,7 @@ export const TableBody = ({
 
               {/* Actions */}
               <td
-                className={`w-8 border-b border-border px-1 py-2 transition-colors duration-200 ${
+                className={`border-b border-border px-1 py-2 transition-colors duration-200 ${
                   isOverflowing
                     ? "sticky right-0 z-10 backdrop-blur-sm border-l border-gray-200 dark:border-gray-700"
                     : ""
@@ -302,6 +302,7 @@ export const TableBody = ({
                       : "bg-gray-50/95 dark:bg-muted/95"
                     : ""
                 }`}
+                style={{ width: "70px", minWidth: "70px", maxWidth: "70px" }}
               >
                 <div
                   className="flex justify-center"
@@ -426,10 +427,10 @@ export const TableBody = ({
                 <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
               </svg>
               <p className="text-lg font-medium text-foreground">
-                {t("title")}
+                {t("noData.title")}
               </p>
               <p className="text-sm text-muted-foreground">
-                {t("description")}
+                {t("noData.description")}
               </p>
             </div>
           </td>

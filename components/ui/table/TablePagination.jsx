@@ -245,36 +245,41 @@ export const TablePagination = ({
               handleJumpToPageInputChange({ target: { value } });
             }}
             onKeyPress={handleJumpToPageKeyPress}
-            className="h-8 w-32 rounded-md border-border text-foreground bg-background text-sm shadow-sm focus:border-primary focus:ring-primary pr-8 text-center"
-            placeholder={t("jumpTo")}
-            min="1"
-            max={totalPages}
-            aria-label="Jump to page"
-            style={
-              locale === "ar"
+            style={{
+              width: "95px",
+              height: "2rem",
+              borderRadius: "0.375rem",
+              ...(locale === "ar"
                 ? {
                     color: "transparent",
                     textShadow: "none",
                     caretColor: "#fff",
                   }
-                : {}
-            }
+                : {}),
+            }}
+            className="text-sm shadow-sm focus:border-primary focus:ring-primary pr-6 text-center border-border text-foreground bg-background"
+            placeholder={t("jumpTo")}
+            min="1"
+            max={totalPages}
+            aria-label="Jump to page"
             inputMode="numeric"
           />
           {locale === "ar" && (
             <span
               style={{
                 position: "absolute",
-                left: "50%",
-                top: "50%",
-                transform: "translate(-50%, -50%)",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
                 pointerEvents: "none",
                 color: "var(--foreground, #fff)",
-                fontSize: "0.875rem",
+                fontSize: "1rem",
                 fontWeight: 500,
                 direction: "ltr",
                 letterSpacing: "0.05em",
-                width: "100%",
                 textAlign: "center",
               }}
             >
@@ -300,7 +305,7 @@ export const TablePagination = ({
             variant="outline"
             size="sm"
             onClick={handleJumpToPage}
-            className="h-8"
+            className="h-8 px-3"
           >
             {t("go")}
           </Button>
