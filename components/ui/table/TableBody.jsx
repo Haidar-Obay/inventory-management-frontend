@@ -36,6 +36,7 @@ export const TableBody = ({
   isOverflowing,
   openDropdownRowId,
   setOpenDropdownRowId,
+  showSearchColumn,
 }) => {
   const t = useTranslations("table");
   const locale = useLocale();
@@ -62,12 +63,14 @@ export const TableBody = ({
                 <div className="h-4 w-4 rounded bg-gray-200 dark:bg-muted animate-pulse"></div>
               </div>
             </td>
-            <td
-              className="border-b border-border px-4 py-2"
-              style={{ width: columnWidths["search"] || "40px" }}
-            >
-              <div className="h-4 w-4 rounded bg-gray-200 dark:bg-muted animate-pulse"></div>
-            </td>
+            {showSearchColumn && (
+              <td
+                className="border-b border-border px-4 py-2"
+                style={{ width: columnWidths["search"] || "40px" }}
+              >
+                <div className="h-4 w-4 rounded bg-gray-200 dark:bg-muted animate-pulse"></div>
+              </td>
+            )}
             {columnOrder.map((key) => {
               const column = columns.find((col) => col.key === key);
               if (!column || !visibleColumns[key]) return null;
@@ -105,51 +108,51 @@ export const TableBody = ({
             >
               {/* Row selection checkbox */}
               <td
-                className="border-b border-border px-4 py-2"
-                style={{
-                  width: columnWidths["select"] || "28px",
-                  minWidth: "15px",
-                }}
+                className="border-b border-border pl-2 py-2"
+                style={{ width: "36px", minWidth: "32px", maxWidth: "40px" }}
               >
-                <div className="flex items-center justify-center w-full">
+                <div className="flex flex-row items-center justify-center w-full gap-1">
                   <Checkbox
                     checked={selectedRows.has(row.id)}
                     onChange={() => handleRowSelect(row.id)}
                     aria-label={`Select row ${actualRowIndex + 1}`}
+                    className="m-0"
+                  />
+                  {/* Reserve space for chevron */}
+                  <span
+                    style={{ display: "inline-block", width: 16, height: 16 }}
                   />
                 </div>
               </td>
-              {/* Row handle */}
-              <td
-                className="border-b border-border px-4 py-2"
-                style={{
-                  width: columnWidths["search"] || "28px",
-                  minWidth: "15px",
-                }}
-              >
-                <div className="flex h-full cursor-move items-center justify-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="text-gray-400"
-                  >
-                    <line x1="8" y1="6" x2="21" y2="6"></line>
-                    <line x1="8" y1="12" x2="21" y2="12"></line>
-                    <line x1="8" y1="18" x2="21" y2="18"></line>
-                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
-                  </svg>
-                </div>
-              </td>
-
+              {/* Row handle (search column) */}
+              {showSearchColumn && (
+                <td
+                  className="border-b border-border px-0 py-2"
+                  style={{ width: "18px", minWidth: "18px", maxWidth: "18px" }}
+                >
+                  <div className="flex items-center justify-center w-full h-full">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="text-gray-400"
+                    >
+                      <line x1="8" y1="6" x2="21" y2="6"></line>
+                      <line x1="8" y1="12" x2="21" y2="12"></line>
+                      <line x1="8" y1="18" x2="21" y2="18"></line>
+                      <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                      <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                      <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                    </svg>
+                  </div>
+                </td>
+              )}
               {/* Row cells */}
               {columnOrder.map((key) => {
                 const column = columns.find((col) => col.key === key);
@@ -404,7 +407,8 @@ export const TableBody = ({
         <tr>
           <td
             colSpan={
-              columnOrder.filter((key) => visibleColumns[key]).length + 3
+              columnOrder.filter((key) => visibleColumns[key]).length +
+              (showSearchColumn ? 3 : 2)
             }
             className="px-4 py-8 text-center"
           >

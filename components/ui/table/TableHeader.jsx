@@ -12,6 +12,7 @@ export const TableHeader = ({
   activeColumnFilters,
   columnFilterTypes,
   showSearchRow,
+  showSearchColumn,
   columnSearch,
   areAllOnPageSelected,
   paginatedData,
@@ -19,6 +20,7 @@ export const TableHeader = ({
   handleColumnDragStart,
   handleColumnDragOver,
   handleToggleSearchRow,
+  handleToggleSearchColumn,
   handleOpenFilterModal,
   handleColumnSearch,
   handleSelectAll,
@@ -38,36 +40,29 @@ export const TableHeader = ({
       {/* Header Row */}
       <tr className="bg-gray-50 dark:bg-muted/50">
         <th
-          className="border-b border-border px-4 py-2 relative group"
+          className="border-b border-border pl-2 py-2"
           data-column="select"
-          style={{ width: columnWidths["select"] || "28px", minWidth: "15px" }}
+          style={{ width: "36px", minWidth: "32px", maxWidth: "40px" }}
         >
-          <div className="flex items-center justify-center w-full">
+          <div className="flex flex-row items-center justify-center w-full gap-1">
             <Checkbox
               checked={areAllOnPageSelected}
               onChange={handleSelectAll}
               disabled={paginatedData.length === 0}
               aria-label="Select all rows on this page"
+              className="m-0"
             />
-          </div>
-        </th>
-        <th
-          className="border-b border-border px-4 py-2 relative group"
-          data-column="search"
-          style={{ width: columnWidths["search"] || "28px", minWidth: "15px" }}
-        >
-          <div className="flex items-center justify-center w-full">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleToggleSearchRow}
-              className="flex items-center gap-1 border-border bg-background shadow-sm hover:bg-muted"
+            <button
+              onClick={handleToggleSearchColumn}
+              className="p-0 m-0 h-4 w-4 flex items-center justify-center hover:bg-muted rounded"
+              title={showSearchColumn ? "Hide search row" : "Show search row"}
+              tabIndex={0}
+              type="button"
             >
-              {showSearchRow ? (
+              {showSearchColumn ? (
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
+                  width="12"
+                  height="12"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -75,14 +70,12 @@ export const TableHeader = ({
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <path d="M3 3l18 18"></path>
-                  <circle cx="12" cy="12" r="7"></circle>
+                  <polyline points="18 15 12 9 6 15"></polyline>
                 </svg>
               ) : (
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
+                  width="12"
+                  height="12"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -90,13 +83,59 @@ export const TableHeader = ({
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
               )}
-            </Button>
+            </button>
           </div>
         </th>
+        {showSearchColumn && (
+          <th
+            className="border-b border-border px-0 py-2"
+            data-column="search"
+            style={{ width: "18px", minWidth: "18px", maxWidth: "18px" }}
+          >
+            <div className="flex items-center justify-center w-full">
+              <button
+                onClick={handleToggleSearchRow}
+                className="flex items-center justify-center border border-border bg-background shadow-sm hover:bg-muted rounded"
+                style={{ width: 18, height: 18, padding: 0 }}
+                tabIndex={0}
+                type="button"
+              >
+                {showSearchRow ? (
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <circle cx="12" cy="12" r="7"></circle>
+                  </svg>
+                ) : (
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                )}
+              </button>
+            </div>
+          </th>
+        )}
 
         {/* Column headers */}
         {columnOrder.map((key) => {
@@ -245,7 +284,7 @@ export const TableHeader = ({
           }}
         >
           <td></td>
-          <td></td>
+          {showSearchColumn && <td></td>}
           {columnOrder.map((key) => {
             const column = columns.find((col) => col.key === key);
             if (!column || !visibleColumns[key]) return null;

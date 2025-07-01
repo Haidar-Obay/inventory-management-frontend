@@ -39,6 +39,7 @@ const Table = (props) => {
     rowsPerPage,
     showSearch,
     showSearchRow,
+    showSearchColumn,
     selectedRows,
     jumpToPageInput,
     deleteModalOpen,
@@ -55,11 +56,12 @@ const Table = (props) => {
     selectedSearchColumns,
     tempColumnWidths,
     tempColumnOrder,
-    handleSearchColumnToggle,
-    handleSelectAllSearchColumns,
 
     // Handlers
+    handleSearchColumnToggle,
+    handleSelectAllSearchColumns,
     handleToggleSearchRow,
+    handleToggleSearchColumn,
     handleJumpToPageInputChange,
     handleJumpToPage,
     handleJumpToPageKeyPress,
@@ -124,6 +126,7 @@ const Table = (props) => {
     setRowsPerPage,
     setShowSearch,
     setShowSearchRow,
+    setShowSearchColumn,
     setSelectedRows,
     setJumpToPageInput,
     setDeleteModalOpen,
@@ -132,8 +135,6 @@ const Table = (props) => {
     setTempFilterConfig,
     setColumnFilterTypes,
     setSelectedSearchColumns,
-    setHandleSearchColumnToggle,
-    setHandleSelectAllSearchColumns,
   } = useTableLogic({
     ...props,
     tableId: props.tableId || "default",
@@ -317,6 +318,7 @@ const Table = (props) => {
                 activeColumnFilters={activeColumnFilters}
                 columnFilterTypes={columnFilterTypes}
                 showSearchRow={showSearchRow}
+                showSearchColumn={showSearchColumn}
                 columnSearch={columnSearch}
                 areAllOnPageSelected={areAllOnPageSelected}
                 paginatedData={paginatedData}
@@ -324,6 +326,7 @@ const Table = (props) => {
                 handleColumnDragStart={handleColumnDragStart}
                 handleColumnDragOver={handleColumnDragOver}
                 handleToggleSearchRow={handleToggleSearchRow}
+                handleToggleSearchColumn={handleToggleSearchColumn}
                 handleOpenFilterModal={handleOpenFilterModal}
                 handleColumnSearch={handleColumnSearch}
                 handleSelectAll={handleSelectAll}
@@ -355,6 +358,7 @@ const Table = (props) => {
                 isOverflowing={isOverflowing}
                 openDropdownRowId={openDropdownRowId}
                 setOpenDropdownRowId={setOpenDropdownRowId}
+                showSearchColumn={showSearchColumn}
               />
             </table>
           </div>

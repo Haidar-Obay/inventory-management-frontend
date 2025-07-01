@@ -41,7 +41,7 @@ export function useTableLogic({
     const storageKey = `tableColumnVisibility_${tableId}`;
 
     // Check if we're in a browser environment
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       // Try to get saved settings from localStorage
       const savedSettings = localStorage.getItem(storageKey);
       if (savedSettings) {
@@ -56,7 +56,10 @@ export function useTableLogic({
           });
           return validSettings;
         } catch (error) {
-          console.error("Error parsing saved column visibility settings:", error);
+          console.error(
+            "Error parsing saved column visibility settings:",
+            error
+          );
         }
       }
     }
@@ -74,7 +77,7 @@ export function useTableLogic({
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [columnOrder, setColumnOrder] = useState(() => {
     // Check if we're in a browser environment
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       // Try to load saved order from localStorage
       const storageKey = `tableColumnOrder_${tableId}`;
       const savedOrder = localStorage.getItem(storageKey);
@@ -82,10 +85,12 @@ export function useTableLogic({
         try {
           const parsedOrder = JSON.parse(savedOrder);
           // Validate that all current columns are in the order
-          const currentColumnKeys = columns.map(col => col.key);
-          const validOrder = parsedOrder.filter(key => currentColumnKeys.includes(key));
+          const currentColumnKeys = columns.map((col) => col.key);
+          const validOrder = parsedOrder.filter((key) =>
+            currentColumnKeys.includes(key)
+          );
           // Add any missing columns at the end
-          currentColumnKeys.forEach(key => {
+          currentColumnKeys.forEach((key) => {
             if (!validOrder.includes(key)) {
               validOrder.push(key);
             }
@@ -113,6 +118,13 @@ export function useTableLogic({
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [showSearch, setShowSearch] = useState(true);
   const [showSearchRow, setShowSearchRow] = useState(false);
+  const [showSearchColumn, setShowSearchColumn] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(`tableShowSearchColumn_${tableId}`);
+      if (saved !== null) return saved === "true";
+    }
+    return false;
+  });
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [jumpToPageInput, setJumpToPageInput] = useState("");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -144,7 +156,7 @@ export function useTableLogic({
   // Add column widths state with localStorage
   const [columnWidths, setColumnWidths] = useState(() => {
     // Check if we're in a browser environment
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       // Try to load saved widths from localStorage
       const storageKey = `tableColumnWidths_${tableId}`;
       const savedWidths = localStorage.getItem(storageKey);
@@ -157,7 +169,8 @@ export function useTableLogic({
             search: Math.max(parseInt(parsedWidths.search || 28), 15) + "px",
           };
           columns.forEach((column) => {
-            validWidths[column.key] = parsedWidths[column.key] || column.width || "100px";
+            validWidths[column.key] =
+              parsedWidths[column.key] || column.width || "100px";
           });
           return validWidths;
         } catch (error) {
@@ -178,7 +191,7 @@ export function useTableLogic({
 
   // Save column widths to localStorage whenever they change
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       localStorage.setItem("tableColumnWidths", JSON.stringify(columnWidths));
     }
   }, [columnWidths]);
@@ -188,11 +201,11 @@ export function useTableLogic({
     const uniqueValues = {};
     // Ensure data is an array before processing
     const safeData = Array.isArray(data) ? data : [];
-    
+
     columns.forEach((column) => {
-      const values = [...new Set(safeData.map((row) => row[column.key]))].filter(
-        (value) => value !== undefined && value !== null
-      );
+      const values = [
+        ...new Set(safeData.map((row) => row[column.key])),
+      ].filter((value) => value !== undefined && value !== null);
       uniqueValues[column.key] = values;
     });
     setUniqueColumnValues(uniqueValues);
@@ -200,7 +213,7 @@ export function useTableLogic({
 
   // Load saved filters from localStorage
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const savedFiltersFromStorage = localStorage.getItem("tableFilters");
       if (savedFiltersFromStorage) {
         setSavedFilters(JSON.parse(savedFiltersFromStorage));
@@ -277,7 +290,7 @@ export function useTableLogic({
   const filteredData = useMemo(() => {
     // Ensure sortedData is an array before processing
     const safeSortedData = Array.isArray(sortedData) ? sortedData : [];
-    
+
     return safeSortedData.filter((row) => {
       // Apply global search
       if (globalSearch) {
@@ -429,6 +442,10 @@ export function useTableLogic({
   // Handlers
   const handleToggleSearchRow = () => {
     setShowSearchRow((prev) => !prev);
+  };
+
+  const handleToggleSearchColumn = () => {
+    setShowSearchColumn((prev) => !prev);
   };
 
   const handleJumpToPageInputChange = (e) => {
@@ -723,16 +740,16 @@ export function useTableLogic({
     setVisibleColumns(tempVisibleColumns);
     setColumnWidths(tempColumnWidths);
     setColumnOrder(tempColumnOrder);
-    
+
     // Save to localStorage with table-specific keys
     const visibilityKey = `tableColumnVisibility_${tableId}`;
     const widthsKey = `tableColumnWidths_${tableId}`;
     const orderKey = `tableColumnOrder_${tableId}`;
-    
+
     localStorage.setItem(visibilityKey, JSON.stringify(tempVisibleColumns));
     localStorage.setItem(widthsKey, JSON.stringify(tempColumnWidths));
     localStorage.setItem(orderKey, JSON.stringify(tempColumnOrder));
-    
+
     setShowColumnModal(false);
   };
 
@@ -742,9 +759,9 @@ export function useTableLogic({
 
   // New handlers for column width and order management
   const handleColumnWidthChange = (columnKey, newWidth) => {
-    setTempColumnWidths(prev => ({
+    setTempColumnWidths((prev) => ({
       ...prev,
-      [columnKey]: newWidth
+      [columnKey]: newWidth,
     }));
   };
 
@@ -756,7 +773,10 @@ export function useTableLogic({
     const currentIndex = tempColumnOrder.indexOf(columnKey);
     if (currentIndex > 0) {
       const newOrder = [...tempColumnOrder];
-      [newOrder[currentIndex], newOrder[currentIndex - 1]] = [newOrder[currentIndex - 1], newOrder[currentIndex]];
+      [newOrder[currentIndex], newOrder[currentIndex - 1]] = [
+        newOrder[currentIndex - 1],
+        newOrder[currentIndex],
+      ];
       setTempColumnOrder(newOrder);
     }
   };
@@ -765,7 +785,10 @@ export function useTableLogic({
     const currentIndex = tempColumnOrder.indexOf(columnKey);
     if (currentIndex < tempColumnOrder.length - 1) {
       const newOrder = [...tempColumnOrder];
-      [newOrder[currentIndex], newOrder[currentIndex + 1]] = [newOrder[currentIndex + 1], newOrder[currentIndex]];
+      [newOrder[currentIndex], newOrder[currentIndex + 1]] = [
+        newOrder[currentIndex + 1],
+        newOrder[currentIndex],
+      ];
       setTempColumnOrder(newOrder);
     }
   };
@@ -774,7 +797,8 @@ export function useTableLogic({
     if (tab === "visibility") {
       const defaultSettings = {};
       columns.forEach((col) => {
-        defaultSettings[col.key] = col.key !== "created_at" && col.key !== "updated_at";
+        defaultSettings[col.key] =
+          col.key !== "created_at" && col.key !== "updated_at";
       });
       setTempVisibleColumns(defaultSettings);
       setVisibleColumns(defaultSettings);
@@ -845,7 +869,8 @@ export function useTableLogic({
   };
 
   const areAllOnPageSelected =
-    Array.isArray(paginatedData) && paginatedData.length > 0 &&
+    Array.isArray(paginatedData) &&
+    paginatedData.length > 0 &&
     paginatedData.every((row) => selectedRows.has(row.id));
 
   // Reset column widths with animation
@@ -892,6 +917,15 @@ export function useTableLogic({
     return columns.filter((col) => visibleColumns[col.key]);
   };
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        `tableShowSearchColumn_${tableId}`,
+        showSearchColumn
+      );
+    }
+  }, [showSearchColumn, tableId]);
+
   return {
     // State
     tableData,
@@ -917,6 +951,7 @@ export function useTableLogic({
     rowsPerPage,
     showSearch,
     showSearchRow,
+    showSearchColumn,
     selectedRows,
     jumpToPageInput,
     deleteModalOpen,
@@ -936,6 +971,7 @@ export function useTableLogic({
 
     // Handlers
     handleToggleSearchRow,
+    handleToggleSearchColumn,
     handleJumpToPageInputChange,
     handleJumpToPage,
     handleJumpToPageKeyPress,
@@ -1002,6 +1038,7 @@ export function useTableLogic({
     setRowsPerPage,
     setShowSearch,
     setShowSearchRow,
+    setShowSearchColumn,
     setSelectedRows,
     setJumpToPageInput,
     setDeleteModalOpen,
