@@ -108,7 +108,7 @@ export const TableBody = ({
             >
               {/* Row selection checkbox */}
               <td
-                className="border-b border-border pl-2 py-2"
+                className="border-b border-border ps-2 py-2"
                 style={{ width: "36px", minWidth: "32px", maxWidth: "40px" }}
               >
                 <div className="flex flex-row items-center justify-center w-full gap-1">
@@ -290,7 +290,7 @@ export const TableBody = ({
               <td
                 className={`border-b border-border px-1 py-2 transition-colors duration-200 ${
                   isOverflowing
-                    ? "sticky right-0 z-10 backdrop-blur-sm border-l border-gray-200 dark:border-gray-700"
+                    ? "sticky end-0 z-10 backdrop-blur-sm border-s border-gray-200 dark:border-gray-700"
                     : ""
                 } ${
                   selectedRows.has(row.id)
@@ -298,14 +298,8 @@ export const TableBody = ({
                     : rowIndex % 2 === 0
                       ? "bg-white dark:bg-background hover:bg-gray-100 dark:hover:bg-muted"
                       : "bg-gray-50 dark:bg-muted/50 hover:bg-gray-100 dark:hover:bg-muted"
-                } ${
-                  isOverflowing
-                    ? rowIndex % 2 === 0
-                      ? "bg-white/95 dark:bg-background/95"
-                      : "bg-gray-50/95 dark:bg-muted/95"
-                    : ""
                 }`}
-                style={{ width: "70px", minWidth: "70px", maxWidth: "70px" }}
+                style={{ width: "75px", minWidth: "75px", maxWidth: "75px" }}
               >
                 <div
                   className="flex justify-center"
