@@ -99,14 +99,14 @@ export const TableHeader = ({
               <button
                 onClick={handleToggleSearchRow}
                 className="flex items-center justify-center border border-border bg-background shadow-sm hover:bg-muted rounded"
-                style={{ width: 18, height: 18, padding: 0 }}
+                style={{ width: 20, height: 20, padding: 0 }}
                 tabIndex={0}
                 type="button"
               >
                 {showSearchRow ? (
                   <svg
-                    width="12"
-                    height="12"
+                    width="14"
+                    height="14"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -119,8 +119,8 @@ export const TableHeader = ({
                   </svg>
                 ) : (
                   <svg
-                    width="12"
-                    height="12"
+                    width="14"
+                    height="14"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
