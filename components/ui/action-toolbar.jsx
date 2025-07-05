@@ -366,10 +366,14 @@ export function ActionToolbar({
                       {renderActionButton(lastUsedAction, group.id)}
                     </div>
                   )}
-                  <div className="scale-x-[-1]">
+                  <div>
                     <Button
                       onClick={() => toggleGroup(group.id)}
-                      className={`flex items-center justify-center bg-background hover:bg-muted text-foreground border border-border px-2 py-2 text-sm h-9 w-8 transition-all duration-200 shadow-sm ${shouldExpandLeft ? "rounded-l-none" : "rounded-r-none"}`}
+                      className={`flex items-center justify-center bg-background hover:bg-muted text-foreground border border-border px-2 py-2 text-sm h-9 w-8 transition-all duration-200 shadow-sm ${
+                        isRTL
+                          ? "rounded-l-lg rounded-r-none"
+                          : "rounded-r-lg rounded-l-none"
+                      }`}
                     >
                       <div
                         className={`transform transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}

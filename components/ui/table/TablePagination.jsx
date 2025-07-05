@@ -120,6 +120,7 @@ export const TablePagination = ({
           >
             <span className="sr-only">{t("first")}</span>
             <svg
+              className={locale === "ar" ? "scale-x-[-1]" : ""}
               xmlns="http://www.w3.org/2000/svg"
               width="16"
               height="16"
@@ -142,6 +143,7 @@ export const TablePagination = ({
           >
             <span className="sr-only">{t("previous")}</span>
             <svg
+              className={locale === "ar" ? "scale-x-[-1]" : ""}
               xmlns="http://www.w3.org/2000/svg"
               width="16"
               height="16"
@@ -167,6 +169,7 @@ export const TablePagination = ({
           >
             <span className="sr-only">{t("next")}</span>
             <svg
+              className={locale === "ar" ? "scale-x-[-1]" : ""}
               xmlns="http://www.w3.org/2000/svg"
               width="16"
               height="16"
@@ -189,6 +192,7 @@ export const TablePagination = ({
           >
             <span className="sr-only">{t("last")}</span>
             <svg
+              className={locale === "ar" ? "scale-x-[-1]" : ""}
               xmlns="http://www.w3.org/2000/svg"
               width="16"
               height="16"

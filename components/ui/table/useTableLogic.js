@@ -587,10 +587,20 @@ export function useTableLogic({
   };
 
   const handleColumnSearch = (key, value) => {
-    setColumnSearch((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
+    setColumnSearch((prev) => {
+      if (value === "") {
+        // Remove the key if value is empty
+        const newSearch = { ...prev };
+        delete newSearch[key];
+        return newSearch;
+      } else {
+        // Add or update the key with the value
+        return {
+          ...prev,
+          [key]: value,
+        };
+      }
+    });
     setCurrentPage(1);
   };
 

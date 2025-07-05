@@ -109,7 +109,9 @@ export const TableToolbar = ({
 
           {/* Show Clear Filters only if there are active filters */}
           {(Object.keys(activeColumnFilters).length > 0 ||
-            Object.keys(columnSearch).length > 0) && (
+            Object.values(columnSearch).some(
+              (value) => value && value.trim() !== ""
+            )) && (
             <Button
               variant="outline"
               size="sm"

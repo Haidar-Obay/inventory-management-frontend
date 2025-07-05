@@ -516,6 +516,8 @@ const GroupItems = ({
   isMainFiles = false,
   isRTL,
   isExpanded,
+  expandedSubGroups,
+  onToggleSubGroup,
 }) => {
   if (isCollapsed || !isExpanded) return null;
 
@@ -538,6 +540,8 @@ const GroupItems = ({
                 t={t}
                 isMainFiles={isMainFiles}
                 isRTL={isRTL}
+                isExpanded={expandedSubGroups[item.key] || false}
+                onToggleSubGroup={onToggleSubGroup}
               />
             </li>
           );
@@ -593,27 +597,27 @@ const NestedGroup = ({
   t,
   isMainFiles = false,
   isRTL,
+  isExpanded,
+  onToggleSubGroup,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const buttonRef = useRef(null);
 
   const handlePopoverOpen = (e) => {
     e.preventDefault();
-    setIsOpen(true);
+    onToggleSubGroup(item.key || item.name);
     setTooltipVisible(false); // Hide tooltip when popover opens
   };
 
   const handlePopoverClose = (e) => {
     e.preventDefault();
-    setIsOpen(false);
+    onToggleSubGroup(item.key || item.name);
   };
 
   const handleNavigate = (itemName) => {
     onNavigate(itemName);
     // Always close popovers when navigating
-    setIsOpen(false);
     setPopoverOpen(false);
   };
 
@@ -640,7 +644,7 @@ const NestedGroup = ({
             className={cn(
               "h-4 w-4 transition-transform",
               isRTL ? "rotate-180" : "",
-              isOpen ? "rotate-90" : ""
+              isExpanded ? "rotate-90" : ""
             )}
           />
         </button>
@@ -709,7 +713,7 @@ const NestedGroup = ({
             <button
               ref={buttonRef}
               className="w-full flex justify-center p-2 rounded-md transition-colors duration-200 hover:bg-primary-foreground/20 active:bg-primary-foreground/30"
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={() => onToggleSubGroup(item.key || item.name)}
               onMouseEnter={() => setTooltipVisible(true)}
               onMouseLeave={() => setTooltipVisible(false)}
             >
@@ -735,7 +739,7 @@ const NestedGroup = ({
     <div>
       <CollapsibleTrigger
         className="group flex w-full items-center h-12 min-w-0"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => onToggleSubGroup(item.key || item.name)}
       >
         <div
           className={cn(
@@ -755,11 +759,11 @@ const NestedGroup = ({
           className={cn(
             "h-4 w-4 transition-transform flex-shrink-0",
             isRTL ? "rotate-180" : "",
-            isOpen ? "rotate-90" : ""
+            isExpanded ? "rotate-90" : ""
           )}
         />
       </CollapsibleTrigger>
-      {isOpen && (
+      {isExpanded && (
         <ul className="space-y-1 mt-1">
           {item.items.map((subItem) => {
             const SubIcon = iconMap[subItem.icon];
@@ -809,11 +813,13 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   const [bookmarks, setBookmarks] = useState([]);
   const [activeItem, setActiveItem] = useState("");
   const [expandedGroups, setExpandedGroups] = useState({});
+  const [expandedSubGroups, setExpandedSubGroups] = useState({});
   const [userRole, setUserRole] = useState("user");
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const logoutButtonRef = useRef(null);
   const menuItems = useMenuItems(t);
-  const [isBookmarksExpanded, setIsBookmarksExpanded] = useState(true);
+  const [isBookmarksExpanded, setIsBookmarksExpanded] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     // Load bookmarks from localStorage
@@ -821,6 +827,55 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
     if (storedBookmarks) {
       setBookmarks(JSON.parse(storedBookmarks));
     }
+
+    // Load expanded groups state from localStorage
+    const storedExpandedGroups = localStorage.getItem("sidebarExpandedGroups");
+    console.log(
+      "Loading expanded groups state:",
+      storedExpandedGroups,
+      "RTL:",
+      isRTL
+    );
+    if (storedExpandedGroups) {
+      setExpandedGroups(JSON.parse(storedExpandedGroups));
+    }
+
+    // Load expanded sub-groups state from localStorage
+    const storedExpandedSubGroups = localStorage.getItem(
+      "sidebarExpandedSubGroups"
+    );
+    console.log(
+      "Loading expanded sub-groups state:",
+      storedExpandedSubGroups,
+      "RTL:",
+      isRTL
+    );
+    if (storedExpandedSubGroups) {
+      setExpandedSubGroups(JSON.parse(storedExpandedSubGroups));
+    }
+
+    // Load bookmarks expanded state from localStorage
+    const storedBookmarksExpanded = localStorage.getItem(
+      "sidebarBookmarksExpanded"
+    );
+    console.log(
+      "Loading bookmarks expanded state:",
+      storedBookmarksExpanded,
+      "RTL:",
+      isRTL
+    );
+    if (storedBookmarksExpanded !== null) {
+      const parsedValue = JSON.parse(storedBookmarksExpanded);
+      console.log("Setting bookmarks expanded to:", parsedValue);
+      setIsBookmarksExpanded(parsedValue);
+    } else {
+      // If no saved state exists, default to expanded (true) but don't save it yet
+      console.log("No saved state, defaulting to expanded (true)");
+      setIsBookmarksExpanded(true);
+    }
+
+    // Mark as initialized after loading all states
+    setIsInitialized(true);
 
     // Set default role to "user" if no role is found in cookies
     const getRoleFromCookies = () => {
@@ -838,15 +893,75 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
 
     getRoleFromCookies();
 
-    // Initialize expandedGroups state for all menu categories
-    const groupKeys = Object.keys(menuItems);
-    const initialExpandedGroups = groupKeys.reduce((acc, key) => {
-      acc[key] = true; // Expand all groups by default
-      return acc;
-    }, {});
+    // Initialize expandedGroups state for all menu categories if no saved state exists
+    if (!storedExpandedGroups) {
+      const initialExpandedGroups = {};
+      Object.entries(menuItems).forEach(([translatedKey, groupData]) => {
+        const languageAgnosticKey = groupData.key || translatedKey;
+        initialExpandedGroups[languageAgnosticKey] = true; // Expand all groups by default
+      });
 
-    setExpandedGroups(initialExpandedGroups);
+      setExpandedGroups(initialExpandedGroups);
+      localStorage.setItem(
+        "sidebarExpandedGroups",
+        JSON.stringify(initialExpandedGroups)
+      );
+    }
   }, []);
+
+  // Save expanded groups state to localStorage whenever it changes
+  // This works for both English (LTR) and Arabic (RTL) modes
+  useEffect(() => {
+    // Only save after initialization to prevent overwriting during initial load
+    if (isInitialized && Object.keys(expandedGroups).length > 0) {
+      console.log(
+        "Saving expanded groups state to localStorage:",
+        expandedGroups,
+        "RTL:",
+        isRTL
+      );
+      localStorage.setItem(
+        "sidebarExpandedGroups",
+        JSON.stringify(expandedGroups)
+      );
+    }
+  }, [expandedGroups, isInitialized, isRTL]);
+
+  // Save expanded sub-groups state to localStorage whenever it changes
+  // This works for both English (LTR) and Arabic (RTL) modes
+  useEffect(() => {
+    // Only save after initialization to prevent overwriting during initial load
+    if (isInitialized && Object.keys(expandedSubGroups).length > 0) {
+      console.log(
+        "Saving expanded sub-groups state to localStorage:",
+        expandedSubGroups,
+        "RTL:",
+        isRTL
+      );
+      localStorage.setItem(
+        "sidebarExpandedSubGroups",
+        JSON.stringify(expandedSubGroups)
+      );
+    }
+  }, [expandedSubGroups, isInitialized, isRTL]);
+
+  // Save bookmarks expanded state to localStorage whenever it changes
+  // This works for both English (LTR) and Arabic (RTL) modes
+  useEffect(() => {
+    // Only save after initialization to prevent overwriting during initial load
+    if (isInitialized) {
+      console.log(
+        "Saving bookmarks expanded state to localStorage:",
+        isBookmarksExpanded,
+        "RTL:",
+        isRTL
+      );
+      localStorage.setItem(
+        "sidebarBookmarksExpanded",
+        JSON.stringify(isBookmarksExpanded)
+      );
+    }
+  }, [isBookmarksExpanded, isInitialized, isRTL]);
 
   const toggleBookmark = (itemName) => {
     const allItems = GetAllMenuItems(t);
@@ -874,10 +989,28 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   };
 
   const toggleGroup = (group) => {
-    setExpandedGroups({
+    // Find the language-agnostic key for this group
+    const groupKey = Object.keys(menuItems).find((key) => key === group);
+    const groupData = menuItems[groupKey];
+    const languageAgnosticKey = groupData?.key || group;
+
+    const newExpandedGroups = {
       ...expandedGroups,
-      [group]: !expandedGroups[group],
-    });
+      [languageAgnosticKey]: !expandedGroups[languageAgnosticKey],
+    };
+    console.log(
+      "Toggling group:",
+      group,
+      "language-agnostic key:",
+      languageAgnosticKey,
+      "from",
+      expandedGroups[languageAgnosticKey],
+      "to",
+      newExpandedGroups[languageAgnosticKey],
+      "RTL:",
+      isRTL
+    );
+    setExpandedGroups(newExpandedGroups);
 
     // If sidebar is collapsed, expand it when clicking a group
     if (isCollapsed) {
@@ -886,15 +1019,59 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
       // Set all groups to collapsed except the clicked one
       const updatedGroups = {};
       Object.keys(expandedGroups).forEach((key) => {
-        updatedGroups[key] = key === group;
+        updatedGroups[key] = key === languageAgnosticKey;
       });
 
       setExpandedGroups(updatedGroups);
     }
   };
 
+  const toggleSubGroup = (subGroupName) => {
+    // Find the language-agnostic key for this sub-group
+    // Since subGroupName is the translated name, we need to find the item by name and get its key
+    let languageAgnosticKey = subGroupName;
+
+    // Search through all menu items to find the sub-group by its translated name
+    Object.values(menuItems).forEach((groupData) => {
+      if (groupData.items) {
+        groupData.items.forEach((item) => {
+          if (item.name === subGroupName && item.key) {
+            languageAgnosticKey = item.key;
+          }
+        });
+      }
+    });
+
+    const newExpandedSubGroups = {
+      ...expandedSubGroups,
+      [languageAgnosticKey]: !expandedSubGroups[languageAgnosticKey],
+    };
+    console.log(
+      "Toggling sub-group:",
+      subGroupName,
+      "language-agnostic key:",
+      languageAgnosticKey,
+      "from",
+      expandedSubGroups[languageAgnosticKey],
+      "to",
+      newExpandedSubGroups[languageAgnosticKey],
+      "RTL:",
+      isRTL
+    );
+    setExpandedSubGroups(newExpandedSubGroups);
+  };
+
   const toggleBookmarks = () => {
-    setIsBookmarksExpanded(!isBookmarksExpanded);
+    const newState = !isBookmarksExpanded;
+    console.log(
+      "Toggling bookmarks from",
+      isBookmarksExpanded,
+      "to",
+      newState,
+      "RTL:",
+      isRTL
+    );
+    setIsBookmarksExpanded(newState);
   };
 
   const handleNavigation = (itemName) => {
@@ -1079,7 +1256,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
                     isMainFiles={isMainFiles}
                     isRTL={isRTL}
                     isSupport={isSupport}
-                    isExpanded={expandedGroups[groupName]}
+                    isExpanded={expandedGroups[groupData.key || groupName]}
                     onToggleGroup={toggleGroup}
                   />
                   <GroupItems
@@ -1093,7 +1270,9 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
                     t={t}
                     isMainFiles={isMainFiles}
                     isRTL={isRTL}
-                    isExpanded={expandedGroups[groupName]}
+                    isExpanded={expandedGroups[groupData.key || groupName]}
+                    expandedSubGroups={expandedSubGroups}
+                    onToggleSubGroup={toggleSubGroup}
                   />
                 </div>
               </div>

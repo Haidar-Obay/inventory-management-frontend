@@ -3,6 +3,7 @@
 import React from "react";
 import { Button, Select, Input, DatePicker } from "./CustomControls";
 import { useTranslations, useLocale } from "next-intl";
+import Portal from "../Portal";
 
 export const FilterModal = ({
   isOpen,
@@ -235,10 +236,11 @@ export const FilterModal = ({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-      onClick={handleBackdropClick}
-    >
+    <Portal>
+      <div
+        className="fixed inset-0 z-[2147483647] pointer-events-auto flex items-center justify-center bg-black/50"
+        onClick={handleBackdropClick}
+      >
       <div className="w-full max-w-md rounded-lg bg-background p-6 shadow-lg border border-border">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-medium text-foreground">
@@ -292,5 +294,6 @@ export const FilterModal = ({
         </div>
       </div>
     </div>
+    </Portal>
   );
 };
