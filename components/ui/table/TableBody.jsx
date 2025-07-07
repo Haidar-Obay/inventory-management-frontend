@@ -168,6 +168,7 @@ export const TableBody = ({
                   editingCell.columnKey === key;
 
                 const width = columnWidths[key];
+                const cellValue = row[key];
 
                 return (
                   <td
@@ -182,7 +183,7 @@ export const TableBody = ({
                     {isEditing ? (
                       column.type === "boolean" ? (
                         <Select
-                          value={String(row[key])}
+                          value={String(cellValue)}
                           onChange={(e) =>
                             handleCellEdit(e, actualRowIndex, key)
                           }
@@ -194,7 +195,7 @@ export const TableBody = ({
                         </Select>
                       ) : column.type === "date" ? (
                         <DatePicker
-                          value={row[key]}
+                          value={cellValue}
                           onChange={(e) =>
                             handleCellEdit(e, actualRowIndex, key)
                           }
@@ -203,7 +204,7 @@ export const TableBody = ({
                         />
                       ) : column.options ? (
                         <Select
-                          value={row[key]}
+                          value={cellValue}
                           onChange={(e) =>
                             handleCellEdit(e, actualRowIndex, key)
                           }
@@ -219,7 +220,7 @@ export const TableBody = ({
                       ) : (
                         <Input
                           type={column.type === "number" ? "number" : "text"}
-                          value={row[key]}
+                          value={cellValue}
                           onChange={(e) =>
                             handleCellEdit(e, actualRowIndex, key)
                           }
@@ -236,7 +237,7 @@ export const TableBody = ({
                     ) : (
                       <div className="min-h-[24px]">
                         {column.type === "boolean" ? (
-                          row[key] ? (
+                          cellValue ? (
                             <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -275,13 +276,13 @@ export const TableBody = ({
                             </span>
                           )
                         ) : column.type === "date" ? (
-                          new Date(row[key]).toLocaleDateString()
+                          cellValue ? new Date(cellValue).toLocaleDateString() : ""
                         ) : column.options ? (
                           column.options.find(
-                            (option) => option.value === row[key]
-                          )?.label || row[key]
+                            (option) => option.value === cellValue
+                          )?.label || cellValue
                         ) : (
-                          row[key]
+                          cellValue || ""
                         )}
                       </div>
                     )}

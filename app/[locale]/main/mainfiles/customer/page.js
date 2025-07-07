@@ -155,7 +155,42 @@ function CustomerPage() {
             return;
           }
           response = await getCustomers();
-          setCustomersData(response.data || []);
+          // Handle paginated response structure and transform nested objects
+          const rawCustomersData = response.data?.data || response.data || [];
+          console.log('Raw customers data:', rawCustomersData[0]); // Debug first item
+          const transformedCustomersData = rawCustomersData.map(customer => {
+            console.log('Customer nested objects:', {
+              customer_group: customer.customer_group,
+              salesman: customer.salesman,
+              collector: customer.collector,
+              supervisor: customer.supervisor,
+              manager: customer.manager,
+              payment_term: customer.payment_term,
+              payment_method: customer.payment_method
+            });
+            
+            return {
+              ...customer,
+              // Flatten nested objects for table display
+              'customer_group.name': customer.customer_group?.name || '',
+              'salesman.name': customer.salesman?.name || '',
+              'collector.name': customer.collector?.name || '',
+              'supervisor.name': customer.supervisor?.name || '',
+              'manager.name': customer.manager?.name || '',
+              'payment_term.name': customer.payment_term?.name || '',
+              'payment_method.name': customer.payment_method?.name || '',
+              // Also add simple properties as fallback
+              customer_group_name: customer.customer_group?.name || '',
+              salesman_name: customer.salesman?.name || '',
+              collector_name: customer.collector?.name || '',
+              supervisor_name: customer.supervisor?.name || '',
+              manager_name: customer.manager?.name || '',
+              payment_term_name: customer.payment_term?.name || '',
+              payment_method_name: customer.payment_method?.name || '',
+            };
+          });
+          console.log('Transformed customers data:', transformedCustomersData[0]); // Debug first item
+          setCustomersData(transformedCustomersData);
           dataType = "customers";
           break;
       }
@@ -208,6 +243,45 @@ function CustomerPage() {
   };
 
   const handleEdit = (type, row) => {
+    if (type === "customer") {
+      // Handle customer data with nested objects
+      setFormData({
+        id: row.id,
+        title: row.title,
+        first_name: row.first_name,
+        middle_name: row.middle_name,
+        last_name: row.last_name,
+        display_name: row.display_name,
+        company_name: row.company_name,
+        phone1: row.phone1,
+        phone2: row.phone2,
+        phone3: row.phone3,
+        file_number: row.file_number,
+        bar_code: row.bar_code,
+        search_terms: row.search_terms,
+        indicator: row.indicator,
+        risk_category: row.risk_category,
+        active: row.active,
+        black_listed: row.black_listed,
+        one_time_account: row.one_time_account,
+        special_account: row.special_account,
+        pos_customer: row.pos_customer,
+        free_delivery_charge: row.free_delivery_charge,
+        print_invoice_language: row.print_invoice_language,
+        send_invoice: row.send_invoice,
+        add_message: row.add_message,
+        invoice_message: row.invoice_message,
+        notes: row.notes,
+        customer_group_id: row.customer_group?.id,
+        salesman_id: row.salesman?.id,
+        collector_id: row.collector?.id,
+        supervisor_id: row.supervisor?.id,
+        manager_id: row.manager?.id,
+        payment_term_id: row.payment_term?.id,
+        payment_method_id: row.payment_method?.id,
+      });
+    } else {
+      // Handle other entity types (customer groups, salesmen)
     setFormData({
       id: row.id,
       name: row.name,
@@ -231,6 +305,7 @@ function CustomerPage() {
       commission_by_item: row.commission_by_item,
       commission_by_turnover: row.commission_by_turnover,
     });
+    }
     setActiveDrawerType(type);
     setIsEditMode(true);
     setIsDrawerOpen(true);

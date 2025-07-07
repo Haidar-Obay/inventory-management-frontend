@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Grid, Autocomplete, Typography } from "@mui/material";
+import { Grid, Autocomplete, Typography, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { useTranslations, useLocale } from "next-intl";
@@ -476,266 +477,197 @@ const CustomerDrawer = ({
 
     if (type === "customer") {
       return (
-        <Grid container spacing={2} sx={{ p: 2 }}>
-          <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
+        <div>
+          <Accordion defaultExpanded>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="personal-info-content"
+              id="personal-info-header"
             >
-              {t("management.code")} *
-            </Typography>
-            <RTLTextField
-              value={formData?.code || ""}
-              onChange={handleFieldChange("code")}
-              required
-              placeholder=""
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.name")} *
-            </Typography>
-            <RTLTextField
-              value={formData?.name || ""}
-              onChange={handleFieldChange("name")}
-              required
-              placeholder=""
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.address")}
-            </Typography>
-            <RTLTextField
-              value={formData?.address || ""}
-              onChange={handleFieldChange("address")}
-              multiline
-              rows={3}
-              placeholder=""
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.phone1")}
-            </Typography>
-            <RTLTextField
-              value={formData?.phone1 || ""}
-              onChange={handleFieldChange("phone1")}
-              placeholder=""
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.phone2")}
-            </Typography>
-            <RTLTextField
-              value={formData?.phone2 || ""}
-              onChange={handleFieldChange("phone2")}
-              placeholder=""
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.fax")}
-            </Typography>
-            <RTLTextField
-              value={formData?.fax || ""}
-              onChange={handleFieldChange("fax")}
-              placeholder=""
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.email")}
-            </Typography>
-            <RTLTextField
-              value={formData?.email || ""}
-              onChange={handleFieldChange("email")}
-              type="email"
-              placeholder=""
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.website")}
-            </Typography>
-            <RTLTextField
-              value={formData?.website || ""}
-              onChange={handleFieldChange("website")}
-              placeholder=""
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.taxNumber")}
-            </Typography>
-            <RTLTextField
-              value={formData?.tax_number || ""}
-              onChange={handleFieldChange("tax_number")}
-              placeholder=""
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.taxOffice")}
-            </Typography>
-            <RTLTextField
-              value={formData?.tax_office || ""}
-              onChange={handleFieldChange("tax_office")}
-              placeholder=""
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.customerGroup")}
-            </Typography>
-            <Autocomplete
-              fullWidth
-              options={customerGroups}
-              getOptionLabel={(option) => option.name || ""}
-              value={
-                customerGroups.find(
-                  (group) => group.id === formData?.customer_group_id
-                ) || null
-              }
-              onChange={handleCustomerGroupChange}
-              loading={loading}
-              renderInput={(params) => (
-                <RTLTextField {...params} placeholder="" />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.salesman")}
-            </Typography>
-            <Autocomplete
-              fullWidth
-              options={salesmen}
-              getOptionLabel={(option) => option.name || ""}
-              value={
-                salesmen.find(
-                  (salesman) => salesman.id === formData?.salesman_id
-                ) || null
-              }
-              onChange={handleSalesmanChange}
-              loading={loading}
-              renderInput={(params) => (
-                <RTLTextField {...params} placeholder="" />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.active")}
-            </Typography>
-            <RTLTextField
-              select
-              value={formData?.active === false ? "false" : "true"}
-              onChange={(e) =>
-                onFormDataChange({
-                  ...formData,
-                  active: e.target.value === "true",
-                })
-              }
-              SelectProps={{
-                native: true,
-              }}
-              placeholder=""
-            >
-              <option value="true">{t("management.yes")}</option>
-              <option value="false">{t("management.no")}</option>
-            </RTLTextField>
-          </Grid>
-        </Grid>
+              <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                {t("management.personalInformation") || "Personal Information"}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.title") || "Title"}
+                  </Typography>
+                  <RTLTextField
+                    select
+                    value={formData?.title || ""}
+                    onChange={handleFieldChange("title")}
+                    placeholder=""
+                  >
+                    <option value="">{t("management.selectTitle") || "Select Title"}</option>
+                    <option value="Mr.">Mr.</option>
+                    <option value="Mrs.">Mrs.</option>
+                    <option value="Ms.">Ms.</option>
+                    <option value="Dr.">Dr.</option>
+                    <option value="Prof.">Prof.</option>
+                  </RTLTextField>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.firstName") || "First Name"} *
+                  </Typography>
+                  <RTLTextField
+                    value={formData?.first_name || ""}
+                    onChange={handleFieldChange("first_name")}
+                    required
+                    placeholder=""
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.lastName") || "Last Name"} *
+                  </Typography>
+                  <RTLTextField
+                    value={formData?.last_name || ""}
+                    onChange={handleFieldChange("last_name")}
+                    required
+                    placeholder=""
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.displayName") || "Display Name"}
+                  </Typography>
+                  <RTLTextField
+                    value={formData?.display_name || ""}
+                    onChange={handleFieldChange("display_name")}
+                    placeholder=""
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.companyName") || "Company Name"}
+                  </Typography>
+                  <RTLTextField
+                    value={formData?.company_name || ""}
+                    onChange={handleFieldChange("company_name")}
+                    placeholder=""
+                  />
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.phone1") || "Phone 1"} *
+                  </Typography>
+                  <RTLTextField
+                    value={formData?.phone1 || ""}
+                    onChange={handleFieldChange("phone1")}
+                    required
+                    placeholder=""
+                  />
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.phone2") || "Phone 2"}
+                  </Typography>
+                  <RTLTextField
+                    value={formData?.phone2 || ""}
+                    onChange={handleFieldChange("phone2")}
+                    placeholder=""
+                  />
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.phone3") || "Phone 3"}
+                  </Typography>
+                  <RTLTextField
+                    value={formData?.phone3 || ""}
+                    onChange={handleFieldChange("phone3")}
+                    placeholder=""
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.customerGroup") || "Customer Group"} *
+                  </Typography>
+                  <Autocomplete
+                    fullWidth
+                    options={customerGroups}
+                    getOptionLabel={(option) => option.name || ""}
+                    value={
+                      customerGroups.find(
+                        (group) => group.id === formData?.customer_group_id
+                      ) || null
+                    }
+                    onChange={handleCustomerGroupChange}
+                    loading={loading}
+                    renderInput={(params) => (
+                      <RTLTextField {...params} placeholder="" />
+                    )}
+                  />
+                </Grid>
+              </Grid>
+            </AccordionDetails>
+          </Accordion>
+        </div>
       );
     }
 
