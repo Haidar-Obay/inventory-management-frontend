@@ -9,6 +9,7 @@ import { useSimpleToast } from "@/components/ui/simple-toast";
 import { getCategoryNames } from "@/API/Items";
 import { getBrandNames } from "@/API/Items";
 import { useTranslations, useLocale } from "next-intl";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const ItemDrawer = ({
   isOpen,
@@ -169,33 +170,17 @@ const ItemDrawer = ({
             />
           </Grid>
           <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.active")}
-            </Typography>
-            <RTLTextField
-              select
-              value={formData?.active === false ? "false" : "true"}
+            <Checkbox
+              checked={formData?.active !== false}
               onChange={(e) =>
                 onFormDataChange({
                   ...formData,
-                  active: e.target.value === "true",
+                  active: e.target.checked,
                 })
               }
-              SelectProps={{
-                native: true,
-              }}
-              placeholder=""
-            >
-              <option value="true">{t("management.yes")}</option>
-              <option value="false">{t("management.no")}</option>
-            </RTLTextField>
+              label={t("management.active")}
+              isRTL={isRTL}
+            />
           </Grid>
         </Grid>
       );
@@ -273,33 +258,17 @@ const ItemDrawer = ({
             />
           </Grid>
           <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.active")}
-            </Typography>
-            <RTLTextField
-              select
-              value={formData?.active === false ? "false" : "true"}
+            <Checkbox
+              checked={formData?.active !== false}
               onChange={(e) =>
                 onFormDataChange({
                   ...formData,
-                  active: e.target.value === "true",
+                  active: e.target.checked,
                 })
               }
-              SelectProps={{
-                native: true,
-              }}
-              placeholder=""
-            >
-              <option value="true">{t("management.yes")}</option>
-              <option value="false">{t("management.no")}</option>
-            </RTLTextField>
+              label={t("management.active")}
+              isRTL={isRTL}
+            />
           </Grid>
         </Grid>
       );
@@ -376,33 +345,17 @@ const ItemDrawer = ({
             />
           </Grid>
           <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.active")}
-            </Typography>
-            <RTLTextField
-              select
-              value={formData?.active === false ? "false" : "true"}
+            <Checkbox
+              checked={formData?.active !== false}
               onChange={(e) =>
                 onFormDataChange({
                   ...formData,
-                  active: e.target.value === "true",
+                  active: e.target.checked,
                 })
               }
-              SelectProps={{
-                native: true,
-              }}
-              placeholder=""
-            >
-              <option value="true">{t("management.yes")}</option>
-              <option value="false">{t("management.no")}</option>
-            </RTLTextField>
+              label={t("management.active")}
+              isRTL={isRTL}
+            />
           </Grid>
         </Grid>
       );
@@ -526,33 +479,17 @@ const ItemDrawer = ({
             />
           </Grid>
           <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.active")}
-            </Typography>
-            <RTLTextField
-              select
-              value={formData?.active === false ? "false" : "true"}
+            <Checkbox
+              checked={formData?.active !== false}
               onChange={(e) =>
                 onFormDataChange({
                   ...formData,
-                  active: e.target.value === "true",
+                  active: e.target.checked,
                 })
               }
-              SelectProps={{
-                native: true,
-              }}
-              placeholder=""
-            >
-              <option value="true">{t("management.yes")}</option>
-              <option value="false">{t("management.no")}</option>
-            </RTLTextField>
+              label={t("management.active")}
+              isRTL={isRTL}
+            />
           </Grid>
         </Grid>
       );

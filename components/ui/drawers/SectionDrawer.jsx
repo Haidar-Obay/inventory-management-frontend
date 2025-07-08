@@ -20,6 +20,7 @@ import { getDepartmentNames as getDepartmentNamesFromSections } from "@/API/Sect
 import { getProjectNames as getProjectNamesFromSections } from "@/API/Sections";
 import { useTranslations, useLocale } from "next-intl";
 import { useSimpleToast } from "@/components/ui/simple-toast";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const SectionDrawer = ({
   isOpen,
@@ -163,7 +164,9 @@ const SectionDrawer = ({
       addToast({
         type: "error",
         title: t("noChangesTitle") || "No changes detected",
-        description: t("noChangesDesc") || "Please modify at least one field before saving."
+        description:
+          t("noChangesDesc") ||
+          "Please modify at least one field before saving.",
       });
       return;
     }
@@ -410,33 +413,17 @@ const SectionDrawer = ({
             />
           </Grid>
           <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.active")}
-            </Typography>
-            <RTLTextField
-              select
-              value={formData?.active === false ? "false" : "true"}
+            <Checkbox
+              checked={formData?.active !== false}
               onChange={(e) =>
                 onFormDataChange({
                   ...formData,
-                  active: e.target.value === "true",
+                  active: e.target.checked,
                 })
               }
-              SelectProps={{
-                native: true,
-              }}
-              placeholder=""
-            >
-              <option value="true">{t("management.yes")}</option>
-              <option value="false">{t("management.no")}</option>
-            </RTLTextField>
+              label={t("management.active")}
+              isRTL={isRTL}
+            />
           </Grid>
         </Grid>
       );
@@ -509,33 +496,17 @@ const SectionDrawer = ({
             />
           </Grid>
           <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.active")}
-            </Typography>
-            <RTLTextField
-              select
-              value={formData?.active === false ? "false" : "true"}
+            <Checkbox
+              checked={formData?.active !== false}
               onChange={(e) =>
                 onFormDataChange({
                   ...formData,
-                  active: e.target.value === "true",
+                  active: e.target.checked,
                 })
               }
-              SelectProps={{
-                native: true,
-              }}
-              placeholder=""
-            >
-              <option value="true">{t("management.yes")}</option>
-              <option value="false">{t("management.no")}</option>
-            </RTLTextField>
+              label={t("management.active")}
+              isRTL={isRTL}
+            />
           </Grid>
         </Grid>
       );
@@ -581,33 +552,17 @@ const SectionDrawer = ({
             />
           </Grid>
           <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.active")}
-            </Typography>
-            <RTLTextField
-              select
-              value={formData?.active === false ? "false" : "true"}
+            <Checkbox
+              checked={formData?.active !== false}
               onChange={(e) =>
                 onFormDataChange({
                   ...formData,
-                  active: e.target.value === "true",
+                  active: e.target.checked,
                 })
               }
-              SelectProps={{
-                native: true,
-              }}
-              placeholder=""
-            >
-              <option value="true">{t("management.yes")}</option>
-              <option value="false">{t("management.no")}</option>
-            </RTLTextField>
+              label={t("management.active")}
+              isRTL={isRTL}
+            />
           </Grid>
         </Grid>
       );
