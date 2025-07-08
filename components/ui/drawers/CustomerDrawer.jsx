@@ -506,6 +506,9 @@ const CustomerDrawer = ({
                     value={formData?.title || ""}
                     onChange={handleFieldChange("title")}
                     placeholder=""
+                    SelectProps={{
+                      native: true,
+                    }}
                   >
                     <option value="">{t("management.selectTitle") || "Select Title"}</option>
                     <option value="Mr.">Mr.</option>
