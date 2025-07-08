@@ -205,6 +205,9 @@ const Table = (props) => {
           visibleColumns={tempVisibleColumns}
           columnWidths={tempColumnWidths}
           columnOrder={tempColumnOrder}
+          realVisibleColumns={visibleColumns}
+          realColumnWidths={columnWidths}
+          realColumnOrder={columnOrder}
           onSave={handleSaveColumnVisibility}
           onCancel={handleCancelColumnVisibility}
           onToggleColumn={(columnKey, checked, newVisibleColumns) => {

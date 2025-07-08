@@ -727,7 +727,16 @@
         "columnOrder": "Column Order",
         "dragToReorder": "Drag to reorder columns",
         "px": "px",
-        "auto": "Auto"
+        "auto": "Auto",
+        "templates": "Templates",
+        "saveAsTemplate": "Save as Template",
+        "noTemplates": "No templates saved.",
+        "apply": "Apply",
+        "delete": "Delete",
+        "templateName": "Template name",
+        "nameRequired": "Name required",
+        "nameExists": "Name already exists",
+        "select": "Select"
       }
     },
     "filter": {
