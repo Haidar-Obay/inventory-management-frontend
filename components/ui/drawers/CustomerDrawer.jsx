@@ -1,13 +1,21 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Grid, Autocomplete, Typography, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import {
+  Grid,
+  Autocomplete,
+  Typography,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { useTranslations, useLocale } from "next-intl";
 import { getCustomerGroupNames, getSalesmanNames } from "@/API/Customers";
 import { useSimpleToast } from "@/components/ui/simple-toast";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const CustomerDrawer = ({
   isOpen,
@@ -91,7 +99,9 @@ const CustomerDrawer = ({
       addToast({
         type: "error",
         title: t("noChangesTitle") || "No changes detected",
-        description: t("noChangesDesc") || "Please modify at least one field before saving."
+        description:
+          t("noChangesDesc") ||
+          "Please modify at least one field before saving.",
       });
       return;
     }
@@ -141,33 +151,17 @@ const CustomerDrawer = ({
             />
           </Grid>
           <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.active")}
-            </Typography>
-            <RTLTextField
-              select
-              value={formData?.active === false ? "false" : "true"}
+            <Checkbox
+              checked={formData?.active !== false}
               onChange={(e) =>
                 onFormDataChange({
                   ...formData,
-                  active: e.target.value === "true",
+                  active: e.target.checked,
                 })
               }
-              SelectProps={{
-                native: true,
-              }}
-              placeholder=""
-            >
-              <option value="true">{t("management.yes")}</option>
-              <option value="false">{t("management.no")}</option>
-            </RTLTextField>
+              label={t("management.active")}
+              isRTL={isRTL}
+            />
           </Grid>
         </Grid>
       );
@@ -195,33 +189,17 @@ const CustomerDrawer = ({
             />
           </Grid>
           <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.active")}
-            </Typography>
-            <RTLTextField
-              select
-              value={formData?.active === false ? "false" : "true"}
+            <Checkbox
+              checked={formData?.active !== false}
               onChange={(e) =>
                 onFormDataChange({
                   ...formData,
-                  active: e.target.value === "true",
+                  active: e.target.checked,
                 })
               }
-              SelectProps={{
-                native: true,
-              }}
-              placeholder=""
-            >
-              <option value="true">{t("management.yes")}</option>
-              <option value="false">{t("management.no")}</option>
-            </RTLTextField>
+              label={t("management.active")}
+              isRTL={isRTL}
+            />
           </Grid>
           <Grid item xs={12} md={6} sx={{ width: "100%" }}>
             <Typography
@@ -510,7 +488,9 @@ const CustomerDrawer = ({
                       native: true,
                     }}
                   >
-                    <option value="">{t("management.selectTitle") || "Select Title"}</option>
+                    <option value="">
+                      {t("management.selectTitle") || "Select Title"}
+                    </option>
                     <option value="Mr.">Mr.</option>
                     <option value="Mrs.">Mrs.</option>
                     <option value="Ms.">Ms.</option>
