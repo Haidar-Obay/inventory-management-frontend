@@ -22,7 +22,7 @@ export const metadata = {
 
 export default async function LocaleLayout({ children, params }) {
   const { locale: localeParam } = await params;
-  
+
   // Validate that the incoming `locale` parameter is valid
   let locale = localeParam;
   if (!locales.includes(locale)) {
