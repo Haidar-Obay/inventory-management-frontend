@@ -33,10 +33,12 @@ const RTLTextField = ({
       sx={{
         ...(isRTL && {
           direction: "rtl",
+          fontFamily: "var(--font-cairo), system-ui, sans-serif",
           "& .MuiInputLabel-root": {
             transformOrigin: "top right",
             left: "inherit",
             right: 0,
+            fontFamily: "var(--font-cairo), system-ui, sans-serif",
           },
           "& .MuiInputLabel-outlined:not(.MuiInputLabel-shrink)": {
             transform: "translate(-14px, 14px) scale(1)",
@@ -46,6 +48,7 @@ const RTLTextField = ({
           },
           "& .MuiOutlinedInput-input": {
             textAlign: "right",
+            fontFamily: "var(--font-cairo), system-ui, sans-serif",
           },
           "& .MuiOutlinedInput-notchedOutline": {
             textAlign: "right",
@@ -57,17 +60,20 @@ const RTLTextField = ({
             textAlign: "right",
             paddingRight: "8px",
             paddingLeft: "0px",
+            fontFamily: "var(--font-cairo), system-ui, sans-serif",
           },
           ...(multiline && {
             "& .MuiInputBase-input": {
               textAlign: "right",
               direction: "rtl",
+              fontFamily: "var(--font-cairo), system-ui, sans-serif",
             },
             "& .MuiInputBase-input::placeholder": {
               textAlign: "right",
               direction: "rtl",
               paddingRight: "8px",
               paddingLeft: "0px",
+              fontFamily: "var(--font-cairo), system-ui, sans-serif",
             },
             "& .MuiInputLabel-outlined:not(.MuiInputLabel-shrink)": {
               transform: "translate(-14px, 14px) scale(1)",

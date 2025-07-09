@@ -404,47 +404,11 @@ const CustomerDrawer = ({
                 textAlign: isRTL ? "right" : "left",
               }}
             >
-              {t("management.commissionPercent")}
-            </Typography>
-            <RTLTextField
-              value={formData?.commission_percent || ""}
-              onChange={handleFieldChange("commission_percent")}
-              type="number"
-              placeholder=""
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
               {t("management.commissionByItem")}
             </Typography>
             <RTLTextField
               value={formData?.commission_by_item || ""}
               onChange={handleFieldChange("commission_by_item")}
-              type="number"
-              placeholder=""
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.commissionByTurnover")}
-            </Typography>
-            <RTLTextField
-              value={formData?.commission_by_turnover || ""}
-              onChange={handleFieldChange("commission_by_turnover")}
               type="number"
               placeholder=""
             />

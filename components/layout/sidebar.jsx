@@ -1,6 +1,10 @@
+// Sidebar.jsx - Main sidebar navigation component for the app
+// - Handles bookmarks, menu groups, navigation, and logout
+// - Optimized for performance and maintainability
+
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import Link from "next/link";
 import {
   BarChart3,
@@ -66,7 +70,8 @@ import tenantApiService from "@/API/TenantApiService";
 import { useRouter, useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 
-// Icon mapping for menu items
+// ================= ICON MAP =================
+// Maps string keys to Lucide icons for menu rendering
 const iconMap = {
   Home,
   BarChart3,
@@ -98,31 +103,28 @@ const iconMap = {
   Briefcase,
 };
 
-// Helper function to get all menu items
-const GetAllMenuItems = (t) => {
-  const getAllNestedItems = (items) => {
-    return items.reduce((acc, item) => {
-      if (item.type === "group" && item.items) {
-        return [...acc, ...getAllNestedItems(item.items)];
-      }
-      // Add a unique identifier that doesn't change with language
-      const itemWithId = {
-        ...item,
-        uniqueId: item.key,
-      };
-      return [...acc, itemWithId];
-    }, []);
-  };
-
-  return Object.values(useMenuItems(t)).flatMap((group) => {
-    if (group.items) {
-      return getAllNestedItems(group.items);
-    }
-    return [];
-  });
+// ================= MENU ITEM FLATTENING =================
+// Helper to flatten all menu items for easy lookup (memoized)
+const useAllMenuItems = (t) => {
+  const menuItems = useMenuItems(t);
+  return useMemo(() => {
+    const getAllNestedItems = (items) => {
+      return items.reduce((acc, item) => {
+        if (item.type === "group" && item.items) {
+          return [...acc, ...getAllNestedItems(item.items)];
+        }
+        return [...acc, { ...item, uniqueId: item.key }];
+      }, []);
+    };
+    return Object.values(menuItems).flatMap((group) => {
+      if (group.items) return getAllNestedItems(group.items);
+      return [];
+    });
+  }, [menuItems]);
 };
 
-// Custom Tooltip Component using Portal
+// ================= PORTAL TOOLTIP =================
+// Custom tooltip rendered in a portal for sidebar icons
 const PortalTooltip = ({ children, content, isRTL, isVisible }) => {
   const [position, setPosition] = useState({ top: 0, left: 0 });
 
@@ -163,7 +165,8 @@ const PortalTooltip = ({ children, content, isRTL, isVisible }) => {
   return createPortal(tooltip, document.body);
 };
 
-// Component for rendering bookmarks section
+// ================= BOOKMARKS SECTION =================
+// Renders the bookmarks area at the top of the sidebar
 const BookmarksSection = ({
   bookmarks,
   isCollapsed,
@@ -183,7 +186,7 @@ const BookmarksSection = ({
   if (bookmarks.length === 0) return null;
 
   // Use the GetAllMenuItems helper
-  const allItems = GetAllMenuItems(t);
+  const allItems = useAllMenuItems(t);
 
   return (
     <div>
@@ -273,7 +276,8 @@ const BookmarksSection = ({
   );
 };
 
-// Component for rendering a group header
+// ================= GROUP HEADER =================
+// Renders a group header (collapsible or popover)
 const GroupHeader = ({
   groupName,
   GroupIcon,
@@ -300,7 +304,7 @@ const GroupHeader = ({
   const router = useRouter();
 
   // Get all items with proper uniqueId
-  const allItems = GetAllMenuItems(t);
+  const allItems = useAllMenuItems(t);
 
   const getFullPath = (path) => {
     if (path.startsWith("/")) {
@@ -372,7 +376,7 @@ const GroupHeader = ({
             side={isRTL ? "left" : "right"}
             align="start"
             className="w-48 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
-            sideOffset={-2}
+            sideOffset={18}
             alignOffset={-8}
           >
             <div className="space-y-1">
@@ -412,7 +416,7 @@ const GroupHeader = ({
                           side={isRTL ? "left" : "right"}
                           align="start"
                           className="w-48 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
-                          sideOffset={-1}
+                          sideOffset={3}
                           alignOffset={8}
                         >
                           <div className="space-y-0.5">
@@ -503,7 +507,8 @@ const GroupHeader = ({
   );
 };
 
-// Component for rendering group items
+// ================= GROUP ITEMS =================
+// Renders the items within a group (collapsible or popover)
 const GroupItems = ({
   groupItems,
   isCollapsed,
@@ -522,7 +527,7 @@ const GroupItems = ({
   if (isCollapsed || !isExpanded) return null;
 
   // Get all items with proper uniqueId
-  const allItems = GetAllMenuItems(t);
+  const allItems = useAllMenuItems(t);
 
   return (
     <ul className="space-y-1 mt-1">
@@ -585,7 +590,8 @@ const GroupItems = ({
   );
 };
 
-// Component for rendering nested groups
+// ================= NESTED GROUP =================
+// Renders nested groups (submenus)
 const NestedGroup = ({
   item,
   isCollapsed,
@@ -622,7 +628,7 @@ const NestedGroup = ({
   };
 
   // Get all items with proper uniqueId
-  const allItems = GetAllMenuItems(t);
+  const allItems = useAllMenuItems(t);
 
   const renderPopover = () => (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
@@ -653,7 +659,7 @@ const NestedGroup = ({
         side="right"
         align="start"
         className="w-48 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
-        sideOffset={-10}
+        sideOffset={-3}
         onOpenAutoFocus={handlePopoverOpen}
         onCloseAutoFocus={handlePopoverClose}
       >
@@ -684,13 +690,12 @@ const NestedGroup = ({
                       ? "pr-8"
                       : "pl-8"
                     : isRTL
-                      ? "pr-12"
-                      : "pl-12"
+                      ? "pr-20"
+                      : "pl-20"
                 }
                 className="whitespace-nowrap"
                 t={t}
                 isRTL={isRTL}
-                compact={true}
               />
             );
           })}
@@ -806,7 +811,9 @@ const NestedGroup = ({
   );
 };
 
+// ================= SIDEBAR MAIN COMPONENT =================
 export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
+  // ====== HOOKS & STATE ======
   const t = useTranslations("sidebar");
   const router = useRouter();
   const params = useParams();
@@ -820,7 +827,10 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   const menuItems = useMenuItems(t);
   const [isBookmarksExpanded, setIsBookmarksExpanded] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  // Memoized all menu items for fast lookup
+  const allItems = useAllMenuItems(t);
 
+  // ====== EFFECTS: LOAD STATE FROM LOCALSTORAGE ======
   useEffect(() => {
     // Load bookmarks from localStorage
     const storedBookmarks = localStorage.getItem("sidebarBookmarks");
@@ -909,8 +919,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
     }
   }, []);
 
-  // Save expanded groups state to localStorage whenever it changes
-  // This works for both English (LTR) and Arabic (RTL) modes
+  // ====== EFFECTS: SAVE STATE TO LOCALSTORAGE ======
   useEffect(() => {
     // Only save after initialization to prevent overwriting during initial load
     if (isInitialized && Object.keys(expandedGroups).length > 0) {
@@ -926,9 +935,6 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
       );
     }
   }, [expandedGroups, isInitialized, isRTL]);
-
-  // Save expanded sub-groups state to localStorage whenever it changes
-  // This works for both English (LTR) and Arabic (RTL) modes
   useEffect(() => {
     // Only save after initialization to prevent overwriting during initial load
     if (isInitialized && Object.keys(expandedSubGroups).length > 0) {
@@ -944,9 +950,6 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
       );
     }
   }, [expandedSubGroups, isInitialized, isRTL]);
-
-  // Save bookmarks expanded state to localStorage whenever it changes
-  // This works for both English (LTR) and Arabic (RTL) modes
   useEffect(() => {
     // Only save after initialization to prevent overwriting during initial load
     if (isInitialized) {
@@ -963,32 +966,23 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
     }
   }, [isBookmarksExpanded, isInitialized, isRTL]);
 
-  const toggleBookmark = (itemName) => {
-    const allItems = GetAllMenuItems(t);
+  // ====== HANDLERS (memoized with useCallback) ======
+  const toggleBookmark = useCallback((itemName) => {
     const item = allItems.find((i) => i.name === itemName);
     if (!item) return;
-
     let newBookmarks;
     if (bookmarks.includes(item.uniqueId)) {
       newBookmarks = bookmarks.filter((b) => b !== item.uniqueId);
-      toast.info({
-        title: "info",
-        description: "sidebarInfo",
-        isTranslated: true,
-      });
+      toast.info({ title: "info", description: "sidebarInfo", isTranslated: true });
     } else {
       newBookmarks = [...bookmarks, item.uniqueId];
-      toast.info({
-        title: "info",
-        description: "sidebarInfo",
-        isTranslated: true,
-      });
+      toast.info({ title: "info", description: "sidebarInfo", isTranslated: true });
     }
     setBookmarks(newBookmarks);
     localStorage.setItem("sidebarBookmarks", JSON.stringify(newBookmarks));
-  };
+  }, [allItems, bookmarks]);
 
-  const toggleGroup = (group) => {
+  const toggleGroup = useCallback((group) => {
     // Find the language-agnostic key for this group
     const groupKey = Object.keys(menuItems).find((key) => key === group);
     const groupData = menuItems[groupKey];
@@ -1024,9 +1018,9 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
 
       setExpandedGroups(updatedGroups);
     }
-  };
+  }, [expandedGroups, isCollapsed, menuItems, toggleSidebar]);
 
-  const toggleSubGroup = (subGroupName) => {
+  const toggleSubGroup = useCallback((subGroupName) => {
     // Find the language-agnostic key for this sub-group
     // Since subGroupName is the translated name, we need to find the item by name and get its key
     let languageAgnosticKey = subGroupName;
@@ -1059,9 +1053,9 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
       isRTL
     );
     setExpandedSubGroups(newExpandedSubGroups);
-  };
+  }, [expandedSubGroups, menuItems]);
 
-  const toggleBookmarks = () => {
+  const toggleBookmarks = useCallback(() => {
     const newState = !isBookmarksExpanded;
     console.log(
       "Toggling bookmarks from",
@@ -1072,35 +1066,21 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
       isRTL
     );
     setIsBookmarksExpanded(newState);
-  };
+  }, []);
 
-  const handleNavigation = (itemName) => {
+  const handleNavigation = useCallback((itemName) => {
     setActiveItem(itemName.toLowerCase());
-
-    // Find the item in the menu items
-    const allItems = GetAllMenuItems(t);
     const item = allItems.find((i) => i.name === itemName);
-
     if (item && item.path) {
-      // Get the full path
-      const fullPath = item.path.startsWith("/")
-        ? item.path
-        : `/${params?.route}/${item.path}`;
-
+      const fullPath = item.path.startsWith("/") ? item.path : `/${params?.route}/${item.path}`;
       router.push(fullPath);
     }
-
-    // Show navigation toast only in collapsed mode to provide feedback
     if (isCollapsed) {
-      toast.info({
-        title: "info",
-        description: "sidebarInfo",
-        isTranslated: true,
-      });
+      toast.info({ title: "info", description: "sidebarInfo", isTranslated: true });
     }
-  };
+  }, [allItems, isCollapsed, params?.route, router]);
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     try {
       // Get token before making the API call
       const token = document.cookie
@@ -1138,10 +1118,10 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
       });
       router.push("/login");
     }
-  };
+  }, [router]);
 
   // Helper function to clear all cookies
-  const clearCookies = () => {
+  const clearCookies = useCallback(() => {
     document.cookie =
       "tenant_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie =
@@ -1154,9 +1134,9 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
       "tenantEmail=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie =
       "tenantPassword=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  };
+  }, []);
 
-  const clearAllBookmarks = () => {
+  const clearAllBookmarks = useCallback(() => {
     if (bookmarks.length === 0) {
       toast.info({
         title: "info",
@@ -1173,13 +1153,12 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
       description: "sidebarInfo",
       isTranslated: true,
     });
-  };
+  }, [bookmarks]);
 
-  // Filter items based on user role
-  const filterItemsByRole = (items) => {
-    return items; // Show all items regardless of role
-  };
+  // ====== FILTER ITEMS BY ROLE (currently passthrough) ======
+  const filterItemsByRole = useCallback((items) => items, []);
 
+  // ====== RENDER ======
   return (
     <TooltipProvider delayDuration={600}>
       <aside
@@ -1318,3 +1297,4 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
     </TooltipProvider>
   );
 }
+// ================= END SIDEBAR =================

@@ -722,7 +722,18 @@
         "columnOrder": "ترتيب الأعمدة",
         "dragToReorder": "اسحب لإعادة ترتيب الأعمدة",
         "px": "بكسل",
-        "auto": "تلقائي"
+        "auto": "تلقائي",
+        "templates": "القوالب",
+        "saveAsTemplate": "حفظ كقالب",
+        "noTemplates": "لا توجد قوالب محفوظة.",
+        "apply": "تطبيق",
+        "delete": "حذف",
+        "templateName": "اسم القالب",
+        "nameRequired": "الاسم مطلوب",
+        "nameExists": "الاسم موجود بالفعل",
+        "select": "اختيار",
+        "searchColumn": "البحث في العمود...",
+        "loadingTemplates": "جاري تحميل القوالب..."
       }
     },
     "filter": {

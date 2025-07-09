@@ -29,6 +29,32 @@
     scrollbar-color: hsl(var(--primary)) hsl(var(--muted));
   }
 
+  /* Arabic font styling */
+  [dir="rtl"] {
+    font-family: var(--font-cairo), system-ui, sans-serif;
+  }
+
+  [dir="rtl"] * {
+    font-family: inherit;
+  }
+
+  /* Ensure Arabic text has proper line height and spacing */
+  [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4, [dir="rtl"] h5, [dir="rtl"] h6 {
+    font-family: var(--font-cairo), system-ui, sans-serif;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  [dir="rtl"] p, [dir="rtl"] span, [dir="rtl"] div {
+    font-family: var(--font-cairo), system-ui, sans-serif;
+    line-height: 1.6;
+  }
+
+  /* Arabic button and input styling */
+  [dir="rtl"] button, [dir="rtl"] input, [dir="rtl"] textarea, [dir="rtl"] select {
+    font-family: var(--font-cairo), system-ui, sans-serif;
+  }
+
   :root {
     --background: 220 14% 96%;
     --foreground: 0 0% 9%;
@@ -159,4 +185,36 @@
 /* For Webkit browsers (Chrome, Safari, etc.) */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* RTL Layout */
+.rtl .sidebar {
+  right: 0;
+  left: auto;
+}
+
+.rtl .main-content-expanded {
+  margin-right: var(--sidebar-width);
+  margin-left: 0;
+}
+
+.rtl .main-content-collapsed {
+  margin-right: var(--sidebar-width-collapsed);
+  margin-left: 0;
+}
+
+/* LTR Layout */
+.ltr .sidebar {
+  left: 0;
+  right: auto;
+}
+
+.ltr .main-content-expanded {
+  margin-left: var(--sidebar-width);
+  margin-right: 0;
+}
+
+.ltr .main-content-collapsed {
+  margin-left: var(--sidebar-width-collapsed);
+  margin-right: 0;
 }

@@ -201,6 +201,7 @@ const Table = (props) => {
       {showColumnModal && (
         <ColumnModal
           isOpen={showColumnModal}
+          tableName={props.tableId || "default"}
           columns={columnsArray}
           visibleColumns={tempVisibleColumns}
           columnWidths={tempColumnWidths}

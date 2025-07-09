@@ -2,6 +2,72 @@
 
 import React, { useEffect, useRef } from "react";
 
+export const ArabicFontWrapper = ({ children, className = "" }) => {
+  return (
+    <div className={`font-cairo ${className}`}>
+      {children}
+    </div>
+  );
+};
+
+export const ArabicText = ({ children, className = "", ...props }) => {
+  return (
+    <span className={`font-cairo ${className}`} {...props}>
+      {children}
+    </span>
+  );
+};
+
+export const ArabicHeading = ({ children, className = "", as = "h2", ...props }) => {
+  const Component = as;
+  return (
+    <Component className={`font-cairo font-semibold ${className}`} {...props}>
+      {children}
+    </Component>
+  );
+};
+
+export const ArabicParagraph = ({ children, className = "", ...props }) => {
+  return (
+    <p className={`font-cairo leading-relaxed ${className}`} {...props}>
+      {children}
+    </p>
+  );
+};
+
+export const ArabicButton = ({ children, className = "", ...props }) => {
+  return (
+    <button className={`font-cairo ${className}`} {...props}>
+      {children}
+    </button>
+  );
+};
+
+export const ArabicInput = ({ className = "", ...props }) => {
+  return (
+    <input className={`font-cairo ${className}`} {...props} />
+  );
+};
+
+// Background components (existing)
+export const BackgroundGradient = ({ children, className = "" }) => {
+  return (
+    <div className={`bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 ${className}`}>
+      {children}
+    </div>
+  );
+};
+
+export const BackgroundPattern = ({ children, className = "" }) => {
+  return (
+    <div className={`bg-white dark:bg-gray-900 ${className}`} style={{
+      backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+    }}>
+      {children}
+    </div>
+  );
+};
+
 export const CustomBackground = ({ className }) => {
   const canvasRef = useRef(null);
 

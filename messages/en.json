@@ -736,7 +736,9 @@
         "templateName": "Template name",
         "nameRequired": "Name required",
         "nameExists": "Name already exists",
-        "select": "Select"
+        "select": "Select",
+        "searchColumn": "Search column...",
+        "loadingTemplates": "Loading templates..."
       }
     },
     "filter": {

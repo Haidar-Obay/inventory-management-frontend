@@ -34,13 +34,13 @@ export const TableHeader = ({
 
   return (
     <thead
-      className="bg-gray-50 dark:bg-muted/50 sticky top-0 z-20"
+      className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 sticky top-0 z-20 border-b-2 border-slate-200 dark:border-slate-700"
       style={{ transform: "translateZ(0px)" }}
     >
       {/* Header Row */}
-      <tr className="bg-gray-50 dark:bg-muted/50">
+      <tr className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900">
         <th
-          className="border-b border-border ps-2 py-2"
+          className="border-b border-slate-200 dark:border-slate-700 ps-3 py-3 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-all duration-200"
           data-column="select"
           style={{ width: "36px", minWidth: "32px", maxWidth: "40px" }}
         >
@@ -50,11 +50,11 @@ export const TableHeader = ({
               onChange={handleSelectAll}
               disabled={paginatedData.length === 0}
               aria-label="Select all rows on this page"
-              className="m-0"
+              className="m-0 hover:scale-105 transition-transform duration-200"
             />
             <button
               onClick={handleToggleSearchColumn}
-              className="p-0 m-0 h-4 w-4 flex items-center justify-center hover:bg-muted rounded"
+              className="p-0 m-0 h-5 w-5 flex items-center justify-center hover:bg-slate-300 dark:hover:bg-slate-600 rounded-md hover:scale-110 transition-all duration-200 shadow-sm"
               title={showSearchColumn ? "Hide search row" : "Show search row"}
               tabIndex={0}
               type="button"
@@ -91,15 +91,15 @@ export const TableHeader = ({
         </th>
         {showSearchColumn && (
           <th
-            className="border-b border-border px-0 py-2"
+            className="border-b border-slate-200 dark:border-slate-700 px-0 py-3"
             data-column="search"
             style={{ width: "18px", minWidth: "18px", maxWidth: "18px" }}
           >
             <div className="flex items-center justify-center w-full">
               <button
                 onClick={handleToggleSearchRow}
-                className="flex items-center justify-center border border-border bg-background shadow-sm hover:bg-muted rounded"
-                style={{ width: 20, height: 20, padding: 0 }}
+                className="flex items-center justify-center border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-sm hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md hover:scale-110 transition-all duration-200"
+                style={{ width: 22, height: 22, padding: 0 }}
                 tabIndex={0}
                 type="button"
               >
@@ -149,7 +149,7 @@ export const TableHeader = ({
             <th
               key={key}
               data-column={key}
-              className="border-b border-border px-4 py-2 text-left relative group"
+              className="border-b border-slate-200 dark:border-slate-700 px-6 py-4 text-left relative group hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-all duration-200 cursor-pointer"
               style={{ width: width === "auto" ? "auto" : width }}
               draggable
               onDragStart={() => handleColumnDragStart(key)}
@@ -157,14 +157,14 @@ export const TableHeader = ({
             >
               <div className="flex flex-col">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">{column.header}</span>
+                  <span className="font-semibold text-slate-700 dark:text-slate-200 text-sm uppercase tracking-wide hover:text-slate-900 dark:hover:text-white transition-colors duration-200">{column.header}</span>
                   <div className="flex items-center space-x-2">
                     {column.sortable && (
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleSort(key)}
-                        className="h-8 w-8 p-0"
+                        className="h-8 w-8 p-0 hover:bg-slate-300 dark:hover:bg-slate-600 hover:scale-105 transition-all duration-200 rounded-md"
                       >
                         {sortConfig.key === key ? (
                           sortConfig.direction === "asc" ? (
@@ -217,11 +217,11 @@ export const TableHeader = ({
                     <Button
                       variant={hasActiveFilter ? "primary" : "ghost"}
                       size="sm"
-                      className={`h-10 w-10 p-0 ml-2 flex items-center justify-center transition-all duration-200 
+                      className={`h-9 w-9 p-0 ml-2 flex items-center justify-center transition-all duration-200 rounded-md
                       ${
                         hasActiveFilter
-                          ? "text-primary-foreground bg-primary hover:bg-primary/90"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                          ? "text-white bg-blue-600 hover:bg-blue-700 hover:scale-105 shadow-sm"
+                          : "text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 hover:scale-105"
                       }`}
                       onClick={() => handleOpenFilterModal(key)}
                       title="Filter Options"
@@ -243,8 +243,8 @@ export const TableHeader = ({
                   </div>
                 </div>
                 {hasActiveFilter && (
-                  <div className="mt-1">
-                    <Badge variant="primary" className="text-xs">
+                  <div className="mt-2">
+                    <Badge variant="primary" className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 border border-blue-200 dark:border-blue-700">
                       {activeColumnFilters[key].type}:{" "}
                       {activeColumnFilters[key].value}
                     </Badge>
@@ -257,14 +257,14 @@ export const TableHeader = ({
 
         {/* Actions column */}
         <th
-          className={`border-b border-border px-1 py-2 text-center bg-gray-50 dark:bg-muted/50 ${
+          className={`border-b border-slate-200 dark:border-slate-700 px-4 py-4 text-center bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-all duration-200 ${
             isOverflowing
-              ? "sticky end-0 z-20 backdrop-blur-sm border-s border-gray-200 dark:border-gray-700 bg-gray-50/95 dark:bg-muted/95"
+              ? "sticky end-0 z-20 backdrop-blur-sm border-s border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50/95 to-slate-100/95 dark:from-slate-800/95 dark:to-slate-900/95"
               : ""
           }`}
           style={{ width: "75px", minWidth: "75px", maxWidth: "75px" }}
         >
-          <span className="flex items-center justify-center w-full">
+          <span className="flex items-center justify-center w-full font-semibold text-slate-700 dark:text-slate-200 text-sm uppercase tracking-wide hover:text-slate-900 dark:hover:text-white transition-colors duration-200">
             {t("actions")}
           </span>
         </th>
@@ -272,7 +272,7 @@ export const TableHeader = ({
 
       {showSearchRow && (
         <tr
-          className="bg-gray-50 dark:bg-muted/50"
+          className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700"
           style={{
             visibility: showSearchRow ? "visible" : "hidden",
             position: showSearchRow ? "static" : "absolute",
@@ -290,7 +290,7 @@ export const TableHeader = ({
             if (!column || !visibleColumns[key]) return null;
 
             return (
-              <td key={`search-${key}`} className="px-4 py-2">
+              <td key={`search-${key}`} className="px-6 py-2 hover:bg-slate-100 dark:hover:bg-slate-700/30 transition-colors duration-200">
                 <div className="relative">
                   <div
                     className={`pointer-events-none absolute inset-y-0 ${isRTL ? "left-0" : "right-0"} flex items-center ${isRTL ? "pl-2" : "pr-2"}`}
@@ -320,16 +320,16 @@ export const TableHeader = ({
                     onChange={(e) =>
                       handleColumnSearch(column.key, e.target.value)
                     }
-                    className="h-8 w-full"
+                    className="h-8 w-full border-slate-300 dark:border-slate-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-blue-500 dark:focus:ring-blue-400"
                   />
                 </div>
               </td>
             );
           })}
           <td
-            className={`border-b border-border px-1 py-2 bg-gray-50 dark:bg-muted/50 ${
+            className={`border-b border-slate-200 dark:border-slate-700 px-4 py-2 bg-slate-50 dark:bg-slate-800/50 ${
               isOverflowing
-                ? "sticky end-0 z-10 backdrop-blur-sm border-s border-gray-200 dark:border-gray-700 bg-gray-50/95 dark:bg-muted/95"
+                ? "sticky end-0 z-10 backdrop-blur-sm border-s border-slate-200 dark:border-slate-700 bg-slate-50/95 dark:bg-slate-800/95"
                 : ""
             }`}
             style={{ width: "75px", minWidth: "75px", maxWidth: "75px" }}

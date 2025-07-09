@@ -7,12 +7,19 @@ import { ThemeProvider } from "@/lib/themes/theme-provider";
 import { MUIThemeWrapper } from "@/lib/themes/mui-theme-provider";
 import "@/styles/globals.css";
 import "@/styles/toast.css";
-import { Inter } from "next/font/google";
+import { Inter, Cairo } from "next/font/google";
 
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-inter",
+});
+
+const cairo = Cairo({
+  subsets: ["arabic", "latin"],
+  display: "swap",
+  variable: "--font-cairo",
+  weight: ["200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 export const metadata = {
@@ -38,7 +45,7 @@ export default async function LocaleLayout({ children, params }) {
 
   return (
     <html suppressHydrationWarning dir={locale === "ar" ? "rtl" : "ltr"}>
-      <body className={`${inter.variable} ${inter.className}`}>
+      <body className={`${inter.variable} ${cairo.variable} ${locale === "ar" ? cairo.className : inter.className}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
