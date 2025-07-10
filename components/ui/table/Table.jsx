@@ -10,6 +10,7 @@ import { TableToolbar } from "./TableToolbar";
 import { DeleteModal } from "./DeleteModal";
 import { ColumnModal } from "./ColumnModal";
 import { FilterModal } from "./FilterModal";
+import PreviewModal from "./PreviewModal";
 import { Badge } from "./CustomControls";
 
 const Table = (props) => {
@@ -143,6 +144,10 @@ const Table = (props) => {
   const [isOverflowing, setIsOverflowing] = useState(false);
   const scrollContainerRef = useRef(null);
   const [openDropdownRowId, setOpenDropdownRowId] = useState(null);
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
+  const [previewRow, setPreviewRow] = useState(null);
+
+  console.log("Table state:", { previewModalOpen, previewRow });
 
   // Convert columns object to array if needed
   const columnsArray = Array.isArray(props.columns)
@@ -196,6 +201,19 @@ const Table = (props) => {
         isOpen={deleteModalOpen}
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
+      />
+
+      <PreviewModal
+        isOpen={previewModalOpen}
+        onClose={() => {
+          console.log("Closing preview modal");
+          setPreviewModalOpen(false);
+          setPreviewRow(null);
+        }}
+        row={previewRow}
+        columns={columnsArray}
+        columnOrder={effectiveColumnOrder}
+        visibleColumns={effectiveVisibleColumns}
       />
 
       {showColumnModal && (
@@ -363,6 +381,12 @@ const Table = (props) => {
                 openDropdownRowId={openDropdownRowId}
                 setOpenDropdownRowId={setOpenDropdownRowId}
                 showSearchColumn={showSearchColumn}
+                onPreview={(row) => {
+                  console.log("Preview clicked for row:", row);
+                  setPreviewRow(row);
+                  setPreviewModalOpen(true);
+                  setOpenDropdownRowId(null);
+                }}
               />
             </table>
           </div>
