@@ -155,14 +155,14 @@ const PreviewModal = ({ isOpen, onClose, row, columns, columnOrder, visibleColum
           </div>
           
           {/* Future sections can be added here */}
-          {/* <div className="space-y-4">
+          <div className="space-y-4">
             <h3 className="text-lg font-semibold">Additional Information</h3>
             <div className="p-4 bg-muted/30 rounded-lg border">
               <p className="text-sm text-muted-foreground">
                 Future sections will be added here...
               </p>
             </div>
-          </div> */}
+          </div>
         </div>
         
         <div className="flex justify-end gap-2 pt-4 border-t">
