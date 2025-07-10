@@ -692,6 +692,12 @@
     "description": "وصف الجدول",
     "editLabel": "تعديل",
     "deleteLabel": "حذف",
+    "previewLabel": "معاينة",
+    "closeLabel": "إغلاق",
+    "basicInformation": "المعلومات الأساسية",
+    "fields": "حقول",
+    "boolean": "منطقي",
+    "date": "تاريخ",
     "edit": "تعديل",
     "delete": "حذف",
     "search": {

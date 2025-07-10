@@ -697,6 +697,12 @@
     "description": "Table description",
     "editLabel": "Edit",
     "deleteLabel": "Delete",
+    "previewLabel": "Preview",
+    "closeLabel": "Close",
+    "basicInformation": "Basic Information",
+    "fields": "fields",
+    "boolean": "boolean",
+    "date": "date",
     "edit": "Edit",
     "delete": "Delete",
     "search": {

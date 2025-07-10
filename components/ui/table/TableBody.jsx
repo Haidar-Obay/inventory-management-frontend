@@ -37,6 +37,7 @@ export const TableBody = ({
   openDropdownRowId,
   setOpenDropdownRowId,
   showSearchColumn,
+  onPreview,
 }) => {
   const t = useTranslations("table");
   const locale = useLocale();
@@ -55,35 +56,84 @@ export const TableBody = ({
                 : "bg-gray-50 dark:bg-muted/50"
             }`}
           >
+            {/* Row selection checkbox skeleton */}
             <td
-              className="border-b border-border px-4 py-2"
-              style={{ width: columnWidths["select"] || "40px" }}
+              className="border-b border-border ps-2 py-2"
+              style={{ width: "36px", minWidth: "32px", maxWidth: "40px" }}
             >
-              <div className="flex items-center justify-center w-full">
+              <div className="flex flex-row items-center justify-center w-full gap-1">
                 <div className="h-4 w-4 rounded bg-gray-200 dark:bg-muted animate-pulse"></div>
+                <div className="w-4 h-4"></div>
               </div>
             </td>
+            {/* Row handle (search column) skeleton */}
             {showSearchColumn && (
               <td
-                className="border-b border-border px-4 py-2"
-                style={{ width: columnWidths["search"] || "40px" }}
+                className="border-b border-border px-0 py-2"
+                style={{ width: "18px", minWidth: "18px", maxWidth: "18px" }}
               >
-                <div className="h-4 w-4 rounded bg-gray-200 dark:bg-muted animate-pulse"></div>
+                <div className="flex items-center justify-center w-full h-full">
+                  <div className="h-3 w-3 rounded bg-gray-200 dark:bg-muted animate-pulse"></div>
+                </div>
               </td>
             )}
+            {/* Column cells skeleton */}
             {columnOrder.map((key) => {
               const column = columns.find((col) => col.key === key);
               if (!column || !visibleColumns[key]) return null;
+              
+              const width = columnWidths[key];
+              
               return (
-                <td key={key} className="border-b border-border px-4 py-2">
-                  <div className="h-4 bg-gray-200 dark:bg-muted rounded animate-pulse"></div>
+                <td
+                  key={key}
+                  className="border-b border-border px-4 py-2"
+                  style={{ width: width === "auto" ? "auto" : width }}
+                >
+                  <div className="min-h-[24px] flex items-center">
+                    {column.type === "boolean" ? (
+                      // Boolean skeleton - badge style
+                      <div className="inline-flex items-center rounded-full bg-gray-200 dark:bg-muted px-2 py-0.5 text-xs font-medium animate-pulse">
+                        <div className="h-3 w-3 rounded mr-1 bg-gray-300 dark:bg-muted-foreground"></div>
+                        <div className="h-3 w-8 rounded bg-gray-300 dark:bg-muted-foreground"></div>
+                      </div>
+                    ) : column.type === "date" ? (
+                      // Date skeleton - shorter width
+                      <div className="h-4 w-20 rounded bg-gray-200 dark:bg-muted animate-pulse"></div>
+                    ) : column.options ? (
+                      // Select options skeleton
+                      <div className="h-4 w-24 rounded bg-gray-200 dark:bg-muted animate-pulse"></div>
+                    ) : (
+                      // Text/number skeleton - variable width based on content
+                      <div className="h-4 rounded bg-gray-200 dark:bg-muted animate-pulse" style={{
+                        width: column.key === "id" ? "40px" : 
+                               column.key === "code" ? "60px" : 
+                               column.key === "name" ? "120px" : 
+                               column.key === "description" ? "150px" : 
+                               column.key === "phone" || column.key.includes("phone") ? "100px" :
+                               column.key === "email" ? "140px" :
+                               column.key === "address" ? "180px" :
+                               column.key === "notes" ? "200px" :
+                               "80px"
+                      }}></div>
+                    )}
+                  </div>
                 </td>
               );
             })}
-            <td className="w-20 border-b border-border px-4 py-2">
-              <div className="flex space-x-2">
-                <div className="h-8 w-8 rounded bg-gray-200 dark:bg-muted animate-pulse"></div>
-                <div className="h-8 w-8 rounded bg-gray-200 dark:bg-muted animate-pulse"></div>
+            {/* Actions skeleton */}
+            <td
+              className="border-b border-border px-1 py-2"
+              style={{ width: "75px", minWidth: "75px", maxWidth: "75px" }}
+            >
+              <div className="flex justify-center">
+                <div className="h-8 w-8 rounded bg-gray-200 dark:bg-muted animate-pulse flex items-center justify-center">
+                  <div className="flex items-center gap-0.5">
+                    <div className="h-1 w-1 rounded-full bg-gray-400 dark:bg-muted-foreground animate-pulse"></div>
+                    <div className="h-1 w-1 rounded-full bg-gray-400 dark:bg-muted-foreground animate-pulse"></div>
+                    <div className="h-1 w-1 rounded-full bg-gray-400 dark:bg-muted-foreground animate-pulse"></div>
+                  </div>
+                </div>
               </div>
             </td>
           </tr>
@@ -334,6 +384,30 @@ export const TableBody = ({
                     }
                     align="right"
                   >
+                    <DropdownItem
+                      onClick={() => {
+                        setOpenDropdownRowId(null);
+                        onPreview && onPreview(row);
+                      }}
+                      className="flex items-center gap-2"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="13"
+                        height="13"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-blue-600"
+                      >
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                      {t("previewLabel") || "Preview"}
+                    </DropdownItem>
                     <DropdownItem
                       onClick={() => {
                         setOpenDropdownRowId(null);
