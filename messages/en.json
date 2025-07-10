@@ -16,7 +16,9 @@
     "searchTitle": "Search initiated",
     "searchDescription": "Searching for",
     "notificationsRead": "All notifications marked as read",
-    "notificationsCleared": "All notifications cleared"
+    "notificationsCleared": "All notifications cleared",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out"
   },
   "breadcrumbs": {
     "home": "Home",
@@ -44,7 +46,9 @@
     "departments": "Departments",
     "trades": "Trades",
     "companyCodes": "Company Codes",
-    "jobs": "Jobs"
+    "jobs": "Jobs",
+    "settings": "Settings",
+    "profile": "Profile"
   },
   "toast": {
     "success": "Success",

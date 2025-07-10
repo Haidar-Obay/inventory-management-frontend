@@ -212,8 +212,8 @@ const Table = (props) => {
         }}
         row={previewRow}
         columns={columnsArray}
-        columnOrder={effectiveColumnOrder}
-        visibleColumns={effectiveVisibleColumns}
+        columnOrder={columnOrder}
+        visibleColumns={visibleColumns}
       />
 
       {showColumnModal && (

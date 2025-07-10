@@ -120,14 +120,14 @@ const PreviewModal = ({ isOpen, onClose, row, columns, columnOrder, visibleColum
             <div className="flex items-center gap-2">
               <h3 className="text-lg font-semibold">{t("basicInformation") || "Basic Information"}</h3>
               <Badge variant="secondary" className="text-xs">
-                {columnOrder.filter(key => visibleColumns[key]).length} {t("fields") || "fields"}
+                {columnOrder.length} {t("fields") || "fields"}
               </Badge>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {columnOrder.map((key) => {
                 const column = columns.find((col) => col.key === key);
-                if (!column || !visibleColumns[key]) return null;
+                if (!column) return null;
                 
                 const value = row[key];
                 
@@ -155,14 +155,14 @@ const PreviewModal = ({ isOpen, onClose, row, columns, columnOrder, visibleColum
           </div>
           
           {/* Future sections can be added here */}
-          {/* <div className="space-y-4">
+          <div className="space-y-4">
             <h3 className="text-lg font-semibold">Additional Information</h3>
             <div className="p-4 bg-muted/30 rounded-lg border">
               <p className="text-sm text-muted-foreground">
                 Future sections will be added here...
               </p>
             </div>
-          </div> */}
+          </div>
         </div>
         
         <div className="flex justify-end gap-2 pt-4 border-t">
