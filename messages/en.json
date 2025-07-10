@@ -899,6 +899,7 @@
       "personalInformation": "Personal Information",
       "title": "Title",
       "firstName": "First Name",
+      "middleName": "Middle Name",
       "lastName": "Last Name",
       "displayName": "Display Name",
       "companyName": "Company Name",

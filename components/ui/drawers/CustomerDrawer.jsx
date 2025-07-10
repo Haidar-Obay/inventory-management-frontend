@@ -38,6 +38,45 @@ const CustomerDrawer = ({
   const [originalData, setOriginalData] = useState({});
   const { addToast } = useSimpleToast();
 
+  // Generate display name suggestions based on name components
+  const generateDisplayNameSuggestions = () => {
+    const title = formData?.title || "";
+    const firstName = formData?.first_name || "";
+    const middleName = formData?.middle_name || "";
+    const lastName = formData?.last_name || "";
+    
+    const suggestions = [];
+    
+    // Add combinations based on available fields
+    if (firstName && lastName) {
+      suggestions.push(`${firstName} ${lastName}`);
+      if (title) suggestions.push(`${title} ${firstName} ${lastName}`);
+      if (middleName) {
+        suggestions.push(`${firstName} ${middleName} ${lastName}`);
+        if (title) suggestions.push(`${title} ${firstName} ${middleName} ${lastName}`);
+      }
+    }
+    
+    if (firstName) {
+      suggestions.push(firstName);
+      if (title) suggestions.push(`${title} ${firstName}`);
+    }
+    
+    if (lastName) {
+      suggestions.push(lastName);
+      if (title) suggestions.push(`${title} ${lastName}`);
+    }
+    
+    // Add company name if available
+    if (formData?.company_name) {
+      suggestions.push(formData.company_name);
+    }
+    
+    return suggestions.filter((suggestion, index, array) => 
+      array.indexOf(suggestion) === index && suggestion.trim() !== ""
+    );
+  };
+
   useEffect(() => {
     if (isOpen) {
       if (type === "customer") {
@@ -90,6 +129,13 @@ const CustomerDrawer = ({
     });
   };
 
+  const handleDisplayNameChange = (event, newValue) => {
+    onFormDataChange({
+      ...formData,
+      display_name: newValue || "",
+    });
+  };
+
   function isDataChanged() {
     return JSON.stringify(formData) !== JSON.stringify(originalData);
   }
@@ -114,7 +160,7 @@ const CustomerDrawer = ({
     if (type === "customerGroup") {
       return (
         <Grid container spacing={2} sx={{ p: 2 }}>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -132,7 +178,7 @@ const CustomerDrawer = ({
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -150,7 +196,7 @@ const CustomerDrawer = ({
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Checkbox
               checked={formData?.active !== false}
               onChange={(e) =>
@@ -170,7 +216,7 @@ const CustomerDrawer = ({
     if (type === "salesman") {
       return (
         <Grid container spacing={2} sx={{ p: 2 }}>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -188,7 +234,7 @@ const CustomerDrawer = ({
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Checkbox
               checked={formData?.active !== false}
               onChange={(e) =>
@@ -201,7 +247,7 @@ const CustomerDrawer = ({
               isRTL={isRTL}
             />
           </Grid>
-          <Grid item xs={12} md={6} sx={{ width: "100%" }}>
+          <Grid xs={12} md={6} sx={{ width: "100%" }}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -219,7 +265,7 @@ const CustomerDrawer = ({
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} sx={{ width: "100%" }}>
+          <Grid xs={12} sx={{ width: "100%" }}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -238,7 +284,7 @@ const CustomerDrawer = ({
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -255,7 +301,7 @@ const CustomerDrawer = ({
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -272,7 +318,7 @@ const CustomerDrawer = ({
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -290,7 +336,7 @@ const CustomerDrawer = ({
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={4} sx={{ width: "50%" }}>
+          <Grid xs={12} md={4} sx={{ width: "50%" }}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -319,7 +365,7 @@ const CustomerDrawer = ({
               <option value="true">{t("management.yes")}</option>
             </RTLTextField>
           </Grid>
-          <Grid item xs={12} md={4} sx={{ width: "50%" }}>
+          <Grid xs={12} md={4} sx={{ width: "50%" }}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -348,7 +394,7 @@ const CustomerDrawer = ({
               <option value="true">{t("management.yes")}</option>
             </RTLTextField>
           </Grid>
-          <Grid item xs={12} md={4} sx={{ width: "50%" }}>
+          <Grid xs={12} md={4} sx={{ width: "50%" }}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -377,7 +423,7 @@ const CustomerDrawer = ({
               <option value="true">{t("management.yes")}</option>
             </RTLTextField>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -395,7 +441,7 @@ const CustomerDrawer = ({
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -418,6 +464,8 @@ const CustomerDrawer = ({
     }
 
     if (type === "customer") {
+      const displayNameSuggestions = generateDisplayNameSuggestions();
+      
       return (
         <div>
           <Accordion defaultExpanded>
@@ -432,7 +480,7 @@ const CustomerDrawer = ({
             </AccordionSummary>
             <AccordionDetails>
               <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
+                <Grid xs={12} md={6}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -462,7 +510,7 @@ const CustomerDrawer = ({
                     <option value="Prof.">Prof.</option>
                   </RTLTextField>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid xs={12} md={6}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -480,7 +528,24 @@ const CustomerDrawer = ({
                     placeholder=""
                   />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid xs={12} md={6}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.middleName") || "Middle Name"}
+                  </Typography>
+                  <RTLTextField
+                    value={formData?.middle_name || ""}
+                    onChange={handleFieldChange("middle_name")}
+                    placeholder=""
+                  />
+                </Grid>
+                <Grid xs={12} md={6}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -498,7 +563,7 @@ const CustomerDrawer = ({
                     placeholder=""
                   />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid xs={12}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -509,13 +574,18 @@ const CustomerDrawer = ({
                   >
                     {t("management.displayName") || "Display Name"}
                   </Typography>
-                  <RTLTextField
+                  <Autocomplete
+                    fullWidth
+                    freeSolo
+                    options={displayNameSuggestions}
                     value={formData?.display_name || ""}
-                    onChange={handleFieldChange("display_name")}
-                    placeholder=""
+                    onChange={handleDisplayNameChange}
+                    renderInput={(params) => (
+                      <RTLTextField {...params} placeholder="" />
+                    )}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid xs={12}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -532,7 +602,7 @@ const CustomerDrawer = ({
                     placeholder=""
                   />
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid xs={12} md={4}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -550,7 +620,7 @@ const CustomerDrawer = ({
                     placeholder=""
                   />
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid xs={12} md={4}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -567,7 +637,7 @@ const CustomerDrawer = ({
                     placeholder=""
                   />
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid xs={12} md={4}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -584,7 +654,7 @@ const CustomerDrawer = ({
                     placeholder=""
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid xs={12}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -621,7 +691,7 @@ const CustomerDrawer = ({
     // Default fields for other types
     return (
       <Grid container spacing={2} sx={{ p: 2 }}>
-        <Grid item xs={12}>
+        <Grid xs={12}>
           <Typography
             variant="body2"
             color="text.secondary"

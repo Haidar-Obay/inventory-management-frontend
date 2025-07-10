@@ -30,7 +30,6 @@ export const TableHeader = ({
   const t = useTranslations("table");
   const locale = useLocale();
   const isRTL = locale === "ar";
-  console.log("t is a function:", typeof t === "function");
 
   return (
     <thead

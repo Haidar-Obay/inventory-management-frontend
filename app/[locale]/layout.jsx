@@ -25,6 +25,10 @@ const cairo = Cairo({
 export const metadata = {
   title: "Inventory Management System",
   description: "An inventory management system",
+  // Optimize CSS preloading
+  other: {
+    "preload-css": "true",
+  },
 };
 
 export default async function LocaleLayout({ children, params }) {

@@ -56,7 +56,6 @@ const ItemDrawer = ({
       setLoading(true);
       const response = await getCategoryNames();
       setCategoryOptions(response.data || []);
-      console.log(response.data);
     } catch (error) {
       console.error("Error fetching category names:", error);
     } finally {
@@ -133,7 +132,7 @@ const ItemDrawer = ({
     if (type === "productLine") {
       return (
         <Grid container spacing={2} sx={{ p: 2 }}>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -151,7 +150,7 @@ const ItemDrawer = ({
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -169,7 +168,7 @@ const ItemDrawer = ({
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Checkbox
               checked={formData?.active !== false}
               onChange={(e) =>
@@ -189,7 +188,7 @@ const ItemDrawer = ({
     if (type === "category") {
       return (
         <Grid container spacing={2} sx={{ p: 2 }}>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -207,7 +206,7 @@ const ItemDrawer = ({
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -225,7 +224,7 @@ const ItemDrawer = ({
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} sx={{ width: "53%" }}>
+          <Grid xs={12} sx={{ width: "53%" }}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -257,7 +256,7 @@ const ItemDrawer = ({
               )}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Checkbox
               checked={formData?.active !== false}
               onChange={(e) =>
@@ -277,7 +276,7 @@ const ItemDrawer = ({
     if (type === "brand") {
       return (
         <Grid container spacing={2} sx={{ p: 2 }}>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -295,7 +294,7 @@ const ItemDrawer = ({
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -313,7 +312,7 @@ const ItemDrawer = ({
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} sx={{ width: "53%" }}>
+          <Grid xs={12} sx={{ width: "53%" }}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -344,7 +343,7 @@ const ItemDrawer = ({
               )}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Checkbox
               checked={formData?.active !== false}
               onChange={(e) =>
@@ -364,7 +363,7 @@ const ItemDrawer = ({
     if (type === "item") {
       return (
         <Grid container spacing={2} sx={{ p: 2 }}>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -382,7 +381,7 @@ const ItemDrawer = ({
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -400,7 +399,7 @@ const ItemDrawer = ({
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -427,7 +426,7 @@ const ItemDrawer = ({
               )}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -453,7 +452,7 @@ const ItemDrawer = ({
               )}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -478,7 +477,7 @@ const ItemDrawer = ({
               )}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Checkbox
               checked={formData?.active !== false}
               onChange={(e) =>

@@ -454,7 +454,6 @@ function AddressCodesPage() {
   const handlePrint = (type, data, columns) => {
     try {
       // Logic to prepare data for printing
-      console.log("Printing data:", { type, data, columns });
       // Here you can use a library like `react-to-print` or open a new window with a printable format
       toast.success({
         title: toastT("success"),

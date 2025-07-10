@@ -25,10 +25,7 @@ const tenantApiService = async (method, endpoint, data = null) => {
     ...(token && { Authorization: `Bearer ${token}` }),
   };
 
-  console.log("Tenant Name:", tenantName);
-  console.log("Request URL:", url);
-  console.log("Token in Cookie: ", token);
-  console.log("Request Headers: ", headers);
+
 
   try {
     const response = await fetch(url, {

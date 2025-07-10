@@ -99,7 +99,6 @@ export const getProjectNames = async () => {
 export const getCostCenters = async () => {
   try {
     const response = await tenantApiService('GET', 'cost-centers');
-    console.log('Cost Centers API Response:', response);
     return response;
   } catch (error) {
     console.error('Error fetching cost centers:', error);

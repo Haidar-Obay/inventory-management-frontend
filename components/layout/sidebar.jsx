@@ -183,10 +183,10 @@ const BookmarksSection = ({
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const buttonRef = useRef(null);
 
-  if (bookmarks.length === 0) return null;
-
   // Use the GetAllMenuItems helper
   const allItems = useAllMenuItems(t);
+
+  if (bookmarks.length === 0) return null;
 
   return (
     <div>
@@ -840,12 +840,6 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
 
     // Load expanded groups state from localStorage
     const storedExpandedGroups = localStorage.getItem("sidebarExpandedGroups");
-    console.log(
-      "Loading expanded groups state:",
-      storedExpandedGroups,
-      "RTL:",
-      isRTL
-    );
     if (storedExpandedGroups) {
       setExpandedGroups(JSON.parse(storedExpandedGroups));
     }
@@ -853,12 +847,6 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
     // Load expanded sub-groups state from localStorage
     const storedExpandedSubGroups = localStorage.getItem(
       "sidebarExpandedSubGroups"
-    );
-    console.log(
-      "Loading expanded sub-groups state:",
-      storedExpandedSubGroups,
-      "RTL:",
-      isRTL
     );
     if (storedExpandedSubGroups) {
       setExpandedSubGroups(JSON.parse(storedExpandedSubGroups));
@@ -868,19 +856,11 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
     const storedBookmarksExpanded = localStorage.getItem(
       "sidebarBookmarksExpanded"
     );
-    console.log(
-      "Loading bookmarks expanded state:",
-      storedBookmarksExpanded,
-      "RTL:",
-      isRTL
-    );
     if (storedBookmarksExpanded !== null) {
       const parsedValue = JSON.parse(storedBookmarksExpanded);
-      console.log("Setting bookmarks expanded to:", parsedValue);
       setIsBookmarksExpanded(parsedValue);
     } else {
       // If no saved state exists, default to expanded (true) but don't save it yet
-      console.log("No saved state, defaulting to expanded (true)");
       setIsBookmarksExpanded(true);
     }
 
@@ -923,12 +903,6 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   useEffect(() => {
     // Only save after initialization to prevent overwriting during initial load
     if (isInitialized && Object.keys(expandedGroups).length > 0) {
-      console.log(
-        "Saving expanded groups state to localStorage:",
-        expandedGroups,
-        "RTL:",
-        isRTL
-      );
       localStorage.setItem(
         "sidebarExpandedGroups",
         JSON.stringify(expandedGroups)
@@ -938,12 +912,6 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   useEffect(() => {
     // Only save after initialization to prevent overwriting during initial load
     if (isInitialized && Object.keys(expandedSubGroups).length > 0) {
-      console.log(
-        "Saving expanded sub-groups state to localStorage:",
-        expandedSubGroups,
-        "RTL:",
-        isRTL
-      );
       localStorage.setItem(
         "sidebarExpandedSubGroups",
         JSON.stringify(expandedSubGroups)
@@ -953,12 +921,6 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   useEffect(() => {
     // Only save after initialization to prevent overwriting during initial load
     if (isInitialized) {
-      console.log(
-        "Saving bookmarks expanded state to localStorage:",
-        isBookmarksExpanded,
-        "RTL:",
-        isRTL
-      );
       localStorage.setItem(
         "sidebarBookmarksExpanded",
         JSON.stringify(isBookmarksExpanded)
@@ -992,18 +954,6 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
       ...expandedGroups,
       [languageAgnosticKey]: !expandedGroups[languageAgnosticKey],
     };
-    console.log(
-      "Toggling group:",
-      group,
-      "language-agnostic key:",
-      languageAgnosticKey,
-      "from",
-      expandedGroups[languageAgnosticKey],
-      "to",
-      newExpandedGroups[languageAgnosticKey],
-      "RTL:",
-      isRTL
-    );
     setExpandedGroups(newExpandedGroups);
 
     // If sidebar is collapsed, expand it when clicking a group
@@ -1040,33 +990,13 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
       ...expandedSubGroups,
       [languageAgnosticKey]: !expandedSubGroups[languageAgnosticKey],
     };
-    console.log(
-      "Toggling sub-group:",
-      subGroupName,
-      "language-agnostic key:",
-      languageAgnosticKey,
-      "from",
-      expandedSubGroups[languageAgnosticKey],
-      "to",
-      newExpandedSubGroups[languageAgnosticKey],
-      "RTL:",
-      isRTL
-    );
     setExpandedSubGroups(newExpandedSubGroups);
   }, [expandedSubGroups, menuItems]);
 
   const toggleBookmarks = useCallback(() => {
     const newState = !isBookmarksExpanded;
-    console.log(
-      "Toggling bookmarks from",
-      isBookmarksExpanded,
-      "to",
-      newState,
-      "RTL:",
-      isRTL
-    );
     setIsBookmarksExpanded(newState);
-  }, []);
+  }, [isBookmarksExpanded, isRTL]);
 
   const handleNavigation = useCallback((itemName) => {
     setActiveItem(itemName.toLowerCase());

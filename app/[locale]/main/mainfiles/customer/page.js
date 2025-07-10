@@ -157,17 +157,7 @@ function CustomerPage() {
           response = await getCustomers();
           // Handle paginated response structure and transform nested objects
           const rawCustomersData = response.data?.data || response.data || [];
-          console.log('Raw customers data:', rawCustomersData[0]); // Debug first item
           const transformedCustomersData = rawCustomersData.map(customer => {
-            console.log('Customer nested objects:', {
-              customer_group: customer.customer_group,
-              salesman: customer.salesman,
-              collector: customer.collector,
-              supervisor: customer.supervisor,
-              manager: customer.manager,
-              payment_term: customer.payment_term,
-              payment_method: customer.payment_method
-            });
             
             return {
               ...customer,
@@ -189,7 +179,6 @@ function CustomerPage() {
               payment_method_name: customer.payment_method?.name || '',
             };
           });
-          console.log('Transformed customers data:', transformedCustomersData[0]); // Debug first item
           setCustomersData(transformedCustomersData);
           dataType = "customers";
           break;

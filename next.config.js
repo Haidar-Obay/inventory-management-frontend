@@ -12,6 +12,21 @@ const nextConfig = {
   skipTrailingSlashRedirect: true,
   output: "standalone",
   allowedDevOrigins: ["*"],
+  // Optimize CSS preloading
+  optimizeCss: true,
+  // Configure webpack for better CSS handling
+  webpack: (config, { dev, isServer }) => {
+    if (!dev && !isServer) {
+      // Optimize CSS extraction
+      config.optimization.splitChunks.cacheGroups.styles = {
+        name: 'styles',
+        test: /\.(css|scss)$/,
+        chunks: 'all',
+        enforce: true,
+      };
+    }
+    return config;
+  },
   async headers() {
     return [
       {

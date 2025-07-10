@@ -894,6 +894,7 @@
       "personalInformation": "المعلومات الشخصية",
       "title": "اللقب",
       "firstName": "الاسم الأول",
+      "middleName": "الاسم الأوسط",
       "lastName": "اسم العائلة",
       "displayName": "اسم العرض",
       "companyName": "اسم الشركة",
