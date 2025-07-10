@@ -12,8 +12,6 @@ const nextConfig = {
   skipTrailingSlashRedirect: true,
   output: "standalone",
   allowedDevOrigins: ["*"],
-  // Optimize CSS preloading
-  optimizeCss: true,
   // Configure webpack for better CSS handling
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {
