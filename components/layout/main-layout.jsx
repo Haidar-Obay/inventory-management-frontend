@@ -12,6 +12,7 @@ import { MUIThemeWrapper } from "@/lib/themes/mui-theme-provider";
 
 export function MainLayout({ children }) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const [userRole, setUserRole] = useState("user");
   const locale = useLocale();
   const dateAdapterLocale = locale === "ar" ? arSA : enUS;
@@ -29,6 +30,12 @@ export function MainLayout({ children }) {
     if (sidebarState) {
       setIsSidebarCollapsed(sidebarState === "collapsed");
     }
+
+    // Get sidebar visibility from localStorage
+    const sidebarVisible = localStorage.getItem("sidebarVisible");
+    if (sidebarVisible !== null) {
+      setIsSidebarVisible(sidebarVisible === "true");
+    }
   }, []);
 
   const toggleSidebar = () => {
@@ -39,9 +46,23 @@ export function MainLayout({ children }) {
     }
   };
 
+  const hideSidebar = () => {
+    setIsSidebarVisible(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("sidebarVisible", "false");
+    }
+  };
+
+  const showSidebar = () => {
+    setIsSidebarVisible(true);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("sidebarVisible", "true");
+    }
+  };
+
   const isRTL = locale === "ar";
   const sidebarWidth = isSidebarCollapsed ? "3rem" : "16rem";
-  const contentMargin = isSidebarCollapsed ? "5rem" : "16rem";
+  const contentMargin = !isSidebarVisible ? "0" : (isSidebarCollapsed ? "5rem" : "16rem");
 
   const sidebarStyle = {
     position: "fixed",
@@ -70,7 +91,7 @@ export function MainLayout({ children }) {
     marginTop: "4rem",
     transition: "all 0.3s ease-in-out",
     padding: "0",
-    width: `calc(100% - ${contentMargin})`,
+    width: !isSidebarVisible ? "100%" : `calc(100% - ${contentMargin})`,
     transform: "translateZ(0)",
     willChange: "margin-left, margin-right, width",
   };
@@ -83,17 +104,24 @@ export function MainLayout({ children }) {
       >
         <SidebarProvider>
           <div className="flex h-screen overflow-hidden w-full">
-            <div style={sidebarStyle}>
-              <Sidebar
-                userRole={userRole}
-                isCollapsed={isSidebarCollapsed}
-                toggleSidebar={toggleSidebar}
-                isRTL={isRTL}
-              />
-            </div>
+            {isSidebarVisible && (
+              <div style={sidebarStyle}>
+                <Sidebar
+                  userRole={userRole}
+                  isCollapsed={isSidebarCollapsed}
+                  toggleSidebar={toggleSidebar}
+                  isRTL={isRTL}
+                />
+              </div>
+            )}
             <div className="flex flex-col flex-1 w-full">
               <div style={headerStyle} className="bg-background">
-                <Header toggleSidebar={toggleSidebar} />
+                <Header
+                  toggleSidebar={toggleSidebar}
+                  hideSidebar={hideSidebar}
+                  showSidebar={showSidebar}
+                  isSidebarVisible={isSidebarVisible}
+                />
               </div>
               <main
                 className="flex-1 overflow-y-auto"

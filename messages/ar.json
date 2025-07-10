@@ -16,7 +16,9 @@
     "searchTitle": "بدء البحث",
     "searchDescription": "جاري البحث عن",
     "notificationsRead": "تم تحديد جميع الإشعارات كمقروءة",
-    "notificationsCleared": "تم مسح جميع الإشعارات"
+    "notificationsCleared": "تم مسح جميع الإشعارات",
+    "zoomIn": "تكبير",
+    "zoomOut": "تصغير"
   },
   "breadcrumbs": {
     "home": "الرئيسية",
@@ -44,7 +46,9 @@
     "departments": "الأقسام",
     "trades": "الحرف",
     "companyCodes": "أكواد الشركة",
-    "jobs": "الوظائف"
+    "jobs": "الوظائف",
+    "settings": "الإعدادات",
+    "profile": "الملف الشخصي"
   },
   "login": {
     "title": "تسجيل الدخول إلى حسابك",

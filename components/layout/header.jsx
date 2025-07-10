@@ -32,6 +32,7 @@ import { useTranslations } from "next-intl";
 import { useRouter, usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import ThreeDotsMenu from "@/components/ui/ThreeDotsMenu";
 
 // Sub-components
 const SearchBar = ({ searchQuery, setSearchQuery, handleSearch, t }) => {
@@ -214,6 +215,7 @@ const ThemeToggle = ({ theme, setTheme }) => (
 );
 
 const UserMenu = ({ t }) => {
+  const router = useRouter();
   const currentLocale = useLocale();
   const isRTL = currentLocale === "ar";
 
@@ -238,6 +240,7 @@ const UserMenu = ({ t }) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}
+          onClick={() => router.push(`/${currentLocale}/main/profile`)}
         >
           <User className="h-4 w-4" />
           <span>{t("profile")}</span>
@@ -254,7 +257,7 @@ const UserMenu = ({ t }) => {
   );
 };
 
-export function Header({ toggleSidebar }) {
+export function Header({ toggleSidebar, hideSidebar, showSidebar, isSidebarVisible }) {
   const { theme, setTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [notifications, setNotifications] = useState([]);
@@ -301,8 +304,9 @@ export function Header({ toggleSidebar }) {
         style={{ transition: "all 0.3s ease-in-out" }}
       >
         {/* Left Section - Breadcrumbs */}
-        <div className="flex items-center gap-4 flex-shrink-0 w-96">
-          <Breadcrumbs className="font-medium" />
+        <div className="flex items-center gap-2 flex-shrink-0 w-96 pl-1">
+          <ThreeDotsMenu onZoomIn={hideSidebar} onZoomOut={showSidebar} isSidebarVisible={isSidebarVisible} />
+          <Breadcrumbs className="font-medium text-sm" />
         </div>
 
         {/* Center Section - Search Bar */}

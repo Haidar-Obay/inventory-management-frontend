@@ -36,14 +36,26 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
       localeIndex !== -1 ? segments.slice(localeIndex + 1) : segments;
 
     // Add home breadcrumb - redirect to dashboard/overview
-    breadcrumbs.push({
-      label: t("home"),
-      href: `/${currentLocale}/main/dashboard/overview`,
-    });
+    // Skip home breadcrumb for profile page to show only "Profile"
+    if (!pathSegments.includes("profile")) {
+      breadcrumbs.push({
+        label: t("home"),
+        href: `/${currentLocale}/main/dashboard/overview`,
+      });
+    }
 
     // Map path segments to breadcrumb items
     let currentPath = `/${currentLocale}`;
     let skipNext = false;
+
+    // Special handling for profile page - show only "Profile"
+    if (pathSegments.includes("profile")) {
+      breadcrumbs.push({
+        label: t("profile"),
+        isActive: true,
+      });
+      return breadcrumbs;
+    }
 
     for (let i = 0; i < pathSegments.length; i++) {
       const segment = pathSegments[i];
@@ -86,6 +98,10 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
         label = t("sections");
       } else if (segment === "items") {
         label = t("items");
+      } else if (segment === "settings") {
+        label = t("settings");
+      } else if (segment === "profile") {
+        label = t("profile");
       }
 
       // Check if this is the last segment (current page)
@@ -101,6 +117,7 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
         "addresscodes",
         "sections",
         "items",
+        "settings",
       ].includes(segment);
       const hasTab = searchParams.get("tab") !== null;
 
@@ -173,7 +190,8 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
     setBreadcrumbs(newBreadcrumbs);
   }, [pathname, searchParams, currentLocale, t]);
 
-  if (breadcrumbs.length <= 1) {
+  // Allow single breadcrumbs for profile page
+  if (breadcrumbs.length <= 1 && !pathname.includes("profile")) {
     return null;
   }
 
