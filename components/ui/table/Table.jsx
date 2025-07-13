@@ -153,7 +153,7 @@ const Table = (props) => {
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
   const [previewRow, setPreviewRow] = useState(null);
 
-  console.log("Table state:", { previewModalOpen, previewRow });
+  
 
   // Convert columns object to array if needed
   const columnsArray = Array.isArray(tableProps.columns)
@@ -212,7 +212,7 @@ const Table = (props) => {
       <PreviewModal
         isOpen={previewModalOpen}
         onClose={() => {
-          console.log("Closing preview modal");
+      
           setPreviewModalOpen(false);
           setPreviewRow(null);
         }}
@@ -392,7 +392,6 @@ const Table = (props) => {
                 onCustomAction={onCustomAction}
                 onDeleteConfirm={handleDeleteClick}
                 onPreviewConfirm={(row) => {
-                  console.log("Preview clicked for row:", row);
                   setPreviewRow(row);
                   setPreviewModalOpen(true);
                   setOpenDropdownRowId(null);

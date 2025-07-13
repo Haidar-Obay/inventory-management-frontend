@@ -707,6 +707,8 @@
     "editLabel": "تعديل",
     "deleteLabel": "حذف",
     "previewLabel": "معاينة",
+    "setActiveLabel": "تفعيل",
+    "setInactiveLabel": "إلغاء التفعيل",
     "closeLabel": "إغلاق",
     "basicInformation": "المعلومات الأساسية",
     "fields": "حقول",

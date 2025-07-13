@@ -9,7 +9,7 @@ import Portal from "../Portal";
 const PreviewModal = ({ isOpen, onClose, row, columns, columnOrder, visibleColumns }) => {
   const t = useTranslations("table");
 
-  console.log("PreviewModal props:", { isOpen, row, columns, columnOrder, visibleColumns });
+
 
   if (!row) return null;
 
@@ -77,7 +77,7 @@ const PreviewModal = ({ isOpen, onClose, row, columns, columnOrder, visibleColum
 
   return (
     <>
-      {console.log("PreviewModal rendering with isOpen:", isOpen)}
+      
       {isOpen && (
         <Portal>
           <div 

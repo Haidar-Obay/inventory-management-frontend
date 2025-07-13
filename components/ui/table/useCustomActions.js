@@ -40,7 +40,18 @@ export const useCustomActions = ({
     },
   ];
 
-  const allActions = [...defaultActions, ...additionalActions];
+  // Handle both static arrays and functions that return arrays
+  const getAdditionalActions = (row) => {
+    if (typeof additionalActions === 'function') {
+      return additionalActions(row);
+    }
+    return additionalActions;
+  };
+
+  const getActionsForRow = (row) => {
+    const dynamicAdditionalActions = getAdditionalActions(row);
+    return [...defaultActions, ...dynamicAdditionalActions];
+  };
 
   const handleCustomAction = (action, row) => {
     if (action.action) {
@@ -49,7 +60,7 @@ export const useCustomActions = ({
   };
 
   return {
-    customActions: allActions,
+    customActions: getActionsForRow,
     onCustomAction: handleCustomAction,
   };
 }; 

@@ -184,10 +184,10 @@ function AddressCodesPage() {
         }));
       }
 
-      toast.success({
-        title: toastT("success"),
-        description: toastT("dataFetchedSuccessfully"),
-      });
+      // toast.success({
+      //   title: toastT("success"),
+      //   description: toastT("dataFetchedSuccessfully"),
+      // });
     } catch (error) {
       toast.error({
         title: toastT("error"),
@@ -474,7 +474,6 @@ function AddressCodesPage() {
     onDelete: (row) => handleDelete("country", row),
     onPreview: (row) => {
       // Preview functionality can be added here
-      console.log("Preview country:", row);
     },
   });
 
@@ -483,7 +482,6 @@ function AddressCodesPage() {
     onDelete: (row) => handleDelete("zone", row),
     onPreview: (row) => {
       // Preview functionality can be added here
-      console.log("Preview zone:", row);
     },
   });
 
@@ -492,7 +490,6 @@ function AddressCodesPage() {
     onDelete: (row) => handleDelete("city", row),
     onPreview: (row) => {
       // Preview functionality can be added here
-      console.log("Preview city:", row);
     },
   });
 
@@ -501,7 +498,6 @@ function AddressCodesPage() {
     onDelete: (row) => handleDelete("district", row),
     onPreview: (row) => {
       // Preview functionality can be added here
-      console.log("Preview district:", row);
     },
   });
 

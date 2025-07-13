@@ -68,6 +68,7 @@ import {
 } from "@/API/Sections";
 import { useTableColumns } from "@/constants/tableColumns";
 import { useCustomActions } from "@/components/ui/table/useCustomActions";
+import { ActiveStatusAction } from "@/components/ui/table/ActiveStatusAction";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -239,10 +240,10 @@ function SectionsPage() {
         }));
       }
 
-      toast.success({
-        title: toastT("success"),
-        description: toastT("dataFetchedSuccessfully"),
-      });
+      // toast.success({
+      //   title: toastT("success"),
+      //   description: toastT("dataFetchedSuccessfully"),
+      // });
     } catch (error) {
       toast.error({
         title: toastT("error"),
@@ -336,6 +337,38 @@ function SectionsPage() {
       toast.error({
         title: toastT("error"),
         description: error.message || toastT(`${type}.deleteError`),
+      });
+    }
+  };
+
+  const handleToggleActive = async (type, row) => {
+    try {
+      // Prepare the data with only the active field changed
+      const updatedData = {
+        ...row,
+        active: !row.active, // Toggle the active status
+      };
+
+      // Call the edit function (same as drawer uses)
+      const response = await entityHandlers[type].editFn(row.id, updatedData);
+
+      if (response.status) {
+        // Update existing item in the state
+        entityHandlers[type].setData((prev) =>
+          prev.map((item) =>
+            item.id === row.id ? { ...item, active: updatedData.active } : item
+          )
+        );
+
+        toast.success({
+          title: toastT("success"),
+          description: toastT(`${type}.updateSuccess`),
+        });
+      }
+    } catch (error) {
+      toast.error({
+        title: toastT("error"),
+        description: error.message || toastT(`${type}.updateError`),
       });
     }
   };
@@ -581,7 +614,6 @@ function SectionsPage() {
     onDelete: (row) => handleDelete("project", row),
     onPreview: (row) => {
       // Preview functionality can be added here
-      console.log("Preview project:", row);
     },
   });
 
@@ -590,8 +622,30 @@ function SectionsPage() {
     onDelete: (row) => handleDelete("costCenter", row),
     onPreview: (row) => {
       // Preview functionality can be added here
-      console.log("Preview cost center:", row);
     },
+    additionalActions: (row) => [
+      ActiveStatusAction({
+        row,
+        editFunction: entityHandlers.costCenter.editFn,
+        onSuccess: (row, updatedData) => {
+          entityHandlers.costCenter.setData((prev) =>
+            prev.map((item) =>
+              item.id === row.id ? { ...item, active: updatedData.active } : item
+            )
+          );
+          toast.success({
+            title: toastT("success"),
+            description: toastT("costCenter.updateSuccess"),
+          });
+        },
+        onError: (row, errorMessage) => {
+          toast.error({
+            title: toastT("error"),
+            description: errorMessage || toastT("costCenter.updateError"),
+          });
+        },
+      }),
+    ],
   });
 
   const departmentActions = useCustomActions({
@@ -599,8 +653,30 @@ function SectionsPage() {
     onDelete: (row) => handleDelete("department", row),
     onPreview: (row) => {
       // Preview functionality can be added here
-      console.log("Preview department:", row);
     },
+    additionalActions: (row) => [
+      ActiveStatusAction({
+        row,
+        editFunction: entityHandlers.department.editFn,
+        onSuccess: (row, updatedData) => {
+          entityHandlers.department.setData((prev) =>
+            prev.map((item) =>
+              item.id === row.id ? { ...item, active: updatedData.active } : item
+            )
+          );
+          toast.success({
+            title: toastT("success"),
+            description: toastT("department.updateSuccess"),
+          });
+        },
+        onError: (row, errorMessage) => {
+          toast.error({
+            title: toastT("error"),
+            description: errorMessage || toastT("department.updateError"),
+          });
+        },
+      }),
+    ],
   });
 
   const tradesActions = useCustomActions({
@@ -608,8 +684,30 @@ function SectionsPage() {
     onDelete: (row) => handleDelete("trade", row),
     onPreview: (row) => {
       // Preview functionality can be added here
-      console.log("Preview trade:", row);
     },
+    additionalActions: (row) => [
+      ActiveStatusAction({
+        row,
+        editFunction: entityHandlers.trade.editFn,
+        onSuccess: (row, updatedData) => {
+          entityHandlers.trade.setData((prev) =>
+            prev.map((item) =>
+              item.id === row.id ? { ...item, active: updatedData.active } : item
+            )
+          );
+          toast.success({
+            title: toastT("success"),
+            description: toastT("trade.updateSuccess"),
+          });
+        },
+        onError: (row, errorMessage) => {
+          toast.error({
+            title: toastT("error"),
+            description: errorMessage || toastT("trade.updateError"),
+          });
+        },
+      }),
+    ],
   });
 
   const companyCodesActions = useCustomActions({
@@ -617,7 +715,6 @@ function SectionsPage() {
     onDelete: (row) => handleDelete("companyCode", row),
     onPreview: (row) => {
       // Preview functionality can be added here
-      console.log("Preview company code:", row);
     },
   });
 
@@ -626,7 +723,6 @@ function SectionsPage() {
     onDelete: (row) => handleDelete("job", row),
     onPreview: (row) => {
       // Preview functionality can be added here
-      console.log("Preview job:", row);
     },
   });
 

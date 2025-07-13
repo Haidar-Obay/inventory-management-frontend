@@ -718,6 +718,8 @@
     "editLabel": "Edit",
     "deleteLabel": "Delete",
     "previewLabel": "Preview",
+    "setActiveLabel": "Set Active",
+    "setInactiveLabel": "Set Inactive",
     "closeLabel": "Close",
     "basicInformation": "Basic Information",
     "fields": "fields",

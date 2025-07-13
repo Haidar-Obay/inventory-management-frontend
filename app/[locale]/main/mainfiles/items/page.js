@@ -40,6 +40,7 @@ import { useTableColumns } from "@/constants/tableColumns";
 import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useCustomActions } from "@/components/ui/table/useCustomActions";
+import { ActiveStatusAction } from "@/components/ui/table/ActiveStatusAction";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -190,10 +191,10 @@ function ItemsPage() {
         }));
       }
 
-      toast.success({
-        title: toastT("success"),
-        description: toastT("dataFetchedSuccessfully"),
-      });
+      // toast.success({
+      //   title: toastT("success"),
+      //   description: toastT("dataFetchedSuccessfully"),
+      // });
     } catch (error) {
       toast.error({
         title: toastT("error"),
@@ -274,6 +275,38 @@ function ItemsPage() {
       toast.error({
         title: toastT("error"),
         description: error.message || toastT(`${type}.deleteError`),
+      });
+    }
+  };
+
+  const handleToggleActive = async (type, row) => {
+    try {
+      // Prepare the data with only the active field changed
+      const updatedData = {
+        ...row,
+        active: !row.active, // Toggle the active status
+      };
+
+      // Call the edit function (same as drawer uses)
+      const response = await entityHandlers[type].editFn(row.id, updatedData);
+
+      if (response.status) {
+        // Update existing item in the state
+        entityHandlers[type].setData((prev) =>
+          prev.map((item) =>
+            item.id === row.id ? { ...item, active: updatedData.active } : item
+          )
+        );
+
+        toast.success({
+          title: toastT("success"),
+          description: toastT(`${type}.updateSuccess`),
+        });
+      }
+    } catch (error) {
+      toast.error({
+        title: toastT("error"),
+        description: error.message || toastT(`${type}.updateError`),
       });
     }
   };
@@ -570,8 +603,30 @@ function ItemsPage() {
     onDelete: (row) => handleDelete("productLine", row),
     onPreview: (row) => {
       // Preview functionality can be added here
-      console.log("Preview product line:", row);
     },
+    additionalActions: (row) => [
+      ActiveStatusAction({
+        row,
+        editFunction: entityHandlers.productLine.editFn,
+        onSuccess: (row, updatedData) => {
+          entityHandlers.productLine.setData((prev) =>
+            prev.map((item) =>
+              item.id === row.id ? { ...item, active: updatedData.active } : item
+            )
+          );
+          toast.success({
+            title: toastT("success"),
+            description: toastT("productLine.updateSuccess"),
+          });
+        },
+        onError: (row, errorMessage) => {
+          toast.error({
+            title: toastT("error"),
+            description: errorMessage || toastT("productLine.updateError"),
+          });
+        },
+      }),
+    ],
   });
 
   const categoriesActions = useCustomActions({
@@ -579,8 +634,30 @@ function ItemsPage() {
     onDelete: (row) => handleDelete("category", row),
     onPreview: (row) => {
       // Preview functionality can be added here
-      console.log("Preview category:", row);
     },
+    additionalActions: (row) => [
+      ActiveStatusAction({
+        row,
+        editFunction: entityHandlers.category.editFn,
+        onSuccess: (row, updatedData) => {
+          entityHandlers.category.setData((prev) =>
+            prev.map((item) =>
+              item.id === row.id ? { ...item, active: updatedData.active } : item
+            )
+          );
+          toast.success({
+            title: toastT("success"),
+            description: toastT("category.updateSuccess"),
+          });
+        },
+        onError: (row, errorMessage) => {
+          toast.error({
+            title: toastT("error"),
+            description: errorMessage || toastT("category.updateError"),
+          });
+        },
+      }),
+    ],
   });
 
   const brandsActions = useCustomActions({
@@ -588,8 +665,30 @@ function ItemsPage() {
     onDelete: (row) => handleDelete("brand", row),
     onPreview: (row) => {
       // Preview functionality can be added here
-      console.log("Preview brand:", row);
     },
+    additionalActions: (row) => [
+      ActiveStatusAction({
+        row,
+        editFunction: entityHandlers.brand.editFn,
+        onSuccess: (row, updatedData) => {
+          entityHandlers.brand.setData((prev) =>
+            prev.map((item) =>
+              item.id === row.id ? { ...item, active: updatedData.active } : item
+            )
+          );
+          toast.success({
+            title: toastT("success"),
+            description: toastT("brand.updateSuccess"),
+          });
+        },
+        onError: (row, errorMessage) => {
+          toast.error({
+            title: toastT("error"),
+            description: errorMessage || toastT("brand.updateError"),
+          });
+        },
+      }),
+    ],
   });
 
   const itemsActions = useCustomActions({
@@ -597,7 +696,6 @@ function ItemsPage() {
     onDelete: (row) => handleDelete("item", row),
     onPreview: (row) => {
       // Preview functionality can be added here
-      console.log("Preview item:", row);
     },
   });
 

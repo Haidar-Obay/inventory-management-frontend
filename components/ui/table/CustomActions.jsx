@@ -37,7 +37,17 @@ export const CustomActions = ({
     }
   };
 
-  if (!actions || actions.length === 0) {
+  // Handle both static arrays and functions that return arrays
+  const getActions = () => {
+    if (typeof actions === 'function') {
+      return actions(row);
+    }
+    return actions;
+  };
+
+  const actionsArray = getActions();
+
+  if (!actionsArray || actionsArray.length === 0) {
     return null;
   }
 
@@ -71,7 +81,7 @@ export const CustomActions = ({
         }
         align="right"
       >
-        {actions.map((action, index) => (
+        {actionsArray.map((action, index) => (
           <DropdownItem
             key={index}
             onClick={() => handleActionClick(action)}

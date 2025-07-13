@@ -213,11 +213,11 @@ export const Dropdown = ({
         <Portal>
           <div
             ref={dropdownRef}
-            className="z-[9999] min-w-[7rem] rounded-md border border-border bg-background p-0.5 shadow-lg fixed"
+            className="z-[9999] min-w-[9rem] rounded-md border border-border bg-background p-1 shadow-lg fixed"
             style={{
               top: position.top,
               left: position.left,
-              width: position.width > 112 ? position.width : undefined,
+              width: position.width > 144 ? position.width : undefined,
             }}
           >
             {children}
@@ -232,9 +232,9 @@ export const DropdownItem = ({ children, onClick }) => {
   const { theme } = useTheme();
   return (
     <div
-      className="flex cursor-pointer items-center rounded-sm px-2 py-1 text-sm text-foreground hover:bg-muted gap-2 min-h-[28px]"
+      className="flex cursor-pointer items-center rounded-sm px-3 py-2 text-sm text-foreground hover:bg-muted gap-2 min-h-[36px]"
       onClick={onClick}
-      style={{ fontSize: '13px' }}
+      style={{ fontSize: '14px' }}
     >
       {children}
     </div>
