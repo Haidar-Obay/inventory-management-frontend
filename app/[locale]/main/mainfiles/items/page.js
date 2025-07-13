@@ -39,6 +39,7 @@ import {
 import { useTableColumns } from "@/constants/tableColumns";
 import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useCustomActions } from "@/components/ui/table/useCustomActions";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -563,6 +564,43 @@ function ItemsPage() {
     }
   };
 
+  // Setup custom actions for each entity type (after handler functions are defined)
+  const productLinesActions = useCustomActions({
+    onEdit: (row) => handleEdit("productLine", row),
+    onDelete: (row) => handleDelete("productLine", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+      console.log("Preview product line:", row);
+    },
+  });
+
+  const categoriesActions = useCustomActions({
+    onEdit: (row) => handleEdit("category", row),
+    onDelete: (row) => handleDelete("category", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+      console.log("Preview category:", row);
+    },
+  });
+
+  const brandsActions = useCustomActions({
+    onEdit: (row) => handleEdit("brand", row),
+    onDelete: (row) => handleDelete("brand", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+      console.log("Preview brand:", row);
+    },
+  });
+
+  const itemsActions = useCustomActions({
+    onEdit: (row) => handleEdit("item", row),
+    onDelete: (row) => handleDelete("item", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+      console.log("Preview item:", row);
+    },
+  });
+
   return (
     <div className="p-4">
       <Box sx={{ width: "100%" }}>
@@ -585,8 +623,6 @@ function ItemsPage() {
             <Table
               data={productLinesData}
               columns={productLinesColumns}
-              onEdit={(row) => handleEdit("productLine", row)}
-              onDelete={(row) => handleDelete("productLine", row)}
               onAdd={() => handleAddNew("productLine")}
               loading={loading}
               enableCellEditing={false}
@@ -602,6 +638,9 @@ function ItemsPage() {
               onRefresh={() => fetchData(0, true)}
               onImportExcel={(file) => handleImportExcel("productLine", file)}
               tableId="productLines"
+              customActions={productLinesActions.customActions}
+              onCustomAction={productLinesActions.onCustomAction}
+              onDelete={(row) => handleDelete("productLine", row)}
             />
           </Box>
         </TabPanel>
@@ -612,8 +651,6 @@ function ItemsPage() {
             <Table
               data={categoriesData}
               columns={categoriesColumns}
-              onEdit={(row) => handleEdit("category", row)}
-              onDelete={(row) => handleDelete("category", row)}
               onAdd={() => handleAddNew("category")}
               loading={loading}
               enableCellEditing={false}
@@ -625,6 +662,9 @@ function ItemsPage() {
               onRefresh={() => fetchData(1, true)}
               onImportExcel={(file) => handleImportExcel("category", file)}
               tableId="categories"
+              customActions={categoriesActions.customActions}
+              onCustomAction={categoriesActions.onCustomAction}
+              onDelete={(row) => handleDelete("category", row)}
             />
           </Box>
         </TabPanel>
@@ -635,8 +675,6 @@ function ItemsPage() {
             <Table
               data={brandsData}
               columns={brandsColumns}
-              onEdit={(row) => handleEdit("brand", row)}
-              onDelete={(row) => handleDelete("brand", row)}
               onAdd={() => handleAddNew("brand")}
               loading={loading}
               enableCellEditing={false}
@@ -646,6 +684,9 @@ function ItemsPage() {
               onRefresh={() => fetchData(2, true)}
               onImportExcel={(file) => handleImportExcel("brand", file)}
               tableId="brands"
+              customActions={brandsActions.customActions}
+              onCustomAction={brandsActions.onCustomAction}
+              onDelete={(row) => handleDelete("brand", row)}
             />
           </Box>
         </TabPanel>
@@ -656,8 +697,6 @@ function ItemsPage() {
             <Table
               data={itemsData}
               columns={itemsColumns}
-              onEdit={(row) => handleEdit("item", row)}
-              onDelete={(row) => handleDelete("item", row)}
               onAdd={() => handleAddNew("item")}
               loading={loading}
               enableCellEditing={false}
@@ -667,6 +706,9 @@ function ItemsPage() {
               onRefresh={() => fetchData(3, true)}
               onImportExcel={(file) => handleImportExcel("item", file)}
               tableId="items"
+              customActions={itemsActions.customActions}
+              onCustomAction={itemsActions.onCustomAction}
+              onDelete={(row) => handleDelete("item", row)}
             />
           </Box>
         </TabPanel>

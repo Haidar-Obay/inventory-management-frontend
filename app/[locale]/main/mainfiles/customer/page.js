@@ -32,6 +32,7 @@ import {
 import { useTableColumns } from "@/constants/tableColumns";
 import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useCustomActions } from "@/components/ui/table/useCustomActions";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -603,6 +604,34 @@ function CustomerPage() {
     }
   };
 
+  // Setup custom actions for each entity type (after handler functions are defined)
+  const customerGroupActions = useCustomActions({
+    onEdit: (row) => handleEdit("customerGroup", row),
+    onDelete: (row) => handleDelete("customerGroup", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+      console.log("Preview customer group:", row);
+    },
+  });
+
+  const salesmenActions = useCustomActions({
+    onEdit: (row) => handleEdit("salesman", row),
+    onDelete: (row) => handleDelete("salesman", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+      console.log("Preview salesman:", row);
+    },
+  });
+
+  const customerActions = useCustomActions({
+    onEdit: (row) => handleEdit("customer", row),
+    onDelete: (row) => handleDelete("customer", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+      console.log("Preview customer:", row);
+    },
+  });
+
   return (
     <div className="p-4">
       <Box sx={{ width: "100%" }}>
@@ -624,8 +653,6 @@ function CustomerPage() {
             <Table
               data={customerGroupsData}
               columns={customerGroupColumns}
-              onEdit={(row) => handleEdit("customerGroup", row)}
-              onDelete={(row) => handleDelete("customerGroup", row)}
               onAdd={() => handleAddNew("customerGroup")}
               loading={loading}
               enableCellEditing={false}
@@ -641,6 +668,9 @@ function CustomerPage() {
               onRefresh={() => fetchData(0, true)}
               onImportExcel={(file) => handleImportExcel("customerGroup", file)}
               tableId="customerGroups"
+              customActions={customerGroupActions.customActions}
+              onCustomAction={customerGroupActions.onCustomAction}
+              onDelete={(row) => handleDelete("customerGroup", row)}
             />
           </Box>
         </TabPanel>
@@ -651,8 +681,6 @@ function CustomerPage() {
             <Table
               data={salesmenData}
               columns={salesmenColumns}
-              onEdit={(row) => handleEdit("salesman", row)}
-              onDelete={(row) => handleDelete("salesman", row)}
               onAdd={() => handleAddNew("salesman")}
               loading={loading}
               enableCellEditing={false}
@@ -664,6 +692,9 @@ function CustomerPage() {
               onRefresh={() => fetchData(1, true)}
               onImportExcel={(file) => handleImportExcel("salesman", file)}
               tableId="salesmen"
+              customActions={salesmenActions.customActions}
+              onCustomAction={salesmenActions.onCustomAction}
+              onDelete={(row) => handleDelete("salesman", row)}
             />
           </Box>
         </TabPanel>
@@ -674,8 +705,6 @@ function CustomerPage() {
             <Table
               data={customersData}
               columns={customerColumns}
-              onEdit={(row) => handleEdit("customer", row)}
-              onDelete={(row) => handleDelete("customer", row)}
               onAdd={() => handleAddNew("customer")}
               loading={loading}
               enableCellEditing={false}
@@ -687,6 +716,9 @@ function CustomerPage() {
               onRefresh={() => fetchData(2, true)}
               onImportExcel={(file) => handleImportExcel("customer", file)}
               tableId="customers"
+              customActions={customerActions.customActions}
+              onCustomAction={customerActions.onCustomAction}
+              onDelete={(row) => handleDelete("customer", row)}
             />
           </Box>
         </TabPanel>

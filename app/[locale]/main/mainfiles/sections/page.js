@@ -67,6 +67,7 @@ import {
   importDepartmentsFromExcel,
 } from "@/API/Sections";
 import { useTableColumns } from "@/constants/tableColumns";
+import { useCustomActions } from "@/components/ui/table/useCustomActions";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -300,10 +301,15 @@ function SectionsPage() {
     setFormData({
       id: row.id,
       name: row.name,
+      code: row.code,
+      active: row.active,
       start_date: row.start_date ? new Date(row.start_date) : null,
       end_date: row.end_date ? new Date(row.end_date) : null,
       expected_date: row.expected_date ? new Date(row.expected_date) : null,
       customer_id: row.customer_id || "",
+      sub_cost_center_of: row.sub_cost_center_of || "",
+      sub_department_of: row.sub_department_of || "",
+      project_id: row.project_id || "",
     });
     setActiveDrawerType(type);
     setIsEditMode(true);
@@ -337,7 +343,11 @@ function SectionsPage() {
   const handleAddNew = (type) => {
     setActiveDrawerType(type);
     setIsEditMode(false);
-    setFormData({});
+    // Set default values for new items
+    const defaultData = {
+      active: true, // Default to active for new items
+    };
+    setFormData(defaultData);
     setIsDrawerOpen(true);
   };
 
@@ -357,9 +367,15 @@ function SectionsPage() {
     const handler = entityHandlers[type];
 
     try {
+      // Prepare the data with proper types
+      const preparedData = {
+        ...formData,
+        active: formData.active === "true" || formData.active === true,
+      };
+
       let response;
       if (isEditMode) {
-        response = await handler.editFn(formData.id, formData);
+        response = await handler.editFn(formData.id, preparedData);
         if (response.status) {
           entityHandlers[type].setData((prev) =>
             prev.map((item) =>
@@ -368,7 +384,7 @@ function SectionsPage() {
           );
         }
       } else {
-        response = await handler.createFn(formData);
+        response = await handler.createFn(preparedData);
         if (response.status) {
           entityHandlers[type].setData((prev) => [...prev, response.data]);
         }
@@ -559,6 +575,61 @@ function SectionsPage() {
     }
   };
 
+  // Setup custom actions for each entity type (after handler functions are defined)
+  const projectActions = useCustomActions({
+    onEdit: (row) => handleEdit("project", row),
+    onDelete: (row) => handleDelete("project", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+      console.log("Preview project:", row);
+    },
+  });
+
+  const costCenterActions = useCustomActions({
+    onEdit: (row) => handleEdit("costCenter", row),
+    onDelete: (row) => handleDelete("costCenter", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+      console.log("Preview cost center:", row);
+    },
+  });
+
+  const departmentActions = useCustomActions({
+    onEdit: (row) => handleEdit("department", row),
+    onDelete: (row) => handleDelete("department", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+      console.log("Preview department:", row);
+    },
+  });
+
+  const tradesActions = useCustomActions({
+    onEdit: (row) => handleEdit("trade", row),
+    onDelete: (row) => handleDelete("trade", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+      console.log("Preview trade:", row);
+    },
+  });
+
+  const companyCodesActions = useCustomActions({
+    onEdit: (row) => handleEdit("companyCode", row),
+    onDelete: (row) => handleDelete("companyCode", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+      console.log("Preview company code:", row);
+    },
+  });
+
+  const jobsActions = useCustomActions({
+    onEdit: (row) => handleEdit("job", row),
+    onDelete: (row) => handleDelete("job", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+      console.log("Preview job:", row);
+    },
+  });
+
   return (
     <div className="p-4">
       <Box sx={{ width: "100%" }}>
@@ -586,8 +657,6 @@ function SectionsPage() {
             <Table
               data={projectsData}
               columns={projectColumns}
-              onEdit={(row) => handleEdit("project", row)}
-              onDelete={(row) => handleDelete("project", row)}
               onAdd={() => handleAddNew("project")}
               loading={loading}
               enableCellEditing={false}
@@ -599,6 +668,9 @@ function SectionsPage() {
               onRefresh={() => fetchData(0, true)}
               onImportExcel={(file) => handleImportExcel("project", file)}
               tableId="projects"
+              customActions={projectActions.customActions}
+              onCustomAction={projectActions.onCustomAction}
+              onDelete={(row) => handleDelete("project", row)}
             />
           </Box>
         </TabPanel>
@@ -609,8 +681,6 @@ function SectionsPage() {
             <Table
               data={costCentersData}
               columns={costCenterColumns}
-              onEdit={(row) => handleEdit("costCenter", row)}
-              onDelete={(row) => handleDelete("costCenter", row)}
               onAdd={() => handleAddNew("costCenter")}
               loading={loading}
               enableCellEditing={false}
@@ -622,6 +692,9 @@ function SectionsPage() {
               onRefresh={() => fetchData(1, true)}
               onImportExcel={(file) => handleImportExcel("costCenter", file)}
               tableId="costCenters"
+              customActions={costCenterActions.customActions}
+              onCustomAction={costCenterActions.onCustomAction}
+              onDelete={(row) => handleDelete("costCenter", row)}
             />
           </Box>
         </TabPanel>
@@ -632,8 +705,6 @@ function SectionsPage() {
             <Table
               data={departmentsData}
               columns={departmentColumns}
-              onEdit={(row) => handleEdit("department", row)}
-              onDelete={(row) => handleDelete("department", row)}
               onAdd={() => handleAddNew("department")}
               loading={loading}
               enableCellEditing={false}
@@ -645,6 +716,9 @@ function SectionsPage() {
               onRefresh={() => fetchData(2, true)}
               onImportExcel={(file) => handleImportExcel("department", file)}
               tableId="departments"
+              customActions={departmentActions.customActions}
+              onCustomAction={departmentActions.onCustomAction}
+              onDelete={(row) => handleDelete("department", row)}
             />
           </Box>
         </TabPanel>
@@ -655,8 +729,6 @@ function SectionsPage() {
             <Table
               data={tradesData}
               columns={tradesColumns}
-              onEdit={(row) => handleEdit("trade", row)}
-              onDelete={(row) => handleDelete("trade", row)}
               onAdd={() => handleAddNew("trade")}
               loading={loading}
               enableCellEditing={false}
@@ -666,6 +738,9 @@ function SectionsPage() {
               onRefresh={() => fetchData(3, true)}
               onImportExcel={(file) => handleImportExcel("trade", file)}
               tableId="trades"
+              customActions={tradesActions.customActions}
+              onCustomAction={tradesActions.onCustomAction}
+              onDelete={(row) => handleDelete("trade", row)}
             />
           </Box>
         </TabPanel>
@@ -676,8 +751,6 @@ function SectionsPage() {
             <Table
               data={companyCodesData}
               columns={companyCodesColumns}
-              onEdit={(row) => handleEdit("companyCode", row)}
-              onDelete={(row) => handleDelete("companyCode", row)}
               onAdd={() => handleAddNew("companyCode")}
               loading={loading}
               enableCellEditing={false}
@@ -693,6 +766,9 @@ function SectionsPage() {
               onRefresh={() => fetchData(4, true)}
               onImportExcel={(file) => handleImportExcel("companyCode", file)}
               tableId="companyCodes"
+              customActions={companyCodesActions.customActions}
+              onCustomAction={companyCodesActions.onCustomAction}
+              onDelete={(row) => handleDelete("companyCode", row)}
             />
           </Box>
         </TabPanel>
@@ -703,8 +779,6 @@ function SectionsPage() {
             <Table
               data={jobsData}
               columns={jobsColumns}
-              onEdit={(row) => handleEdit("job", row)}
-              onDelete={(row) => handleDelete("job", row)}
               onAdd={() => handleAddNew("job")}
               loading={loading}
               enableCellEditing={false}
@@ -714,6 +788,9 @@ function SectionsPage() {
               onRefresh={() => fetchData(5, true)}
               onImportExcel={(file) => handleImportExcel("job", file)}
               tableId="jobs"
+              customActions={jobsActions.customActions}
+              onCustomAction={jobsActions.onCustomAction}
+              onDelete={(row) => handleDelete("job", row)}
             />
           </Box>
         </TabPanel>

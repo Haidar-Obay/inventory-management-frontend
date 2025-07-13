@@ -39,6 +39,7 @@ import {
 import { useTableColumns } from "@/constants/tableColumns";
 import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useCustomActions } from "@/components/ui/table/useCustomActions";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -467,6 +468,43 @@ function AddressCodesPage() {
     }
   };
 
+  // Setup custom actions for each entity type (after handler functions are defined)
+  const countryActions = useCustomActions({
+    onEdit: (row) => handleEdit("country", row),
+    onDelete: (row) => handleDelete("country", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+      console.log("Preview country:", row);
+    },
+  });
+
+  const zoneActions = useCustomActions({
+    onEdit: (row) => handleEdit("zone", row),
+    onDelete: (row) => handleDelete("zone", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+      console.log("Preview zone:", row);
+    },
+  });
+
+  const cityActions = useCustomActions({
+    onEdit: (row) => handleEdit("city", row),
+    onDelete: (row) => handleDelete("city", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+      console.log("Preview city:", row);
+    },
+  });
+
+  const districtActions = useCustomActions({
+    onEdit: (row) => handleEdit("district", row),
+    onDelete: (row) => handleDelete("district", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+      console.log("Preview district:", row);
+    },
+  });
+
   return (
     <div className="p-4">
       <Box sx={{ width: "100%" }}>
@@ -490,8 +528,6 @@ function AddressCodesPage() {
               columns={countryColumns}
               data={countriesData}
               t={t}
-              onEdit={(row) => handleEdit("country", row)}
-              onDelete={(row) => handleDelete("country", row)}
               onAdd={() => handleAddNew("country")}
               loading={loading}
               enableCellEditing={false}
@@ -503,6 +539,9 @@ function AddressCodesPage() {
               onRefresh={() => fetchData(0, true)}
               onImportExcel={(file) => handleImportExcel("country", file)}
               tableId="countries"
+              customActions={countryActions.customActions}
+              onCustomAction={countryActions.onCustomAction}
+              onDelete={(row) => handleDelete("country", row)}
             />
           </Box>
         </TabPanel>
@@ -514,8 +553,6 @@ function AddressCodesPage() {
               data={zonesData}
               columns={zoneColumns}
               t={t}
-              onEdit={(row) => handleEdit("zone", row)}
-              onDelete={(row) => handleDelete("zone", row)}
               onAdd={() => handleAddNew("zone")}
               loading={loading}
               enableCellEditing={false}
@@ -525,6 +562,9 @@ function AddressCodesPage() {
               onRefresh={() => fetchData(1, true)}
               onImportExcel={(file) => handleImportExcel("zone", file)}
               tableId="zones"
+              customActions={zoneActions.customActions}
+              onCustomAction={zoneActions.onCustomAction}
+              onDelete={(row) => handleDelete("zone", row)}
             />
           </Box>
         </TabPanel>
@@ -536,8 +576,6 @@ function AddressCodesPage() {
               data={citiesData}
               columns={cityColumns}
               t={t}
-              onEdit={(row) => handleEdit("city", row)}
-              onDelete={(row) => handleDelete("city", row)}
               onAdd={() => handleAddNew("city")}
               loading={loading}
               enableCellEditing={false}
@@ -547,6 +585,9 @@ function AddressCodesPage() {
               onRefresh={() => fetchData(2, true)}
               onImportExcel={(file) => handleImportExcel("city", file)}
               tableId="cities"
+              customActions={cityActions.customActions}
+              onCustomAction={cityActions.onCustomAction}
+              onDelete={(row) => handleDelete("city", row)}
             />
           </Box>
         </TabPanel>
@@ -558,8 +599,6 @@ function AddressCodesPage() {
               data={districtsData}
               columns={districtColumns}
               t={t}
-              onEdit={(row) => handleEdit("district", row)}
-              onDelete={(row) => handleDelete("district", row)}
               onAdd={() => handleAddNew("district")}
               loading={loading}
               enableCellEditing={false}
@@ -571,6 +610,9 @@ function AddressCodesPage() {
               onRefresh={() => fetchData(3, true)}
               onImportExcel={(file) => handleImportExcel("district", file)}
               tableId="districts"
+              customActions={districtActions.customActions}
+              onCustomAction={districtActions.onCustomAction}
+              onDelete={(row) => handleDelete("district", row)}
             />
           </Box>
         </TabPanel>
