@@ -29,6 +29,8 @@ export function useTableLogic({
   enableCellEditing = false,
   loading = false,
   tableId = "default",
+  customActions = [],
+  onCustomAction,
 }) {
   const { theme } = useTheme();
   const [tableData, setTableData] = useState(data);

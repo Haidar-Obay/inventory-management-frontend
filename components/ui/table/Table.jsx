@@ -16,6 +16,12 @@ import { Badge } from "./CustomControls";
 const Table = (props) => {
   const { theme } = useTheme();
   const {
+    customActions = [],
+    onCustomAction,
+    ...tableProps
+  } = props;
+  
+  const {
     // State
     tableData,
     sortConfig,
@@ -137,8 +143,8 @@ const Table = (props) => {
     setColumnFilterTypes,
     setSelectedSearchColumns,
   } = useTableLogic({
-    ...props,
-    tableId: props.tableId || "default",
+    ...tableProps,
+    tableId: tableProps.tableId || "default",
   });
 
   const [isOverflowing, setIsOverflowing] = useState(false);
@@ -150,9 +156,9 @@ const Table = (props) => {
 
 
   // Convert columns object to array if needed
-  const columnsArray = Array.isArray(props.columns)
-    ? props.columns
-    : Object.values(props.columns);
+  const columnsArray = Array.isArray(tableProps.columns)
+    ? tableProps.columns
+    : Object.values(tableProps.columns);
 
   // Use temp states for live preview when modal is open
   const effectiveVisibleColumns = showColumnModal
@@ -218,7 +224,7 @@ const Table = (props) => {
       {showColumnModal && (
         <ColumnModal
           isOpen={showColumnModal}
-          tableName={props.tableId || "default"}
+          tableName={tableProps.tableId || "default"}
           columns={columnsArray}
           visibleColumns={tempVisibleColumns}
           columnWidths={tempColumnWidths}
@@ -267,12 +273,12 @@ const Table = (props) => {
         handleClearGlobalSearch={handleClearGlobalSearch}
         handleClearColumnFilters={handleClearColumnFilters}
         handleOpenColumnModal={handleOpenColumnModal}
-        onAdd={props.onAdd}
-        onExportExcel={props.onExportExcel}
-        onExportPdf={props.onExportPdf}
-        onPrint={props.onPrint}
-        onRefresh={props.onRefresh}
-        onImportExcel={props.onImportExcel}
+        onAdd={tableProps.onAdd}
+        onExportExcel={tableProps.onExportExcel}
+        onExportPdf={tableProps.onExportPdf}
+        onPrint={tableProps.onPrint}
+        onRefresh={tableProps.onRefresh}
+        onImportExcel={tableProps.onImportExcel}
         columns={columnsArray}
         selectedSearchColumns={selectedSearchColumns}
         handleSearchColumnToggle={handleSearchColumnToggle}
@@ -365,8 +371,8 @@ const Table = (props) => {
                 rowsPerPage={rowsPerPage}
                 selectedRows={selectedRows}
                 editingCell={editingCell}
-                enableCellEditing={props.enableCellEditing}
-                loading={props.loading}
+                enableCellEditing={tableProps.enableCellEditing}
+                loading={tableProps.loading}
                 handleRowDragStart={handleRowDragStart}
                 handleRowDragOver={handleRowDragOver}
                 handleCellDoubleClick={handleCellDoubleClick}
@@ -374,14 +380,17 @@ const Table = (props) => {
                 handleCellEditFinish={handleCellEditFinish}
                 handleRowSelect={handleRowSelect}
                 handleDeleteClick={handleDeleteClick}
-                onEdit={props.onEdit}
+                onEdit={tableProps.onEdit}
                 columnWidths={effectiveColumnWidths}
                 isOverflowing={isOverflowing}
                 openDropdownRowId={openDropdownRowId}
                 setOpenDropdownRowId={setOpenDropdownRowId}
                 showSearchColumn={showSearchColumn}
-                onPreview={(row) => {
-                  console.log("Preview clicked for row:", row);
+
+                customActions={customActions}
+                onCustomAction={onCustomAction}
+                onDeleteConfirm={handleDeleteClick}
+                onPreviewConfirm={(row) => {
                   setPreviewRow(row);
                   setPreviewModalOpen(true);
                   setOpenDropdownRowId(null);

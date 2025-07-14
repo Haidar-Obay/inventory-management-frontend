@@ -531,7 +531,17 @@
         "clear": "مسح البحث",
         "clearFilters": "مسح الفلاتر",
         "activeFilters": "الفلاتر النشطة"
-      }
+      },
+      "previewLabel": "معاينة التفاصيل",
+      "basicInformation": "المعلومات الأساسية",
+      "fields": "حقول",
+      "closeLabel": "إغلاق",
+      "boolean": "منطقي",
+      "date": "تاريخ",
+      "text": "نص",
+      "number": "رقم",
+      "editLabel": "تعديل",
+      "deleteLabel": "حذف"
     },
     "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
     "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."
@@ -697,11 +707,15 @@
     "editLabel": "تعديل",
     "deleteLabel": "حذف",
     "previewLabel": "معاينة",
+    "setActiveLabel": "تفعيل",
+    "setInactiveLabel": "إلغاء التفعيل",
     "closeLabel": "إغلاق",
     "basicInformation": "المعلومات الأساسية",
     "fields": "حقول",
     "boolean": "منطقي",
     "date": "تاريخ",
+    "text": "نص",
+    "number": "رقم",
     "edit": "تعديل",
     "delete": "حذف",
     "search": {

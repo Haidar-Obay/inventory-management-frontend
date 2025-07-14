@@ -4,6 +4,7 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "../button";
 import { Badge } from "./CustomControls";
+import Portal from "../Portal";
 
 const PreviewModal = ({ isOpen, onClose, row, columns, columnOrder, visibleColumns }) => {
   const t = useTranslations("table");
@@ -11,6 +12,12 @@ const PreviewModal = ({ isOpen, onClose, row, columns, columnOrder, visibleColum
 
 
   if (!row) return null;
+
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
 
   const formatValue = (value, column) => {
     if (value === null || value === undefined) return "-";
@@ -70,9 +77,13 @@ const PreviewModal = ({ isOpen, onClose, row, columns, columnOrder, visibleColum
 
   return (
     <>
-
+      
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <Portal>
+          <div 
+            className="fixed inset-0 z-[2147483647] pointer-events-auto flex items-center justify-center bg-black/50"
+            onClick={handleBackdropClick}
+          >
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold flex items-center gap-2">
@@ -172,6 +183,7 @@ const PreviewModal = ({ isOpen, onClose, row, columns, columnOrder, visibleColum
         </div>
           </div>
         </div>
+        </Portal>
       )}
     </>
   );

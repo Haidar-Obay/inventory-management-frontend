@@ -32,6 +32,8 @@ import {
 import { useTableColumns } from "@/constants/tableColumns";
 import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useCustomActions } from "@/components/ui/table/useCustomActions";
+import { ActiveStatusAction } from "@/components/ui/table/ActiveStatusAction";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -191,10 +193,10 @@ function CustomerPage() {
         }));
       }
 
-      toast.success({
-        title: toastT("success"),
-        description: toastT("dataFetchedSuccessfully"),
-      });
+      // toast.success({
+      //   title: toastT("success"),
+      //   description: toastT("dataFetchedSuccessfully"),
+      // });
     } catch (error) {
       toast.error({
         title: toastT("error"),
@@ -321,6 +323,38 @@ function CustomerPage() {
       toast.error({
         title: toastT("error"),
         description: error.message || toastT(`${type}.deleteError`),
+      });
+    }
+  };
+
+  const handleToggleActive = async (type, row) => {
+    try {
+      // Prepare the data with only the active field changed
+      const updatedData = {
+        ...row,
+        active: !row.active, // Toggle the active status
+      };
+
+      // Call the edit function (same as drawer uses)
+      const response = await entityHandlers[type].editFn(row.id, updatedData);
+
+      if (response.status) {
+        // Update existing item in the state
+        entityHandlers[type].setData((prev) =>
+          prev.map((item) =>
+            item.id === row.id ? { ...item, active: updatedData.active } : item
+          )
+        );
+
+        toast.success({
+          title: toastT("success"),
+          description: toastT(`${type}.updateSuccess`),
+        });
+      }
+    } catch (error) {
+      toast.error({
+        title: toastT("error"),
+        description: error.message || toastT(`${type}.updateError`),
       });
     }
   };
@@ -603,6 +637,77 @@ function CustomerPage() {
     }
   };
 
+  // Setup custom actions for each entity type (after handler functions are defined)
+  const customerGroupActions = useCustomActions({
+    onEdit: (row) => handleEdit("customerGroup", row),
+    onDelete: (row) => handleDelete("customerGroup", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+    },
+    additionalActions: (row) => [
+      ActiveStatusAction({
+        row,
+        editFunction: entityHandlers.customerGroup.editFn,
+        onSuccess: (row, updatedData) => {
+          entityHandlers.customerGroup.setData((prev) =>
+            prev.map((item) =>
+              item.id === row.id ? { ...item, active: updatedData.active } : item
+            )
+          );
+          toast.success({
+            title: toastT("success"),
+            description: toastT("customerGroup.updateSuccess"),
+          });
+        },
+        onError: (row, errorMessage) => {
+          toast.error({
+            title: toastT("error"),
+            description: errorMessage || toastT("customerGroup.updateError"),
+          });
+        },
+      }),
+    ],
+  });
+
+  const salesmenActions = useCustomActions({
+    onEdit: (row) => handleEdit("salesman", row),
+    onDelete: (row) => handleDelete("salesman", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+    },
+    additionalActions: (row) => [
+      ActiveStatusAction({
+        row,
+        editFunction: entityHandlers.salesman.editFn,
+        onSuccess: (row, updatedData) => {
+          entityHandlers.salesman.setData((prev) =>
+            prev.map((item) =>
+              item.id === row.id ? { ...item, active: updatedData.active } : item
+            )
+          );
+          toast.success({
+            title: toastT("success"),
+            description: toastT("salesman.updateSuccess"),
+          });
+        },
+        onError: (row, errorMessage) => {
+          toast.error({
+            title: toastT("error"),
+            description: errorMessage || toastT("salesman.updateError"),
+          });
+        },
+      }),
+    ],
+  });
+
+  const customerActions = useCustomActions({
+    onEdit: (row) => handleEdit("customer", row),
+    onDelete: (row) => handleDelete("customer", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+    },
+  });
+
   return (
     <div className="p-4">
       <Box sx={{ width: "100%" }}>
@@ -624,8 +729,6 @@ function CustomerPage() {
             <Table
               data={customerGroupsData}
               columns={customerGroupColumns}
-              onEdit={(row) => handleEdit("customerGroup", row)}
-              onDelete={(row) => handleDelete("customerGroup", row)}
               onAdd={() => handleAddNew("customerGroup")}
               loading={loading}
               enableCellEditing={false}
@@ -641,6 +744,9 @@ function CustomerPage() {
               onRefresh={() => fetchData(0, true)}
               onImportExcel={(file) => handleImportExcel("customerGroup", file)}
               tableId="customerGroups"
+              customActions={customerGroupActions.customActions}
+              onCustomAction={customerGroupActions.onCustomAction}
+              onDelete={(row) => handleDelete("customerGroup", row)}
             />
           </Box>
         </TabPanel>
@@ -651,8 +757,6 @@ function CustomerPage() {
             <Table
               data={salesmenData}
               columns={salesmenColumns}
-              onEdit={(row) => handleEdit("salesman", row)}
-              onDelete={(row) => handleDelete("salesman", row)}
               onAdd={() => handleAddNew("salesman")}
               loading={loading}
               enableCellEditing={false}
@@ -664,6 +768,9 @@ function CustomerPage() {
               onRefresh={() => fetchData(1, true)}
               onImportExcel={(file) => handleImportExcel("salesman", file)}
               tableId="salesmen"
+              customActions={salesmenActions.customActions}
+              onCustomAction={salesmenActions.onCustomAction}
+              onDelete={(row) => handleDelete("salesman", row)}
             />
           </Box>
         </TabPanel>
@@ -674,8 +781,6 @@ function CustomerPage() {
             <Table
               data={customersData}
               columns={customerColumns}
-              onEdit={(row) => handleEdit("customer", row)}
-              onDelete={(row) => handleDelete("customer", row)}
               onAdd={() => handleAddNew("customer")}
               loading={loading}
               enableCellEditing={false}
@@ -687,6 +792,9 @@ function CustomerPage() {
               onRefresh={() => fetchData(2, true)}
               onImportExcel={(file) => handleImportExcel("customer", file)}
               tableId="customers"
+              customActions={customerActions.customActions}
+              onCustomAction={customerActions.onCustomAction}
+              onDelete={(row) => handleDelete("customer", row)}
             />
           </Box>
         </TabPanel>
