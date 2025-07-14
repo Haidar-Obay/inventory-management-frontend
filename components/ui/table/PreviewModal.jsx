@@ -8,7 +8,7 @@ import { Badge } from "./CustomControls";
 const PreviewModal = ({ isOpen, onClose, row, columns, columnOrder, visibleColumns }) => {
   const t = useTranslations("table");
 
-  console.log("PreviewModal props:", { isOpen, row, columns, columnOrder, visibleColumns });
+
 
   if (!row) return null;
 
@@ -70,7 +70,7 @@ const PreviewModal = ({ isOpen, onClose, row, columns, columnOrder, visibleColum
 
   return (
     <>
-      {console.log("PreviewModal rendering with isOpen:", isOpen)}
+
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl max-h-[80vh] overflow-y-auto">

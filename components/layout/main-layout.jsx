@@ -13,13 +13,19 @@ import { MUIThemeWrapper } from "@/lib/themes/mui-theme-provider";
 export function MainLayout({ children }) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [userRole, setUserRole] = useState("user");
+  const [isClient, setIsClient] = useState(false);
   const locale = useLocale();
   const dateAdapterLocale = locale === "ar" ? arSA : enUS;
 
   useEffect(() => {
-    // Only run on client side
-    if (typeof window === "undefined") return;
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    // Only run on client side after hydration
+    if (!isClient) return;
 
     // Get user role from localStorage
     const storedRole = localStorage.getItem("userRole") || "user";
@@ -36,27 +42,75 @@ export function MainLayout({ children }) {
     if (sidebarVisible !== null) {
       setIsSidebarVisible(sidebarVisible === "true");
     }
-  }, []);
+
+    // Get fullscreen state from localStorage
+    const fullscreenState = localStorage.getItem("fullscreenState");
+    if (fullscreenState !== null) {
+      setIsFullscreen(fullscreenState === "true");
+    }
+  }, [isClient]);
+
+  // Handle ESC key to exit fullscreen
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape" && isFullscreen) {
+        toggleFullscreen();
+      }
+    };
+
+    if (isClient) {
+      document.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [isClient, isFullscreen]);
 
   const toggleSidebar = () => {
     const newState = !isSidebarCollapsed;
     setIsSidebarCollapsed(newState);
-    if (typeof window !== "undefined") {
+    if (isClient) {
       localStorage.setItem("sidebarState", newState ? "collapsed" : "expanded");
     }
   };
 
   const hideSidebar = () => {
     setIsSidebarVisible(false);
-    if (typeof window !== "undefined") {
+    if (isClient) {
       localStorage.setItem("sidebarVisible", "false");
     }
   };
 
   const showSidebar = () => {
     setIsSidebarVisible(true);
-    if (typeof window !== "undefined") {
+    if (isClient) {
       localStorage.setItem("sidebarVisible", "true");
+    }
+  };
+
+  const toggleFullscreen = () => {
+    const newFullscreenState = !isFullscreen;
+    setIsFullscreen(newFullscreenState);
+    
+    // Save fullscreen state to localStorage
+    if (isClient) {
+      localStorage.setItem("fullscreenState", newFullscreenState.toString());
+    }
+    
+    // When entering fullscreen, hide both sidebar and header
+    // When exiting fullscreen, show sidebar and header
+    if (newFullscreenState) {
+      // Entering fullscreen - hide sidebar
+      setIsSidebarVisible(false);
+      if (isClient) {
+        localStorage.setItem("sidebarVisible", "false");
+      }
+    } else {
+      // Exiting fullscreen - show sidebar
+      setIsSidebarVisible(true);
+      if (isClient) {
+        localStorage.setItem("sidebarVisible", "true");
+      }
     }
   };
 
@@ -77,8 +131,8 @@ export function MainLayout({ children }) {
   const headerStyle = {
     position: "fixed",
     top: 0,
-    left: isRTL ? 0 : contentMargin,
-    right: isRTL ? contentMargin : 0,
+    left: isRTL ? 0 : (isFullscreen ? 0 : contentMargin),
+    right: isRTL ? (isFullscreen ? 0 : contentMargin) : 0,
     zIndex: 20,
     transition: "all 0.3s ease-in-out",
     transform: "translateZ(0)",
@@ -86,12 +140,12 @@ export function MainLayout({ children }) {
   };
 
   const mainContentStyle = {
-    marginLeft: isRTL ? 0 : contentMargin,
-    marginRight: isRTL ? contentMargin : 0,
-    marginTop: "4rem",
+    marginLeft: isRTL ? 0 : (isFullscreen ? 0 : contentMargin),
+    marginRight: isRTL ? (isFullscreen ? 0 : contentMargin) : 0,
+    marginTop: isFullscreen ? "0" : "4rem",
     transition: "all 0.3s ease-in-out",
     padding: "0",
-    width: !isSidebarVisible ? "100%" : `calc(100% - ${contentMargin})`,
+    width: isFullscreen ? "100%" : (!isSidebarVisible ? "100%" : `calc(100% - ${contentMargin})`),
     transform: "translateZ(0)",
     willChange: "margin-left, margin-right, width",
   };
@@ -115,19 +169,31 @@ export function MainLayout({ children }) {
               </div>
             )}
             <div className="flex flex-col flex-1 w-full">
-              <div style={headerStyle} className="bg-background">
-                <Header
-                  toggleSidebar={toggleSidebar}
-                  hideSidebar={hideSidebar}
-                  showSidebar={showSidebar}
-                  isSidebarVisible={isSidebarVisible}
-                />
-              </div>
+              {!isFullscreen && (
+                <div style={headerStyle} className="bg-background">
+                  <Header
+                    hideSidebar={hideSidebar}
+                    showSidebar={showSidebar}
+                    isSidebarVisible={isSidebarVisible}
+                    onToggleFullscreen={toggleFullscreen}
+                    isFullscreen={isFullscreen}
+                  />
+                </div>
+              )}
               <main
-                className="flex-1 overflow-y-auto"
+                className="flex-1 overflow-y-auto relative"
                 style={mainContentStyle}
               >
                 {children}
+                
+                {/* Fullscreen exit message */}
+                {isFullscreen && (
+                  <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-background/95 backdrop-blur-sm border border-border/50 rounded-lg px-4 py-2 shadow-lg">
+                    <p className="text-sm text-muted-foreground">
+                      Press <kbd className="px-2 py-1 text-xs bg-muted rounded border">ESC</kbd> to exit fullscreen
+                    </p>
+                  </div>
+                )}
               </main>
             </div>
           </div>

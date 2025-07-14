@@ -369,6 +369,101 @@ export const importTradesFromExcel = async (file) => {
   }
 };
 
+// Function to get only trade names for dropdowns
+export const getTradeNames = async () => {
+  try {
+    const response = await tenantApiService('GET', 'names/trades');
+    return response;
+  } catch (error) {
+    console.error('Error fetching trade names:', error);
+    throw error;
+  }
+};
+
+// Business Type API functions
+export const getBusinessTypes = async () => {
+  try {
+    const response = await tenantApiService('GET', 'business-types');
+    return response;
+  } catch (error) {
+    console.error('Error fetching business types:', error);
+    throw error;
+  }
+};
+
+export const getBusinessTypeNames = async () => {
+  try {
+    const response = await tenantApiService('GET', 'business-types');
+    return response;
+  } catch (error) {
+    console.error('Error fetching business type names:', error);
+    throw error;
+  }
+};
+
+// Sales Channel API functions
+export const getSalesChannels = async () => {
+  try {
+    const response = await tenantApiService('GET', 'sales-channels');
+    return response;
+  } catch (error) {
+    console.error('Error fetching sales channels:', error);
+    throw error;
+  }
+};
+
+export const getSalesChannelNames = async () => {
+  try {
+    const response = await tenantApiService('GET', 'names/sales-channels');
+    return response;
+  } catch (error) {
+    console.error('Error fetching sales channel names:', error);
+    throw error;
+  }
+};
+
+// Distribution Channel API functions
+export const getDistributionChannels = async () => {
+  try {
+    const response = await tenantApiService('GET', 'distribution-channels');
+    return response;
+  } catch (error) {
+    console.error('Error fetching distribution channels:', error);
+    throw error;
+  }
+};
+
+export const getDistributionChannelNames = async () => {
+  try {
+    const response = await tenantApiService('GET', 'names/distribution-channels');
+    return response;
+  } catch (error) {
+    console.error('Error fetching distribution channel names:', error);
+    throw error;
+  }
+};
+
+// Media Channel API functions
+export const getMediaChannels = async () => {
+  try {
+    const response = await tenantApiService('GET', 'media-channels');
+    return response;
+  } catch (error) {
+    console.error('Error fetching media channels:', error);
+    throw error;
+  }
+};
+
+export const getMediaChannelNames = async () => {
+  try {
+    const response = await tenantApiService('GET', 'names/media-channels');
+    return response;
+  } catch (error) {
+    console.error('Error fetching media channel names:', error);
+    throw error;
+  }
+};
+
 // Company Code API functions
 export const getCompanyCodes = async () => {
   try {
@@ -453,6 +548,17 @@ export const importCompanyCodesFromExcel = async (file) => {
   }
 };
 
+// Function to get only company code names for dropdowns
+export const getCompanyCodeNames = async () => {
+  try {
+    const response = await tenantApiService('GET', 'company-codes');
+    return response;
+  } catch (error) {
+    console.error('Error fetching company code names:', error);
+    throw error;
+  }
+};
+
 // Jobs API functions
 export const getJobs = async () => {
   try {
@@ -533,6 +639,17 @@ export const importJobsFromExcel = async (file) => {
     return response;
   } catch (error) {
     console.error('Error importing jobs from Excel:', error);
+    throw error;
+  }
+};
+
+// Subscription API functions
+export const getSubscriptionStatus = async () => {
+  try {
+    const response = await tenantApiService('GET', 'subscription/status');
+    return response;
+  } catch (error) {
+    console.error('Error fetching subscription status:', error);
     throw error;
   }
 };

@@ -16,7 +16,7 @@ const DynamicDrawer = ({
   isOpen,
   onClose,
   title,
-  width = 500,
+  width = 700,
   zIndex = 1200,
   accordions = [], // Array of accordion configurations
   content = null, // Direct content without accordions

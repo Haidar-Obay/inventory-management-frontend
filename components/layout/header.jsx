@@ -32,7 +32,7 @@ import { useTranslations } from "next-intl";
 import { useRouter, usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
-import ThreeDotsMenu from "@/components/ui/ThreeDotsMenu";
+import FullscreenToggle from "@/components/ui/FullscreenToggle";
 
 // Sub-components
 const SearchBar = ({ searchQuery, setSearchQuery, handleSearch, t }) => {
@@ -257,7 +257,7 @@ const UserMenu = ({ t }) => {
   );
 };
 
-export function Header({ toggleSidebar, hideSidebar, showSidebar, isSidebarVisible }) {
+export function Header({ hideSidebar, showSidebar, isSidebarVisible, onToggleFullscreen, isFullscreen }) {
   const { theme, setTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [notifications, setNotifications] = useState([]);
@@ -298,41 +298,45 @@ export function Header({ toggleSidebar, hideSidebar, showSidebar, isSidebarVisib
   };
 
   return (
-    <header className="w-full h-16 border-b bg-background/95 backdrop-blur-sm sticky top-0 z-50">
-      <div
-        className="flex h-full items-center px-4 gap-4"
-        style={{ transition: "all 0.3s ease-in-out" }}
-      >
-        {/* Left Section - Breadcrumbs */}
-        <div className="flex items-center gap-2 flex-shrink-0 w-96 pl-1">
-          <ThreeDotsMenu onZoomIn={hideSidebar} onZoomOut={showSidebar} isSidebarVisible={isSidebarVisible} />
-          <Breadcrumbs className="font-medium text-sm" />
-        </div>
+    <>
+      <header className="w-full h-16 border-b bg-background/95 backdrop-blur-sm sticky top-0 z-50 transition-all duration-300">
+        <div
+          className="flex h-full items-center px-4 gap-4"
+          style={{ transition: "all 0.3s ease-in-out" }}
+        >
+          {/* Left Section - Breadcrumbs */}
+          <div className="flex items-center gap-2 flex-shrink-0 w-96 pl-1">
+            <FullscreenToggle onToggleFullscreen={onToggleFullscreen} isFullscreen={isFullscreen} />
+            <Breadcrumbs className="font-medium text-sm" />
+          </div>
 
-        {/* Center Section - Search Bar */}
-        <div className="flex-1 flex justify-center px-4 min-w-0">
-          <SearchBar
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            handleSearch={handleSearch}
-            t={t}
-          />
-        </div>
+          {/* Center Section - Search Bar */}
+          <div className="flex-1 flex justify-center px-4 min-w-0">
+            <SearchBar
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              handleSearch={handleSearch}
+              t={t}
+            />
+          </div>
 
-        {/* Right Section - User Controls */}
-        <div className="flex items-center gap-2 flex-shrink-0 w-48">
-          <LanguageSelector />
-          <ThemeToggle theme={theme} setTheme={setTheme} />
-          <NotificationCenter
-            notifications={notifications}
-            unreadCount={unreadCount}
-            markAllAsRead={markAllAsRead}
-            clearNotifications={clearNotifications}
-            t={t}
-          />
-          <UserMenu t={t} />
+          {/* Right Section - User Controls */}
+          <div className="flex items-center gap-2 flex-shrink-0 w-48">
+            <LanguageSelector />
+            <ThemeToggle theme={theme} setTheme={setTheme} />
+            <NotificationCenter
+              notifications={notifications}
+              unreadCount={unreadCount}
+              markAllAsRead={markAllAsRead}
+              clearNotifications={clearNotifications}
+              t={t}
+            />
+            <UserMenu t={t} />
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+      
+
+    </>
   );
 }

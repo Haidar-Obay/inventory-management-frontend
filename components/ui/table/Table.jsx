@@ -147,7 +147,7 @@ const Table = (props) => {
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
   const [previewRow, setPreviewRow] = useState(null);
 
-  console.log("Table state:", { previewModalOpen, previewRow });
+
 
   // Convert columns object to array if needed
   const columnsArray = Array.isArray(props.columns)
@@ -206,7 +206,6 @@ const Table = (props) => {
       <PreviewModal
         isOpen={previewModalOpen}
         onClose={() => {
-          console.log("Closing preview modal");
           setPreviewModalOpen(false);
           setPreviewRow(null);
         }}
