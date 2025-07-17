@@ -52,7 +52,7 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "http://hadishokor.app.localhost:8000/:path*",
+        destination: "http://default.app.localhost:8000/:path*",
       },
     ];
   },

@@ -643,13 +643,24 @@ export const importJobsFromExcel = async (file) => {
   }
 };
 
-// Subscription API functions
-export const getSubscriptionStatus = async () => {
+// Payment Terms API functions
+export const getPaymentTerms = async () => {
   try {
-    const response = await tenantApiService('GET', 'subscription/status');
+    const response = await tenantApiService('GET', 'payment-terms');
     return response;
   } catch (error) {
-    console.error('Error fetching subscription status:', error);
+    console.error('Error fetching payment terms:', error);
+    throw error;
+  }
+};
+
+// Payment Methods API functions
+export const getPaymentMethods = async () => {
+  try {
+    const response = await tenantApiService('GET', 'payment-methods');
+    return response;
+  } catch (error) {
+    console.error('Error fetching payment methods:', error);
     throw error;
   }
 };
