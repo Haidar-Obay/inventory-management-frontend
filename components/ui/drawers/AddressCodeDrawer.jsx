@@ -70,6 +70,14 @@ const AddressCodeDrawer = ({
 
   if (!type) return null;
 
+  const getDrawerWidth = (type) => {
+    if (type === "zone") return 450;
+    if (type === "country") return 450;
+    if (type === "city") return 450;
+    if (type === "district") return 450;
+    return 450; // default
+  };
+
   const getTitle = () => {
     if (isEdit) {
       return `${t("management.edit")} ${t(`management.${type}`)}${originalName ? ` / ${originalName}` : ""}`;
@@ -102,6 +110,7 @@ const AddressCodeDrawer = ({
       onSaveAndNew={onSaveAndNew}
       onSaveAndClose={onSaveAndClose}
       anchor={isRTL ? "left" : "right"}
+      width={getDrawerWidth(type)}
     />
   );
 };
