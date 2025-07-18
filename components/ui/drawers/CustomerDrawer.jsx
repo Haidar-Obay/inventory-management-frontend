@@ -1,20 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, Suspense } from "react";
 import {
   Grid,
-  Autocomplete,
   Typography,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Button,
-  Box,
-  IconButton,
-  Chip,
+  Box,  
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import AddIcon from "@mui/icons-material/Add";
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { useTranslations, useLocale } from "next-intl";
@@ -22,23 +14,66 @@ import { getCustomerGroupNames, getSalesmen } from "@/API/Customers";
 import { getCountries, getZones, getCities, getDistricts } from "@/API/AddressCodes";
 import { getTradeNames, getCompanyCodeNames, getBusinessTypeNames, getSalesChannelNames, getDistributionChannelNames, getMediaChannelNames, getPaymentTerms, getPaymentMethods } from "@/API/Sections";
 import { useSimpleToast } from "@/components/ui/simple-toast";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import { getCurrencies, getSubscriptionStatus } from '@/API/Currency';
-import PersonalInformationSection from './customer/PersonalInformationSection';
-import BillingAddressSection from './customer/BillingAddressSection';
-import ShippingAddressSection from './customer/ShippingAddressSection';
-import BusinessInformationSection from './customer/BusinessInformationSection';
-import CategorizeSection from './customer/CategorizeSection';
-import SalesmenSection from './customer/SalesmenSection';
-import PaymentTermsSection from './customer/PaymentTermsSection';
-import OpeningSection from './customer/OpeningSection';
-import MoreOptionsSection from './customer/MoreOptionsSection';
-import PricingSection from './customer/PricingSection';
-import TaxesSection from './customer/TaxesSection';
-import ContactsSection from './customer/ContactsSection';
-import RoutingSection from './customer/RoutingSection';
-import AttachmentsSection from './customer/AttachmentsSection';
-import MessageSection from './customer/MessageSection';
+import dynamic from 'next/dynamic';
+
+const LoadingSkeleton = () => (
+  <div
+    style={{
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      color: '#888',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '1rem',
+      zIndex: 10,
+      width: '100%',
+      pointerEvents: 'none',
+      background: 'transparent'
+    }}
+  >
+    <span
+      style={{
+        display: 'inline-block',
+        width: 48,
+        height: 48,
+        border: '5px solid #eee',
+        borderTop: '5px solid #1976d2',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite',
+      }}
+    />
+    <style>{`
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    `}</style>
+    Loading customer details...
+  </div>
+);
+
+const PersonalInformationSection = dynamic(() => import('./customer/PersonalInformationSection'));
+const BillingAddressSection = dynamic(() => import('./customer/BillingAddressSection'));
+const ShippingAddressSection = dynamic(() => import('./customer/ShippingAddressSection'));
+const BusinessInformationSection = dynamic(() => import('./customer/BusinessInformationSection'));
+const CategorizeSection = dynamic(() => import('./customer/CategorizeSection'));
+const SalesmenSection = dynamic(() => import('./customer/SalesmenSection'));
+const PaymentTermsSection = dynamic(() => import('./customer/PaymentTermsSection'));
+const OpeningSection = dynamic(() => import('./customer/OpeningSection'));
+const MoreOptionsSection = dynamic(() => import('./customer/MoreOptionsSection'));
+const PricingSection = dynamic(() => import('./customer/PricingSection'));
+const TaxesSection = dynamic(() => import('./customer/TaxesSection'));
+const ContactsSection = dynamic(() => import('./customer/ContactsSection'));
+const RoutingSection = dynamic(() => import('./customer/RoutingSection'));
+const AttachmentsSection = dynamic(() => import('./customer/AttachmentsSection'));
+const MessageSection = dynamic(() => import('./customer/MessageSection'));
+const CustomerGroupSection = dynamic(() => import('./customerGroup/CustomerGroupSection'));
+const SalesmanSection = dynamic(() => import('./salesmen/SalesmanSection'));
 
 const CustomerDrawer = ({
   isOpen,
@@ -497,571 +532,291 @@ const CustomerDrawer = ({
     if (!type) return null;
 
     if (type === "customerGroup") {
-  return (
-        <Grid container spacing={2} sx={{ p: 2 }}>
-          <Grid xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.code")} *
-            </Typography>
-            <RTLTextField
-              value={formData?.code || ""}
-              onChange={handleFieldChange("code")}
-              required
-              placeholder=""
-            />
-          </Grid>
-          <Grid xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.name")} *
-            </Typography>
-            <RTLTextField
-              value={formData?.name || ""}
-              onChange={handleFieldChange("name")}
-              required
-              placeholder=""
-            />
-          </Grid>
-          <Grid xs={12} md={6}>
-            <Checkbox
-              checked={formData?.active !== false}
-              onChange={(e) =>
-    onFormDataChange({
-      ...formData,
-                  active: e.target.checked,
-                })
-              }
-              label={t("management.active")}
-              isRTL={isRTL}
-            />
-          </Grid>
-        </Grid>
+      return (
+        <CustomerGroupSection
+          formData={formData}
+          onFormDataChange={onFormDataChange}
+          isRTL={isRTL}
+          t={t}
+          handleFieldChange={handleFieldChange}
+        />
       );
     }
 
     if (type === "salesman") {
-  return (
-        <Grid container spacing={2} sx={{ p: 2 }}>
-          <Grid xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.code")} *
-        </Typography>
-            <RTLTextField
-              value={formData?.code || ""}
-              onChange={handleFieldChange("code")}
-              required
-              placeholder=""
-            />
-          </Grid>
-          <Grid xs={12} md={6}>
-            <Checkbox
-              checked={formData?.active !== false}
-              onChange={(e) =>
-                onFormDataChange({
-                  ...formData,
-                  active: e.target.checked,
-                })
-              }
-              label={t("management.active")}
-              isRTL={isRTL}
-            />
-          </Grid>
-          <Grid xs={12} md={6} sx={{ width: "100%" }}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.name")} *
-            </Typography>
-            <RTLTextField
-              value={formData?.name || ""}
-              onChange={handleFieldChange("name")}
-              required
-              placeholder=""
-            />
-          </Grid>
-          <Grid xs={12} sx={{ width: "100%" }}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.address")}
-            </Typography>
-            <RTLTextField
-              value={formData?.address || ""}
-              onChange={handleFieldChange("address")}
-              multiline
-              rows={3}
-              placeholder=""
-            />
-          </Grid>
-          <Grid xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.phone1")}
-            </Typography>
-            <RTLTextField
-              value={formData?.phone1 || ""}
-              onChange={handleFieldChange("phone1")}
-              placeholder=""
-            />
-          </Grid>
-          <Grid xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.phone2")}
-            </Typography>
-            <RTLTextField
-              value={formData?.phone2 || ""}
-              onChange={handleFieldChange("phone2")}
-              placeholder=""
-            />
-          </Grid>
-          <Grid xs={12}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.email")}
-            </Typography>
-            <RTLTextField
-              value={formData?.email || ""}
-              onChange={handleFieldChange("email")}
-              type="email"
-              placeholder=""
-            />
-          </Grid>
-          <Grid xs={12} md={4} sx={{ width: "50%" }}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.isManager")}
-            </Typography>
-            <RTLTextField
-              select
-              value={formData?.is_manager === true ? "true" : "false"}
-              onChange={(e) =>
-                onFormDataChange({
-                  ...formData,
-                  is_manager: e.target.value === "true",
-                })
-              }
-              SelectProps={{
-                native: true,
-              }}
-              placeholder=""
-            >
-              <option value="false">{t("management.no")}</option>
-              <option value="true">{t("management.yes")}</option>
-            </RTLTextField>
-          </Grid>
-          <Grid xs={12} md={4} sx={{ width: "50%" }}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.isSupervisor")}
-            </Typography>
-            <RTLTextField
-              select
-              value={formData?.is_supervisor === true ? "true" : "false"}
-              onChange={(e) =>
-                onFormDataChange({
-                  ...formData,
-                  is_supervisor: e.target.value === "true",
-                })
-              }
-              SelectProps={{
-                native: true,
-              }}
-              placeholder=""
-            >
-              <option value="false">{t("management.no")}</option>
-              <option value="true">{t("management.yes")}</option>
-            </RTLTextField>
-          </Grid>
-          <Grid xs={12} md={4} sx={{ width: "50%" }}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.isCollector")}
-            </Typography>
-            <RTLTextField
-              select
-              value={formData?.is_collector === true ? "true" : "false"}
-              onChange={(e) =>
-                onFormDataChange({
-                  ...formData,
-                  is_collector: e.target.value === "true",
-                })
-              }
-              SelectProps={{
-                native: true,
-              }}
-              placeholder=""
-            >
-              <option value="false">{t("management.no")}</option>
-              <option value="true">{t("management.yes")}</option>
-            </RTLTextField>
-          </Grid>
-          <Grid xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.fixCommission")}
-            </Typography>
-            <RTLTextField
-              value={formData?.fix_commission || ""}
-              onChange={handleFieldChange("fix_commission")}
-              type="number"
-              placeholder=""
-            />
-          </Grid>
-          <Grid xs={12} md={6}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.commissionByItem")}
-            </Typography>
-            <RTLTextField
-              value={formData?.commission_by_item || ""}
-              onChange={handleFieldChange("commission_by_item")}
-              type="number"
-              placeholder=""
-            />
-          </Grid>
-        </Grid>
+      return (
+        <SalesmanSection
+          formData={formData}
+          onFormDataChange={onFormDataChange}
+          isRTL={isRTL}
+          t={t}
+          handleFieldChange={handleFieldChange}
+        />
       );
     }
 
     if (type === "customer") {
       return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <PersonalInformationSection
-            formData={formData}
-            onFormDataChange={onFormDataChange}
-            isRTL={isRTL}
-            t={t}
-            generateDisplayNameSuggestions={generateDisplayNameSuggestions}
-            handleDisplayNameChange={handleDisplayNameChange}
-            handleFieldChange={handleFieldChange}
-            expanded={!!expandedSections.personalInformation}
-            onAccordionChange={handleAccordionChange('personalInformation')}
-            allCollapsed={allCollapsed}
-            setAllCollapsed={setAllCollapsed}
-          />
-          <BillingAddressSection
-            formData={formData}
-            onFormDataChange={onFormDataChange}
-            isRTL={isRTL}
-            t={t}
-            countries={countries}
-            zones={zones}
-            cities={cities}
-            districts={districts}
-                    loading={loading}
-            expanded={!!expandedSections.billingAddress}
-            onAccordionChange={handleAccordionChange('billingAddress')}
-            allCollapsed={allCollapsed}
-            setAllCollapsed={setAllCollapsed}
-          />
-          <ShippingAddressSection
-            formData={formData}
-            onFormDataChange={onFormDataChange}
-            isRTL={isRTL}
-            t={t}
-            countries={countries}
-            zones={zones}
-            cities={cities}
-            districts={districts}
-                    loading={loading}
-            shippingAddresses={shippingAddresses}
-            setShippingAddresses={setShippingAddresses}
-            handleCopyFromBillingAddress={handleCopyFromBillingAddress}
-            handleAddShippingAddress={handleAddShippingAddress}
-            handleRemoveShippingAddress={handleRemoveShippingAddress}
-            handleShippingAddressChange={handleShippingAddressChange}
-            handleCopyToShippingAddress={handleCopyToShippingAddress}
-            expanded={!!expandedSections.shippingAddress}
-            onAccordionChange={handleAccordionChange('shippingAddress')}
-            allCollapsed={allCollapsed}
-            setAllCollapsed={setAllCollapsed}
-          />
-          <BusinessInformationSection
-            formData={formData}
-            onFormDataChange={onFormDataChange}
-            isRTL={isRTL}
-            t={t}
-            searchTerms={searchTerms}
-            newSearchTerm={newSearchTerm}
-            setNewSearchTerm={setNewSearchTerm}
-            handleAddSearchTerm={handleAddSearchTerm}
-            handleRemoveSearchTerm={handleRemoveSearchTerm}
-            handleSearchTermKeyPress={handleSearchTermKeyPress}
-            expanded={!!expandedSections.businessInformation}
-            onAccordionChange={handleAccordionChange('businessInformation')}
-            allCollapsed={allCollapsed}
-            setAllCollapsed={setAllCollapsed}
-          />
-          <CategorizeSection
-            formData={formData}
-            onFormDataChange={onFormDataChange}
-            isRTL={isRTL}
-            t={t}
-            trades={trades}
-            companyCodes={companyCodes}
-            customerGroups={customerGroups}
-            businessTypes={businessTypes}
-            salesChannels={salesChannels}
-            distributionChannels={distributionChannels}
-            mediaChannels={mediaChannels}
-                    loading={loading}
-            handleTradeChange={handleTradeChange}
-            handleCompanyCodeChange={handleCompanyCodeChange}
-            handleCustomerGroupChange={handleCustomerGroupChange}
-            handleBusinessTypeChange={handleBusinessTypeChange}
-            handleSalesChannelChange={handleSalesChannelChange}
-            handleDistributionChannelChange={handleDistributionChannelChange}
-            handleMediaChannelChange={handleMediaChannelChange}
-            handleFieldChange={handleFieldChange}
-            expanded={!!expandedSections.categorize}
-            onAccordionChange={handleAccordionChange('categorize')}
-            allCollapsed={allCollapsed}
-            setAllCollapsed={setAllCollapsed}
-          />
-          <OpeningSection
-            formData={formData}
-            onFormDataChange={onFormDataChange}
-                    isRTL={isRTL}
-            t={t}
-            subscriptionChecked={subscriptionChecked}
-            canAddMultiCurrency={canAddMultiCurrency}
-            upgradeMessage={upgradeMessage}
-            openingBalances={openingBalances}
-            handleOpeningBalanceChange={handleOpeningBalanceChange}
-            handleAddOpeningBalance={handleAddOpeningBalance}
-            handleRemoveOpeningBalance={handleRemoveOpeningBalance}
-            currencies={currencies}
-            expanded={!!expandedSections.opening}
-            onAccordionChange={handleAccordionChange('opening')}
-            allCollapsed={allCollapsed}
-            setAllCollapsed={setAllCollapsed}
-          />
-          <SalesmenSection
-            formData={formData}
-            onFormDataChange={onFormDataChange}
-                    isRTL={isRTL}
-            t={t}
-            salesmen={salesmen}
-            collectors={collectors}
-            supervisors={supervisors}
-            managers={managers}
-            handleSalesmanSelect={handleSalesmanSelect}
-            handleCollectorSelect={handleCollectorSelect}
-            handleSupervisorSelect={handleSupervisorSelect}
-            handleManagerSelect={handleManagerSelect}
-            expanded={!!expandedSections.salesmen}
-            onAccordionChange={handleAccordionChange('salesmen')}
-            allCollapsed={allCollapsed}
-            setAllCollapsed={setAllCollapsed}
-          />
-          <PaymentTermsSection
-            formData={formData}
-            onFormDataChange={onFormDataChange}
-                    isRTL={isRTL}
-            t={t}
-            paymentTerms={paymentTerms}
-            paymentMethods={paymentMethods}
-            selectedPaymentTerm={selectedPaymentTerm}
-            setSelectedPaymentTerm={setSelectedPaymentTerm}
-            selectedPaymentMethod={selectedPaymentMethod}
-            setSelectedPaymentMethod={setSelectedPaymentMethod}
-            allowCredit={allowCredit}
-            setAllowCredit={setAllowCredit}
-            openingBalances={openingBalances}
-            creditLimits={creditLimits}
-            handleCreditLimitChange={handleCreditLimitChange}
-            acceptCheques={acceptCheques}
-            setAcceptCheques={setAcceptCheques}
-            maxCheques={maxCheques}
-            handleMaxChequesChange={handleMaxChequesChange}
-            paymentDay={paymentDay}
-            setPaymentDay={setPaymentDay}
-            trackPayment={trackPayment}
-            setTrackPayment={setTrackPayment}
-            settlementMethod={settlementMethod}
-            setSettlementMethod={setSettlementMethod}
-            expanded={!!expandedSections.paymentTerms}
-            onAccordionChange={handleAccordionChange('paymentTerms')}
-            allCollapsed={allCollapsed}
-            setAllCollapsed={setAllCollapsed}
-          />
-          <MoreOptionsSection
-            formData={formData}
-            onFormDataChange={onFormDataChange}
-                    isRTL={isRTL}
-            t={t}
-            active={active}
-            setActive={setActive}
-            blackListed={blackListed}
-            setBlackListed={setBlackListed}
-            oneTimeAccount={oneTimeAccount}
-            setOneTimeAccount={setOneTimeAccount}
-            specialAccount={specialAccount}
-            setSpecialAccount={setSpecialAccount}
-            posCustomer={posCustomer}
-            setPosCustomer={setPosCustomer}
-            freeDeliveryCharge={freeDeliveryCharge}
-            setFreeDeliveryCharge={setFreeDeliveryCharge}
-            printInvoiceLanguage={printInvoiceLanguage}
-            setPrintInvoiceLanguage={setPrintInvoiceLanguage}
-            sendInvoice={sendInvoice}
-            setSendInvoice={setSendInvoice}
-            notes={notes}
-            setNotes={setNotes}
-            expanded={!!expandedSections.moreOptions}
-            onAccordionChange={handleAccordionChange('moreOptions')}
-            allCollapsed={allCollapsed}
-            setAllCollapsed={setAllCollapsed}
-          />
-          <PricingSection
-            formData={formData}
-            onFormDataChange={onFormDataChange}
-                    isRTL={isRTL}
-            t={t}
-            priceChoice={priceChoice}
-            setPriceChoice={setPriceChoice}
-            priceList={priceList}
-            setPriceList={setPriceList}
-            globalDiscount={globalDiscount}
-            setGlobalDiscount={setGlobalDiscount}
-            discountClass={discountClass}
-            setDiscountClass={setDiscountClass}
-            markup={markup}
-            setMarkup={setMarkup}
-            markdown={markdown}
-            setMarkdown={setMarkdown}
-            expanded={!!expandedSections.pricing}
-            onAccordionChange={handleAccordionChange('pricing')}
-            allCollapsed={allCollapsed}
-            setAllCollapsed={setAllCollapsed}
-          />
-          <TaxesSection
-            formData={formData}
-            onFormDataChange={onFormDataChange}
-                    isRTL={isRTL}
-            t={t}
-            handleFieldChange={handleFieldChange}
-            expanded={!!expandedSections.taxes}
-            onAccordionChange={handleAccordionChange('taxes')}
-            allCollapsed={allCollapsed}
-            setAllCollapsed={setAllCollapsed}
-          />
-          <ContactsSection
-            formData={formData}
-            onFormDataChange={onFormDataChange}
-                    isRTL={isRTL}
-            t={t}
-            handleFieldChange={handleFieldChange}
-            expanded={!!expandedSections.contacts}
-            onAccordionChange={handleAccordionChange('contacts')}
-            allCollapsed={allCollapsed}
-            setAllCollapsed={setAllCollapsed}
-          />
-          <RoutingSection
-            formData={formData}
-            onFormDataChange={onFormDataChange}
-                    isRTL={isRTL}
-            t={t}
-            salesmen={salesmen}
-            handleFieldChange={handleFieldChange}
-            expanded={!!expandedSections.routing}
-            onAccordionChange={handleAccordionChange('routing')}
-            allCollapsed={allCollapsed}
-            setAllCollapsed={setAllCollapsed}
-          />
-          <AttachmentsSection
-            formData={formData}
-            onFormDataChange={onFormDataChange}
-            t={t}
-          />
-          <MessageSection
-            showMessageField={showMessageField}
-            setShowMessageField={setShowMessageField}
-            message={message}
-            setMessage={setMessage}
-                    isRTL={isRTL}
-            t={t}
-          />
-        </Box>
+        <Suspense fallback={<LoadingSkeleton />}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <PersonalInformationSection
+              formData={formData}
+              onFormDataChange={onFormDataChange}
+              isRTL={isRTL}
+              t={t}
+              generateDisplayNameSuggestions={generateDisplayNameSuggestions}
+              handleDisplayNameChange={handleDisplayNameChange}
+              handleFieldChange={handleFieldChange}
+              expanded={!!expandedSections.personalInformation}
+              onAccordionChange={handleAccordionChange('personalInformation')}
+              allCollapsed={allCollapsed}
+              setAllCollapsed={setAllCollapsed}
+            />
+            <BillingAddressSection
+              formData={formData}
+              onFormDataChange={onFormDataChange}
+              isRTL={isRTL}
+              t={t}
+              countries={countries}
+              zones={zones}
+              cities={cities}
+              districts={districts}
+              loading={loading}
+              expanded={!!expandedSections.billingAddress}
+              onAccordionChange={handleAccordionChange('billingAddress')}
+              allCollapsed={allCollapsed}
+              setAllCollapsed={setAllCollapsed}
+            />
+            <ShippingAddressSection
+              formData={formData}
+              onFormDataChange={onFormDataChange}
+              isRTL={isRTL}
+              t={t}
+              countries={countries}
+              zones={zones}
+              cities={cities}
+              districts={districts}
+              loading={loading}
+              shippingAddresses={shippingAddresses}
+              setShippingAddresses={setShippingAddresses}
+              handleCopyFromBillingAddress={handleCopyFromBillingAddress}
+              handleAddShippingAddress={handleAddShippingAddress}
+              handleRemoveShippingAddress={handleRemoveShippingAddress}
+              handleShippingAddressChange={handleShippingAddressChange}
+              handleCopyToShippingAddress={handleCopyToShippingAddress}
+              expanded={!!expandedSections.shippingAddress}
+              onAccordionChange={handleAccordionChange('shippingAddress')}
+              allCollapsed={allCollapsed}
+              setAllCollapsed={setAllCollapsed}
+            />
+            <BusinessInformationSection
+              formData={formData}
+              onFormDataChange={onFormDataChange}
+              isRTL={isRTL}
+              t={t}
+              searchTerms={searchTerms}
+              newSearchTerm={newSearchTerm}
+              setNewSearchTerm={setNewSearchTerm}
+              handleAddSearchTerm={handleAddSearchTerm}
+              handleRemoveSearchTerm={handleRemoveSearchTerm}
+              handleSearchTermKeyPress={handleSearchTermKeyPress}
+              expanded={!!expandedSections.businessInformation}
+              onAccordionChange={handleAccordionChange('businessInformation')}
+              allCollapsed={allCollapsed}
+              setAllCollapsed={setAllCollapsed}
+            />
+            <CategorizeSection
+              formData={formData}
+              onFormDataChange={onFormDataChange}
+              isRTL={isRTL}
+              t={t}
+              trades={trades}
+              companyCodes={companyCodes}
+              customerGroups={customerGroups}
+              businessTypes={businessTypes}
+              salesChannels={salesChannels}
+              distributionChannels={distributionChannels}
+              mediaChannels={mediaChannels}
+              loading={loading}
+              handleTradeChange={handleTradeChange}
+              handleCompanyCodeChange={handleCompanyCodeChange}
+              handleCustomerGroupChange={handleCustomerGroupChange}
+              handleBusinessTypeChange={handleBusinessTypeChange}
+              handleSalesChannelChange={handleSalesChannelChange}
+              handleDistributionChannelChange={handleDistributionChannelChange}
+              handleMediaChannelChange={handleMediaChannelChange}
+              handleFieldChange={handleFieldChange}
+              expanded={!!expandedSections.categorize}
+              onAccordionChange={handleAccordionChange('categorize')}
+              allCollapsed={allCollapsed}
+              setAllCollapsed={setAllCollapsed}
+            />
+            <OpeningSection
+              formData={formData}
+              onFormDataChange={onFormDataChange}
+              isRTL={isRTL}
+              t={t}
+              subscriptionChecked={subscriptionChecked}
+              canAddMultiCurrency={canAddMultiCurrency}
+              upgradeMessage={upgradeMessage}
+              openingBalances={openingBalances}
+              handleOpeningBalanceChange={handleOpeningBalanceChange}
+              handleAddOpeningBalance={handleAddOpeningBalance}
+              handleRemoveOpeningBalance={handleRemoveOpeningBalance}
+              currencies={currencies}
+              expanded={!!expandedSections.opening}
+              onAccordionChange={handleAccordionChange('opening')}
+              allCollapsed={allCollapsed}
+              setAllCollapsed={setAllCollapsed}
+            />
+            <SalesmenSection
+              formData={formData}
+              onFormDataChange={onFormDataChange}
+              isRTL={isRTL}
+              t={t}
+              salesmen={salesmen}
+              collectors={collectors}
+              supervisors={supervisors}
+              managers={managers}
+              handleSalesmanSelect={handleSalesmanSelect}
+              handleCollectorSelect={handleCollectorSelect}
+              handleSupervisorSelect={handleSupervisorSelect}
+              handleManagerSelect={handleManagerSelect}
+              expanded={!!expandedSections.salesmen}
+              onAccordionChange={handleAccordionChange('salesmen')}
+              allCollapsed={allCollapsed}
+              setAllCollapsed={setAllCollapsed}
+            />
+            <PaymentTermsSection
+              formData={formData}
+              onFormDataChange={onFormDataChange}
+              isRTL={isRTL}
+              t={t}
+              paymentTerms={paymentTerms}
+              paymentMethods={paymentMethods}
+              selectedPaymentTerm={selectedPaymentTerm}
+              setSelectedPaymentTerm={setSelectedPaymentTerm}
+              selectedPaymentMethod={selectedPaymentMethod}
+              setSelectedPaymentMethod={setSelectedPaymentMethod}
+              allowCredit={allowCredit}
+              setAllowCredit={setAllowCredit}
+              openingBalances={openingBalances}
+              creditLimits={creditLimits}
+              handleCreditLimitChange={handleCreditLimitChange}
+              acceptCheques={acceptCheques}
+              setAcceptCheques={setAcceptCheques}
+              maxCheques={maxCheques}
+              handleMaxChequesChange={handleMaxChequesChange}
+              paymentDay={paymentDay}
+              setPaymentDay={setPaymentDay}
+              trackPayment={trackPayment}
+              setTrackPayment={setTrackPayment}
+              settlementMethod={settlementMethod}
+              setSettlementMethod={setSettlementMethod}
+              expanded={!!expandedSections.paymentTerms}
+              onAccordionChange={handleAccordionChange('paymentTerms')}
+              allCollapsed={allCollapsed}
+              setAllCollapsed={setAllCollapsed}
+            />
+            <MoreOptionsSection
+              formData={formData}
+              onFormDataChange={onFormDataChange}
+              isRTL={isRTL}
+              t={t}
+              active={active}
+              setActive={setActive}
+              blackListed={blackListed}
+              setBlackListed={setBlackListed}
+              oneTimeAccount={oneTimeAccount}
+              setOneTimeAccount={setOneTimeAccount}
+              specialAccount={specialAccount}
+              setSpecialAccount={setSpecialAccount}
+              posCustomer={posCustomer}
+              setPosCustomer={setPosCustomer}
+              freeDeliveryCharge={freeDeliveryCharge}
+              setFreeDeliveryCharge={setFreeDeliveryCharge}
+              printInvoiceLanguage={printInvoiceLanguage}
+              setPrintInvoiceLanguage={setPrintInvoiceLanguage}
+              sendInvoice={sendInvoice}
+              setSendInvoice={setSendInvoice}
+              notes={notes}
+              setNotes={setNotes}
+              expanded={!!expandedSections.moreOptions}
+              onAccordionChange={handleAccordionChange('moreOptions')}
+              allCollapsed={allCollapsed}
+              setAllCollapsed={setAllCollapsed}
+            />
+            <PricingSection
+              formData={formData}
+              onFormDataChange={onFormDataChange}
+              isRTL={isRTL}
+              t={t}
+              priceChoice={priceChoice}
+              setPriceChoice={setPriceChoice}
+              priceList={priceList}
+              setPriceList={setPriceList}
+              globalDiscount={globalDiscount}
+              setGlobalDiscount={setGlobalDiscount}
+              discountClass={discountClass}
+              setDiscountClass={setDiscountClass}
+              markup={markup}
+              setMarkup={setMarkup}
+              markdown={markdown}
+              setMarkdown={setMarkdown}
+              expanded={!!expandedSections.pricing}
+              onAccordionChange={handleAccordionChange('pricing')}
+              allCollapsed={allCollapsed}
+              setAllCollapsed={setAllCollapsed}
+            />
+            <TaxesSection
+              formData={formData}
+              onFormDataChange={onFormDataChange}
+              isRTL={isRTL}
+              t={t}
+              handleFieldChange={handleFieldChange}
+              expanded={!!expandedSections.taxes}
+              onAccordionChange={handleAccordionChange('taxes')}
+              allCollapsed={allCollapsed}
+              setAllCollapsed={setAllCollapsed}
+            />
+            <ContactsSection
+              formData={formData}
+              onFormDataChange={onFormDataChange}
+              isRTL={isRTL}
+              t={t}
+              handleFieldChange={handleFieldChange}
+              expanded={!!expandedSections.contacts}
+              onAccordionChange={handleAccordionChange('contacts')}
+              allCollapsed={allCollapsed}
+              setAllCollapsed={setAllCollapsed}
+            />
+            <RoutingSection
+              formData={formData}
+              onFormDataChange={onFormDataChange}
+              isRTL={isRTL}
+              t={t}
+              salesmen={salesmen}
+              handleFieldChange={handleFieldChange}
+              expanded={!!expandedSections.routing}
+              onAccordionChange={handleAccordionChange('routing')}
+              allCollapsed={allCollapsed}
+              setAllCollapsed={setAllCollapsed}
+            />
+            <AttachmentsSection
+              formData={formData}
+              onFormDataChange={onFormDataChange}
+              t={t}
+            />
+            <MessageSection
+              showMessageField={showMessageField}
+              setShowMessageField={setShowMessageField}
+              message={message}
+              setMessage={setMessage}
+              isRTL={isRTL}
+              t={t}
+            />
+          </Box>
+        </Suspense>
       );
     }
 
