@@ -527,6 +527,14 @@ const ItemDrawer = ({
 
   if (!type) return null;
 
+  const getDrawerWidth = (type) => {
+    if (type === "productLine") return 500;
+    if (type === "category") return 500;
+    if (type === "brand") return 500;
+    if (type === "item") return 500;
+    return 600; // default
+  };
+
   const getTitle = () => {
     if (isEdit) {
       return `${t("management.edit")} ${t(`management.${type}`)}${originalName ? ` / ${originalName}` : ""}`;
@@ -545,6 +553,7 @@ const ItemDrawer = ({
       onSaveAndNew={onSaveAndNew}
       onSaveAndClose={onSaveAndClose}
       anchor={isRTL ? "left" : "right"}
+      width={getDrawerWidth(type)}
     />
   );
 };

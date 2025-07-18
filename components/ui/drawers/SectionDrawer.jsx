@@ -712,6 +712,16 @@ const SectionDrawer = ({
 
   if (!type) return null;
 
+  const getDrawerWidth = (type) => {
+    if (type === "project") return 600;
+    if (type === "costCenter") return 500;
+    if (type === "department") return 500;
+    if (type === "trade") return 500;
+    if (type === "companyCode") return 450;
+    if (type === "job") return 500;
+    return 600; // default
+  };
+
   const getTitle = () => {
     if (isEdit) {
       return `${t("management.edit")} ${t(`management.${type}`)}${originalName ? ` / ${originalName}` : ""}`;
@@ -730,6 +740,7 @@ const SectionDrawer = ({
       onSaveAndNew={onSaveAndNew}
       onSaveAndClose={onSaveAndClose}
       anchor={isRTL ? "left" : "right"}
+      width={getDrawerWidth(type)}
     />
   );
 };
