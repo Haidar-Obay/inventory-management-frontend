@@ -144,6 +144,19 @@ const CustomerDrawer = ({
   const [allCollapsed, setAllCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState({});
 
+  // Open Personal Information by default when opening customer drawer
+  useEffect(() => {
+    if (isOpen && type === "customer") {
+      setExpandedSections(prev => {
+        // Only set if not already set (preserve user toggling)
+        if (prev.personalInformation === undefined) {
+          return { ...prev, personalInformation: true };
+        }
+        return prev;
+      });
+    }
+  }, [isOpen, type]);
+
   // Generate display name suggestions based on name components
   const generateDisplayNameSuggestions = () => {
     const title = formData?.title || "";
@@ -880,7 +893,7 @@ const CustomerDrawer = ({
       onSaveAndNew={onSaveAndNew}
       onSaveAndClose={onSaveAndClose}
       anchor={isRTL ? "left" : "right"}
-      width={900}
+      width={1100}
     />
   );
 };

@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Typography, Autocomplete, Accordion, AccordionSummary, AccordionDetails, Button } from "@mui/material";
+import { Grid, Typography, Autocomplete, Accordion, AccordionSummary, AccordionDetails, Button, Box } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import RTLTextField from "@/components/ui/RTLTextField";
 
@@ -28,7 +28,7 @@ const OpeningSection = React.memo(({ formData, onFormDataChange, isRTL, t, subsc
           </Typography>
         )}
         {openingBalances.map((entry, idx) => (
-          <Grid container spacing={2} key={idx} sx={{ mb: 2, border: '1px solid #eee', borderRadius: 1, p: 2 }}>
+          <Grid container spacing={2} key={idx} sx={{ mb: 2, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
             <Grid item xs={12} md={4}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
                 {t('management.currency') || 'Currency'}
@@ -74,9 +74,11 @@ const OpeningSection = React.memo(({ formData, onFormDataChange, isRTL, t, subsc
           </Grid>
         ))}
         {canAddMultiCurrency && (
-          <Button variant="outlined" size="small" onClick={handleAddOpeningBalance}>
-            {t('management.addCurrency') || 'Add Currency'}
-          </Button>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+            <Button variant="outlined" size="small" onClick={handleAddOpeningBalance}>
+              {t('management.addCurrency') || 'Add Currency'}
+            </Button>
+          </Box>
         )}
       </AccordionDetails>
     </Accordion>

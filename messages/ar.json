@@ -781,6 +781,8 @@
     "date": "تاريخ",
     "edit": "تعديل",
     "delete": "حذف",
+    "setInactiveLabel": "تعيين كغير نشط",
+    "setActiveLabel": "تعيين كنشط",
     "search": {
       "placeholder": "البحث في جميع الأعمدة...",
       "columnPlaceholder": "البحث في {column}...",
@@ -811,7 +813,7 @@
         "px": "بكسل",
         "auto": "تلقائي",
         "templates": "القوالب",
-        "saveAsTemplate": "حفظ كقالب",
+        "saveAsTemplate": "إضافة قالب جديد",
         "noTemplates": "لا توجد قوالب محفوظة.",
         "apply": "تطبيق",
         "delete": "حذف",
@@ -820,7 +822,10 @@
         "nameExists": "الاسم موجود بالفعل",
         "select": "اختيار",
         "searchColumn": "البحث في العمود...",
-        "loadingTemplates": "جاري تحميل القوالب..."
+        "loadingTemplates": "جاري تحميل القوالب...",
+        "update": "تحديث القالب",
+        "error": "خطأ",
+        "duplicateTemplate": "يوجد قالب بهذه الإعدادات بالفعل."
       }
     },
     "filter": {

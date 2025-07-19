@@ -511,9 +511,9 @@ function AddressCodesPage() {
             aria-label="address code tabs"
           >
             <Tab label={t("tabs.countries")} />
-            <Tab label={t("tabs.zones")} />
             <Tab label={t("tabs.cities")} />
             <Tab label={t("tabs.districts")} />
+            <Tab label={t("tabs.zones")} />
           </CustomTabs>
         </Box>
 

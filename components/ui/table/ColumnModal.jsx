@@ -3,12 +3,20 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Modal, Button, Checkbox, Input } from "./CustomControls";
 import { useTranslations, useLocale } from "next-intl";
+import { toast } from "@/components/ui/simple-toast";
 import Portal from "../Portal";
 import { 
   getTableTemplates, 
   createTableTemplate, 
-  deleteTableTemplate 
+  deleteTableTemplate,
+  // We'll use this for updating
+  updateTableTemplate
 } from "../../../API/TableTemplates";
+
+// Utility to conditionally add a class
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ');
+}
 
 // Extracted Components
 const TabButton = React.memo(({ 
@@ -45,11 +53,16 @@ const SearchInput = React.memo(({
 const TemplateItem = React.memo(({ 
   template, 
   isActive, 
+  isSelected,
   onApply, 
   onDelete, 
+  onUpdate,
   t 
 }) => (
-  <div className="flex items-center justify-between border-b border-border py-2 last:border-0">
+  <div className={classNames(
+    'flex items-center justify-between border-b border-border px-4 py-3 last:border-0',
+    isSelected && 'bg-primary/10 rounded-lg'
+  )}>
     <span className="text-foreground font-medium flex items-center gap-2">
       {template.name}
       {isActive && (
@@ -65,8 +78,17 @@ const TemplateItem = React.memo(({
         variant="outline"
         size="sm"
         onClick={() => onApply(template)}
+        className={isSelected ? 'border-primary' : ''}
       >
         {t("columns.modal.select")}
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => onUpdate(template)}
+        className={isSelected ? 'border-primary' : ''}
+      >
+        {t("columns.modal.update") || "Update Template"}
       </Button>
       <Button
         variant="destructive"
@@ -86,7 +108,8 @@ const TemplatePrompt = React.memo(({
   onNameChange, 
   onSave, 
   onCancel, 
-  t 
+  t,
+  isSaving
 }) => {
   if (!isOpen) return null;
   
@@ -111,11 +134,16 @@ const TemplatePrompt = React.memo(({
           </div>
         )}
         <div className="flex justify-end gap-2">
-          <Button variant="outline" size="sm" onClick={onCancel}>
+          <Button variant="outline" size="sm" onClick={onCancel} disabled={isSaving}>
             {t("columns.modal.cancel")}
           </Button>
-          <Button variant="primary" size="sm" onClick={onSave}>
+          <Button variant="primary" size="sm" onClick={onSave} disabled={isSaving}>
             {t("columns.modal.save")}
+            {isSaving && (
+              <span className="ml-2 inline-block align-middle">
+                <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity=".25"/><path d="M22 12a10 10 0 0 1-10 10"/></svg>
+              </span>
+            )}
           </Button>
         </div>
       </div>
@@ -154,6 +182,25 @@ export const ColumnModal = React.memo(({
   const [templateError, setTemplateError] = useState("");
   const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
   const [columnSearch, setColumnSearch] = useState("");
+  const [selectedTemplateId, setSelectedTemplateId] = useState(null);
+
+  // For updating templates
+  const [updatingTemplate, setUpdatingTemplate] = useState(null);
+  // When updating, we need to set the columns, widths, and order to the template's values
+  useEffect(() => {
+    if (updatingTemplate) {
+      // Pre-fill all settings
+      const visibleColumns = updatingTemplate.visible_columns || updatingTemplate.visibleColumns;
+      const columnWidths = updatingTemplate.column_widths || updatingTemplate.columnWidths;
+      const columnOrder = updatingTemplate.column_order || updatingTemplate.columnOrder;
+      onToggleColumn(null, null, visibleColumns);
+      Object.entries(columnWidths).forEach(([key, width]) => {
+        onColumnWidthChange(key, width);
+      });
+      onColumnOrderChange([...columnOrder]);
+      setActiveTab("visibility");
+    }
+  }, [updatingTemplate]);
 
   // Memoized values
   const orderedColumns = useMemo(() => 
@@ -237,54 +284,6 @@ export const ColumnModal = React.memo(({
     setShowTemplatePrompt(true);
   }, []);
 
-  const handleTemplateSave = useCallback(async () => {
-    if (!templateName.trim()) {
-      setTemplateError("Name required");
-      return;
-    }
-    if (templates.some((t) => t.name === templateName.trim())) {
-      setTemplateError("Name already exists");
-      return;
-    }
-    
-    const template = {
-      name: templateName.trim(),
-      visible_columns: { ...visibleColumns },
-      column_widths: { ...columnWidths },
-      column_order: [...columnOrder],
-    };
-    
-    try {
-      await createTableTemplate(tableName, template);
-      await loadTemplatesFromAPI();
-      setShowTemplatePrompt(false);
-    } catch (error) {
-      console.error("Error saving template:", error);
-      setTemplateError("Failed to save template");
-    }
-  }, [templateName, templates, visibleColumns, columnWidths, columnOrder, tableName, loadTemplatesFromAPI]);
-
-  const handleTemplateDelete = useCallback(async (templateId) => {
-    try {
-      await deleteTableTemplate(tableName, templateId);
-      await loadTemplatesFromAPI();
-    } catch (error) {
-      console.error("Error deleting template:", error);
-    }
-  }, [tableName, loadTemplatesFromAPI]);
-
-  const handleTemplateApply = useCallback((template) => {
-    const visibleColumns = template.visible_columns || template.visibleColumns;
-    const columnWidths = template.column_widths || template.columnWidths;
-    const columnOrder = template.column_order || template.columnOrder;
-    
-    onToggleColumn(null, null, visibleColumns);
-    Object.entries(columnWidths).forEach(([key, width]) => {
-      onColumnWidthChange(key, width);
-    });
-    onColumnOrderChange([...columnOrder]);
-  }, [onToggleColumn, onColumnWidthChange, onColumnOrderChange]);
-
   const isTemplateMatch = useCallback((template, vCols, cWidths, cOrder) => {
     const visibleColumns = template.visible_columns || template.visibleColumns;
     const columnWidths = template.column_widths || template.columnWidths;
@@ -306,6 +305,63 @@ export const ColumnModal = React.memo(({
     }
     return true;
   }, []);
+
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleTemplateSave = useCallback(async () => {
+    if (!templateName.trim()) {
+      setTemplateError("Name required");
+      return;
+    }
+    if (templates.some((t) => t.name === templateName.trim())) {
+      setTemplateError("Name already exists");
+      return;
+    }
+    // Prevent saving if a template with the same settings exists
+    if (templates.some((t) => isTemplateMatch(t, visibleColumns, columnWidths, columnOrder))) {
+      setTemplateError("A template with these settings already exists.");
+      return;
+    }
+    setIsSaving(true);
+    const template = {
+      name: templateName.trim(),
+      visible_columns: { ...visibleColumns },
+      column_widths: { ...columnWidths },
+      column_order: [...columnOrder],
+    };
+    try {
+      await createTableTemplate(tableName, template);
+      await loadTemplatesFromAPI();
+      setShowTemplatePrompt(false);
+    } catch (error) {
+      console.error("Error saving template:", error);
+      setTemplateError("Failed to save template");
+    } finally {
+      setIsSaving(false);
+    }
+  }, [templateName, templates, visibleColumns, columnWidths, columnOrder, tableName, loadTemplatesFromAPI, isTemplateMatch, t]);
+
+  const handleTemplateDelete = useCallback(async (templateId) => {
+    try {
+      await deleteTableTemplate(tableName, templateId);
+      await loadTemplatesFromAPI();
+    } catch (error) {
+      console.error("Error deleting template:", error);
+    }
+  }, [tableName, loadTemplatesFromAPI]);
+
+  const handleTemplateApply = useCallback((template) => {
+    const visibleColumns = template.visible_columns || template.visibleColumns;
+    const columnWidths = template.column_widths || template.columnWidths;
+    const columnOrder = template.column_order || template.columnOrder;
+    
+    onToggleColumn(null, null, visibleColumns);
+    Object.entries(columnWidths).forEach(([key, width]) => {
+      onColumnWidthChange(key, width);
+    });
+    onColumnOrderChange([...columnOrder]);
+    setSelectedTemplateId(template.id || template.name);
+  }, [onToggleColumn, onColumnWidthChange, onColumnOrderChange]);
 
   const handleTemplateNameChange = useCallback((value) => {
     setTemplateName(value);
@@ -488,20 +544,46 @@ export const ColumnModal = React.memo(({
       ) : (
         templates.map((template) => {
           const isActive = isTemplateMatch(template, realVisibleColumns, realColumnWidths, realColumnOrder);
+          const isSelected = selectedTemplateId === (template.id || template.name);
           return (
             <TemplateItem
               key={template.id || template.name}
               template={template}
               isActive={isActive}
+              isSelected={isSelected}
               onApply={handleTemplateApply}
               onDelete={handleTemplateDelete}
+              onUpdate={setUpdatingTemplate}
               t={t}
             />
           );
         })
       )}
     </div>
-  ), [templates, isLoadingTemplates, realVisibleColumns, realColumnWidths, realColumnOrder, isTemplateMatch, handleTemplateApply, handleTemplateDelete, t]);
+  ), [templates, isLoadingTemplates, realVisibleColumns, realColumnWidths, realColumnOrder, isTemplateMatch, handleTemplateApply, handleTemplateDelete, t, selectedTemplateId]);
+
+  // Update template API call
+  const handleUpdateTemplate = useCallback(async () => {
+    if (!updatingTemplate) return;
+    setIsSaving(true);
+    const updatedTemplate = {
+      ...updatingTemplate,
+      visible_columns: { ...visibleColumns },
+      column_widths: { ...columnWidths },
+      column_order: [...columnOrder],
+    };
+    try {
+      await updateTableTemplate(tableName, updatingTemplate.id, updatedTemplate);
+      await loadTemplatesFromAPI();
+      setUpdatingTemplate(null);
+      setActiveTab("templates");
+    } catch (error) {
+      // Optionally show error
+      console.error("Error updating template:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [updatingTemplate, visibleColumns, columnWidths, columnOrder, tableName, loadTemplatesFromAPI]);
 
   if (!isOpen) return null;
 
@@ -528,16 +610,16 @@ export const ColumnModal = React.memo(({
           {/* Tabs */}
           <div className="mb-4 border-b border-border">
             <div className="flex" style={{ gap: "2rem" }}>
-              <TabButton isActive={activeTab === "visibility"} onClick={() => setActiveTab("visibility")}>
+              <TabButton isActive={activeTab === "visibility"} onClick={() => setActiveTab("visibility")}> 
                 {t("columns.modal.visibility")}
               </TabButton>
-              <TabButton isActive={activeTab === "size"} onClick={() => setActiveTab("size")}>
+              <TabButton isActive={activeTab === "size"} onClick={() => setActiveTab("size")}> 
                 {t("columns.modal.size")}
               </TabButton>
-              <TabButton isActive={activeTab === "order"} onClick={() => setActiveTab("order")}>
+              <TabButton isActive={activeTab === "order"} onClick={() => setActiveTab("order")}> 
                 {t("columns.modal.order")}
               </TabButton>
-              <TabButton isActive={activeTab === "templates"} onClick={() => setActiveTab("templates")}>
+              <TabButton isActive={activeTab === "templates"} onClick={() => setActiveTab("templates")}> 
                 {t("columns.modal.templates")}
               </TabButton>
             </div>
@@ -560,6 +642,7 @@ export const ColumnModal = React.memo(({
             onSave={handleTemplateSave}
             onCancel={() => setShowTemplatePrompt(false)}
             t={t}
+            isSaving={isSaving}
           />
 
           {/* Footer */}
@@ -571,9 +654,22 @@ export const ColumnModal = React.memo(({
               <Button variant="outline" onClick={onCancel} className="border-border">
                 {t("columns.modal.cancel")}
               </Button>
-              <Button variant="outline" onClick={handleSaveAsTemplate} className="ml-2">
-                {t("columns.modal.saveAsTemplate")}
-              </Button>
+              {updatingTemplate ? (
+                <Button variant="primary" onClick={handleUpdateTemplate} className="ml-2" disabled={isSaving}>
+                  {t("columns.modal.update") || "Update Template"}
+                  {isSaving && (
+                    <span className="ml-2 inline-block align-middle">
+                      <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity=".25"/><path d="M22 12a10 10 0 0 1-10 10"/></svg>
+                    </span>
+                  )}
+                </Button>
+              ) : (
+                activeTab !== "templates" && (
+                  <Button variant="outline" onClick={handleSaveAsTemplate} className="ml-2">
+                    {t("columns.modal.saveAsTemplate")}
+                  </Button>
+                )
+              )}
               <Button variant="primary" onClick={onSave} className="bg-primary text-primary-foreground hover:bg-primary/90">
                 {t("columns.modal.apply")}
               </Button>

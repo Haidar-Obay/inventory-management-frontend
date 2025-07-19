@@ -29,9 +29,9 @@ const PersonalInformationSection = React.memo(
     const displayNameSuggestions = generateDisplayNameSuggestions ? generateDisplayNameSuggestions() : []
 
     return (
-      <Accordion expanded={expanded} onChange={onAccordionChange}>
+      <Accordion expanded={true}>
         <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
+          // Remove expandIcon to prevent toggling
           aria-controls="personal-info-content"
           id="personal-info-header"
         >

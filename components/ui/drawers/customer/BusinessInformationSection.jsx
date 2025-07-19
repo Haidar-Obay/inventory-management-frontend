@@ -10,6 +10,16 @@ const BusinessInformationSection = React.memo(({ formData, onFormDataChange, isR
       setAllCollapsed(false);
     }
   }, [allCollapsed]);
+
+  // Ref for the add search term input
+  const addSearchTermInputRef = React.useRef(null);
+  // Focus input when newSearchTerm is cleared (after add)
+  React.useEffect(() => {
+    if (newSearchTerm === "" && addSearchTermInputRef.current) {
+      addSearchTermInputRef.current.focus();
+    }
+  }, [newSearchTerm]);
+
   return (
     <Accordion expanded={expanded} onChange={onAccordionChange}>
       <AccordionSummary
@@ -23,7 +33,7 @@ const BusinessInformationSection = React.memo(({ formData, onFormDataChange, isR
       </AccordionSummary>
       <AccordionDetails>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{minWidth:300}}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.fileNumber") || "File Number"}
             </Typography>
@@ -33,7 +43,7 @@ const BusinessInformationSection = React.memo(({ formData, onFormDataChange, isR
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{minWidth:300}}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.barcode") || "Barcode"}
             </Typography>
@@ -43,7 +53,7 @@ const BusinessInformationSection = React.memo(({ formData, onFormDataChange, isR
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sx={{minWidth:300}}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.searchTerms") || "Search Terms"}
             </Typography>
@@ -55,6 +65,7 @@ const BusinessInformationSection = React.memo(({ formData, onFormDataChange, isR
                   onKeyPress={handleSearchTermKeyPress}
                   placeholder={t("management.addSearchTerm") || "Add search term..."}
                   sx={{ flexGrow: 1 }}
+                  inputRef={addSearchTermInputRef}
                 />
                 <button
                   type="button"
