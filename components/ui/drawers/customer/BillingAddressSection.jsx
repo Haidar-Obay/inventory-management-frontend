@@ -44,7 +44,7 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
       </AccordionSummary>
       <AccordionDetails>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6} sx={{ minWidth: 150 }}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.country") || "Country"}
             </Typography>
@@ -66,7 +66,46 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
               renderInput={(params) => <RTLTextField {...params} placeholder="" />}
             />
           </Grid>
-          <Grid item xs={12} md={6} sx={{ minWidth: 150 }}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
+              {t("management.city") || "City"}
+            </Typography>
+            <Autocomplete
+              fullWidth
+              options={cities}
+              getOptionLabel={(option) => option.name || ""}
+              value={cities.find((city) => city.id === formData?.billing_city_id) || null}
+              onChange={(event, newValue) => {
+                onFormDataChange({
+                  ...formData,
+                  billing_city_id: newValue?.id || "",
+                  billing_district_id: "",
+                });
+              }}
+              loading={loading}
+              renderInput={(params) => <RTLTextField {...params} placeholder="" />}
+            />
+          </Grid>
+          <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
+              {t("management.district") || "District"}
+            </Typography>
+            <Autocomplete
+              fullWidth
+              options={districts}
+              getOptionLabel={(option) => option.name || ""}
+              value={districts.find((district) => district.id === formData?.billing_district_id) || null}
+              onChange={(event, newValue) => {
+                onFormDataChange({
+                  ...formData,
+                  billing_district_id: newValue?.id || "",
+                });
+              }}
+              loading={loading}
+              renderInput={(params) => <RTLTextField {...params} placeholder="" />}
+            />
+          </Grid>
+          <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.zone") || "Zone"}
             </Typography>
@@ -87,47 +126,8 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
               renderInput={(params) => <RTLTextField {...params} placeholder="" />}
             />
           </Grid>
-          <Grid item xs={12} md={6} sx={{ minWidth: 150 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
-              {t("management.city") || "City"}
-            </Typography>
-            <Autocomplete
-              fullWidth
-              options={cities}
-              getOptionLabel={(option) => option.name || ""}
-              value={cities.find((city) => city.id === formData?.billing_city_id) || null}
-              onChange={(event, newValue) => {
-                onFormDataChange({
-                  ...formData,
-                  billing_city_id: newValue?.id || "",
-                  billing_district_id: "",
-                });
-              }}
-              loading={loading}
-              renderInput={(params) => <RTLTextField {...params} placeholder="" />}
-            />
-          </Grid>
-          <Grid item xs={12} md={6} sx={{ minWidth: 150 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
-              {t("management.district") || "District"}
-            </Typography>
-            <Autocomplete
-              fullWidth
-              options={districts}
-              getOptionLabel={(option) => option.name || ""}
-              value={districts.find((district) => district.id === formData?.billing_district_id) || null}
-              onChange={(event, newValue) => {
-                onFormDataChange({
-                  ...formData,
-                  billing_district_id: newValue?.id || "",
-                });
-              }}
-              loading={loading}
-              renderInput={(params) => <RTLTextField {...params} placeholder="" />}
-            />
-          </Grid>
           {/* Address Line 1 inside details, only when expanded */}
-          <Grid item xs={12}>
+          <Grid item xs={12} sx={{ minWidth: 400 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.addressLine1") || "Address Line 1"}
             </Typography>
@@ -137,7 +137,7 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sx={{ minWidth: 400 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.addressLine2") || "Address Line 2"}
             </Typography>
@@ -147,7 +147,7 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.building") || "Building"}
             </Typography>
@@ -157,7 +157,7 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.block") || "Block"}
             </Typography>
@@ -167,7 +167,17 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
+              {t("management.floor") || "Floor"}
+            </Typography>
+            <RTLTextField
+              value={formData?.billing_floor || ""}
+              onChange={e => onFormDataChange({ ...formData, billing_floor: e.target.value })}
+              placeholder=""
+            />
+          </Grid>
+          <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.side") || "Side"}
             </Typography>
@@ -177,7 +187,7 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 250 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.apartment") || "Apartment"}
             </Typography>
@@ -187,7 +197,7 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 250 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.zipCode") || "Zip Code"}
             </Typography>

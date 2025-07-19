@@ -51,7 +51,7 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
       </AccordionSummary>
       <AccordionDetails>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 375 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.trade") || "Trade"}
             </Typography>
@@ -65,7 +65,7 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               renderInput={(params) => <RTLTextField {...params} placeholder="" />}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 375 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.companyCode") || "Company Code"}
             </Typography>
@@ -81,7 +81,7 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
           </Grid>
           {/* Customer Group inside details, only when expanded */}
           {expanded && (
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6} sx={{ minWidth: 375 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                 {t("management.customerGroup") || "Customer Group"} *
               </Typography>
@@ -96,7 +96,7 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               />
             </Grid>
           )}
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 375 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.businessType") || "Business Type"}
             </Typography>
@@ -110,7 +110,7 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               renderInput={(params) => <RTLTextField {...params} placeholder="" />}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 275 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.salesChannel") || "Sales Channel"}
             </Typography>
@@ -124,7 +124,7 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               renderInput={(params) => <RTLTextField {...params} placeholder="" />}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 275 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.distributionChannel") || "Distribution Channel"}
             </Typography>
@@ -138,7 +138,7 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               renderInput={(params) => <RTLTextField {...params} placeholder="" />}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 275 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.mediaChannel") || "Media Channel"}
             </Typography>
@@ -152,7 +152,7 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               renderInput={(params) => <RTLTextField {...params} placeholder="" />}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 300 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.indicator") || "Indicator"}
             </Typography>
@@ -170,7 +170,7 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               <option value="D">D</option>
             </RTLTextField>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 300 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.riskCategory") || "Risk Category"}
             </Typography>

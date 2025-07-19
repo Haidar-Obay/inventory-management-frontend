@@ -70,7 +70,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
           </Typography>
           <Grid container spacing={2}>
             {/* Country, Zone, City, District, Address fields for primary shipping address */}
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6} sx={{ minWidth: 150 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                 {t("management.country") || "Country"}
               </Typography>
@@ -92,28 +92,8 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 renderInput={(params) => <RTLTextField {...params} placeholder="" />}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
-                {t("management.zone") || "Zone"}
-              </Typography>
-              <Autocomplete
-                fullWidth
-                options={zones}
-                getOptionLabel={(option) => option.name || ""}
-                value={zones.find((zone) => zone.id === formData?.shipping_zone_id) || null}
-                onChange={(event, newValue) => {
-                  onFormDataChange({
-                    ...formData,
-                    shipping_zone_id: newValue?.id || "",
-                    shipping_city_id: "",
-                    shipping_district_id: "",
-                  });
-                }}
-                loading={loading}
-                renderInput={(params) => <RTLTextField {...params} placeholder="" />}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
+          
+            <Grid item xs={12} md={6} sx={{ minWidth: 150 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                 {t("management.city") || "City"}
               </Typography>
@@ -133,7 +113,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 renderInput={(params) => <RTLTextField {...params} placeholder="" />}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6} sx={{ minWidth: 150 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                 {t("management.district") || "District"}
               </Typography>
@@ -146,6 +126,27 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                   onFormDataChange({
                     ...formData,
                     shipping_district_id: newValue?.id || "",
+                  });
+                }}
+                loading={loading}
+                renderInput={(params) => <RTLTextField {...params} placeholder="" />}
+              />
+            </Grid>
+            <Grid item xs={12} md={6} sx={{ minWidth: 150 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
+                {t("management.zone") || "Zone"}
+              </Typography>
+              <Autocomplete
+                fullWidth
+                options={zones}
+                getOptionLabel={(option) => option.name || ""}
+                value={zones.find((zone) => zone.id === formData?.shipping_zone_id) || null}
+                onChange={(event, newValue) => {
+                  onFormDataChange({
+                    ...formData,
+                    shipping_zone_id: newValue?.id || "",
+                    shipping_city_id: "",
+                    shipping_district_id: "",
                   });
                 }}
                 loading={loading}
@@ -190,6 +191,16 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
               <RTLTextField
                 value={formData?.shipping_block || ""}
                 onChange={e => onFormDataChange({ ...formData, shipping_block: e.target.value })}
+                placeholder=""
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
+                {t("management.floor") || "Floor"}
+              </Typography>
+              <RTLTextField
+                value={formData?.shipping_floor || ""}
+                onChange={e => onFormDataChange({ ...formData, shipping_floor: e.target.value })}
                 placeholder=""
               />
             </Grid>
@@ -251,7 +262,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
               </Box>
             </Box>
             <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                   {t("management.country") || "Country"}
                 </Typography>
@@ -267,7 +278,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                   renderInput={(params) => <RTLTextField {...params} placeholder="" />}
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                   {t("management.zone") || "Zone"}
                 </Typography>
@@ -283,7 +294,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                   renderInput={(params) => <RTLTextField {...params} placeholder="" />}
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                   {t("management.city") || "City"}
                 </Typography>
@@ -299,7 +310,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                   renderInput={(params) => <RTLTextField {...params} placeholder="" />}
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                   {t("management.district") || "District"}
                 </Typography>
@@ -315,7 +326,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                   renderInput={(params) => <RTLTextField {...params} placeholder="" />}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} sx={{ minWidth: 400 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                   {t("management.addressLine1") || "Address Line 1"}
                 </Typography>
@@ -325,7 +336,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                   placeholder=""
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} sx={{ minWidth: 400 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                   {t("management.addressLine2") || "Address Line 2"}
                 </Typography>
@@ -335,7 +346,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                   placeholder=""
                 />
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                   {t("management.building") || "Building"}
                 </Typography>
@@ -345,7 +356,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                   placeholder=""
                 />
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                   {t("management.block") || "Block"}
                 </Typography>
@@ -355,7 +366,17 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                   placeholder=""
                 />
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
+                  {t("management.floor") || "Floor"}
+                </Typography>
+                <RTLTextField
+                  value={address.floor || ""}
+                  onChange={e => handleShippingAddressChange(index, 'floor', e.target.value)}
+                  placeholder=""
+                />
+              </Grid>
+              <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                   {t("management.side") || "Side"}
                 </Typography>
@@ -365,7 +386,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                   placeholder=""
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={6} sx={{ minWidth: 250 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                   {t("management.apartment") || "Apartment"}
                 </Typography>
@@ -375,7 +396,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                   placeholder=""
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={6} sx={{ minWidth: 250 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                   {t("management.zipCode") || "Zip Code"}
                 </Typography>

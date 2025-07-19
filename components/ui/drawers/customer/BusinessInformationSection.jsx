@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Box, Button } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import RTLTextField from "@/components/ui/RTLTextField";
 
@@ -27,13 +27,34 @@ const BusinessInformationSection = React.memo(({ formData, onFormDataChange, isR
         aria-controls="business-info-content"
         id="business-info-header"
       >
-        <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-          {t("management.businessInformation") || "Business Information"}
-        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+            {t("management.businessInformation") || "Business Information"}
+          </Typography>
+          {/* Show file number under header only when collapsed */}
+          {!expanded && (
+            <Box sx={{ mt: 1, display: 'flex', alignItems: 'center', gap: 2, width: { xs: '100%', sm: '80%' } }}>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
+                  {t("management.fileNumber") || "File Number"}
+                </Typography>
+                <RTLTextField
+                  value={formData?.file_number || ""}
+                  onChange={e => onFormDataChange({ ...formData, file_number: e.target.value })}
+                  placeholder=""
+                  onClick={e => e.stopPropagation()}
+                  onFocus={e => e.stopPropagation()}
+                  onKeyDown={e => { if ((e.key === ' ' || e.key === 'Spacebar') && !expanded) { e.preventDefault(); e.stopPropagation(); } }}
+                  sx={{ background: 'background.paper' }}
+                />
+              </Box>
+            </Box>
+          )}
+        </Box>
       </AccordionSummary>
       <AccordionDetails>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6} sx={{minWidth:300}}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 400  }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.fileNumber") || "File Number"}
             </Typography>
@@ -43,7 +64,7 @@ const BusinessInformationSection = React.memo(({ formData, onFormDataChange, isR
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={6} sx={{minWidth:300}}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 400 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.barcode") || "Barcode"}
             </Typography>
@@ -53,7 +74,7 @@ const BusinessInformationSection = React.memo(({ formData, onFormDataChange, isR
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} sx={{minWidth:300}}>
+          <Grid item xs={12} sx={{ minWidth: 400 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
               {t("management.searchTerms") || "Search Terms"}
             </Typography>
@@ -67,14 +88,15 @@ const BusinessInformationSection = React.memo(({ formData, onFormDataChange, isR
                   sx={{ flexGrow: 1 }}
                   inputRef={addSearchTermInputRef}
                 />
-                <button
-                  type="button"
+                <Button
+                  variant="outlined"
+                  size="small"
                   onClick={handleAddSearchTerm}
                   disabled={!newSearchTerm.trim()}
-                  style={{ padding: '4px 12px', fontSize: '0.75rem', textTransform: 'none', border: '1px solid #ccc', borderRadius: 4, background: '#fff', cursor: 'pointer' }}
+                  sx={{ fontSize: '0.75rem', textTransform: 'none', borderRadius: 1, height: '36px' }}
                 >
                   {t("management.add") || "Add"}
-                </button>
+                </Button>
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {searchTerms && searchTerms.map((term, index) => (
