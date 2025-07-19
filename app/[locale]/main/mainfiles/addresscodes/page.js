@@ -166,7 +166,7 @@ function AddressCodesPage() {
           setDistrictsData(response.data || []);
           dataType = "districts";
           break;
-          case 3: // Zones
+        case 3: // Zones
           if (!force && dataFetched.zones) {
             setLoading(false);
             return;
@@ -388,7 +388,7 @@ function AddressCodesPage() {
         case "district":
           response = await exportDistrictsToPdf();
           break;
-          case "zone":
+        case "zone":
           response = await exportZonesToPdf();
           break;
         default:
@@ -429,7 +429,7 @@ function AddressCodesPage() {
         case "district":
           response = await importDistrictsFromExcel(file);
           break;
-          case "zone":
+        case "zone":
           response = await importZonesFromExcel(file);
           break;
         default:

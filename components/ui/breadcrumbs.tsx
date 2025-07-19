@@ -148,9 +148,9 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
       } else if (pathSegments.includes("addresscodes")) {
         const addressTabs = [
           t("countries"),
-          t("zones"),
           t("cities"),
           t("districts"),
+          t("zones"),
         ];
         tabLabel = addressTabs[tabIndex] || "";
       } else if (pathSegments.includes("sections")) {
