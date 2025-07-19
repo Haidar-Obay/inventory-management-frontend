@@ -10,8 +10,12 @@ const OpeningSection = React.memo(({ formData, onFormDataChange, isRTL, t, subsc
       setAllCollapsed(false);
     }
   }, [allCollapsed]);
+
+  // Default expanded to true if not provided
+  const isExpanded = expanded === undefined ? true : expanded;
+
   return (
-    <Accordion expanded={expanded} onChange={onAccordionChange}>
+    <Accordion expanded={isExpanded} onChange={onAccordionChange}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="opening-content"
@@ -29,7 +33,7 @@ const OpeningSection = React.memo(({ formData, onFormDataChange, isRTL, t, subsc
         )}
         {openingBalances.map((entry, idx) => (
           <Grid container spacing={2} key={idx} sx={{ mb: 2, border: '1px solid #eee', borderRadius: 1, p: 2 }}>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
                 {t('management.currency') || 'Currency'}
               </Typography>
@@ -42,7 +46,7 @@ const OpeningSection = React.memo(({ formData, onFormDataChange, isRTL, t, subsc
                 renderInput={(params) => <RTLTextField {...params} placeholder="" />}
               />
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
                 {t('management.openingAmount') || 'Opening Amount'}
               </Typography>
@@ -53,7 +57,7 @@ const OpeningSection = React.memo(({ formData, onFormDataChange, isRTL, t, subsc
                 placeholder=""
               />
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
                 {t('management.openingDate') || 'Opening Date'}
               </Typography>

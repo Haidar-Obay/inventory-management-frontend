@@ -52,7 +52,7 @@ const SalesmenSection = React.memo(({ formData, onFormDataChange, isRTL, t, sale
         <Grid container spacing={2}>
           {/* Show all comboboxes only when expanded */}
           {expanded && <>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6} sx={{ minWidth: 375 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
                 {t('management.salesman') || 'Salesman'}
               </Typography>
@@ -65,7 +65,7 @@ const SalesmenSection = React.memo(({ formData, onFormDataChange, isRTL, t, sale
                 renderInput={params => <RTLTextField {...params} placeholder="" />}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6} sx={{ minWidth: 375 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
                 {t('management.collector') || 'Collector'}
               </Typography>
@@ -78,7 +78,7 @@ const SalesmenSection = React.memo(({ formData, onFormDataChange, isRTL, t, sale
                 renderInput={params => <RTLTextField {...params} placeholder="" />}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6} sx={{ minWidth: 375 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
                 {t('management.supervisor') || 'Supervisor'}
               </Typography>
@@ -91,7 +91,7 @@ const SalesmenSection = React.memo(({ formData, onFormDataChange, isRTL, t, sale
                 renderInput={params => <RTLTextField {...params} placeholder="" />}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6} sx={{ minWidth: 375 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
                 {t('management.manager') || 'Manager'}
               </Typography>

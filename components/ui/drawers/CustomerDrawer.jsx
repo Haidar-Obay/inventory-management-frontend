@@ -14,6 +14,7 @@ import { getCustomerGroupNames, getSalesmen } from "@/API/Customers";
 import { getCountries, getZones, getCities, getDistricts } from "@/API/AddressCodes";
 import { getTradeNames, getCompanyCodeNames, getBusinessTypeNames, getSalesChannelNames, getDistributionChannelNames, getMediaChannelNames, getPaymentTerms, getPaymentMethods } from "@/API/Sections";
 import { useSimpleToast } from "@/components/ui/simple-toast";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import { getCurrencies, getSubscriptionStatus } from '@/API/Currency';
 import dynamic from 'next/dynamic';
@@ -143,6 +144,13 @@ const CustomerDrawer = ({
   const [showMessageField, setShowMessageField] = useState(false);
   const [allCollapsed, setAllCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState({});
+
+  // Add this effect to expand OpeningSection by default when opening the drawer for a customer
+  React.useEffect(() => {
+    if (isOpen && type === 'customer') {
+      setExpandedSections(prev => ({ ...prev, opening: true }));
+    }
+  }, [isOpen, type]);
 
   // Generate display name suggestions based on name components
   const generateDisplayNameSuggestions = () => {
@@ -558,263 +566,333 @@ const CustomerDrawer = ({
     if (type === "customer") {
       return (
         <Suspense fallback={<LoadingSkeleton />}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <PersonalInformationSection
-              formData={formData}
-              onFormDataChange={onFormDataChange}
-              isRTL={isRTL}
-              t={t}
-              generateDisplayNameSuggestions={generateDisplayNameSuggestions}
-              handleDisplayNameChange={handleDisplayNameChange}
-              handleFieldChange={handleFieldChange}
-              expanded={!!expandedSections.personalInformation}
-              onAccordionChange={handleAccordionChange('personalInformation')}
-              allCollapsed={allCollapsed}
-              setAllCollapsed={setAllCollapsed}
-            />
-            <BillingAddressSection
-              formData={formData}
-              onFormDataChange={onFormDataChange}
-              isRTL={isRTL}
-              t={t}
-              countries={countries}
-              zones={zones}
-              cities={cities}
-              districts={districts}
-              loading={loading}
-              expanded={!!expandedSections.billingAddress}
-              onAccordionChange={handleAccordionChange('billingAddress')}
-              allCollapsed={allCollapsed}
-              setAllCollapsed={setAllCollapsed}
-            />
-            <ShippingAddressSection
-              formData={formData}
-              onFormDataChange={onFormDataChange}
-              isRTL={isRTL}
-              t={t}
-              countries={countries}
-              zones={zones}
-              cities={cities}
-              districts={districts}
-              loading={loading}
-              shippingAddresses={shippingAddresses}
-              setShippingAddresses={setShippingAddresses}
-              handleCopyFromBillingAddress={handleCopyFromBillingAddress}
-              handleAddShippingAddress={handleAddShippingAddress}
-              handleRemoveShippingAddress={handleRemoveShippingAddress}
-              handleShippingAddressChange={handleShippingAddressChange}
-              handleCopyToShippingAddress={handleCopyToShippingAddress}
-              expanded={!!expandedSections.shippingAddress}
-              onAccordionChange={handleAccordionChange('shippingAddress')}
-              allCollapsed={allCollapsed}
-              setAllCollapsed={setAllCollapsed}
-            />
-            <BusinessInformationSection
-              formData={formData}
-              onFormDataChange={onFormDataChange}
-              isRTL={isRTL}
-              t={t}
-              searchTerms={searchTerms}
-              newSearchTerm={newSearchTerm}
-              setNewSearchTerm={setNewSearchTerm}
-              handleAddSearchTerm={handleAddSearchTerm}
-              handleRemoveSearchTerm={handleRemoveSearchTerm}
-              handleSearchTermKeyPress={handleSearchTermKeyPress}
-              expanded={!!expandedSections.businessInformation}
-              onAccordionChange={handleAccordionChange('businessInformation')}
-              allCollapsed={allCollapsed}
-              setAllCollapsed={setAllCollapsed}
-            />
-            <CategorizeSection
-              formData={formData}
-              onFormDataChange={onFormDataChange}
-              isRTL={isRTL}
-              t={t}
-              trades={trades}
-              companyCodes={companyCodes}
-              customerGroups={customerGroups}
-              businessTypes={businessTypes}
-              salesChannels={salesChannels}
-              distributionChannels={distributionChannels}
-              mediaChannels={mediaChannels}
-              loading={loading}
-              handleTradeChange={handleTradeChange}
-              handleCompanyCodeChange={handleCompanyCodeChange}
-              handleCustomerGroupChange={handleCustomerGroupChange}
-              handleBusinessTypeChange={handleBusinessTypeChange}
-              handleSalesChannelChange={handleSalesChannelChange}
-              handleDistributionChannelChange={handleDistributionChannelChange}
-              handleMediaChannelChange={handleMediaChannelChange}
-              handleFieldChange={handleFieldChange}
-              expanded={!!expandedSections.categorize}
-              onAccordionChange={handleAccordionChange('categorize')}
-              allCollapsed={allCollapsed}
-              setAllCollapsed={setAllCollapsed}
-            />
-            <OpeningSection
-              formData={formData}
-              onFormDataChange={onFormDataChange}
-              isRTL={isRTL}
-              t={t}
-              subscriptionChecked={subscriptionChecked}
-              canAddMultiCurrency={canAddMultiCurrency}
-              upgradeMessage={upgradeMessage}
-              openingBalances={openingBalances}
-              handleOpeningBalanceChange={handleOpeningBalanceChange}
-              handleAddOpeningBalance={handleAddOpeningBalance}
-              handleRemoveOpeningBalance={handleRemoveOpeningBalance}
-              currencies={currencies}
-              expanded={!!expandedSections.opening}
-              onAccordionChange={handleAccordionChange('opening')}
-              allCollapsed={allCollapsed}
-              setAllCollapsed={setAllCollapsed}
-            />
-            <SalesmenSection
-              formData={formData}
-              onFormDataChange={onFormDataChange}
-              isRTL={isRTL}
-              t={t}
-              salesmen={salesmen}
-              collectors={collectors}
-              supervisors={supervisors}
-              managers={managers}
-              handleSalesmanSelect={handleSalesmanSelect}
-              handleCollectorSelect={handleCollectorSelect}
-              handleSupervisorSelect={handleSupervisorSelect}
-              handleManagerSelect={handleManagerSelect}
-              expanded={!!expandedSections.salesmen}
-              onAccordionChange={handleAccordionChange('salesmen')}
-              allCollapsed={allCollapsed}
-              setAllCollapsed={setAllCollapsed}
-            />
-            <PaymentTermsSection
-              formData={formData}
-              onFormDataChange={onFormDataChange}
-              isRTL={isRTL}
-              t={t}
-              paymentTerms={paymentTerms}
-              paymentMethods={paymentMethods}
-              selectedPaymentTerm={selectedPaymentTerm}
-              setSelectedPaymentTerm={setSelectedPaymentTerm}
-              selectedPaymentMethod={selectedPaymentMethod}
-              setSelectedPaymentMethod={setSelectedPaymentMethod}
-              allowCredit={allowCredit}
-              setAllowCredit={setAllowCredit}
-              openingBalances={openingBalances}
-              creditLimits={creditLimits}
-              handleCreditLimitChange={handleCreditLimitChange}
-              acceptCheques={acceptCheques}
-              setAcceptCheques={setAcceptCheques}
-              maxCheques={maxCheques}
-              handleMaxChequesChange={handleMaxChequesChange}
-              paymentDay={paymentDay}
-              setPaymentDay={setPaymentDay}
-              trackPayment={trackPayment}
-              setTrackPayment={setTrackPayment}
-              settlementMethod={settlementMethod}
-              setSettlementMethod={setSettlementMethod}
-              expanded={!!expandedSections.paymentTerms}
-              onAccordionChange={handleAccordionChange('paymentTerms')}
-              allCollapsed={allCollapsed}
-              setAllCollapsed={setAllCollapsed}
-            />
-            <MoreOptionsSection
-              formData={formData}
-              onFormDataChange={onFormDataChange}
-              isRTL={isRTL}
-              t={t}
-              active={active}
-              setActive={setActive}
-              blackListed={blackListed}
-              setBlackListed={setBlackListed}
-              oneTimeAccount={oneTimeAccount}
-              setOneTimeAccount={setOneTimeAccount}
-              specialAccount={specialAccount}
-              setSpecialAccount={setSpecialAccount}
-              posCustomer={posCustomer}
-              setPosCustomer={setPosCustomer}
-              freeDeliveryCharge={freeDeliveryCharge}
-              setFreeDeliveryCharge={setFreeDeliveryCharge}
-              printInvoiceLanguage={printInvoiceLanguage}
-              setPrintInvoiceLanguage={setPrintInvoiceLanguage}
-              sendInvoice={sendInvoice}
-              setSendInvoice={setSendInvoice}
-              notes={notes}
-              setNotes={setNotes}
-              expanded={!!expandedSections.moreOptions}
-              onAccordionChange={handleAccordionChange('moreOptions')}
-              allCollapsed={allCollapsed}
-              setAllCollapsed={setAllCollapsed}
-            />
-            <PricingSection
-              formData={formData}
-              onFormDataChange={onFormDataChange}
-              isRTL={isRTL}
-              t={t}
-              priceChoice={priceChoice}
-              setPriceChoice={setPriceChoice}
-              priceList={priceList}
-              setPriceList={setPriceList}
-              globalDiscount={globalDiscount}
-              setGlobalDiscount={setGlobalDiscount}
-              discountClass={discountClass}
-              setDiscountClass={setDiscountClass}
-              markup={markup}
-              setMarkup={setMarkup}
-              markdown={markdown}
-              setMarkdown={setMarkdown}
-              expanded={!!expandedSections.pricing}
-              onAccordionChange={handleAccordionChange('pricing')}
-              allCollapsed={allCollapsed}
-              setAllCollapsed={setAllCollapsed}
-            />
-            <TaxesSection
-              formData={formData}
-              onFormDataChange={onFormDataChange}
-              isRTL={isRTL}
-              t={t}
-              handleFieldChange={handleFieldChange}
-              expanded={!!expandedSections.taxes}
-              onAccordionChange={handleAccordionChange('taxes')}
-              allCollapsed={allCollapsed}
-              setAllCollapsed={setAllCollapsed}
-            />
-            <ContactsSection
-              formData={formData}
-              onFormDataChange={onFormDataChange}
-              isRTL={isRTL}
-              t={t}
-              handleFieldChange={handleFieldChange}
-              expanded={!!expandedSections.contacts}
-              onAccordionChange={handleAccordionChange('contacts')}
-              allCollapsed={allCollapsed}
-              setAllCollapsed={setAllCollapsed}
-            />
-            <RoutingSection
-              formData={formData}
-              onFormDataChange={onFormDataChange}
-              isRTL={isRTL}
-              t={t}
-              salesmen={salesmen}
-              handleFieldChange={handleFieldChange}
-              expanded={!!expandedSections.routing}
-              onAccordionChange={handleAccordionChange('routing')}
-              allCollapsed={allCollapsed}
-              setAllCollapsed={setAllCollapsed}
-            />
-            <AttachmentsSection
-              formData={formData}
-              onFormDataChange={onFormDataChange}
-              t={t}
-            />
-            <MessageSection
-              showMessageField={showMessageField}
-              setShowMessageField={setShowMessageField}
-              message={message}
-              setMessage={setMessage}
-              isRTL={isRTL}
-              t={t}
-            />
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            {/* Left Column - Accordions */}
+            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <PersonalInformationSection
+                formData={formData}
+                onFormDataChange={onFormDataChange}
+                isRTL={isRTL}
+                t={t}
+                generateDisplayNameSuggestions={generateDisplayNameSuggestions}
+                handleDisplayNameChange={handleDisplayNameChange}
+                handleFieldChange={handleFieldChange}
+                expanded={!!expandedSections.personalInformation}
+                onAccordionChange={handleAccordionChange('personalInformation')}
+                allCollapsed={allCollapsed}
+                setAllCollapsed={setAllCollapsed}
+              />
+              <BillingAddressSection
+                formData={formData}
+                onFormDataChange={onFormDataChange}
+                isRTL={isRTL}
+                t={t}
+                countries={countries}
+                zones={zones}
+                cities={cities}
+                districts={districts}
+                loading={loading}
+                expanded={!!expandedSections.billingAddress}
+                onAccordionChange={handleAccordionChange('billingAddress')}
+                allCollapsed={allCollapsed}
+                setAllCollapsed={setAllCollapsed}
+              />
+              <ShippingAddressSection
+                formData={formData}
+                onFormDataChange={onFormDataChange}
+                isRTL={isRTL}
+                t={t}
+                countries={countries}
+                zones={zones}
+                cities={cities}
+                districts={districts}
+                loading={loading}
+                shippingAddresses={shippingAddresses}
+                setShippingAddresses={setShippingAddresses}
+                handleCopyFromBillingAddress={handleCopyFromBillingAddress}
+                handleAddShippingAddress={handleAddShippingAddress}
+                handleRemoveShippingAddress={handleRemoveShippingAddress}
+                handleShippingAddressChange={handleShippingAddressChange}
+                handleCopyToShippingAddress={handleCopyToShippingAddress}
+                expanded={!!expandedSections.shippingAddress}
+                onAccordionChange={handleAccordionChange('shippingAddress')}
+                allCollapsed={allCollapsed}
+                setAllCollapsed={setAllCollapsed}
+              />
+              <BusinessInformationSection
+                formData={formData}
+                onFormDataChange={onFormDataChange}
+                isRTL={isRTL}
+                t={t}
+                searchTerms={searchTerms}
+                newSearchTerm={newSearchTerm}
+                setNewSearchTerm={setNewSearchTerm}
+                handleAddSearchTerm={handleAddSearchTerm}
+                handleRemoveSearchTerm={handleRemoveSearchTerm}
+                handleSearchTermKeyPress={handleSearchTermKeyPress}
+                expanded={!!expandedSections.businessInformation}
+                onAccordionChange={handleAccordionChange('businessInformation')}
+                allCollapsed={allCollapsed}
+                setAllCollapsed={setAllCollapsed}
+              />
+              <CategorizeSection
+                formData={formData}
+                onFormDataChange={onFormDataChange}
+                isRTL={isRTL}
+                t={t}
+                trades={trades}
+                companyCodes={companyCodes}
+                customerGroups={customerGroups}
+                businessTypes={businessTypes}
+                salesChannels={salesChannels}
+                distributionChannels={distributionChannels}
+                mediaChannels={mediaChannels}
+                loading={loading}
+                handleTradeChange={handleTradeChange}
+                handleCompanyCodeChange={handleCompanyCodeChange}
+                handleCustomerGroupChange={handleCustomerGroupChange}
+                handleBusinessTypeChange={handleBusinessTypeChange}
+                handleSalesChannelChange={handleSalesChannelChange}
+                handleDistributionChannelChange={handleDistributionChannelChange}
+                handleMediaChannelChange={handleMediaChannelChange}
+                handleFieldChange={handleFieldChange}
+                expanded={!!expandedSections.categorize}
+                onAccordionChange={handleAccordionChange('categorize')}
+                allCollapsed={allCollapsed}
+                setAllCollapsed={setAllCollapsed}
+              />
+              <OpeningSection
+                formData={formData}
+                onFormDataChange={onFormDataChange}
+                isRTL={isRTL}
+                t={t}
+                subscriptionChecked={subscriptionChecked}
+                canAddMultiCurrency={canAddMultiCurrency}
+                upgradeMessage={upgradeMessage}
+                openingBalances={openingBalances}
+                handleOpeningBalanceChange={handleOpeningBalanceChange}
+                handleAddOpeningBalance={handleAddOpeningBalance}
+                handleRemoveOpeningBalance={handleRemoveOpeningBalance}
+                currencies={currencies}
+                expanded={!!expandedSections.opening}
+                onAccordionChange={handleAccordionChange('opening')}
+                allCollapsed={allCollapsed}
+                setAllCollapsed={setAllCollapsed}
+              />
+              <SalesmenSection
+                formData={formData}
+                onFormDataChange={onFormDataChange}
+                isRTL={isRTL}
+                t={t}
+                salesmen={salesmen}
+                collectors={collectors}
+                supervisors={supervisors}
+                managers={managers}
+                handleSalesmanSelect={handleSalesmanSelect}
+                handleCollectorSelect={handleCollectorSelect}
+                handleSupervisorSelect={handleSupervisorSelect}
+                handleManagerSelect={handleManagerSelect}
+                expanded={!!expandedSections.salesmen}
+                onAccordionChange={handleAccordionChange('salesmen')}
+                allCollapsed={allCollapsed}
+                setAllCollapsed={setAllCollapsed}
+              />
+              <PaymentTermsSection
+                formData={formData}
+                onFormDataChange={onFormDataChange}
+                isRTL={isRTL}
+                t={t}
+                paymentTerms={paymentTerms}
+                paymentMethods={paymentMethods}
+                selectedPaymentTerm={selectedPaymentTerm}
+                setSelectedPaymentTerm={setSelectedPaymentTerm}
+                selectedPaymentMethod={selectedPaymentMethod}
+                setSelectedPaymentMethod={setSelectedPaymentMethod}
+                allowCredit={allowCredit}
+                setAllowCredit={setAllowCredit}
+                openingBalances={openingBalances}
+                creditLimits={creditLimits}
+                handleCreditLimitChange={handleCreditLimitChange}
+                acceptCheques={acceptCheques}
+                setAcceptCheques={setAcceptCheques}
+                maxCheques={maxCheques}
+                handleMaxChequesChange={handleMaxChequesChange}
+                paymentDay={paymentDay}
+                setPaymentDay={setPaymentDay}
+                trackPayment={trackPayment}
+                setTrackPayment={setTrackPayment}
+                settlementMethod={settlementMethod}
+                setSettlementMethod={setSettlementMethod}
+                expanded={!!expandedSections.paymentTerms}
+                onAccordionChange={handleAccordionChange('paymentTerms')}
+                allCollapsed={allCollapsed}
+                setAllCollapsed={setAllCollapsed}
+              />
+              <MoreOptionsSection
+                formData={formData}
+                onFormDataChange={onFormDataChange}
+                isRTL={isRTL}
+                t={t}
+                active={active}
+                setActive={setActive}
+                blackListed={blackListed}
+                setBlackListed={setBlackListed}
+                oneTimeAccount={oneTimeAccount}
+                setOneTimeAccount={setOneTimeAccount}
+                specialAccount={specialAccount}
+                setSpecialAccount={setSpecialAccount}
+                posCustomer={posCustomer}
+                setPosCustomer={setPosCustomer}
+                freeDeliveryCharge={freeDeliveryCharge}
+                setFreeDeliveryCharge={setFreeDeliveryCharge}
+                printInvoiceLanguage={printInvoiceLanguage}
+                setPrintInvoiceLanguage={setPrintInvoiceLanguage}
+                sendInvoice={sendInvoice}
+                setSendInvoice={setSendInvoice}
+                notes={notes}
+                setNotes={setNotes}
+                expanded={!!expandedSections.moreOptions}
+                onAccordionChange={handleAccordionChange('moreOptions')}
+                allCollapsed={allCollapsed}
+                setAllCollapsed={setAllCollapsed}
+              />
+              <PricingSection
+                formData={formData}
+                onFormDataChange={onFormDataChange}
+                isRTL={isRTL}
+                t={t}
+                priceChoice={priceChoice}
+                setPriceChoice={setPriceChoice}
+                priceList={priceList}
+                setPriceList={setPriceList}
+                globalDiscount={globalDiscount}
+                setGlobalDiscount={setGlobalDiscount}
+                discountClass={discountClass}
+                setDiscountClass={setDiscountClass}
+                markup={markup}
+                setMarkup={setMarkup}
+                markdown={markdown}
+                setMarkdown={setMarkdown}
+                expanded={!!expandedSections.pricing}
+                onAccordionChange={handleAccordionChange('pricing')}
+                allCollapsed={allCollapsed}
+                setAllCollapsed={setAllCollapsed}
+              />
+              <TaxesSection
+                formData={formData}
+                onFormDataChange={onFormDataChange}
+                isRTL={isRTL}
+                t={t}
+                handleFieldChange={handleFieldChange}
+                expanded={!!expandedSections.taxes}
+                onAccordionChange={handleAccordionChange('taxes')}
+                allCollapsed={allCollapsed}
+                setAllCollapsed={setAllCollapsed}
+              />
+              <ContactsSection
+                formData={formData}
+                onFormDataChange={onFormDataChange}
+                isRTL={isRTL}
+                t={t}
+                handleFieldChange={handleFieldChange}
+                expanded={!!expandedSections.contacts}
+                onAccordionChange={handleAccordionChange('contacts')}
+                allCollapsed={allCollapsed}
+                setAllCollapsed={setAllCollapsed}
+              />
+              <RoutingSection
+                formData={formData}
+                onFormDataChange={onFormDataChange}
+                isRTL={isRTL}
+                t={t}
+                salesmen={salesmen}
+                handleFieldChange={handleFieldChange}
+                expanded={!!expandedSections.routing}
+                onAccordionChange={handleAccordionChange('routing')}
+                allCollapsed={allCollapsed}
+                setAllCollapsed={setAllCollapsed}
+              />
+              <AttachmentsSection
+                formData={formData}
+                onFormDataChange={onFormDataChange}
+                t={t}
+              />
+              <MessageSection
+                showMessageField={showMessageField}
+                setShowMessageField={setShowMessageField}
+                message={message}
+                setMessage={setMessage}
+                isRTL={isRTL}
+                t={t}
+              />
+            </Box>
+
+            {/* Right Column - Checkboxes */}
+            <Box
+              sx={{
+                position: 'sticky',
+                top: 24,
+                height: 'fit-content',
+                width: 200,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+                p: 2,
+                bgcolor: 'background.paper',
+                borderRadius: 1,
+                border: '1px solid',
+                borderColor: 'divider',
+                zIndex: 2,
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, textAlign: isRTL ? 'right' : 'left' }}>
+                {t('management.quickOptions') || 'Quick Options'}
+              </Typography>
+              
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Checkbox
+                  checked={active}
+                  onChange={e => setActive(e.target.checked)}
+                  label={t('management.active') || 'Active'}
+                  isRTL={isRTL}
+                />
+                
+                <Checkbox
+                  checked={blackListed}
+                  onChange={e => setBlackListed(e.target.checked)}
+                  label={t('management.blackListed') || 'Black Listed'}
+                  isRTL={isRTL}
+                />
+                
+                <Checkbox
+                  checked={oneTimeAccount}
+                  onChange={e => setOneTimeAccount(e.target.checked)}
+                  label={t('management.oneTimeAccount') || 'One Time Account'}
+                  isRTL={isRTL}
+                />
+                
+                <Checkbox
+                  checked={specialAccount}
+                  onChange={e => setSpecialAccount(e.target.checked)}
+                  label={t('management.specialAccount') || 'Special Account'}
+                  isRTL={isRTL}
+                />
+                
+                <Checkbox
+                  checked={posCustomer}
+                  onChange={e => setPosCustomer(e.target.checked)}
+                  label={t('management.posCustomer') || 'POS Customer'}
+                  isRTL={isRTL}
+                />
+                
+                <Checkbox
+                  checked={freeDeliveryCharge}
+                  onChange={e => setFreeDeliveryCharge(e.target.checked)}
+                  label={t('management.freeDeliveryCharge') || 'Free Delivery Charge'}
+                  isRTL={isRTL}
+                />
+              </Box>
+            </Box>
           </Box>
         </Suspense>
       );
@@ -880,7 +958,7 @@ const CustomerDrawer = ({
       onSaveAndNew={onSaveAndNew}
       onSaveAndClose={onSaveAndClose}
       anchor={isRTL ? "left" : "right"}
-      width={900}
+      width={1200}
     />
   );
 };

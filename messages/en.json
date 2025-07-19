@@ -934,6 +934,7 @@
       "zone": "Zone",
       "city": "City",
       "district": "District",
+      "floor": "Floor",
       "addressLine1": "Address Line 1",
       "addressLine2": "Address Line 2",
       "building": "Building",
@@ -1034,7 +1035,8 @@
       "addMessage": "Add a message",
       "message": "Message",
       "enterMessage": "Enter your message...",
-      "closeAll": "Close All"
+      "closeAll": "Close All",
+      "quickOptions": "Quick Options"
     },
     "noChangesTitle": "No changes detected",
     "noChangesDesc": "Please modify at least one field before saving.",
