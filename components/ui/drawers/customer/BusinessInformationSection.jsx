@@ -10,6 +10,16 @@ const BusinessInformationSection = React.memo(({ formData, onFormDataChange, isR
       setAllCollapsed(false);
     }
   }, [allCollapsed]);
+
+  // Ref for the add search term input
+  const addSearchTermInputRef = React.useRef(null);
+  // Focus input when newSearchTerm is cleared (after add)
+  React.useEffect(() => {
+    if (newSearchTerm === "" && addSearchTermInputRef.current) {
+      addSearchTermInputRef.current.focus();
+    }
+  }, [newSearchTerm]);
+
   return (
     <Accordion expanded={expanded} onChange={onAccordionChange}>
       <AccordionSummary
@@ -76,6 +86,7 @@ const BusinessInformationSection = React.memo(({ formData, onFormDataChange, isR
                   onKeyPress={handleSearchTermKeyPress}
                   placeholder={t("management.addSearchTerm") || "Add search term..."}
                   sx={{ flexGrow: 1 }}
+                  inputRef={addSearchTermInputRef}
                 />
                 <Button
                   variant="outlined"

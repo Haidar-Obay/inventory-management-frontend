@@ -62,16 +62,9 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
           >
             {t("management.copyFromBillingAddress") || "Copy from Billing Address"}
           </Button>
-          <IconButton
-            size="small"
-            onClick={handleAddShippingAddress}
-            sx={{ color: 'primary.main', '&:hover': { backgroundColor: 'primary.light', color: 'white' } }}
-          >
-            <AddIcon />
-          </IconButton>
         </Box>
         {/* Primary Shipping Address */}
-        <Box sx={{ mb: 3 }}>
+        <Box sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
           <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 500, color: 'primary.main' }}>
             {t("management.primaryShippingAddress") || "Primary Shipping Address"}
           </Typography>
@@ -416,6 +409,16 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
             </Grid>
           </Box>
         ))}
+        {/* Add button at the end */}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+          <IconButton
+            size="small"
+            onClick={handleAddShippingAddress}
+            sx={{ color: 'primary.main', '&:hover': { backgroundColor: 'primary.light', color: 'white' } }}
+          >
+            <AddIcon />
+          </IconButton>
+        </Box>
       </AccordionDetails>
     </Accordion>
   );

@@ -145,10 +145,16 @@ const CustomerDrawer = ({
   const [allCollapsed, setAllCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState({});
 
-  // Add this effect to expand OpeningSection by default when opening the drawer for a customer
-  React.useEffect(() => {
-    if (isOpen && type === 'customer') {
-      setExpandedSections(prev => ({ ...prev, opening: true }));
+  // Open Personal Information by default when opening customer drawer
+  useEffect(() => {
+    if (isOpen && type === "customer") {
+      setExpandedSections(prev => {
+        // Only set if not already set (preserve user toggling)
+        if (prev.personalInformation === undefined) {
+          return { ...prev, personalInformation: true };
+        }
+        return prev;
+      });
     }
   }, [isOpen, type]);
 

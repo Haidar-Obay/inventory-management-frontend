@@ -711,6 +711,8 @@
     "date": "date",
     "edit": "Edit",
     "delete": "Delete",
+    "setInactiveLabel": "Set as Inactive",
+    "setActiveLabel": "Set as Active",
     "search": {
       "placeholder": "Search all columns...",
       "columnPlaceholder": "Search {column}...",
@@ -741,7 +743,7 @@
         "px": "px",
         "auto": "Auto",
         "templates": "Templates",
-        "saveAsTemplate": "Save as Template",
+        "saveAsTemplate": "Add new template",
         "noTemplates": "No templates saved.",
         "apply": "Apply",
         "delete": "Delete",
@@ -750,7 +752,8 @@
         "nameExists": "Name already exists",
         "select": "Select",
         "searchColumn": "Search column...",
-        "loadingTemplates": "Loading templates..."
+        "loadingTemplates": "Loading templates...",
+        "update": "Update Template"
       }
     },
     "filter": {
