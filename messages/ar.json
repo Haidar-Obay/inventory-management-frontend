@@ -1104,7 +1104,9 @@
       "message": "رسالة",
       "enterMessage": "أدخل رسالتك...",
       "closeAll": "إغلاق الكل",
-      "quickOptions": "خيارات سريعة"
+      "quickOptions": "خيارات سريعة",
+      "primaryContact": "جهة الاتصال الأساسية",
+      "additionalContact": "جهة اتصال إضافية"
     },
     "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
     "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."

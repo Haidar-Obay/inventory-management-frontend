@@ -106,6 +106,7 @@ const CustomerDrawer = ({
   const [originalName, setOriginalName] = useState("");
   const [originalData, setOriginalData] = useState({});
   const [shippingAddresses, setShippingAddresses] = useState([]);
+  const [contacts, setContacts] = useState([]);
   const [searchTerms, setSearchTerms] = useState([]);
   const [newSearchTerm, setNewSearchTerm] = useState("");
   const { addToast } = useSimpleToast();
@@ -145,15 +146,19 @@ const CustomerDrawer = ({
   const [allCollapsed, setAllCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState({});
 
-  // Open Personal Information by default when opening customer drawer
+  // Open Personal Information and Opening sections by default when opening customer drawer
   useEffect(() => {
     if (isOpen && type === "customer") {
       setExpandedSections(prev => {
         // Only set if not already set (preserve user toggling)
+        const updates = {};
         if (prev.personalInformation === undefined) {
-          return { ...prev, personalInformation: true };
+          updates.personalInformation = true;
         }
-        return prev;
+        if (prev.opening === undefined) {
+          updates.opening = true;
+        }
+        return { ...prev, ...updates };
       });
     }
   }, [isOpen, type]);
@@ -453,6 +458,35 @@ const CustomerDrawer = ({
       return updatedAddresses;
     });
   }, [formData]);
+
+  // Contact handlers
+  const handleAddContact = useCallback(() => {
+    const newContact = {
+      id: Date.now(), // Temporary ID for new contacts
+      title: "",
+      name: "",
+      work_phone: "",
+      mobile: "",
+      position: "",
+      extension: "",
+    };
+    setContacts((prev) => [...prev, newContact]);
+  }, []);
+
+  const handleRemoveContact = useCallback((index) => {
+    setContacts((prev) => prev.filter((_, i) => i !== index));
+  }, []);
+
+  const handleContactChange = useCallback((index, field, value) => {
+    setContacts((prev) => {
+      const updatedContacts = [...prev];
+      updatedContacts[index] = {
+        ...updatedContacts[index],
+        [field]: value,
+      };
+      return updatedContacts;
+    });
+  }, []);
 
   const handleAddSearchTerm = useCallback(() => {
     if (newSearchTerm.trim() && !searchTerms.includes(newSearchTerm.trim())) {
@@ -801,6 +835,11 @@ const CustomerDrawer = ({
                 isRTL={isRTL}
                 t={t}
                 handleFieldChange={handleFieldChange}
+                contacts={contacts}
+                setContacts={setContacts}
+                handleAddContact={handleAddContact}
+                handleRemoveContact={handleRemoveContact}
+                handleContactChange={handleContactChange}
                 expanded={!!expandedSections.contacts}
                 onAccordionChange={handleAccordionChange('contacts')}
                 allCollapsed={allCollapsed}

@@ -23,7 +23,7 @@ const MoreOptionsSection = React.memo(({ formData, onFormDataChange, isRTL, t, a
       </AccordionSummary>
       <AccordionDetails>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 250 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
               {t('management.printInvoiceLanguage') || 'Print Invoice Language'}
             </Typography>
@@ -37,7 +37,7 @@ const MoreOptionsSection = React.memo(({ formData, onFormDataChange, isRTL, t, a
               <option value="en">{t('management.english') || 'English'}</option>
             </RTLTextField>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 250 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
               {t('management.sendInvoice') || 'Send Invoice'}
             </Typography>
@@ -53,7 +53,7 @@ const MoreOptionsSection = React.memo(({ formData, onFormDataChange, isRTL, t, a
               <option value="all">{t('management.all') || 'All'}</option>
             </RTLTextField>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sx={{ minWidth: 550 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
               {t('management.notes') || 'Notes'}
             </Typography>

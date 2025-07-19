@@ -23,7 +23,7 @@ const PricingSection = React.memo(({ formData, onFormDataChange, isRTL, t, price
       </AccordionSummary>
       <AccordionDetails>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 400 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
               {t('management.priceChoice') || 'Price Choice'}
             </Typography>
@@ -43,7 +43,7 @@ const PricingSection = React.memo(({ formData, onFormDataChange, isRTL, t, price
               <option value="LAST_INVOICE_PRICE">{t('management.lastInvoicePrice') || 'Last Invoice Price'}</option>
             </RTLTextField>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 400 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
               {t('management.priceList') || 'Price List'}
             </Typography>
@@ -53,9 +53,9 @@ const PricingSection = React.memo(({ formData, onFormDataChange, isRTL, t, price
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 400 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
-              {t('management.globalDiscount') || 'Global Discount'}
+              {t('management.discount') || 'Discount'}
             </Typography>
             <RTLTextField
               value={globalDiscount}
@@ -64,7 +64,7 @@ const PricingSection = React.memo(({ formData, onFormDataChange, isRTL, t, price
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 400 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
               {t('management.discountClass') || 'Discount Class'}
             </Typography>
@@ -80,7 +80,7 @@ const PricingSection = React.memo(({ formData, onFormDataChange, isRTL, t, price
               <option value="platinum">{t('management.platinum') || 'Platinum'}</option>
             </RTLTextField>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 400 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
               {t('management.markup') || 'Markup'}
             </Typography>
@@ -91,7 +91,7 @@ const PricingSection = React.memo(({ formData, onFormDataChange, isRTL, t, price
               placeholder=""
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 400 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
               {t('management.markdown') || 'Markdown'}
             </Typography>
