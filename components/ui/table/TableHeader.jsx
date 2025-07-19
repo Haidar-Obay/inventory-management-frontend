@@ -137,18 +137,21 @@ export const TableHeader = ({
         )}
 
         {/* Column headers */}
-        {columnOrder.map((key) => {
+        {columnOrder.map((key, index) => {
           const column = columns.find((col) => col.key === key);
           if (!column || !visibleColumns[key]) return null;
 
           const hasActiveFilter = activeColumnFilters[key];
           const width = columnWidths[key];
+          const isLastColumn = index === columnOrder.filter(k => visibleColumns[k]).length - 1;
 
           return (
             <th
               key={key}
               data-column={key}
-              className="border-b border-slate-200 dark:border-slate-700 px-6 py-4 text-left relative group hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-all duration-200 cursor-pointer"
+              className={`border-b border-slate-200 dark:border-slate-700 px-6 py-4 text-left relative group hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-all duration-200 cursor-pointer ${
+                !isLastColumn ? 'border-r border-slate-300 dark:border-slate-600' : ''
+              }`}
               style={{ width: width === "auto" ? "auto" : width }}
               draggable
               onDragStart={() => handleColumnDragStart(key)}
@@ -256,7 +259,7 @@ export const TableHeader = ({
 
         {/* Actions column */}
         <th
-          className={`border-b border-slate-200 dark:border-slate-700 px-4 py-4 text-center bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-all duration-200 ${
+          className={`border-b border-slate-200 dark:border-slate-700 px-4 py-4 text-center bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-all duration-200 border-l border-slate-300 dark:border-slate-600 ${
             isOverflowing
               ? "sticky end-0 z-20 backdrop-blur-sm border-s border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50/95 to-slate-100/95 dark:from-slate-800/95 dark:to-slate-900/95"
               : ""
@@ -267,6 +270,14 @@ export const TableHeader = ({
             {t("actions")}
           </span>
         </th>
+      </tr>
+
+      {/* Separator Row */}
+      <tr className="bg-slate-100 dark:bg-slate-700/30 border-b border-slate-300 dark:border-slate-600">
+        <td 
+          colSpan={1 + (showSearchColumn ? 1 : 0) + columnOrder.filter(key => visibleColumns[key]).length + 1}
+          className="h-1 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 dark:from-slate-600 dark:via-slate-500 dark:to-slate-600"
+        ></td>
       </tr>
 
       {showSearchRow && (

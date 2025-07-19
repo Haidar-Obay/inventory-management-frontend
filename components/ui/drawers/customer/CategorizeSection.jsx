@@ -35,36 +35,39 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                 {t("management.trade") || "Trade"}
               </Typography>
-              <Autocomplete
-                options={createOptionsWithAdd(trades, 'trade')}
-                getOptionLabel={(option) => option.name || ""}
-                value={trades.find((trade) => trade.id === formData?.trade_id) || null}
-                onChange={(event, newValue) => {
-                  if (newValue?.isAddButton) {
-                    console.log('Add trade clicked');
-                    return;
-                  }
-                  handleTradeChange(event, newValue);
-                }}
-                loading={loading}
-                renderInput={(params) => <RTLTextField {...params} placeholder="" />}
-                renderOption={(props, option) => (
-                  <Box component="li" {...props}>
-                    {option.isAddButton ? (
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
-                        <AddIcon sx={{ fontSize: '1rem' }} />
-                        {option.name}
-                      </Box>
-                    ) : (
-                      option.name
-                    )}
-                  </Box>
-                )}
+              <Box 
                 onClick={e => e.stopPropagation()}
+                onMouseDown={e => e.stopPropagation()}
                 onFocus={e => e.stopPropagation()}
-                onKeyDown={e => { if ((e.key === ' ' || e.key === 'Spacebar') && !expanded) { e.preventDefault(); e.stopPropagation(); } }}
-                sx={{ background: 'background.paper' }}
-              />
+              >
+                <Autocomplete
+                  options={createOptionsWithAdd(trades, 'trade')}
+                  getOptionLabel={(option) => option.name || ""}
+                  value={trades.find((trade) => trade.id === formData?.trade_id) || null}
+                  onChange={(event, newValue) => {
+                    if (newValue?.isAddButton) {
+                      console.log('Add trade clicked');
+                      return;
+                    }
+                    handleTradeChange(event, newValue);
+                  }}
+                  loading={loading}
+                  renderInput={(params) => <RTLTextField {...params} placeholder="" />}
+                  renderOption={(props, option) => (
+                    <Box component="li" {...props}>
+                      {option.isAddButton ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                          <AddIcon sx={{ fontSize: '1rem' }} />
+                          {option.name}
+                        </Box>
+                      ) : (
+                        option.name
+                      )}
+                    </Box>
+                  )}
+                  sx={{ background: 'background.paper' }}
+                />
+              </Box>
             </Box>
           )}
         </Box>

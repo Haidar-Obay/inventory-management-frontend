@@ -35,39 +35,42 @@ const SalesmenSection = React.memo(({ formData, onFormDataChange, isRTL, t, sale
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
                 {t('management.salesman') || 'Salesman'}
               </Typography>
-              <Autocomplete
-                fullWidth
-                options={createOptionsWithAdd(salesmen, 'salesman')}
-                getOptionLabel={option => {
-                  if (option?.isAddButton) return option.name;
-                  return option ? `${option.name} (${option.code})` : '';
-                }}
-                value={salesmen.find(s => s.id === formData?.salesman_id) || null}
-                onChange={(event, newValue) => {
-                  if (newValue?.isAddButton) {
-                    console.log('Add salesman clicked');
-                    return;
-                  }
-                  handleSalesmanSelect(event, newValue);
-                }}
-                renderInput={params => <RTLTextField {...params} placeholder="" />}
-                renderOption={(props, option) => (
-                  <Box component="li" {...props}>
-                    {option.isAddButton ? (
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
-                        <AddIcon sx={{ fontSize: '1rem' }} />
-                        {option.name}
-                      </Box>
-                    ) : (
-                      `${option.name} (${option.code})`
-                    )}
-                  </Box>
-                )}
+              <Box 
                 onClick={e => e.stopPropagation()}
+                onMouseDown={e => e.stopPropagation()}
                 onFocus={e => e.stopPropagation()}
-                onKeyDown={e => { if ((e.key === ' ' || e.key === 'Spacebar') && !expanded) { e.preventDefault(); e.stopPropagation(); } }}
-                sx={{ background: 'background.paper' }}
-              />
+              >
+                <Autocomplete
+                  fullWidth
+                  options={createOptionsWithAdd(salesmen, 'salesman')}
+                  getOptionLabel={option => {
+                    if (option?.isAddButton) return option.name;
+                    return option ? `${option.name} (${option.code})` : '';
+                  }}
+                  value={salesmen.find(s => s.id === formData?.salesman_id) || null}
+                  onChange={(event, newValue) => {
+                    if (newValue?.isAddButton) {
+                      console.log('Add salesman clicked');
+                      return;
+                    }
+                    handleSalesmanSelect(event, newValue);
+                  }}
+                  renderInput={params => <RTLTextField {...params} placeholder="" />}
+                  renderOption={(props, option) => (
+                    <Box component="li" {...props}>
+                      {option.isAddButton ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                          <AddIcon sx={{ fontSize: '1rem' }} />
+                          {option.name}
+                        </Box>
+                      ) : (
+                        `${option.name} (${option.code})`
+                      )}
+                    </Box>
+                  )}
+                  sx={{ background: 'background.paper' }}
+                />
+              </Box>
             </Box>
           )}
         </Box>
