@@ -337,15 +337,19 @@ const GroupHeader = ({
         <div className="flex items-center justify-between">
           <button
             onClick={() => onToggleGroup(groupName)}
-            className="flex items-center justify-between w-full text-sm font-medium hover:text-primary-foreground/80 transition-colors duration-200"
+            className={cn(
+              "flex items-center justify-between w-full text-sm font-medium hover:text-primary-foreground/80 transition-colors duration-200",
+              isCollapsed ? "" : "h-10"
+            )}
           >
             <div className="flex items-center gap-2">
-              <GroupIcon className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")} />
-              <span>{groupName}</span>
+              <GroupIcon className={cn(isCollapsed ? "h-4 w-4" : "h-4 w-4", isRTL ? "ml-2" : "mr-2")} />
+              <span className={cn(isCollapsed ? "" : "text-sm")}>{groupName}</span>
             </div>
             <ChevronRight
               className={cn(
-                "h-4 w-4 transition-transform duration-200",
+                isCollapsed ? "h-4 w-4" : "h-4 w-4",
+                "transition-transform duration-200",
                 isRTL ? "rotate-180" : "",
                 isExpanded ? "rotate-90" : ""
               )}
@@ -372,13 +376,13 @@ const GroupHeader = ({
               <GroupIcon className="h-5 w-5" />
             </button>
           </PopoverTrigger>
-          <PopoverContent
-            side={isRTL ? "left" : "right"}
-            align="start"
-            className="w-48 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
-            sideOffset={18}
-            alignOffset={-8}
-          >
+                <PopoverContent
+        side={isRTL ? "left" : "right"}
+        align="start"
+        className="w-52 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
+        sideOffset={18}
+        alignOffset={-8}
+      >
             <div className="space-y-1">
               <h3 className="text-[15px] font-medium px-2 py-1 bg-primary-foreground/5 rounded-md">
                 {groupName}
@@ -412,13 +416,13 @@ const GroupHeader = ({
                             />
                           </button>
                         </PopoverTrigger>
-                        <PopoverContent
-                          side={isRTL ? "left" : "right"}
-                          align="start"
-                          className="w-48 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
-                          sideOffset={3}
-                          alignOffset={8}
-                        >
+                                <PopoverContent
+          side={isRTL ? "left" : "right"}
+          align="start"
+          className="w-52 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
+          sideOffset={3}
+          alignOffset={8}
+        >
                           <div className="space-y-0.5">
                             {item.items.map((subItem) => {
                               const SubIcon = iconMap[subItem.icon];
@@ -530,7 +534,7 @@ const GroupItems = ({
   const allItems = useAllMenuItems(t);
 
   return (
-    <ul className="space-y-1 mt-1">
+    <ul className={cn("mt-1", isCollapsed ? "space-y-1" : "space-y-0.5")}>
       {groupItems.map((item) => {
         if (item.type === "group") {
           return (
@@ -658,12 +662,12 @@ const NestedGroup = ({
       <PopoverContent
         side="right"
         align="start"
-        className="w-48 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
+        className="w-52 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
         sideOffset={-3}
         onOpenAutoFocus={handlePopoverOpen}
         onCloseAutoFocus={handlePopoverClose}
       >
-        <div className="space-y-0.5">
+        <div className={cn("", isCollapsed ? "space-y-0.5" : "space-y-0.5")}>
           {item.items.map((subItem) => {
             const SubIcon = iconMap[subItem.icon];
             // Find the subItem with proper uniqueId from allItems
@@ -696,6 +700,7 @@ const NestedGroup = ({
                 className="whitespace-nowrap"
                 t={t}
                 isRTL={isRTL}
+                compact={!isCollapsed}
               />
             );
           })}
@@ -743,7 +748,7 @@ const NestedGroup = ({
   ) : (
     <div>
       <CollapsibleTrigger
-        className="group flex w-full items-center h-12 min-w-0"
+        className={cn("group flex w-full items-center min-w-0", isCollapsed ? "h-12" : "h-8")}
         onClick={() => onToggleSubGroup(item.key || item.name)}
       >
         <div
@@ -756,20 +761,21 @@ const NestedGroup = ({
           )}
         >
           <Icon
-            className={cn("h-4 w-4 flex-shrink-0", isRTL ? "ml-2" : "mr-2")}
+            className={cn(isCollapsed ? "h-4 w-4" : "h-3 w-3", "flex-shrink-0", isRTL ? "ml-2" : "mr-2")}
           />
-          <span className="whitespace-nowrap">{item.name}</span>
+          <span className={cn("whitespace-nowrap", isCollapsed ? "" : "text-sm")}>{item.name}</span>
         </div>
         <ChevronRight
           className={cn(
-            "h-4 w-4 transition-transform flex-shrink-0",
+            isCollapsed ? "h-4 w-4" : "h-3 w-3",
+            "transition-transform flex-shrink-0",
             isRTL ? "rotate-180" : "",
             isExpanded ? "rotate-90" : ""
           )}
         />
       </CollapsibleTrigger>
       {isExpanded && (
-        <ul className="space-y-1 mt-1">
+        <ul className={cn("mt-1", isCollapsed ? "space-y-1" : "space-y-0.5")}>
           {item.items.map((subItem) => {
             const SubIcon = iconMap[subItem.icon];
             // Find the subItem with proper uniqueId from allItems
@@ -801,6 +807,7 @@ const NestedGroup = ({
                   }
                   t={t}
                   isRTL={isRTL}
+                  compact={!isCollapsed}
                 />
               </li>
             );
