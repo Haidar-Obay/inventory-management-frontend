@@ -543,6 +543,40 @@ const ItemDrawer = ({
     }
   };
 
+  // Check if form has data
+  const hasFormData = () => {
+    // Check if any form field has data, excluding default values
+    return formData && (
+      formData.name ||
+      formData.code ||
+      formData.description ||
+      formData.price ||
+      formData.cost ||
+      formData.category_id ||
+      formData.brand_id ||
+      formData.unit_id ||
+      formData.tax_id ||
+      formData.supplier_id ||
+      formData.min_stock ||
+      formData.max_stock ||
+      formData.reorder_point ||
+      formData.sku ||
+      formData.barcode ||
+      formData.weight ||
+      formData.dimensions ||
+      formData.notes ||
+      formData.attachments?.length > 0 ||
+      // Check other fields excluding default values
+      Object.entries(formData).some(([key, value]) => {
+        // Skip default values
+        if (key === 'active' || key === 'is_service') return false;
+        if (Array.isArray(value) && value.length === 0) return false;
+        if (typeof value === 'object' && value !== null && Object.keys(value).length === 0) return false;
+        return value && value.toString().trim() !== "";
+      })
+    );
+  };
+
   return (
     <DynamicDrawer
       isOpen={isOpen}
@@ -553,7 +587,8 @@ const ItemDrawer = ({
       onSaveAndNew={onSaveAndNew}
       onSaveAndClose={onSaveAndClose}
       anchor={isRTL ? "left" : "right"}
-      width={getDrawerWidth(type)}
+      width={getDrawerWidth()}
+      hasFormData={hasFormData()}
     />
   );
 };

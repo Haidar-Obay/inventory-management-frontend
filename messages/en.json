@@ -342,7 +342,11 @@
     "signup": "Sign Up",
     "email": "Email",
     "password": "Password",
-    "submit": "Submit"
+    "submit": "Submit",
+    "exitConfirmationTitle": "Exit Confirmation",
+    "exitConfirmationMessage": "Are you sure you want to exit? Any unsaved changes will be lost.",
+    "cancel": "Cancel",
+    "exit": "Exit"
   },
   "home": {
     "welcome": "Welcome to Your Inventory Management System",

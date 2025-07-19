@@ -100,6 +100,9 @@ const AddressCodeDrawer = ({
     onSave && onSave();
   };
 
+  // Check if form has data
+  const hasFormData = formData?.name && formData.name.trim() !== "";
+
   return (
     <DynamicDrawer
       isOpen={isOpen}
@@ -111,6 +114,7 @@ const AddressCodeDrawer = ({
       onSaveAndClose={onSaveAndClose}
       anchor={isRTL ? "left" : "right"}
       width={getDrawerWidth(type)}
+      hasFormData={hasFormData}
     />
   );
 };

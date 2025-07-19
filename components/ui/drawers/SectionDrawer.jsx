@@ -730,6 +730,27 @@ const SectionDrawer = ({
     }
   };
 
+  // Check if form has data
+  const hasFormData = () => {
+    // Check if any form field has data, excluding 'active' since it's true by default
+    return formData && (
+      formData.name ||
+      formData.description ||
+      formData.customer_id ||
+      formData.cost_center_id ||
+      formData.department_id ||
+      formData.project_id ||
+      formData.start_date ||
+      formData.end_date ||
+      formData.expected_date ||
+      formData.code ||
+      // Check other fields excluding 'active'
+      Object.entries(formData).some(([key, value]) => 
+        key !== 'active' && value && value.toString().trim() !== ""
+      )
+    );
+  };
+
   return (
     <DynamicDrawer
       isOpen={isOpen}
@@ -741,6 +762,7 @@ const SectionDrawer = ({
       onSaveAndClose={onSaveAndClose}
       anchor={isRTL ? "left" : "right"}
       width={getDrawerWidth(type)}
+      hasFormData={hasFormData()}
     />
   );
 };
