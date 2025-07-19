@@ -83,16 +83,19 @@ export const TableBody = ({
               </td>
             )}
             {/* Column cells skeleton */}
-            {columnOrder.map((key) => {
+            {columnOrder.map((key, columnIndex) => {
               const column = columns.find((col) => col.key === key);
               if (!column || !visibleColumns[key]) return null;
               
               const width = columnWidths[key];
+              const isLastColumn = columnIndex === columnOrder.filter(k => visibleColumns[k]).length - 1;
               
               return (
                 <td
                   key={key}
-                  className="border-b border-border px-4 py-2"
+                  className={`border-b border-border px-4 py-2 ${
+                    !isLastColumn ? 'border-r border-slate-300 dark:border-slate-600' : ''
+                  }`}
                   style={{ width: width === "auto" ? "auto" : width }}
                 >
                   <div className="min-h-[24px] flex items-center">
@@ -128,7 +131,7 @@ export const TableBody = ({
             })}
             {/* Actions skeleton */}
             <td
-              className="border-b border-border px-1 py-2"
+              className="border-b border-border px-1 py-2 border-l border-slate-300 dark:border-slate-600"
               style={{ width: "75px", minWidth: "75px", maxWidth: "75px" }}
             >
               <div className="flex justify-center">
@@ -212,7 +215,7 @@ export const TableBody = ({
                 </td>
               )}
               {/* Row cells */}
-              {columnOrder.map((key) => {
+              {columnOrder.map((key, columnIndex) => {
                 const column = columns.find((col) => col.key === key);
                 if (!column || !visibleColumns[key]) return null;
 
@@ -224,11 +227,14 @@ export const TableBody = ({
 
                 const width = columnWidths[key];
                 const cellValue = row[key];
+                const isLastColumn = columnIndex === columnOrder.filter(k => visibleColumns[k]).length - 1;
 
                 return (
                   <td
                     key={`${rowIndex}-${key}`}
-                    className="border-b border-border px-4 py-2"
+                    className={`border-b border-border px-4 py-2 ${
+                      !isLastColumn ? 'border-r border-slate-300 dark:border-slate-600' : ''
+                    }`}
                     style={{ width: width === "auto" ? "auto" : width }}
                     onDoubleClick={() =>
                       enableCellEditing &&
@@ -347,7 +353,7 @@ export const TableBody = ({
 
               {/* Actions */}
               <td
-                className={`border-b border-border px-1 py-2 transition-colors duration-200 ${
+                className={`border-b border-border px-1 py-2 transition-colors duration-200 border-l border-slate-300 dark:border-slate-600 ${
                   isOverflowing
                     ? "sticky end-0 z-10 backdrop-blur-sm border-s border-gray-200 dark:border-gray-700"
                     : ""
