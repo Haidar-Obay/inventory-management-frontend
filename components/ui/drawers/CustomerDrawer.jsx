@@ -993,6 +993,93 @@ const CustomerDrawer = ({
     }
   };
 
+  // Check if form has data
+  const hasFormData = () => {
+    // Check if any form field has data, excluding default values
+    return formData && (
+      formData.first_name ||
+      formData.last_name ||
+      formData.display_name ||
+      formData.company_name ||
+      formData.phone1 ||
+      formData.phone2 ||
+      formData.phone3 ||
+      formData.work_phone ||
+      formData.mobile ||
+      formData.position ||
+      formData.extension ||
+      formData.title ||
+      formData.middle_name ||
+      formData.file_number ||
+      formData.barcode ||
+      formData.billing_address_line1 ||
+      formData.billing_address_line2 ||
+      formData.billing_building ||
+      formData.billing_block ||
+      formData.billing_floor ||
+      formData.billing_side ||
+      formData.billing_apartment ||
+      formData.billing_zip_code ||
+      formData.billing_country_id ||
+      formData.billing_zone_id ||
+      formData.billing_city_id ||
+      formData.billing_district_id ||
+      formData.customer_group_id ||
+      formData.trade_id ||
+      formData.company_code_id ||
+      formData.business_type_id ||
+      formData.sales_channel_id ||
+      formData.distribution_channel_id ||
+      formData.media_channel_id ||
+      formData.indicator ||
+      formData.risk_category ||
+      formData.salesman_id ||
+      formData.collector_id ||
+      formData.supervisor_id ||
+      formData.manager_id ||
+      formData.routing_type ||
+      formData.routing_day_of_week ||
+      formData.routing_first_day ||
+      formData.routing_second_day ||
+      formData.routing_day_of_month ||
+      formData.price_choice ||
+      formData.price_list ||
+      formData.global_discount ||
+      formData.discount_class ||
+      formData.markup ||
+      formData.markdown ||
+      formData.selected_payment_term ||
+      formData.selected_payment_method ||
+      formData.allow_credit ||
+      formData.accept_cheques ||
+      formData.payment_day ||
+      formData.track_payment ||
+      formData.settlement_method ||
+      formData.print_invoice_language ||
+      formData.send_invoice ||
+      formData.notes ||
+      formData.message ||
+      formData.attachments?.length > 0 ||
+      formData.opening_balances?.some(balance => 
+        balance.currency || balance.amount || balance.date
+      ) ||
+      formData.credit_limits && Object.values(formData.credit_limits).some(limit => limit) ||
+      formData.max_cheques && Object.values(formData.max_cheques).some(cheque => cheque) ||
+      formData.contacts?.some(contact => 
+        contact.title || contact.name || contact.work_phone || contact.mobile || contact.position || contact.extension
+      ) ||
+      formData.search_terms?.length > 0 ||
+      // Check other fields excluding default values
+      Object.entries(formData).some(([key, value]) => {
+        // Skip default values and empty arrays/objects
+        if (key === 'active' || key === 'subscription_checked' || key === 'can_add_multi_currency') return false;
+        if (Array.isArray(value) && value.length === 0) return false;
+        if (typeof value === 'object' && value !== null && Object.keys(value).length === 0) return false;
+        return value && value.toString().trim() !== "";
+      })
+    );
+  };
+
   return (
     <DynamicDrawer
       isOpen={isOpen}
@@ -1004,6 +1091,7 @@ const CustomerDrawer = ({
       onSaveAndClose={onSaveAndClose}
       anchor={isRTL ? "left" : "right"}
       width={1200}
+      hasFormData={hasFormData()}
     />
   );
 };
