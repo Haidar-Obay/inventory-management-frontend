@@ -148,16 +148,7 @@ function AddressCodesPage() {
           setCountriesData(response.data || []);
           dataType = "countries";
           break;
-        case 1: // Zones
-          if (!force && dataFetched.zones) {
-            setLoading(false);
-            return;
-          }
-          response = await getZones();
-          setZonesData(response.data || []);
-          dataType = "zones";
-          break;
-        case 2: // Cities
+        case 1: // Cities
           if (!force && dataFetched.cities) {
             setLoading(false);
             return;
@@ -166,7 +157,7 @@ function AddressCodesPage() {
           setCitiesData(response.data || []);
           dataType = "cities";
           break;
-        case 3: // Districts
+        case 2: // Districts
           if (!force && dataFetched.districts) {
             setLoading(false);
             return;
@@ -174,6 +165,15 @@ function AddressCodesPage() {
           response = await getDistricts();
           setDistrictsData(response.data || []);
           dataType = "districts";
+          break;
+          case 3: // Zones
+          if (!force && dataFetched.zones) {
+            setLoading(false);
+            return;
+          }
+          response = await getZones();
+          setZonesData(response.data || []);
+          dataType = "zones";
           break;
       }
 
@@ -210,12 +210,6 @@ function AddressCodesPage() {
       editFn: editCountry,
       createFn: createCountry,
     },
-    zone: {
-      setData: setZonesData,
-      deleteFn: deleteZone,
-      editFn: editZone,
-      createFn: createZone,
-    },
     city: {
       setData: setCitiesData,
       deleteFn: deleteCity,
@@ -227,6 +221,12 @@ function AddressCodesPage() {
       deleteFn: deleteDistrict,
       editFn: editDistrict,
       createFn: createDistrict,
+    },
+    zone: {
+      setData: setZonesData,
+      deleteFn: deleteZone,
+      editFn: editZone,
+      createFn: createZone,
     },
   };
 
@@ -341,14 +341,14 @@ function AddressCodesPage() {
         case "country":
           response = await exportCountriesToExcel();
           break;
-        case "zone":
-          response = await exportZonesToExcel();
-          break;
         case "city":
           response = await exportCitiesToExcel();
           break;
         case "district":
           response = await exportDistrictsToExcel();
+          break;
+          case "zone":
+          response = await exportZonesToExcel();
           break;
         default:
           return;
@@ -382,14 +382,14 @@ function AddressCodesPage() {
         case "country":
           response = await exportCountriesToPdf();
           break;
-        case "zone":
-          response = await exportZonesToPdf();
-          break;
         case "city":
           response = await exportCitiesToPdf();
           break;
         case "district":
           response = await exportDistrictsToPdf();
+          break;
+          case "zone":
+          response = await exportZonesToPdf();
           break;
         default:
           return;
@@ -422,15 +422,15 @@ function AddressCodesPage() {
       switch (type) {
         case "country":
           response = await importCountriesFromExcel(file);
-          break;
-        case "zone":
-          response = await importZonesFromExcel(file);
-          break;
+          break;    
         case "city":
           response = await importCitiesFromExcel(file);
           break;
         case "district":
           response = await importDistrictsFromExcel(file);
+          break;
+          case "zone":
+          response = await importZonesFromExcel(file);
           break;
         default:
           return;
@@ -542,31 +542,8 @@ function AddressCodesPage() {
           </Box>
         </TabPanel>
 
-        {/* Zones Management Tab*/}
-        <TabPanel value={value} index={1}>
-          <Box className="p-0">
-            <Table
-              data={zonesData}
-              columns={zoneColumns}
-              t={t}
-              onAdd={() => handleAddNew("zone")}
-              loading={loading}
-              enableCellEditing={false}
-              onExportExcel={() => handleExportExcel("zone")}
-              onExportPdf={() => handleExportPdf("zone")}
-              onPrint={() => handlePrint("zone", zonesData, zoneColumns)}
-              onRefresh={() => fetchData(1, true)}
-              onImportExcel={(file) => handleImportExcel("zone", file)}
-              tableId="zones"
-              customActions={zoneActions.customActions}
-              onCustomAction={zoneActions.onCustomAction}
-              onDelete={(row) => handleDelete("zone", row)}
-            />
-          </Box>
-        </TabPanel>
-
         {/* Cities Management Tab*/}
-        <TabPanel value={value} index={2}>
+        <TabPanel value={value} index={1}>
           <Box className="p-0">
             <Table
               data={citiesData}
@@ -578,7 +555,7 @@ function AddressCodesPage() {
               onExportExcel={() => handleExportExcel("city")}
               onExportPdf={() => handleExportPdf("city")}
               onPrint={() => handlePrint("city", citiesData, cityColumns)}
-              onRefresh={() => fetchData(2, true)}
+              onRefresh={() => fetchData(1, true)}
               onImportExcel={(file) => handleImportExcel("city", file)}
               tableId="cities"
               customActions={cityActions.customActions}
@@ -589,7 +566,7 @@ function AddressCodesPage() {
         </TabPanel>
 
         {/* Districts Management Tab*/}
-        <TabPanel value={value} index={3}>
+        <TabPanel value={value} index={2}>
           <Box className="p-0">
             <Table
               data={districtsData}
@@ -603,12 +580,35 @@ function AddressCodesPage() {
               onPrint={() =>
                 handlePrint("district", districtsData, districtColumns)
               }
-              onRefresh={() => fetchData(3, true)}
+              onRefresh={() => fetchData(2, true)}
               onImportExcel={(file) => handleImportExcel("district", file)}
               tableId="districts"
               customActions={districtActions.customActions}
               onCustomAction={districtActions.onCustomAction}
               onDelete={(row) => handleDelete("district", row)}
+            />
+          </Box>
+        </TabPanel>
+
+        {/* Zones Management Tab*/}
+        <TabPanel value={value} index={3}>
+          <Box className="p-0">
+            <Table
+              data={zonesData}
+              columns={zoneColumns}
+              t={t}
+              onAdd={() => handleAddNew("zone")}
+              loading={loading}
+              enableCellEditing={false}
+              onExportExcel={() => handleExportExcel("zone")}
+              onExportPdf={() => handleExportPdf("zone")}
+              onPrint={() => handlePrint("zone", zonesData, zoneColumns)}
+              onRefresh={() => fetchData(3, true)}
+              onImportExcel={(file) => handleImportExcel("zone", file)}
+              tableId="zones"
+              customActions={zoneActions.customActions}
+              onCustomAction={zoneActions.onCustomAction}
+              onDelete={(row) => handleDelete("zone", row)}
             />
           </Box>
         </TabPanel>
