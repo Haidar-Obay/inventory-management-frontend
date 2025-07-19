@@ -1069,6 +1069,9 @@
       "markdown": "تخفيض السعر",
       "lastInvoicePrice": "سعر آخر فاتورة",
       "taxesAccordion": "الضرائب",
+      "tax": "الضريبة",
+      "taxedFromDate": "تاريخ الضريبة من",
+      "taxedTillDate": "تاريخ الضريبة حتى",
       "taxable": "خاضع للضريبة",
       "addedTax": "الضريبة المضافة",
       "exempted": "معفى",
@@ -1106,7 +1109,15 @@
       "closeAll": "إغلاق الكل",
       "quickOptions": "خيارات سريعة",
       "primaryContact": "جهة الاتصال الأساسية",
-      "additionalContact": "جهة اتصال إضافية"
+      "additionalContact": "جهة اتصال إضافية",
+      "description": "الوصف",
+      "dragDropFiles": "اسحب وأفلت الملفات هنا، أو انقر للاختيار",
+      "uploading": "جاري الرفع...",
+      "preview": "معاينة",
+      "remove": "إزالة",
+      "enterDescription": "أدخل وصفاً لهذا المرفق...",
+      "previewAttachment": "معاينة المرفق",
+      "close": "إغلاق"
     },
     "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
     "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."

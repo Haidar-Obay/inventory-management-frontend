@@ -11,6 +11,13 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
       setAllCollapsed(false);
     }
   }, [allCollapsed]);
+
+  // Create options with Add button as first option
+  const createOptionsWithAdd = (options, type) => {
+    const addOption = { id: 'add', name: `${t('management.add') || 'Add'} ${t(`management.${type}`) || type}`, isAddButton: true };
+    return [addOption, ...options];
+  };
+
   return (
     <Accordion expanded={expanded} onChange={onAccordionChange}>
       <AccordionSummary
@@ -76,10 +83,15 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
               </Typography>
               <Autocomplete
                 fullWidth
-                options={countries}
+                options={createOptionsWithAdd(countries, 'country')}
                 getOptionLabel={(option) => option.name || ""}
                 value={countries.find((country) => country.id === formData?.shipping_country_id) || null}
                 onChange={(event, newValue) => {
+                  if (newValue?.isAddButton) {
+                    // Handle add country action
+                    console.log('Add country clicked');
+                    return;
+                  }
                   onFormDataChange({
                     ...formData,
                     shipping_country_id: newValue?.id || "",
@@ -90,6 +102,18 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 }}
                 loading={loading}
                 renderInput={(params) => <RTLTextField {...params} placeholder="" />}
+                renderOption={(props, option) => (
+                  <Box component="li" {...props}>
+                    {option.isAddButton ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                        <AddIcon sx={{ fontSize: '1rem' }} />
+                        {option.name}
+                      </Box>
+                    ) : (
+                      option.name
+                    )}
+                  </Box>
+                )}
               />
             </Grid>
           
@@ -99,10 +123,15 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
               </Typography>
               <Autocomplete
                 fullWidth
-                options={cities}
+                options={createOptionsWithAdd(cities, 'city')}
                 getOptionLabel={(option) => option.name || ""}
                 value={cities.find((city) => city.id === formData?.shipping_city_id) || null}
                 onChange={(event, newValue) => {
+                  if (newValue?.isAddButton) {
+                    // Handle add city action
+                    console.log('Add city clicked');
+                    return;
+                  }
                   onFormDataChange({
                     ...formData,
                     shipping_city_id: newValue?.id || "",
@@ -111,6 +140,18 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 }}
                 loading={loading}
                 renderInput={(params) => <RTLTextField {...params} placeholder="" />}
+                renderOption={(props, option) => (
+                  <Box component="li" {...props}>
+                    {option.isAddButton ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                        <AddIcon sx={{ fontSize: '1rem' }} />
+                        {option.name}
+                      </Box>
+                    ) : (
+                      option.name
+                    )}
+                  </Box>
+                )}
               />
             </Grid>
             <Grid item xs={12} md={6} sx={{ minWidth: 150 }}>
@@ -119,10 +160,15 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
               </Typography>
               <Autocomplete
                 fullWidth
-                options={districts}
+                options={createOptionsWithAdd(districts, 'district')}
                 getOptionLabel={(option) => option.name || ""}
                 value={districts.find((district) => district.id === formData?.shipping_district_id) || null}
                 onChange={(event, newValue) => {
+                  if (newValue?.isAddButton) {
+                    // Handle add district action
+                    console.log('Add district clicked');
+                    return;
+                  }
                   onFormDataChange({
                     ...formData,
                     shipping_district_id: newValue?.id || "",
@@ -130,6 +176,18 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 }}
                 loading={loading}
                 renderInput={(params) => <RTLTextField {...params} placeholder="" />}
+                renderOption={(props, option) => (
+                  <Box component="li" {...props}>
+                    {option.isAddButton ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                        <AddIcon sx={{ fontSize: '1rem' }} />
+                        {option.name}
+                      </Box>
+                    ) : (
+                      option.name
+                    )}
+                  </Box>
+                )}
               />
             </Grid>
             <Grid item xs={12} md={6} sx={{ minWidth: 150 }}>
@@ -138,10 +196,15 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
               </Typography>
               <Autocomplete
                 fullWidth
-                options={zones}
+                options={createOptionsWithAdd(zones, 'zone')}
                 getOptionLabel={(option) => option.name || ""}
                 value={zones.find((zone) => zone.id === formData?.shipping_zone_id) || null}
                 onChange={(event, newValue) => {
+                  if (newValue?.isAddButton) {
+                    // Handle add zone action
+                    console.log('Add zone clicked');
+                    return;
+                  }
                   onFormDataChange({
                     ...formData,
                     shipping_zone_id: newValue?.id || "",
@@ -151,6 +214,18 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 }}
                 loading={loading}
                 renderInput={(params) => <RTLTextField {...params} placeholder="" />}
+                renderOption={(props, option) => (
+                  <Box component="li" {...props}>
+                    {option.isAddButton ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                        <AddIcon sx={{ fontSize: '1rem' }} />
+                        {option.name}
+                      </Box>
+                    ) : (
+                      option.name
+                    )}
+                  </Box>
+                )}
               />
             </Grid>
             {/* Address Line 1 inside details, only when expanded */}
@@ -268,14 +343,31 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 </Typography>
                 <Autocomplete
                   fullWidth
-                  options={countries}
+                  options={createOptionsWithAdd(countries, 'country')}
                   getOptionLabel={(option) => option.name || ""}
                   value={countries.find((country) => country.id === address.country_id) || null}
                   onChange={(event, newValue) => {
+                    if (newValue?.isAddButton) {
+                      // Handle add country action
+                      console.log('Add country clicked');
+                      return;
+                    }
                     handleShippingAddressChange(index, 'country_id', newValue?.id || "");
                   }}
                   loading={loading}
                   renderInput={(params) => <RTLTextField {...params} placeholder="" />}
+                  renderOption={(props, option) => (
+                    <Box component="li" {...props}>
+                      {option.isAddButton ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                          <AddIcon sx={{ fontSize: '1rem' }} />
+                          {option.name}
+                        </Box>
+                      ) : (
+                        option.name
+                      )}
+                    </Box>
+                  )}
                 />
               </Grid>
               <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
@@ -284,14 +376,31 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 </Typography>
                 <Autocomplete
                   fullWidth
-                  options={zones}
+                  options={createOptionsWithAdd(zones, 'zone')}
                   getOptionLabel={(option) => option.name || ""}
                   value={zones.find((zone) => zone.id === address.zone_id) || null}
                   onChange={(event, newValue) => {
+                    if (newValue?.isAddButton) {
+                      // Handle add zone action
+                      console.log('Add zone clicked');
+                      return;
+                    }
                     handleShippingAddressChange(index, 'zone_id', newValue?.id || "");
                   }}
                   loading={loading}
                   renderInput={(params) => <RTLTextField {...params} placeholder="" />}
+                  renderOption={(props, option) => (
+                    <Box component="li" {...props}>
+                      {option.isAddButton ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                          <AddIcon sx={{ fontSize: '1rem' }} />
+                          {option.name}
+                        </Box>
+                      ) : (
+                        option.name
+                      )}
+                    </Box>
+                  )}
                 />
               </Grid>
               <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
@@ -300,14 +409,31 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 </Typography>
                 <Autocomplete
                   fullWidth
-                  options={cities}
+                  options={createOptionsWithAdd(cities, 'city')}
                   getOptionLabel={(option) => option.name || ""}
                   value={cities.find((city) => city.id === address.city_id) || null}
                   onChange={(event, newValue) => {
+                    if (newValue?.isAddButton) {
+                      // Handle add city action
+                      console.log('Add city clicked');
+                      return;
+                    }
                     handleShippingAddressChange(index, 'city_id', newValue?.id || "");
                   }}
                   loading={loading}
                   renderInput={(params) => <RTLTextField {...params} placeholder="" />}
+                  renderOption={(props, option) => (
+                    <Box component="li" {...props}>
+                      {option.isAddButton ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                          <AddIcon sx={{ fontSize: '1rem' }} />
+                          {option.name}
+                        </Box>
+                      ) : (
+                        option.name
+                      )}
+                    </Box>
+                  )}
                 />
               </Grid>
               <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
@@ -316,14 +442,31 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 </Typography>
                 <Autocomplete
                   fullWidth
-                  options={districts}
+                  options={createOptionsWithAdd(districts, 'district')}
                   getOptionLabel={(option) => option.name || ""}
                   value={districts.find((district) => district.id === address.district_id) || null}
                   onChange={(event, newValue) => {
+                    if (newValue?.isAddButton) {
+                      // Handle add district action
+                      console.log('Add district clicked');
+                      return;
+                    }
                     handleShippingAddressChange(index, 'district_id', newValue?.id || "");
                   }}
                   loading={loading}
                   renderInput={(params) => <RTLTextField {...params} placeholder="" />}
+                  renderOption={(props, option) => (
+                    <Box component="li" {...props}>
+                      {option.isAddButton ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                          <AddIcon sx={{ fontSize: '1rem' }} />
+                          {option.name}
+                        </Box>
+                      ) : (
+                        option.name
+                      )}
+                    </Box>
+                  )}
                 />
               </Grid>
               <Grid item xs={12} sx={{ minWidth: 400 }}>

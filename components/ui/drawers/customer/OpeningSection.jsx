@@ -1,6 +1,7 @@
 import React from "react";
 import { Grid, Typography, Autocomplete, Accordion, AccordionSummary, AccordionDetails, Button, Box } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import AddIcon from "@mui/icons-material/Add";
 import RTLTextField from "@/components/ui/RTLTextField";
 
 const OpeningSection = React.memo(({ formData, onFormDataChange, isRTL, t, subscriptionChecked, canAddMultiCurrency, upgradeMessage, openingBalances, handleOpeningBalanceChange, handleAddOpeningBalance, handleRemoveOpeningBalance, currencies, expanded, onAccordionChange, allCollapsed, setAllCollapsed }) => {
@@ -10,6 +11,12 @@ const OpeningSection = React.memo(({ formData, onFormDataChange, isRTL, t, subsc
       setAllCollapsed(false);
     }
   }, [allCollapsed]);
+
+  // Create options with Add button as first option
+  const createOptionsWithAdd = (options, type) => {
+    const addOption = { id: 'add', name: `${t('management.add') || 'Add'} ${t(`management.${type}`) || type}`, isAddButton: true };
+    return [addOption, ...options];
+  };
 
   // Default expanded to true if not provided
   const isExpanded = expanded === undefined ? true : expanded;
@@ -33,17 +40,38 @@ const OpeningSection = React.memo(({ formData, onFormDataChange, isRTL, t, subsc
         )}
         {openingBalances.map((entry, idx) => (
           <Grid container spacing={2} key={idx} sx={{ mb: 2, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
                 {t('management.currency') || 'Currency'}
               </Typography>
               <Autocomplete
                 fullWidth
-                options={currencies}
-                getOptionLabel={(option) => option ? `${option.name} (${option.code})` : ''}
+                options={createOptionsWithAdd(currencies, 'currency')}
+                getOptionLabel={(option) => {
+                  if (option?.isAddButton) return option.name;
+                  return option ? `${option.name} (${option.code})` : '';
+                }}
                 value={currencies.find((c) => c.code === entry.currency) || null}
-                onChange={(_, newValue) => handleOpeningBalanceChange(idx, 'currency', newValue?.code || '')}
+                onChange={(_, newValue) => {
+                  if (newValue?.isAddButton) {
+                    console.log('Add currency clicked');
+                    return;
+                  }
+                  handleOpeningBalanceChange(idx, 'currency', newValue?.code || '');
+                }}
                 renderInput={(params) => <RTLTextField {...params} placeholder="" />}
+                renderOption={(props, option) => (
+                  <Box component="li" {...props}>
+                    {option.isAddButton ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                        <AddIcon sx={{ fontSize: '1rem' }} />
+                        {option.name}
+                      </Box>
+                    ) : (
+                      `${option.name} (${option.code})`
+                    )}
+                  </Box>
+                )}
               />
             </Grid>
             <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>

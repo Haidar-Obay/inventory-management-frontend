@@ -1,6 +1,7 @@
 import React from "react";
 import { Grid, Typography, Autocomplete, Accordion, AccordionSummary, AccordionDetails, Box } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import AddIcon from "@mui/icons-material/Add";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -11,6 +12,12 @@ const PaymentTermsSection = React.memo(({ formData, onFormDataChange, isRTL, t, 
       setAllCollapsed(false);
     }
   }, [allCollapsed]);
+
+  // Create options with Add button as first option
+  const createOptionsWithAdd = (options, type) => {
+    const addOption = { id: 'add', name: `${t('management.add') || 'Add'} ${t(`management.${type}`) || type}`, isAddButton: true };
+    return [addOption, ...options];
+  };
 
   // Determine if any opening currency is selected
   const hasOpeningCurrency = Array.isArray(openingBalances) && openingBalances.some(entry => entry.currency);
@@ -28,28 +35,44 @@ const PaymentTermsSection = React.memo(({ formData, onFormDataChange, isRTL, t, 
           </Typography>
           {/* Show payment term combobox, allow credit checkbox, and credit limit fields under header only when collapsed */}
           {!expanded && (
-            <Box
-              sx={{ mt: 1, width: { xs: '100%', sm: '80%' } }}
-              onClick={e => e.stopPropagation()}
-              onFocus={e => e.stopPropagation()}
-              onMouseDown={e => e.stopPropagation()}
-            >
+            <Box sx={{ mt: 1, width: { xs: '100%', sm: '80%' } }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
                 {t('management.paymentTerm') || 'Payment Term'}
               </Typography>
               <Autocomplete
                 fullWidth
-                options={paymentTerms}
-                getOptionLabel={option => option ? option.name : ''}
+                options={createOptionsWithAdd(paymentTerms, 'paymentTerm')}
+                getOptionLabel={option => {
+                  if (option?.isAddButton) return option.name;
+                  return option ? option.name : '';
+                }}
                 value={paymentTerms.find(pt => pt.id === selectedPaymentTerm) || null}
-                onChange={(_, newValue) => setSelectedPaymentTerm(newValue?.id || null)}
+                onChange={(_, newValue) => {
+                  if (newValue?.isAddButton) {
+                    console.log('Add payment term clicked');
+                    return;
+                  }
+                  setSelectedPaymentTerm(newValue?.id || null);
+                }}
                 renderInput={params => <RTLTextField {...params} placeholder="" />}
+                renderOption={(props, option) => (
+                  <Box component="li" {...props}>
+                    {option.isAddButton ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                        <AddIcon sx={{ fontSize: '1rem' }} />
+                        {option.name}
+                      </Box>
+                    ) : (
+                      option.name
+                    )}
+                  </Box>
+                )}
                 onClick={e => e.stopPropagation()}
                 onFocus={e => e.stopPropagation()}
-                onMouseDown={e => e.stopPropagation()}
+                onKeyDown={e => { if ((e.key === ' ' || e.key === 'Spacebar') && !expanded) { e.preventDefault(); e.stopPropagation(); } }}
                 sx={{ background: 'background.paper', mb: 2 }}
               />
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                 <Checkbox
                   checked={allowCredit}
                   onChange={e => setAllowCredit(e.target.checked)}
@@ -62,7 +85,7 @@ const PaymentTermsSection = React.memo(({ formData, onFormDataChange, isRTL, t, 
                 />
               </Box>
               {allowCredit && openingBalances.map((entry, idx) => (
-                <Box key={entry.currency + '-credit'} sx={{ mb: 2 }}>
+                <Box key={entry.currency + '-credit'} sx={{ mb: 1 }}>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
                     {t('management.creditLimitPerCurrency') || 'Credit Limit for'} {entry.currency}
                   </Typography>
@@ -92,11 +115,32 @@ const PaymentTermsSection = React.memo(({ formData, onFormDataChange, isRTL, t, 
               </Typography>
               <Autocomplete
                 fullWidth
-                options={paymentTerms}
-                getOptionLabel={option => option ? option.name : ''}
+                options={createOptionsWithAdd(paymentTerms, 'paymentTerm')}
+                getOptionLabel={option => {
+                  if (option?.isAddButton) return option.name;
+                  return option ? option.name : '';
+                }}
                 value={paymentTerms.find(pt => pt.id === selectedPaymentTerm) || null}
-                onChange={(_, newValue) => setSelectedPaymentTerm(newValue?.id || null)}
+                onChange={(_, newValue) => {
+                  if (newValue?.isAddButton) {
+                    console.log('Add payment term clicked');
+                    return;
+                  }
+                  setSelectedPaymentTerm(newValue?.id || null);
+                }}
                 renderInput={params => <RTLTextField {...params} placeholder="" />}
+                renderOption={(props, option) => (
+                  <Box component="li" {...props}>
+                    {option.isAddButton ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                        <AddIcon sx={{ fontSize: '1rem' }} />
+                        {option.name}
+                      </Box>
+                    ) : (
+                      option.name
+                    )}
+                  </Box>
+                )}
                 sx={{ background: 'background.paper' }}
               />
             </Grid>
@@ -106,17 +150,38 @@ const PaymentTermsSection = React.memo(({ formData, onFormDataChange, isRTL, t, 
               </Typography>
               <Autocomplete
                 fullWidth
-                options={paymentMethods}
-                getOptionLabel={option => option ? option.name : ''}
+                options={createOptionsWithAdd(paymentMethods, 'paymentMethod')}
+                getOptionLabel={option => {
+                  if (option?.isAddButton) return option.name;
+                  return option ? option.name : '';
+                }}
                 value={paymentMethods.find(pm => pm.id === selectedPaymentMethod) || null}
-                onChange={(_, newValue) => setSelectedPaymentMethod(newValue?.id || null)}
+                onChange={(_, newValue) => {
+                  if (newValue?.isAddButton) {
+                    console.log('Add payment method clicked');
+                    return;
+                  }
+                  setSelectedPaymentMethod(newValue?.id || null);
+                }}
                 renderInput={params => <RTLTextField {...params} placeholder="" />}
+                renderOption={(props, option) => (
+                  <Box component="li" {...props}>
+                    {option.isAddButton ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                        <AddIcon sx={{ fontSize: '1rem' }} />
+                        {option.name}
+                      </Box>
+                    ) : (
+                      option.name
+                    )}
+                  </Box>
+                )}
                 sx={{ background: 'background.paper' }}
               />
             </Grid>
 
             {/* Second line: Allow Credit checkbox and credit limit fields if checked */}
-            <Grid item xs={12} md={6} sx={{ minWidth: 800, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Grid item xs={12} md={6} sx={{ minWidth: 800, display: 'flex', alignItems: 'center', gap: 0 }}>
               <Checkbox
                 checked={allowCredit}
                 onChange={e => setAllowCredit(e.target.checked)}
@@ -125,7 +190,7 @@ const PaymentTermsSection = React.memo(({ formData, onFormDataChange, isRTL, t, 
                 disabled={!hasOpeningCurrency}
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ minWidth: 300, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Grid item xs={12} md={6} sx={{ minWidth: 800, display: 'flex', alignItems: 'center', gap: 0}}>
               {allowCredit && openingBalances.map((entry, idx) => (
                 <Box key={entry.currency + '-credit'} sx={{ width: '100%' }}>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
@@ -136,14 +201,14 @@ const PaymentTermsSection = React.memo(({ formData, onFormDataChange, isRTL, t, 
                     onChange={e => handleCreditLimitChange(entry.currency, e.target.value)}
                     type="number"
                     placeholder=""
-                    sx={{ background: 'background.paper', mb: 2 }}
+                    sx={{ background: 'background.paper', mb: 1 }}
                   />
                 </Box>
               ))}
             </Grid>
 
             {/* Third line: Accept Cheques checkbox and max cheques fields if checked */}
-            <Grid item xs={12} md={6} sx={{ minWidth: 800, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Grid item xs={12} md={6} sx={{ minWidth: 800, display: 'flex', alignItems: 'center', gap: 0 }}>
               <Checkbox
                 checked={acceptCheques}
                 onChange={e => setAcceptCheques(e.target.checked)}
@@ -152,7 +217,7 @@ const PaymentTermsSection = React.memo(({ formData, onFormDataChange, isRTL, t, 
                 disabled={!hasOpeningCurrency}
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ minWidth: 300, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Grid item xs={12} md={6} sx={{ minWidth: 800, display: 'flex', alignItems: 'center', gap: 0 }}>
               {acceptCheques && openingBalances.map((entry, idx) => (
                 <Box key={entry.currency + '-cheques'} sx={{ width: '100%' }}>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
@@ -163,14 +228,14 @@ const PaymentTermsSection = React.memo(({ formData, onFormDataChange, isRTL, t, 
                     onChange={e => handleMaxChequesChange(entry.currency, e.target.value)}
                     type="number"
                     placeholder=""
-                    sx={{ background: 'background.paper', mb: 2 }}
+                    sx={{ background: 'background.paper', mb: 1 }}
                   />
                 </Box>
               ))}
             </Grid>
 
             {/* Fourth line: Payment Day, Track Payment, Settlement Method */}
-            <Grid item xs={12} md={4} sx={{ minWidth: 300 }}>
+            <Grid item xs={12} md={4} sx={{ minWidth: 275 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
                 {t('management.paymentDay') || 'Payment Day'}
               </Typography>
@@ -182,7 +247,7 @@ const PaymentTermsSection = React.memo(({ formData, onFormDataChange, isRTL, t, 
                 sx={{ background: 'background.paper' }}
               />
             </Grid>
-            <Grid item xs={12} md={4} sx={{ minWidth: 300 }}>
+            <Grid item xs={12} md={4} sx={{ minWidth: 275 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
                 {t('management.trackPayment') || 'Track Payment'}
               </Typography>
@@ -198,7 +263,7 @@ const PaymentTermsSection = React.memo(({ formData, onFormDataChange, isRTL, t, 
                 <option value="no">{t('management.no') || 'No'}</option>
               </RTLTextField>
             </Grid>
-            <Grid item xs={12} md={4} sx={{ minWidth: 300 }}>
+            <Grid item xs={12} md={4} sx={{ minWidth: 275 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
                 {t('management.settlementMethod') || 'Settlement Method'}
               </Typography>

@@ -1,6 +1,7 @@
 import React from "react";
 import { Grid, Typography, Autocomplete, Accordion, AccordionSummary, AccordionDetails, Box } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import AddIcon from "@mui/icons-material/Add";
 import RTLTextField from "@/components/ui/RTLTextField";
 
 const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t, countries, zones, cities, districts, loading, expanded, onAccordionChange, allCollapsed, setAllCollapsed }) => {
@@ -10,6 +11,12 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
       setAllCollapsed(false);
     }
   }, [allCollapsed]);
+
+  // Create options with Add button as first option
+  const createOptionsWithAdd = (options, type) => {
+    const addOption = { id: 'add', name: `${t('management.add') || 'Add'} ${t(`management.${type}`) || type}`, isAddButton: true };
+    return [addOption, ...options];
+  };
 
   return (
     <Accordion expanded={expanded} onChange={onAccordionChange}>
@@ -50,10 +57,15 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
             </Typography>
             <Autocomplete
               fullWidth
-              options={countries}
+              options={createOptionsWithAdd(countries, 'country')}
               getOptionLabel={(option) => option.name || ""}
               value={countries.find((country) => country.id === formData?.billing_country_id) || null}
               onChange={(event, newValue) => {
+                if (newValue?.isAddButton) {
+                  // Handle add country action
+                  console.log('Add country clicked');
+                  return;
+                }
                 onFormDataChange({
                   ...formData,
                   billing_country_id: newValue?.id || "",
@@ -64,6 +76,18 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
               }}
               loading={loading}
               renderInput={(params) => <RTLTextField {...params} placeholder="" />}
+              renderOption={(props, option) => (
+                <Box component="li" {...props}>
+                  {option.isAddButton ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                      <AddIcon sx={{ fontSize: '1rem' }} />
+                      {option.name}
+                    </Box>
+                  ) : (
+                    option.name
+                  )}
+                </Box>
+              )}
             />
           </Grid>
           <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
@@ -72,10 +96,15 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
             </Typography>
             <Autocomplete
               fullWidth
-              options={cities}
+              options={createOptionsWithAdd(cities, 'city')}
               getOptionLabel={(option) => option.name || ""}
               value={cities.find((city) => city.id === formData?.billing_city_id) || null}
               onChange={(event, newValue) => {
+                if (newValue?.isAddButton) {
+                  // Handle add city action
+                  console.log('Add city clicked');
+                  return;
+                }
                 onFormDataChange({
                   ...formData,
                   billing_city_id: newValue?.id || "",
@@ -84,6 +113,18 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
               }}
               loading={loading}
               renderInput={(params) => <RTLTextField {...params} placeholder="" />}
+              renderOption={(props, option) => (
+                <Box component="li" {...props}>
+                  {option.isAddButton ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                      <AddIcon sx={{ fontSize: '1rem' }} />
+                      {option.name}
+                    </Box>
+                  ) : (
+                    option.name
+                  )}
+                </Box>
+              )}
             />
           </Grid>
           <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
@@ -92,10 +133,15 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
             </Typography>
             <Autocomplete
               fullWidth
-              options={districts}
+              options={createOptionsWithAdd(districts, 'district')}
               getOptionLabel={(option) => option.name || ""}
               value={districts.find((district) => district.id === formData?.billing_district_id) || null}
               onChange={(event, newValue) => {
+                if (newValue?.isAddButton) {
+                  // Handle add district action
+                  console.log('Add district clicked');
+                  return;
+                }
                 onFormDataChange({
                   ...formData,
                   billing_district_id: newValue?.id || "",
@@ -103,6 +149,18 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
               }}
               loading={loading}
               renderInput={(params) => <RTLTextField {...params} placeholder="" />}
+              renderOption={(props, option) => (
+                <Box component="li" {...props}>
+                  {option.isAddButton ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                      <AddIcon sx={{ fontSize: '1rem' }} />
+                      {option.name}
+                    </Box>
+                  ) : (
+                    option.name
+                  )}
+                </Box>
+              )}
             />
           </Grid>
           <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
@@ -111,10 +169,15 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
             </Typography>
             <Autocomplete
               fullWidth
-              options={zones}
+              options={createOptionsWithAdd(zones, 'zone')}
               getOptionLabel={(option) => option.name || ""}
               value={zones.find((zone) => zone.id === formData?.billing_zone_id) || null}
               onChange={(event, newValue) => {
+                if (newValue?.isAddButton) {
+                  // Handle add zone action
+                  console.log('Add zone clicked');
+                  return;
+                }
                 onFormDataChange({
                   ...formData,
                   billing_zone_id: newValue?.id || "",
@@ -124,6 +187,18 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
               }}
               loading={loading}
               renderInput={(params) => <RTLTextField {...params} placeholder="" />}
+              renderOption={(props, option) => (
+                <Box component="li" {...props}>
+                  {option.isAddButton ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                      <AddIcon sx={{ fontSize: '1rem' }} />
+                      {option.name}
+                    </Box>
+                  ) : (
+                    option.name
+                  )}
+                </Box>
+              )}
             />
           </Grid>
           {/* Address Line 1 inside details, only when expanded */}

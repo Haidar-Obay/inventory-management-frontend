@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, Suspense } from "react";
+import React, { useState, useEffect, useCallback, Suspense, useMemo } from "react";
 import {
   Grid,
   Typography,
@@ -76,7 +76,7 @@ const MessageSection = dynamic(() => import('./customer/MessageSection'));
 const CustomerGroupSection = dynamic(() => import('./customerGroup/CustomerGroupSection'));
 const SalesmanSection = dynamic(() => import('./salesmen/SalesmanSection'));
 
-const CustomerDrawer = ({
+const CustomerDrawer = React.memo(({
   isOpen,
   onClose,
   type,
@@ -163,8 +163,8 @@ const CustomerDrawer = ({
     }
   }, [isOpen, type]);
 
-  // Generate display name suggestions based on name components
-  const generateDisplayNameSuggestions = () => {
+  // Memoized display name suggestions to prevent recalculation
+  const displayNameSuggestions = useMemo(() => {
     const title = formData?.title || "";
     const firstName = formData?.first_name || "";
     const middleName = formData?.middle_name || "";
@@ -200,7 +200,7 @@ const CustomerDrawer = ({
     return suggestions.filter((suggestion, index, array) => 
       array.indexOf(suggestion) === index && suggestion.trim() !== ""
     );
-  };
+  }, [formData?.title, formData?.first_name, formData?.middle_name, formData?.last_name, formData?.company_name]);
 
   useEffect(() => {
     if (isOpen) {
@@ -215,9 +215,9 @@ const CustomerDrawer = ({
       setOriginalName(formData?.name || "");
       setOriginalData(JSON.parse(JSON.stringify(formData)));
     }
-  }, [isOpen, isEdit]);
+  }, [isOpen, isEdit, formData]);
 
-  const fetchDropdownData = async () => {
+  const fetchDropdownData = useCallback(async () => {
     try {
       setLoading(true);
       const [
@@ -267,34 +267,17 @@ const CustomerDrawer = ({
       setPaymentTerms(paymentTermsRes.data || []);
       setPaymentMethods(paymentMethodsRes.data || []);
       
-      // Console log the results
-      console.log("Customer Groups:", customerGroupsRes.data);
-      console.log("Salesmen:", salesmenRes.data);
-      console.log("Countries:", countriesRes.data);
-      console.log("Zones:", zonesRes.data);
-      console.log("Cities:", citiesRes.data);
-      console.log("Districts:", districtsRes.data);
-      console.log("Trades:", tradesRes.data);
-      console.log("Company Codes:", companyCodesRes.data);
-      console.log("Business Types:", businessTypesRes.data);
-      console.log("Sales Channels:", salesChannelsRes.data);
-      console.log("Distribution Channels:", distributionChannelsRes.data);
-      console.log("Media Channels:", mediaChannelsRes.data);
-      console.log("Payment Terms:", paymentTermsRes.data);
-      console.log("Payment Methods:", paymentMethodsRes.data);
-      
     } catch (error) {
       console.error("Error fetching dropdown data:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Fetch currencies and subscription status on open
   useEffect(() => {
     if (isOpen) {
       getCurrencies().then((data) => {
-        // If the response is an array, set it directly
         setCurrencies(Array.isArray(data) ? data : (data.data || []));
       });
       getSubscriptionStatus().then((data) => {
@@ -318,96 +301,97 @@ const CustomerDrawer = ({
     }
   }, [isOpen]);
 
+  // Optimized handleFieldChange - doesn't depend on formData to prevent re-renders
   const handleFieldChange = useCallback((field) => (event) => {
-    onFormDataChange({
-      ...formData,
+    onFormDataChange((prevFormData) => ({
+      ...prevFormData,
       [field]: event.target.value,
-    });
-  }, [formData, onFormDataChange]);
+    }));
+  }, [onFormDataChange]);
 
   const handleCustomerGroupChange = useCallback((event, newValue) => {
-    onFormDataChange({
-      ...formData,
+    onFormDataChange((prevFormData) => ({
+      ...prevFormData,
       customer_group_id: newValue?.id || "",
-    });
-  }, [formData, onFormDataChange]);
+    }));
+  }, [onFormDataChange]);
 
   const handleSalesmanChange = useCallback((event, newValue) => {
-    onFormDataChange({
-      ...formData,
+    onFormDataChange((prevFormData) => ({
+      ...prevFormData,
       salesman_id: newValue?.id || "",
-    });
-  }, [formData, onFormDataChange]);
+    }));
+  }, [onFormDataChange]);
 
   const handleTradeChange = useCallback((event, newValue) => {
-    onFormDataChange({
-      ...formData,
+    onFormDataChange((prevFormData) => ({
+      ...prevFormData,
       trade_id: newValue?.id || "",
-    });
-  }, [formData, onFormDataChange]);
+    }));
+  }, [onFormDataChange]);
 
   const handleCompanyCodeChange = useCallback((event, newValue) => {
-    onFormDataChange({
-      ...formData,
+    onFormDataChange((prevFormData) => ({
+      ...prevFormData,
       company_code_id: newValue?.id || "",
-    });
-  }, [formData, onFormDataChange]);
+    }));
+  }, [onFormDataChange]);
 
   const handleBusinessTypeChange = useCallback((event, newValue) => {
-    onFormDataChange({
-      ...formData,
+    onFormDataChange((prevFormData) => ({
+      ...prevFormData,
       business_type_id: newValue?.id || "",
-    });
-  }, [formData, onFormDataChange]);
+    }));
+  }, [onFormDataChange]);
 
   const handleSalesChannelChange = useCallback((event, newValue) => {
-    onFormDataChange({
-      ...formData,
+    onFormDataChange((prevFormData) => ({
+      ...prevFormData,
       sales_channel_id: newValue?.id || "",
-    });
-  }, [formData, onFormDataChange]);
+    }));
+  }, [onFormDataChange]);
 
   const handleDistributionChannelChange = useCallback((event, newValue) => {
-    onFormDataChange({
-      ...formData,
+    onFormDataChange((prevFormData) => ({
+      ...prevFormData,
       distribution_channel_id: newValue?.id || "",
-    });
-  }, [formData, onFormDataChange]);
+    }));
+  }, [onFormDataChange]);
 
   const handleMediaChannelChange = useCallback((event, newValue) => {
-    onFormDataChange({
-      ...formData,
+    onFormDataChange((prevFormData) => ({
+      ...prevFormData,
       media_channel_id: newValue?.id || "",
-    });
-  }, [formData, onFormDataChange]);
+    }));
+  }, [onFormDataChange]);
 
   const handleDisplayNameChange = useCallback((event, newValue) => {
-    onFormDataChange({
-      ...formData,
+    onFormDataChange((prevFormData) => ({
+      ...prevFormData,
       display_name: newValue || "",
-    });
-  }, [formData, onFormDataChange]);
+    }));
+  }, [onFormDataChange]);
 
   const handleCopyFromBillingAddress = useCallback(() => {
-    onFormDataChange({
-      ...formData,
-      shipping_country_id: formData?.billing_country_id || "",
-      shipping_zone_id: formData?.billing_country_id || "",
-      shipping_city_id: formData?.billing_city_id || "",
-      shipping_district_id: formData?.billing_district_id || "",
-      shipping_address_line1: formData?.billing_address_line1 || "",
-      shipping_address_line2: formData?.billing_address_line2 || "",
-      shipping_building: formData?.billing_building || "",
-      shipping_block: formData?.billing_block || "",
-      shipping_side: formData?.billing_side || "",
-      shipping_apartment: formData?.billing_apartment || "",
-      shipping_zip_code: formData?.billing_zip_code || "",
-    });
-  }, [formData, onFormDataChange]);
+    onFormDataChange((prevFormData) => ({
+      ...prevFormData,
+      shipping_country_id: prevFormData?.billing_country_id || "",
+      shipping_zone_id: prevFormData?.billing_zone_id || "",
+      shipping_city_id: prevFormData?.billing_city_id || "",
+      shipping_district_id: prevFormData?.billing_district_id || "",
+      shipping_address_line1: prevFormData?.billing_address_line1 || "",
+      shipping_address_line2: prevFormData?.billing_address_line2 || "",
+      shipping_building: prevFormData?.billing_building || "",
+      shipping_block: prevFormData?.billing_block || "",
+      shipping_side: prevFormData?.billing_side || "",
+      shipping_apartment: prevFormData?.billing_apartment || "",
+      shipping_zip_code: prevFormData?.billing_zip_code || "",
+    }));
+  }, [onFormDataChange]);
 
   const handleAddShippingAddress = useCallback(() => {
     const newAddress = {
-      id: Date.now(), // Temporary ID for new addresses
+      id: Date.now(),
       country_id: "",
       zone_id: "",
       city_id: "",
@@ -430,10 +414,10 @@ const CustomerDrawer = ({
   const handleShippingAddressChange = useCallback((index, field, value) => {
     setShippingAddresses((prev) => {
       const updatedAddresses = [...prev];
-    updatedAddresses[index] = {
-      ...updatedAddresses[index],
-      [field]: value,
-    };
+      updatedAddresses[index] = {
+        ...updatedAddresses[index],
+        [field]: value,
+      };
       return updatedAddresses;
     });
   }, []);
@@ -441,20 +425,20 @@ const CustomerDrawer = ({
   const handleCopyToShippingAddress = useCallback((index) => {
     setShippingAddresses((prev) => {
       const updatedAddresses = [...prev];
-    updatedAddresses[index] = {
-      ...updatedAddresses[index],
-      country_id: formData?.billing_country_id || "",
-      zone_id: formData?.billing_zone_id || "",
-      city_id: formData?.billing_city_id || "",
-      district_id: formData?.billing_district_id || "",
-      address_line1: formData?.billing_address_line1 || "",
-      address_line2: formData?.billing_address_line2 || "",
-      building: formData?.billing_building || "",
-      block: formData?.billing_block || "",
-      side: formData?.billing_side || "",
-      apartment: formData?.billing_apartment || "",
-      zip_code: formData?.billing_zip_code || "",
-    };
+      updatedAddresses[index] = {
+        ...updatedAddresses[index],
+        country_id: formData?.billing_country_id || "",
+        zone_id: formData?.billing_zone_id || "",
+        city_id: formData?.billing_city_id || "",
+        district_id: formData?.billing_district_id || "",
+        address_line1: formData?.billing_address_line1 || "",
+        address_line2: formData?.billing_address_line2 || "",
+        building: formData?.billing_building || "",
+        block: formData?.billing_block || "",
+        side: formData?.billing_side || "",
+        apartment: formData?.billing_apartment || "",
+        zip_code: formData?.billing_zip_code || "",
+      };
       return updatedAddresses;
     });
   }, [formData]);
@@ -462,7 +446,7 @@ const CustomerDrawer = ({
   // Contact handlers
   const handleAddContact = useCallback(() => {
     const newContact = {
-      id: Date.now(), // Temporary ID for new contacts
+      id: Date.now(),
       title: "",
       name: "",
       work_phone: "",
@@ -506,11 +490,12 @@ const CustomerDrawer = ({
     }
   }, [handleAddSearchTerm]);
 
-  function isDataChanged() {
+  // Memoized data change check
+  const isDataChanged = useCallback(() => {
     return JSON.stringify(formData) !== JSON.stringify(originalData);
-  }
+  }, [formData, originalData]);
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     if (isEdit && !isDataChanged()) {
       addToast({
         type: "error",
@@ -522,12 +507,12 @@ const CustomerDrawer = ({
       return;
     }
     onSave && onSave();
-  };
+  }, [isEdit, isDataChanged, addToast, t, onSave]);
 
   const handleOpeningBalanceChange = useCallback((index, field, value) => {
     setOpeningBalances((prev) => {
       const updated = [...prev];
-    updated[index][field] = value;
+      updated[index][field] = value;
       return updated;
     });
   }, []);
@@ -543,40 +528,45 @@ const CustomerDrawer = ({
   const handleCreditLimitChange = useCallback((currencyCode, value) => {
     setCreditLimits((prev) => ({ ...prev, [currencyCode]: value }));
   }, []);
+  
   const handleMaxChequesChange = useCallback((currencyCode, value) => {
     setMaxCheques((prev) => ({ ...prev, [currencyCode]: value }));
   }, []);
 
   // Handler functions for salesmen roles
   const handleSalesmanSelect = useCallback((event, newValue) => {
-    onFormDataChange({ ...formData, salesman_id: newValue?.id || '' });
-  }, [formData, onFormDataChange]);
+    onFormDataChange((prevFormData) => ({ ...prevFormData, salesman_id: newValue?.id || '' }));
+  }, [onFormDataChange]);
+  
   const handleCollectorSelect = useCallback((event, newValue) => {
-    onFormDataChange({ ...formData, collector_id: newValue?.id || '' });
-  }, [formData, onFormDataChange]);
+    onFormDataChange((prevFormData) => ({ ...prevFormData, collector_id: newValue?.id || '' }));
+  }, [onFormDataChange]);
+  
   const handleSupervisorSelect = useCallback((event, newValue) => {
-    onFormDataChange({ ...formData, supervisor_id: newValue?.id || '' });
-  }, [formData, onFormDataChange]);
+    onFormDataChange((prevFormData) => ({ ...prevFormData, supervisor_id: newValue?.id || '' }));
+  }, [onFormDataChange]);
+  
   const handleManagerSelect = useCallback((event, newValue) => {
-    onFormDataChange({ ...formData, manager_id: newValue?.id || '' });
-  }, [formData, onFormDataChange]);
+    onFormDataChange((prevFormData) => ({ ...prevFormData, manager_id: newValue?.id || '' }));
+  }, [onFormDataChange]);
 
-  // Filtering logic for active salesmen and roles
-  const activeSalesmen = salesmen.filter(s => s.active);
-  const collectors = activeSalesmen.filter(s => s.is_collector);
-  const supervisors = activeSalesmen.filter(s => s.is_supervisor);
-  const managers = activeSalesmen.filter(s => s.is_manager);
+  // Memoized filtering logic for active salesmen and roles
+  const activeSalesmen = useMemo(() => salesmen.filter(s => s.active), [salesmen]);
+  const collectors = useMemo(() => activeSalesmen.filter(s => s.is_collector), [activeSalesmen]);
+  const supervisors = useMemo(() => activeSalesmen.filter(s => s.is_supervisor), [activeSalesmen]);
+  const managers = useMemo(() => activeSalesmen.filter(s => s.is_manager), [activeSalesmen]);
 
-  const handleAccordionChange = (section) => (event, isExpanded) => {
+  const handleAccordionChange = useCallback((section) => (event, isExpanded) => {
     setExpandedSections((prev) => ({ ...prev, [section]: isExpanded }));
-  };
+  }, []);
 
-  const handleCloseAll = () => {
+  const handleCloseAll = useCallback(() => {
     setAllCollapsed(true);
     setExpandedSections({});
-  };
+  }, []);
 
-  const getContent = () => {
+  // Memoized content to prevent unnecessary re-renders
+  const content = useMemo(() => {
     if (!type) return null;
 
     if (type === "customerGroup") {
@@ -614,7 +604,7 @@ const CustomerDrawer = ({
                 onFormDataChange={onFormDataChange}
                 isRTL={isRTL}
                 t={t}
-                generateDisplayNameSuggestions={generateDisplayNameSuggestions}
+                generateDisplayNameSuggestions={() => displayNameSuggestions}
                 handleDisplayNameChange={handleDisplayNameChange}
                 handleFieldChange={handleFieldChange}
                 expanded={!!expandedSections.personalInformation}
@@ -959,15 +949,132 @@ const CustomerDrawer = ({
             </Typography>
             <RTLTextField
               fullWidth
-            value={formData?.name || ""}
-            onChange={handleFieldChange("name")}
-            required
+              value={formData?.name || ""}
+              onChange={handleFieldChange("name")}
+              required
               placeholder=""
             />
           </Grid>
       </Grid>
     );
-  };
+  }, [
+    type,
+    formData,
+    onFormDataChange,
+    isRTL,
+    t,
+    displayNameSuggestions,
+    handleDisplayNameChange,
+    handleFieldChange,
+    countries,
+    zones,
+    cities,
+    districts,
+    loading,
+    shippingAddresses,
+    handleCopyFromBillingAddress,
+    handleAddShippingAddress,
+    handleRemoveShippingAddress,
+    handleShippingAddressChange,
+    handleCopyToShippingAddress,
+    searchTerms,
+    newSearchTerm,
+    handleAddSearchTerm,
+    handleRemoveSearchTerm,
+    handleSearchTermKeyPress,
+    trades,
+    companyCodes,
+    customerGroups,
+    businessTypes,
+    salesChannels,
+    distributionChannels,
+    mediaChannels,
+    handleTradeChange,
+    handleCompanyCodeChange,
+    handleCustomerGroupChange,
+    handleBusinessTypeChange,
+    handleSalesChannelChange,
+    handleDistributionChannelChange,
+    handleMediaChannelChange,
+    subscriptionChecked,
+    canAddMultiCurrency,
+    upgradeMessage,
+    openingBalances,
+    handleOpeningBalanceChange,
+    handleAddOpeningBalance,
+    handleRemoveOpeningBalance,
+    currencies,
+    salesmen,
+    collectors,
+    supervisors,
+    managers,
+    handleSalesmanSelect,
+    handleCollectorSelect,
+    handleSupervisorSelect,
+    handleManagerSelect,
+    paymentTerms,
+    paymentMethods,
+    selectedPaymentTerm,
+    setSelectedPaymentTerm,
+    selectedPaymentMethod,
+    setSelectedPaymentMethod,
+    allowCredit,
+    setAllowCredit,
+    creditLimits,
+    handleCreditLimitChange,
+    acceptCheques,
+    setAcceptCheques,
+    maxCheques,
+    handleMaxChequesChange,
+    paymentDay,
+    setPaymentDay,
+    trackPayment,
+    setTrackPayment,
+    settlementMethod,
+    setSettlementMethod,
+    active,
+    setActive,
+    blackListed,
+    setBlackListed,
+    oneTimeAccount,
+    setOneTimeAccount,
+    specialAccount,
+    setSpecialAccount,
+    posCustomer,
+    setPosCustomer,
+    freeDeliveryCharge,
+    setFreeDeliveryCharge,
+    printInvoiceLanguage,
+    setPrintInvoiceLanguage,
+    sendInvoice,
+    setSendInvoice,
+    notes,
+    setNotes,
+    priceChoice,
+    setPriceChoice,
+    priceList,
+    setPriceList,
+    globalDiscount,
+    setGlobalDiscount,
+    discountClass,
+    setDiscountClass,
+    markup,
+    setMarkup,
+    markdown,
+    setMarkdown,
+    contacts,
+    handleAddContact,
+    handleRemoveContact,
+    handleContactChange,
+    expandedSections,
+    handleAccordionChange,
+    allCollapsed,
+    setAllCollapsed,
+    showMessageField,
+    setShowMessageField,
+    message,
+    setMessage
+  ]);
 
   if (!type) return null;
 
@@ -998,7 +1105,7 @@ const CustomerDrawer = ({
       isOpen={isOpen}
       onClose={onClose}
       title={getTitle()}
-      content={getContent()}
+      content={content}
       onSave={handleSave}
       onSaveAndNew={onSaveAndNew}
       onSaveAndClose={onSaveAndClose}
@@ -1006,6 +1113,6 @@ const CustomerDrawer = ({
       width={1200}
     />
   );
-};
+});
 
 export default CustomerDrawer;

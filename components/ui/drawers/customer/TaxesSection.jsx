@@ -11,6 +11,7 @@ const TaxesSection = React.memo(({ formData, onFormDataChange, isRTL, t, handleF
       setAllCollapsed(false);
     }
   }, [allCollapsed]);
+  
   return (
     <Accordion expanded={expanded} onChange={onAccordionChange}>
       <AccordionSummary
@@ -24,7 +25,8 @@ const TaxesSection = React.memo(({ formData, onFormDataChange, isRTL, t, handleF
       </AccordionSummary>
       <AccordionDetails>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+          {/* Taxable Checkbox */}
+          <Grid item xs={12} md={6} sx={{ width: '100%' }}>
             <Checkbox
               checked={formData?.taxable || false}
               onChange={e => onFormDataChange({ ...formData, taxable: e.target.checked })}
@@ -32,19 +34,47 @@ const TaxesSection = React.memo(({ formData, onFormDataChange, isRTL, t, handleF
               isRTL={isRTL}
             />
           </Grid>
+          
+          {/* Taxable Fields - Show when taxable is checked */}
           {formData?.taxable && (
-            <Grid item xs={12} md={6}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
-                {t('management.addedTax') || 'Added Tax'}
-              </Typography>
-              <RTLTextField
-                value={formData?.added_tax || ''}
-                onChange={handleFieldChange('added_tax')}
-                placeholder=""
-              />
-            </Grid>
+            <>
+              <Grid item xs={12} md={6}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
+                  {t('management.taxedFromDate') || 'Taxed From Date'}
+                </Typography>
+                <RTLTextField
+                  type="date"
+                  value={formData?.taxed_from_date || ''}
+                  onChange={handleFieldChange('taxed_from_date')}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
+                  {t('management.taxedTillDate') || 'Taxed Till Date'}
+                </Typography>
+                <RTLTextField
+                  type="date"
+                  value={formData?.taxed_till_date || ''}
+                  onChange={handleFieldChange('taxed_till_date')}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
+                  {t('management.addedTax') || 'Added Tax'}
+                </Typography>
+                <RTLTextField
+                  value={formData?.added_tax || ''}
+                  onChange={handleFieldChange('added_tax')}
+                  placeholder=""
+                />
+              </Grid>
+            </>
           )}
-          <Grid item xs={12} md={6}>
+          
+          {/* Exempted Checkbox */}
+          <Grid item xs={12} md={6} sx={{ width: '100%' }}>
             <Checkbox
               checked={formData?.exempted || false}
               onChange={e => onFormDataChange({ ...formData, exempted: e.target.checked })}
@@ -52,6 +82,8 @@ const TaxesSection = React.memo(({ formData, onFormDataChange, isRTL, t, handleF
               isRTL={isRTL}
             />
           </Grid>
+          
+          {/* Exempted Fields - Show when exempted is checked */}
           {formData?.exempted && (
             <>
               <Grid item xs={12} md={6}>
