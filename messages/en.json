@@ -346,7 +346,7 @@
     "exitConfirmationTitle": "Exit Confirmation",
     "exitConfirmationMessage": "Are you sure you want to exit? Any unsaved changes will be lost.",
     "cancel": "Cancel",
-    "exit": "Exit"
+    "exit": "Ignore Changes"
   },
   "home": {
     "welcome": "Welcome to Your Inventory Management System",
@@ -757,7 +757,15 @@
         "select": "Select",
         "searchColumn": "Search column...",
         "loadingTemplates": "Loading templates...",
-        "update": "Update Template"
+        "update": "Update Template",
+        "noColumnsFound": "No columns found.",
+        "settings": "Settings",
+        "save": "Save",
+        "saveAs": "Save As",
+        "saving": "Saving...",
+        "deleteConfirmTitle": "Delete Template",
+        "deleteConfirmMessage": "Are you sure you want to delete the template \"{templateName}\"? This action cannot be undone.",
+        "deleting": "Deleting..."
       }
     },
     "filter": {

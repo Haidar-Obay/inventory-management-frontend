@@ -152,6 +152,23 @@ const Table = (props) => {
   const [openDropdownRowId, setOpenDropdownRowId] = useState(null);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
   const [previewRow, setPreviewRow] = useState(null);
+  const [selectedTemplateId, setSelectedTemplateId] = useState(() => {
+    // Load selected template ID from localStorage on component mount
+    const tableId = tableProps.tableId || "default";
+    const stored = localStorage.getItem(`selectedTemplate_${tableId}`);
+    return stored || null;
+  });
+
+  // Custom setter that saves to localStorage
+  const handleSelectedTemplateChange = (templateId) => {
+    const tableId = tableProps.tableId || "default";
+    if (templateId) {
+      localStorage.setItem(`selectedTemplate_${tableId}`, templateId);
+    } else {
+      localStorage.removeItem(`selectedTemplate_${tableId}`);
+    }
+    setSelectedTemplateId(templateId);
+  };
 
 
 
@@ -249,6 +266,8 @@ const Table = (props) => {
           onMoveColumnUp={handleMoveColumnUp}
           onMoveColumnDown={handleMoveColumnDown}
           onResetSettings={handleResetColumnSettings}
+          selectedTemplateId={selectedTemplateId}
+          onSelectedTemplateChange={handleSelectedTemplateChange}
         />
       )}
 

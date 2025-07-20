@@ -74,7 +74,7 @@
     "exitConfirmationTitle": "تأكيد الخروج",
     "exitConfirmationMessage": "هل أنت متأكد من أنك تريد الخروج؟ سيتم فقدان أي تغييرات غير محفوظة.",
     "cancel": "إلغاء",
-    "exit": "خروج"
+    "exit": "تجاهل التغييرات"
   },
   "home": {
     "welcome": "مرحباً بك في نظام إدارة المخزون",
@@ -829,7 +829,15 @@
         "loadingTemplates": "جاري تحميل القوالب...",
         "update": "تحديث القالب",
         "error": "خطأ",
-        "duplicateTemplate": "يوجد قالب بهذه الإعدادات بالفعل."
+        "duplicateTemplate": "يوجد قالب بهذه الإعدادات بالفعل.",
+        "noColumnsFound": "لم يتم العثور على أعمدة.",
+        "settings": "الاعدادات",
+        "save": "حفظ",
+        "saveAs": "حفظ باسم",
+        "saving": "جاري الحفظ...",
+        "deleteConfirmTitle": "حذف القالب",
+        "deleteConfirmMessage": "هل أنت متأكد من حذف القالب \"{templateName}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+        "deleting": "جاري الحذف..."
       }
     },
     "filter": {

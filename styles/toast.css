@@ -32,7 +32,7 @@
 /* Toast container styles */
 .toast-container {
   position: fixed;
-  z-index: 9999;
+  z-index: 2147483649;
   bottom: 1.5rem;
   right: 1.5rem;
   left: auto;
