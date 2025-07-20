@@ -39,39 +39,42 @@ const PaymentTermsSection = React.memo(({ formData, onFormDataChange, isRTL, t, 
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
                 {t('management.paymentTerm') || 'Payment Term'}
               </Typography>
-              <Autocomplete
-                fullWidth
-                options={createOptionsWithAdd(paymentTerms, 'paymentTerm')}
-                getOptionLabel={option => {
-                  if (option?.isAddButton) return option.name;
-                  return option ? option.name : '';
-                }}
-                value={paymentTerms.find(pt => pt.id === selectedPaymentTerm) || null}
-                onChange={(_, newValue) => {
-                  if (newValue?.isAddButton) {
-                    console.log('Add payment term clicked');
-                    return;
-                  }
-                  setSelectedPaymentTerm(newValue?.id || null);
-                }}
-                renderInput={params => <RTLTextField {...params} placeholder="" />}
-                renderOption={(props, option) => (
-                  <Box component="li" {...props}>
-                    {option.isAddButton ? (
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
-                        <AddIcon sx={{ fontSize: '1rem' }} />
-                        {option.name}
-                      </Box>
-                    ) : (
-                      option.name
-                    )}
-                  </Box>
-                )}
+              <Box 
                 onClick={e => e.stopPropagation()}
+                onMouseDown={e => e.stopPropagation()}
                 onFocus={e => e.stopPropagation()}
-                onKeyDown={e => { if ((e.key === ' ' || e.key === 'Spacebar') && !expanded) { e.preventDefault(); e.stopPropagation(); } }}
-                sx={{ background: 'background.paper', mb: 2 }}
-              />
+              >
+                <Autocomplete
+                  fullWidth
+                  options={createOptionsWithAdd(paymentTerms, 'paymentTerm')}
+                  getOptionLabel={option => {
+                    if (option?.isAddButton) return option.name;
+                    return option ? option.name : '';
+                  }}
+                  value={paymentTerms.find(pt => pt.id === selectedPaymentTerm) || null}
+                  onChange={(_, newValue) => {
+                    if (newValue?.isAddButton) {
+                      console.log('Add payment term clicked');
+                      return;
+                    }
+                    setSelectedPaymentTerm(newValue?.id || null);
+                  }}
+                  renderInput={params => <RTLTextField {...params} placeholder="" />}
+                  renderOption={(props, option) => (
+                    <Box component="li" {...props}>
+                      {option.isAddButton ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                          <AddIcon sx={{ fontSize: '1rem' }} />
+                          {option.name}
+                        </Box>
+                      ) : (
+                        option.name
+                      )}
+                    </Box>
+                  )}
+                  sx={{ background: 'background.paper', mb: 2 }}
+                />
+              </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                 <Checkbox
                   checked={allowCredit}
