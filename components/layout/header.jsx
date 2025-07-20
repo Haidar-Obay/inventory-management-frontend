@@ -175,12 +175,12 @@ const LanguageSelector = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" className="relative">
+        <Button variant="outline" size="icon" className="relative hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors duration-200">
           <Globe className="h-[1.2rem] w-[1.2rem]" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[200px] bg-background">
-        <DropdownMenuLabel className={isRTL ? "text-right" : ""}>
+      <DropdownMenuContent align="end" className="w-[180px] bg-background">
+        <DropdownMenuLabel className={`${isRTL ? "text-right" : ""} px-2 py-1`}>
           {t("selectLanguage")}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -188,7 +188,7 @@ const LanguageSelector = () => {
           <DropdownMenuItem
             key={language.code}
             onClick={() => changeLanguage(language)}
-            className={`flex items-center gap-2 ${currentLocale === language.code ? "bg-muted" : ""} ${isRTL ? "flex-row-reverse" : ""}`}
+            className={`flex items-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors duration-200 ${currentLocale === language.code ? "bg-blue-100 dark:bg-blue-900" : ""} ${isRTL ? "flex-row-reverse" : ""} px-2 py-1.5`}
           >
             <span>{language.name}</span>
             {currentLocale === language.code && (
@@ -224,7 +224,7 @@ const UserMenu = ({ t }) => {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="relative h-8 w-8 rounded-full p-0 hover:bg-muted"
+          className="relative h-8 w-8 rounded-full p-0 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors duration-200"
         >
           <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
             <User className="h-4 w-4 text-primary-foreground" />
@@ -239,7 +239,7 @@ const UserMenu = ({ t }) => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}
+          className={`flex items-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors duration-200 ${isRTL ? "flex-row-reverse" : ""}`}
           onClick={() => router.push(`/${currentLocale}/main/profile`)}
         >
           <User className="h-4 w-4" />
@@ -247,7 +247,7 @@ const UserMenu = ({ t }) => {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}
+          className={`flex items-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors duration-200 ${isRTL ? "flex-row-reverse" : ""}`}
         >
           <LogOut className="h-4 w-4" />
           <span>{t("logout")}</span>
