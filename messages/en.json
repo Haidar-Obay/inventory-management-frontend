@@ -1033,6 +1033,7 @@
       "taxedTillDate": "Taxed Till Date",
       "taxable": "Taxable",
       "addedTax": "Added Tax",
+      "subjectedToTax": "Subjected to Tax",
       "exempted": "Exempted",
       "exemptedFrom": "Exempted From",
       "exemptionReference": "Exemption Reference",

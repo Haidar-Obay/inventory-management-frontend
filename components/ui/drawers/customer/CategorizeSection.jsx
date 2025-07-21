@@ -29,11 +29,11 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
           <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
             {t("management.categorize") || "Categorize"}
           </Typography>
-          {/* Show trade under header only when collapsed */}
+          {/* Show customer group under header only when collapsed */}
           {!expanded && (
             <Box sx={{ mt: 1, width: { xs: '100%', sm: '60%' } }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
-                {t("management.trade") || "Trade"}
+                {t("management.customerGroup") || "Customer Group"} *
               </Typography>
               <Box 
                 onClick={e => e.stopPropagation()}
@@ -41,30 +41,33 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
                 onFocus={e => e.stopPropagation()}
               >
                 <Autocomplete
-                  options={createOptionsWithAdd(trades, 'trade')}
+                  options={createOptionsWithAdd(customerGroups, 'customerGroup')}
                   getOptionLabel={(option) => option.name || ""}
-                  value={trades.find((trade) => trade.id === formData?.trade_id) || null}
+                  value={customerGroups.find((group) => group.id === formData?.customer_group_id) || null}
                   onChange={(event, newValue) => {
                     if (newValue?.isAddButton) {
-                      console.log('Add trade clicked');
+                      console.log('Add customer group clicked');
                       return;
                     }
-                    handleTradeChange(event, newValue);
+                    handleCustomerGroupChange(event, newValue);
                   }}
                   loading={loading}
                   renderInput={(params) => <RTLTextField {...params} placeholder="" />}
-                  renderOption={(props, option) => (
-                    <Box component="li" {...props}>
-                      {option.isAddButton ? (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
-                          <AddIcon sx={{ fontSize: '1rem' }} />
-                          {option.name}
-                        </Box>
-                      ) : (
-                        option.name
-                      )}
-                    </Box>
-                  )}
+                  renderOption={(props, option) => {
+                    const { key, ...rest } = props;
+                    return (
+                      <Box component="li" key={key} {...rest}>
+                        {option.isAddButton ? (
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                            <AddIcon sx={{ fontSize: '1rem' }} />
+                            {option.name}
+                          </Box>
+                        ) : (
+                          option.name
+                        )}
+                      </Box>
+                    );
+                  }}
                   sx={{ background: 'background.paper' }}
                 />
               </Box>
@@ -92,18 +95,21 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               }}
               loading={loading}
               renderInput={(params) => <RTLTextField {...params} placeholder="" />}
-              renderOption={(props, option) => (
-                <Box component="li" {...props}>
-                  {option.isAddButton ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
-                      <AddIcon sx={{ fontSize: '1rem' }} />
-                      {option.name}
-                    </Box>
-                  ) : (
-                    option.name
-                  )}
-                </Box>
-              )}
+              renderOption={(props, option) => {
+                const { key, ...rest } = props;
+                return (
+                  <Box component="li" key={key} {...rest}>
+                    {option.isAddButton ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                        <AddIcon sx={{ fontSize: '1rem' }} />
+                        {option.name}
+                      </Box>
+                    ) : (
+                      option.name
+                    )}
+                  </Box>
+                );
+              }}
             />
           </Grid>
           <Grid item xs={12} md={6} sx={{ minWidth: 375 }}>
@@ -124,18 +130,21 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               }}
               loading={loading}
               renderInput={(params) => <RTLTextField {...params} placeholder="" />}
-              renderOption={(props, option) => (
-                <Box component="li" {...props}>
-                  {option.isAddButton ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
-                      <AddIcon sx={{ fontSize: '1rem' }} />
-                      {option.name}
-                    </Box>
-                  ) : (
-                    option.name
-                  )}
-                </Box>
-              )}
+              renderOption={(props, option) => {
+                const { key, ...rest } = props;
+                return (
+                  <Box component="li" key={key} {...rest}>
+                    {option.isAddButton ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                        <AddIcon sx={{ fontSize: '1rem' }} />
+                        {option.name}
+                      </Box>
+                    ) : (
+                      option.name
+                    )}
+                  </Box>
+                );
+              }}
             />
           </Grid>
           {/* Customer Group inside details, only when expanded */}
@@ -158,18 +167,21 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
                 }}
                 loading={loading}
                 renderInput={(params) => <RTLTextField {...params} placeholder="" />}
-                renderOption={(props, option) => (
-                  <Box component="li" {...props}>
-                    {option.isAddButton ? (
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
-                        <AddIcon sx={{ fontSize: '1rem' }} />
-                        {option.name}
-                      </Box>
-                    ) : (
-                      option.name
-                    )}
-                  </Box>
-                )}
+                renderOption={(props, option) => {
+                  const { key, ...rest } = props;
+                  return (
+                    <Box component="li" key={key} {...rest}>
+                      {option.isAddButton ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                          <AddIcon sx={{ fontSize: '1rem' }} />
+                          {option.name}
+                        </Box>
+                      ) : (
+                        option.name
+                      )}
+                    </Box>
+                  );
+                }}
               />
             </Grid>
           )}
@@ -191,18 +203,21 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               }}
               loading={loading}
               renderInput={(params) => <RTLTextField {...params} placeholder="" />}
-              renderOption={(props, option) => (
-                <Box component="li" {...props}>
-                  {option.isAddButton ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
-                      <AddIcon sx={{ fontSize: '1rem' }} />
-                      {option.name}
-                    </Box>
-                  ) : (
-                    option.name
-                  )}
-                </Box>
-              )}
+              renderOption={(props, option) => {
+                const { key, ...rest } = props;
+                return (
+                  <Box component="li" key={key} {...rest}>
+                    {option.isAddButton ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                        <AddIcon sx={{ fontSize: '1rem' }} />
+                        {option.name}
+                      </Box>
+                    ) : (
+                      option.name
+                    )}
+                  </Box>
+                );
+              }}
             />
           </Grid>
           <Grid item xs={12} md={6} sx={{ minWidth: 275 }}>
@@ -223,18 +238,21 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               }}
               loading={loading}
               renderInput={(params) => <RTLTextField {...params} placeholder="" />}
-              renderOption={(props, option) => (
-                <Box component="li" {...props}>
-                  {option.isAddButton ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
-                      <AddIcon sx={{ fontSize: '1rem' }} />
-                      {option.name}
-                    </Box>
-                  ) : (
-                    option.name
-                  )}
-                </Box>
-              )}
+              renderOption={(props, option) => {
+                const { key, ...rest } = props;
+                return (
+                  <Box component="li" key={key} {...rest}>
+                    {option.isAddButton ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                        <AddIcon sx={{ fontSize: '1rem' }} />
+                        {option.name}
+                      </Box>
+                    ) : (
+                      option.name
+                    )}
+                  </Box>
+                );
+              }}
             />
           </Grid>
           <Grid item xs={12} md={6} sx={{ minWidth: 275 }}>
@@ -255,18 +273,21 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               }}
               loading={loading}
               renderInput={(params) => <RTLTextField {...params} placeholder="" />}
-              renderOption={(props, option) => (
-                <Box component="li" {...props}>
-                  {option.isAddButton ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
-                      <AddIcon sx={{ fontSize: '1rem' }} />
-                      {option.name}
-                    </Box>
-                  ) : (
-                    option.name
-                  )}
-                </Box>
-              )}
+              renderOption={(props, option) => {
+                const { key, ...rest } = props;
+                return (
+                  <Box component="li" key={key} {...rest}>
+                    {option.isAddButton ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                        <AddIcon sx={{ fontSize: '1rem' }} />
+                        {option.name}
+                      </Box>
+                    ) : (
+                      option.name
+                    )}
+                  </Box>
+                );
+              }}
             />
           </Grid>
           <Grid item xs={12} md={6} sx={{ minWidth: 275 }}>
@@ -287,18 +308,21 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               }}
               loading={loading}
               renderInput={(params) => <RTLTextField {...params} placeholder="" />}
-              renderOption={(props, option) => (
-                <Box component="li" {...props}>
-                  {option.isAddButton ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
-                      <AddIcon sx={{ fontSize: '1rem' }} />
-                      {option.name}
-                    </Box>
-                  ) : (
-                    option.name
-                  )}
-                </Box>
-              )}
+              renderOption={(props, option) => {
+                const { key, ...rest } = props;
+                return (
+                  <Box component="li" key={key} {...rest}>
+                    {option.isAddButton ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                        <AddIcon sx={{ fontSize: '1rem' }} />
+                        {option.name}
+                      </Box>
+                    ) : (
+                      option.name
+                    )}
+                  </Box>
+                );
+              }}
             />
           </Grid>
           <Grid item xs={12} md={6} sx={{ minWidth: 375 }}>

@@ -3,14 +3,17 @@ import { Grid, Typography, Autocomplete, Accordion, AccordionSummary, AccordionD
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
 import RTLTextField from "@/components/ui/RTLTextField";
+import { useDrawerStack } from "@/components/ui/DrawerStackContext";
 
-const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t, countries, zones, cities, districts, loading, shippingAddresses, setShippingAddresses, handleCopyFromBillingAddress, handleAddShippingAddress, handleRemoveShippingAddress, handleShippingAddressChange, handleCopyToShippingAddress, expanded, onAccordionChange, allCollapsed, setAllCollapsed }) => {
+const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t, countries, setCountries, zones, setZones, cities, setCities, districts, setDistricts, loading, shippingAddresses, setShippingAddresses, handleCopyFromBillingAddress, handleAddShippingAddress, handleRemoveShippingAddress, handleShippingAddressChange, handleCopyToShippingAddress, expanded, onAccordionChange, allCollapsed, setAllCollapsed }) => {
   React.useEffect(() => {
     if (allCollapsed && expanded) {
       onAccordionChange(null, false);
       setAllCollapsed(false);
     }
   }, [allCollapsed]);
+
+  const { openDrawer } = useDrawerStack();
 
   // Create options with Add button as first option
   const createOptionsWithAdd = (options, type) => {
@@ -89,7 +92,18 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 onChange={(event, newValue) => {
                   if (newValue?.isAddButton) {
                     // Handle add country action
-                    console.log('Add country clicked');
+                    openDrawer({
+                      type: "country",
+                      props: {
+                        onSave: (newCountry) => {
+                          // Instantly add the new country to the countries list
+                          setCountries(prev => [
+                            ...(Array.isArray(prev) ? prev : []),
+                            newCountry
+                          ]);
+                        },
+                      },
+                    });
                     return;
                   }
                   onFormDataChange({
@@ -129,7 +143,14 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 onChange={(event, newValue) => {
                   if (newValue?.isAddButton) {
                     // Handle add city action
-                    console.log('Add city clicked');
+                    openDrawer({
+                      type: "city",
+                      props: {
+                        onSave: (newCity) => {
+                          setCities(prev => [ ...(Array.isArray(prev) ? prev : []), newCity ]);
+                        },
+                      },
+                    });
                     return;
                   }
                   onFormDataChange({
@@ -166,7 +187,14 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 onChange={(event, newValue) => {
                   if (newValue?.isAddButton) {
                     // Handle add district action
-                    console.log('Add district clicked');
+                    openDrawer({
+                      type: "district",
+                      props: {
+                        onSave: (newDistrict) => {
+                          setDistricts(prev => [ ...(Array.isArray(prev) ? prev : []), newDistrict ]);
+                        },
+                      },
+                    });
                     return;
                   }
                   onFormDataChange({
@@ -202,7 +230,14 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 onChange={(event, newValue) => {
                   if (newValue?.isAddButton) {
                     // Handle add zone action
-                    console.log('Add zone clicked');
+                    openDrawer({
+                      type: "zone",
+                      props: {
+                        onSave: (newZone) => {
+                          setZones(prev => [ ...(Array.isArray(prev) ? prev : []), newZone ]);
+                        },
+                      },
+                    });
                     return;
                   }
                   onFormDataChange({

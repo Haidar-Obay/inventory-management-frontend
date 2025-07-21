@@ -8,6 +8,8 @@ import { MUIThemeWrapper } from "@/lib/themes/mui-theme-provider";
 import "@/styles/globals.css";
 import "@/styles/toast.css";
 import { Inter, Cairo } from "next/font/google";
+import { DrawerStackProvider } from "@/components/ui/DrawerStackContext";
+import DrawerStackManager from "@/components/ui/DrawerStackManager";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -60,7 +62,10 @@ export default async function LocaleLayout({ children, params }) {
             <NextIntlClientProvider locale={locale} messages={messages}>
               <SimpleToastProvider>
                 <ToastSetup />
-                {children}
+                <DrawerStackProvider>
+                  <DrawerStackManager />
+                  {children}
+                </DrawerStackProvider>
               </SimpleToastProvider>
             </NextIntlClientProvider>
           </MUIThemeWrapper>

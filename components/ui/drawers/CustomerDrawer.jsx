@@ -70,7 +70,7 @@ const MoreOptionsSection = dynamic(() => import('./customer/MoreOptionsSection')
 const PricingSection = dynamic(() => import('./customer/PricingSection'));
 const TaxesSection = dynamic(() => import('./customer/TaxesSection'));
 const ContactsSection = dynamic(() => import('./customer/ContactsSection'));
-const RoutingSection = dynamic(() => import('./customer/RoutingSection'));
+// const RoutingSection = dynamic(() => import('./customer/RoutingSection'));
 const AttachmentsSection = dynamic(() => import('./customer/AttachmentsSection'));
 const MessageSection = dynamic(() => import('./customer/MessageSection'));
 const CustomerGroupSection = dynamic(() => import('./customerGroup/CustomerGroupSection'));
@@ -618,9 +618,13 @@ const CustomerDrawer = React.memo(({
                 isRTL={isRTL}
                 t={t}
                 countries={countries}
+                setCountries={setCountries}
                 zones={zones}
+                setZones={setZones}
                 cities={cities}
+                setCities={setCities}
                 districts={districts}
+                setDistricts={setDistricts}
                 loading={loading}
                 expanded={!!expandedSections.billingAddress}
                 onAccordionChange={handleAccordionChange('billingAddress')}
@@ -633,9 +637,13 @@ const CustomerDrawer = React.memo(({
                 isRTL={isRTL}
                 t={t}
                 countries={countries}
+                setCountries={setCountries}
                 zones={zones}
+                setZones={setZones}
                 cities={cities}
+                setCities={setCities}
                 districts={districts}
+                setDistricts={setDistricts}
                 loading={loading}
                 shippingAddresses={shippingAddresses}
                 setShippingAddresses={setShippingAddresses}
@@ -835,7 +843,7 @@ const CustomerDrawer = React.memo(({
                 allCollapsed={allCollapsed}
                 setAllCollapsed={setAllCollapsed}
               />
-              <RoutingSection
+              {/* <RoutingSection
                 formData={formData}
                 onFormDataChange={onFormDataChange}
                 isRTL={isRTL}
@@ -846,7 +854,7 @@ const CustomerDrawer = React.memo(({
                 onAccordionChange={handleAccordionChange('routing')}
                 allCollapsed={allCollapsed}
                 setAllCollapsed={setAllCollapsed}
-              />
+              /> */}
               <AttachmentsSection
                 formData={formData}
                 onFormDataChange={onFormDataChange}
