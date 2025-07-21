@@ -699,7 +699,8 @@
       "close": "إغلاق",
       "floor": "الطابق",
       "salesmenAccordion": "مندوبو المبيعات",
-      "discount": "خصم"
+      "discount": "خصم",
+      "addMessage": "أضف رسالة"
     },
     "messages": {
       "exportSuccess": "تم التصدير بنجاح",
@@ -1158,7 +1159,8 @@
       "close": "إغلاق",
       "floor": "الطابق",
       "salesmenAccordion": "مندوبو المبيعات",
-      "discount": "خصم"
+      "discount": "خصم",
+      "addMessage": "أضف رسالة"
     },
     "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
     "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."
