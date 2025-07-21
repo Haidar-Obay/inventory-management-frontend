@@ -1136,7 +1136,12 @@
       "remove": "إزالة",
       "enterDescription": "أدخل وصفاً لهذا المرفق...",
       "previewAttachment": "معاينة المرفق",
-      "close": "إغلاق"
+      "close": "إغلاق",
+      "management": {
+        "customer": "العميل",
+        "customerGroup": "مجموعة العملاء",
+        "salesman": "مندوب المبيعات"
+      }
     },
     "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
     "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."

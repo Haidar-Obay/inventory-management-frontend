@@ -608,7 +608,12 @@
       "category": "Category",
       "brand": "Brand",
       "createdAt": "Created At",
-      "updatedAt": "Updated At"
+      "updatedAt": "Updated At",
+      "costCenter": "Cost Center",
+      "department": "Department",
+      "trade": "Trade",
+      "companyCode": "Company Code",
+      "job": "Job"
     },
     "messages": {
       "exportSuccess": "exported successfully",
@@ -1076,7 +1081,12 @@
     "noChangesTitle": "No changes detected",
     "noChangesDesc": "Please modify at least one field before saving.",
     "closeAll": "Close All",
-    "customer": "Customer"
+    "customer": "Customer",
+    "management": {
+      "customer": "Customer",
+      "customerGroup": "Customer Group",
+      "salesman": "Salesman"
+    }
   },
   "items": {
     "title": "Items Management",
