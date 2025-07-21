@@ -363,6 +363,10 @@ function AddressCodesPage() {
       link.click();
       link.remove();
 
+      toast.success({
+        title: toastT("success"),
+        description: toastT(`${type}.exportSuccess`),
+      });
     } catch (error) {
       toast.error({
         title: toastT("error"),

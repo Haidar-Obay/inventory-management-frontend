@@ -787,27 +787,10 @@ export const ColumnModal = React.memo(({
 
           {/* Footer */}
           <div className="mt-6 flex justify-between items-center">
-            {activeTab !== "templates" && (
-              <Button
-                variant="outline"
-                onClick={() => {
-                  if (activeTab === "settings") {
-                    onResetSettings("visibility");
-                    onResetSettings("size");
-                    onResetSettings("order");
-                  } else if (activeTab === "other") {
-                    setOtherHeaderColor("");
-                    setOtherShowHeaderSeparator(true);
-                    setOtherShowHeaderColSeparator(true);
-                    setOtherShowBodyColSeparator(true);
-                  }
-                }}
-                className="border-border"
-              >
-                {t("columns.modal.reset")}
-              </Button>
-            )}
-            <div className="flex justify-end flex-1" style={{ gap: "0.5rem" }}>
+            <Button variant="outline" onClick={() => onResetSettings(activeTab)} className="border-border">
+              {t("columns.modal.reset")}
+            </Button>
+            <div className="flex" style={{ gap: "0.5rem" }}>
               <Button variant="outline" onClick={onCancel} className="border-border">
                 {t("columns.modal.cancel")}
               </Button>
