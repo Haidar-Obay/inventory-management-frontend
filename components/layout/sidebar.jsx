@@ -344,7 +344,7 @@ const GroupHeader = ({
           >
             <div className="flex items-center gap-2">
               <GroupIcon className={cn(isCollapsed ? "h-4 w-4" : "h-4 w-4", isRTL ? "ml-2" : "mr-2")} />
-              <span className={cn(isCollapsed ? "" : "text-sm")}>{groupName}</span>
+              <span className={cn("text-sm")}>{groupName}</span>
             </div>
             <ChevronRight
               className={cn(
@@ -384,7 +384,7 @@ const GroupHeader = ({
         alignOffset={-8}
       >
             <div className="space-y-1">
-              <h3 className="text-[15px] font-medium px-2 py-1 bg-primary-foreground/5 rounded-md">
+              <h3 className="text-sm font-medium px-2 py-1 bg-primary-foreground/5 rounded-md">
                 {groupName}
               </h3>
               <div className="space-y-0.5">

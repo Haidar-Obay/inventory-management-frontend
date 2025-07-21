@@ -32,13 +32,35 @@ const Toggle = React.forwardRef<
   React.ElementRef<typeof TogglePrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof TogglePrimitive.Root> &
     VariantProps<typeof toggleVariants>
->(({ className, variant, size, ...props }, ref) => (
-  <TogglePrimitive.Root
-    ref={ref}
-    className={cn(toggleVariants({ variant, size, className }))}
-    {...props}
-  />
-))
+>(({ className, variant, size, pressed, ...props }, ref) => {
+  console.log('Toggle pressed:', pressed);
+  return (
+    <TogglePrimitive.Root
+      ref={ref}
+      className={cn(
+        toggleVariants({ variant, size, className }),
+        "relative w-12 h-6 p-0 bg-gray-200 dark:bg-gray-700 transition-colors duration-200 rounded-full",
+        pressed ? "bg-primary/80 dark:bg-primary" : "bg-gray-200 dark:bg-gray-700"
+      )}
+      pressed={pressed}
+      {...props}
+    >
+      <span
+        className={cn(
+          "absolute left-0 top-0 w-full h-full rounded-full transition-colors duration-200",
+          pressed ? "bg-primary/20 dark:bg-primary/30" : "bg-gray-200 dark:bg-gray-700"
+        )}
+      />
+      <span
+        className={cn(
+          "absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow-md transition-transform duration-200",
+          pressed ? "bg-primary" : "bg-white"
+        )}
+        style={{ transform: pressed ? 'translateX(24px)' : 'translateX(0)' }}
+      />
+    </TogglePrimitive.Root>
+  );
+})
 
 Toggle.displayName = TogglePrimitive.Root.displayName
 

@@ -346,7 +346,7 @@
     "exitConfirmationTitle": "Exit Confirmation",
     "exitConfirmationMessage": "Are you sure you want to exit? Any unsaved changes will be lost.",
     "cancel": "Cancel",
-    "exit": "Exit"
+    "exit": "Ignore Changes"
   },
   "home": {
     "welcome": "Welcome to Your Inventory Management System",
@@ -608,7 +608,12 @@
       "category": "Category",
       "brand": "Brand",
       "createdAt": "Created At",
-      "updatedAt": "Updated At"
+      "updatedAt": "Updated At",
+      "costCenter": "Cost Center",
+      "department": "Department",
+      "trade": "Trade",
+      "companyCode": "Company Code",
+      "job": "Job"
     },
     "messages": {
       "exportSuccess": "exported successfully",
@@ -757,7 +762,21 @@
         "select": "Select",
         "searchColumn": "Search column...",
         "loadingTemplates": "Loading templates...",
-        "update": "Update Template"
+        "update": "Update Template",
+        "noColumnsFound": "No columns found.",
+        "settings": "Settings",
+        "save": "Save",
+        "saveAs": "Save As",
+        "saving": "Saving...",
+        "deleteConfirmTitle": "Delete Template",
+        "deleteConfirmMessage": "Are you sure you want to delete the template \"{templateName}\"? This action cannot be undone.",
+        "deleting": "Deleting...",
+        "otherSettings": "Other Settings",
+        "headerColor": "Table Header Color",
+        "pickHeaderColor": "Pick a color for the table header background.",
+        "showHeaderSeparator": "Show header separator",
+        "showHeaderColSeparator": "Show header column separators",
+        "showBodyColSeparator": "Show body column separators"
       }
     },
     "filter": {
@@ -843,7 +862,8 @@
     "noData": {
       "title": "No data found",
       "description": "Try adjusting your search or filter to find what you're looking for."
-    }
+    },
+    "filterOptions": "Filter Options"
   },
   "customers": {
     "title": "Customer Management",
@@ -1061,7 +1081,13 @@
     },
     "noChangesTitle": "No changes detected",
     "noChangesDesc": "Please modify at least one field before saving.",
-    "closeAll": "Close All"
+    "closeAll": "Close All",
+    "customer": "Customer",
+    "management": {
+      "customer": "Customer",
+      "customerGroup": "Customer Group",
+      "salesman": "Salesman"
+    }
   },
   "items": {
     "title": "Items Management",

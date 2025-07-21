@@ -152,6 +152,47 @@ const Table = (props) => {
   const [openDropdownRowId, setOpenDropdownRowId] = useState(null);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
   const [previewRow, setPreviewRow] = useState(null);
+  const [selectedTemplateId, setSelectedTemplateId] = useState(() => {
+    // Load selected template ID from localStorage on component mount
+    const tableId = tableProps.tableId || "default";
+    const stored = localStorage.getItem(`selectedTemplate_${tableId}`);
+    return stored || null;
+  });
+
+  // Persisted Other Settings
+  const tableId = tableProps.tableId || "default";
+  const otherSettingsKey = `table:${tableId}:otherSettings`;
+  const getPersistedOtherSettings = () => {
+    try {
+      const raw = localStorage.getItem(otherSettingsKey);
+      return raw ? JSON.parse(raw) : {};
+    } catch {
+      return {};
+    }
+  };
+  const persisted = getPersistedOtherSettings();
+  const [headerColor, setHeaderColor] = useState(persisted.headerColor ?? "");
+  const [showHeaderSeparator, setShowHeaderSeparator] = useState(persisted.showHeaderSeparator ?? true);
+  const [showHeaderColSeparator, setShowHeaderColSeparator] = useState(persisted.showHeaderColSeparator ?? true);
+  const [showBodyColSeparator, setShowBodyColSeparator] = useState(persisted.showBodyColSeparator ?? true);
+
+  const handleOtherSettingsChange = (settings) => {
+    if (settings.headerColor !== undefined) setHeaderColor(settings.headerColor);
+    if (settings.showHeaderSeparator !== undefined) setShowHeaderSeparator(settings.showHeaderSeparator);
+    if (settings.showHeaderColSeparator !== undefined) setShowHeaderColSeparator(settings.showHeaderColSeparator);
+    if (settings.showBodyColSeparator !== undefined) setShowBodyColSeparator(settings.showBodyColSeparator);
+  };
+
+  // Custom setter that saves to localStorage
+  const handleSelectedTemplateChange = (templateId) => {
+    const tableId = tableProps.tableId || "default";
+    if (templateId) {
+      localStorage.setItem(`selectedTemplate_${tableId}`, templateId);
+    } else {
+      localStorage.removeItem(`selectedTemplate_${tableId}`);
+    }
+    setSelectedTemplateId(templateId);
+  };
 
 
 
@@ -249,6 +290,13 @@ const Table = (props) => {
           onMoveColumnUp={handleMoveColumnUp}
           onMoveColumnDown={handleMoveColumnDown}
           onResetSettings={handleResetColumnSettings}
+          selectedTemplateId={selectedTemplateId}
+          onSelectedTemplateChange={handleSelectedTemplateChange}
+          headerColor={headerColor}
+          showHeaderSeparator={showHeaderSeparator}
+          showHeaderColSeparator={showHeaderColSeparator}
+          showBodyColSeparator={showBodyColSeparator}
+          onOtherSettingsChange={handleOtherSettingsChange}
         />
       )}
 
@@ -338,9 +386,9 @@ const Table = (props) => {
           <div style={{ minWidth: "max-content", width: "100%" }}>
             <table className="w-full border-collapse">
               <TableHeader
-                columnOrder={effectiveColumnOrder}
+                columnOrder={columnOrder}
                 columns={columnsArray}
-                visibleColumns={effectiveVisibleColumns}
+                visibleColumns={visibleColumns}
                 sortConfig={sortConfig}
                 activeColumnFilters={activeColumnFilters}
                 columnFilterTypes={columnFilterTypes}
@@ -357,16 +405,19 @@ const Table = (props) => {
                 handleOpenFilterModal={handleOpenFilterModal}
                 handleColumnSearch={handleColumnSearch}
                 handleSelectAll={handleSelectAll}
-                columnWidths={effectiveColumnWidths}
+                columnWidths={columnWidths}
                 t={props.t}
                 isOverflowing={isOverflowing}
+                headerColor={headerColor}
+                showHeaderSeparator={showHeaderSeparator}
+                showHeaderColSeparator={showHeaderColSeparator}
               />
 
               <TableBody
                 paginatedData={paginatedData}
                 columns={columnsArray}
-                columnOrder={effectiveColumnOrder}
-                visibleColumns={effectiveVisibleColumns}
+                columnOrder={columnOrder}
+                visibleColumns={visibleColumns}
                 currentPage={currentPage}
                 rowsPerPage={rowsPerPage}
                 selectedRows={selectedRows}
@@ -381,11 +432,12 @@ const Table = (props) => {
                 handleRowSelect={handleRowSelect}
                 handleDeleteClick={handleDeleteClick}
                 onEdit={tableProps.onEdit}
-                columnWidths={effectiveColumnWidths}
+                columnWidths={columnWidths}
                 isOverflowing={isOverflowing}
                 openDropdownRowId={openDropdownRowId}
                 setOpenDropdownRowId={setOpenDropdownRowId}
                 showSearchColumn={showSearchColumn}
+                showBodyColSeparator={showBodyColSeparator}
 
                 customActions={customActions}
                 onCustomAction={onCustomAction}
