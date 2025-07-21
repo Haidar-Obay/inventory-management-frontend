@@ -38,15 +38,17 @@ export const TableBody = ({
   openDropdownRowId,
   setOpenDropdownRowId,
   showSearchColumn,
-  onPreview,
   customActions = [],
   onCustomAction,
   onDeleteConfirm,
   onPreviewConfirm,
+  showBodyColSeparator,
 }) => {
   const t = useTranslations("table");
   const locale = useLocale();
   const isRTL = locale === "ar";
+
+  const colBorderClass = showBodyColSeparator === false ? "" : "border-r border-slate-300 dark:border-slate-600";
 
   return (
     <tbody>
@@ -59,7 +61,7 @@ export const TableBody = ({
               index % 2 === 0
                 ? "bg-white dark:bg-background"
                 : "bg-gray-50 dark:bg-muted/50"
-            }`}
+            } border-b border-border`}
           >
             {/* Row selection checkbox skeleton */}
             <td
@@ -93,9 +95,7 @@ export const TableBody = ({
               return (
                 <td
                   key={key}
-                  className={`border-b border-border px-4 py-2 ${
-                    !isLastColumn ? 'border-r border-slate-300 dark:border-slate-600' : ''
-                  }`}
+                  className={`border-b border-border px-4 py-2 ${!isLastColumn && colBorderClass}`}
                   style={{ width: width === "auto" ? "auto" : width }}
                 >
                   <div className="min-h-[24px] flex items-center">
@@ -159,7 +159,7 @@ export const TableBody = ({
                   : rowIndex % 2 === 0
                     ? "bg-white dark:bg-background"
                     : "bg-gray-50 dark:bg-muted/50 hover:bg-gray-100 dark:hover:bg-muted"
-              }`}
+              } border-b border-border`}
               draggable
               onDragStart={() => handleRowDragStart(actualRowIndex)}
               onDragOver={(e) => handleRowDragOver(e, actualRowIndex)}
@@ -227,14 +227,29 @@ export const TableBody = ({
 
                 const width = columnWidths[key];
                 const cellValue = row[key];
+                const isFirstColumn = columnIndex === 0;
                 const isLastColumn = columnIndex === columnOrder.filter(k => visibleColumns[k]).length - 1;
+
+                // RTL/LTR border logic
+                let leftBorder = false;
+                let rightBorder = false;
+                if (showBodyColSeparator !== false) {
+                  if (isRTL) {
+                    leftBorder = isLastColumn;
+                    rightBorder = true; // All columns get right border in RTL
+                  } else {
+                    leftBorder = isFirstColumn;
+                    rightBorder = !isLastColumn;
+                  }
+                }
 
                 return (
                   <td
                     key={`${rowIndex}-${key}`}
-                    className={`border-b border-border px-4 py-2 ${
-                      !isLastColumn ? 'border-r border-slate-300 dark:border-slate-600' : ''
-                    }`}
+                    className={`border-b border-border px-4 py-2
+                      ${leftBorder ? 'border-l border-slate-300 dark:border-slate-600' : ''}
+                      ${rightBorder ? 'border-r border-slate-300 dark:border-slate-600' : ''}
+                    `}
                     style={{ width: width === "auto" ? "auto" : width }}
                     onDoubleClick={() =>
                       enableCellEditing &&
@@ -353,7 +368,7 @@ export const TableBody = ({
 
               {/* Actions */}
               <td
-                className={`border-b border-border px-1 py-2 transition-colors duration-200 border-l border-slate-300 dark:border-slate-600 ${
+                className={`border-b border-border px-1 py-2 transition-colors duration-200 ${showBodyColSeparator !== false ? 'border-l border-r border-slate-300 dark:border-slate-600' : ''} ${
                   isOverflowing
                     ? "sticky end-0 z-10 backdrop-blur-sm border-s border-gray-200 dark:border-gray-700"
                     : ""

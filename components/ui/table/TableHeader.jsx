@@ -26,18 +26,26 @@ export const TableHeader = ({
   handleSelectAll,
   columnWidths,
   isOverflowing,
+  headerColor,
+  showHeaderSeparator,
+  showHeaderColSeparator,
 }) => {
   const t = useTranslations("table");
   const locale = useLocale();
   const isRTL = locale === "ar";
 
+  const theadStyle = headerColor && !isRTL ? { background: headerColor } : {};
+
   return (
     <thead
       className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 sticky top-0 z-20 border-b-2 border-slate-200 dark:border-slate-700"
-      style={{ transform: "translateZ(0px)" }}
+      style={{ transform: "translateZ(0px)", ...theadStyle }}
     >
       {/* Header Row */}
-      <tr className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900">
+      <tr
+        className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900"
+        style={headerColor && !isRTL ? { background: headerColor } : {}}
+      >
         <th
           className="border-b border-slate-200 dark:border-slate-700 ps-3 py-3 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-all duration-200"
           data-column="select"
@@ -143,15 +151,31 @@ export const TableHeader = ({
 
           const hasActiveFilter = activeColumnFilters[key];
           const width = columnWidths[key];
+          const isFirstColumn = index === 0;
           const isLastColumn = index === columnOrder.filter(k => visibleColumns[k]).length - 1;
+
+          // RTL/LTR border logic
+          let leftBorder = false;
+          let rightBorder = false;
+          if (showHeaderColSeparator !== false) {
+            if (isRTL) {
+              leftBorder = isLastColumn;
+              rightBorder = true; // All columns get right border in RTL
+            } else {
+              leftBorder = isFirstColumn;
+              rightBorder = !isLastColumn;
+            }
+          }
 
           return (
             <th
               key={key}
               data-column={key}
-              className={`border-b border-slate-200 dark:border-slate-700 px-6 py-4 text-left relative group hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-all duration-200 cursor-pointer ${
-                !isLastColumn ? 'border-r border-slate-300 dark:border-slate-600' : ''
-              }`}
+              className={`border-b border-slate-200 dark:border-slate-700 px-6 py-4 text-left relative group transition-all duration-200 cursor-pointer
+                hover:bg-gray-200 dark:hover:bg-slate-700/50
+                ${leftBorder ? 'border-l border-slate-300 dark:border-slate-600' : ''}
+                ${rightBorder ? 'border-r border-slate-300 dark:border-slate-600' : ''}
+              `}
               style={{ width: width === "auto" ? "auto" : width }}
               draggable
               onDragStart={() => handleColumnDragStart(key)}
@@ -159,14 +183,14 @@ export const TableHeader = ({
             >
               <div className="flex flex-col">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-slate-700 dark:text-slate-200 text-sm uppercase tracking-wide hover:text-slate-900 dark:hover:text-white transition-colors duration-200">{column.header}</span>
+                  <span className="font-semibold text-slate-700 dark:text-slate-200 text-sm uppercase tracking-wide group-hover:text-slate-900 dark:group-hover:text-white transition-colors duration-200">{column.header}</span>
                   <div className="flex items-center space-x-2">
                     {column.sortable && (
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleSort(key)}
-                        className="h-8 w-8 p-0 hover:bg-slate-300 dark:hover:bg-slate-600 hover:scale-105 transition-all duration-200 rounded-md"
+                        className="h-8 w-8 p-0 hover:bg-gray-200 dark:hover:bg-slate-600 hover:scale-105 transition-all duration-200 rounded-md"
                       >
                         {sortConfig.key === key ? (
                           sortConfig.direction === "asc" ? (
@@ -223,10 +247,10 @@ export const TableHeader = ({
                       ${
                         hasActiveFilter
                           ? "text-white bg-blue-600 hover:bg-blue-700 hover:scale-105 shadow-sm"
-                          : "text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 hover:scale-105"
+                          : "text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-gray-200 dark:hover:bg-slate-700 hover:scale-105"
                       }`}
                       onClick={() => handleOpenFilterModal(key)}
-                      title="Filter Options"
+                      title={t("filterOptions")}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -259,12 +283,12 @@ export const TableHeader = ({
 
         {/* Actions column */}
         <th
-          className={`border-b border-slate-200 dark:border-slate-700 px-4 py-4 text-center bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-all duration-200 border-l border-slate-300 dark:border-slate-600 ${
+          className={`border-b border-slate-200 dark:border-slate-700 px-4 py-4 text-center bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-all duration-200 ${showHeaderColSeparator !== false ? 'border-l border-r border-slate-300 dark:border-slate-600' : ''} ${
             isOverflowing
               ? "sticky end-0 z-20 backdrop-blur-sm border-s border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50/95 to-slate-100/95 dark:from-slate-800/95 dark:to-slate-900/95"
               : ""
           }`}
-          style={{ width: "75px", minWidth: "75px", maxWidth: "75px" }}
+          style={{ width: "75px", minWidth: "75px", maxWidth: "75px", ...(headerColor && !isRTL ? { background: headerColor } : {}) }}
         >
           <span className="flex items-center justify-center w-full font-semibold text-slate-700 dark:text-slate-200 text-sm uppercase tracking-wide hover:text-slate-900 dark:hover:text-white transition-colors duration-200">
             {t("actions")}
@@ -273,12 +297,14 @@ export const TableHeader = ({
       </tr>
 
       {/* Separator Row */}
-      <tr className="bg-slate-100 dark:bg-slate-700/30 border-b border-slate-300 dark:border-slate-600">
-        <td 
-          colSpan={1 + (showSearchColumn ? 1 : 0) + columnOrder.filter(key => visibleColumns[key]).length + 1}
-          className="h-1 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 dark:from-slate-600 dark:via-slate-500 dark:to-slate-600"
-        ></td>
-      </tr>
+      {showHeaderSeparator !== false && (
+        <tr className="bg-slate-100 dark:bg-slate-700/30 border-b border-slate-300 dark:border-slate-600">
+          <td 
+            colSpan={1 + (showSearchColumn ? 1 : 0) + columnOrder.filter(key => visibleColumns[key]).length + 1}
+            className="h-1 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 dark:from-slate-600 dark:via-slate-500 dark:to-slate-600"
+          ></td>
+        </tr>
+      )}
 
       {showSearchRow && (
         <tr

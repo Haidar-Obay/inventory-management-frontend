@@ -765,7 +765,13 @@
         "saving": "Saving...",
         "deleteConfirmTitle": "Delete Template",
         "deleteConfirmMessage": "Are you sure you want to delete the template \"{templateName}\"? This action cannot be undone.",
-        "deleting": "Deleting..."
+        "deleting": "Deleting...",
+        "otherSettings": "Other Settings",
+        "headerColor": "Table Header Color",
+        "pickHeaderColor": "Pick a color for the table header background.",
+        "showHeaderSeparator": "Show header separator",
+        "showHeaderColSeparator": "Show header column separators",
+        "showBodyColSeparator": "Show body column separators"
       }
     },
     "filter": {
@@ -851,7 +857,8 @@
     "noData": {
       "title": "No data found",
       "description": "Try adjusting your search or filter to find what you're looking for."
-    }
+    },
+    "filterOptions": "Filter Options"
   },
   "customers": {
     "title": "Customer Management",
@@ -1068,7 +1075,8 @@
     },
     "noChangesTitle": "No changes detected",
     "noChangesDesc": "Please modify at least one field before saving.",
-    "closeAll": "Close All"
+    "closeAll": "Close All",
+    "customer": "Customer"
   },
   "items": {
     "title": "Items Management",

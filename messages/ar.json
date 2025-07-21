@@ -837,7 +837,13 @@
         "saving": "جاري الحفظ...",
         "deleteConfirmTitle": "حذف القالب",
         "deleteConfirmMessage": "هل أنت متأكد من حذف القالب \"{templateName}\"؟ لا يمكن التراجع عن هذا الإجراء.",
-        "deleting": "جاري الحذف..."
+        "deleting": "جاري الحذف...",
+        "otherSettings": "إعدادات أخرى",
+        "headerColor": "لون رأس الجدول",
+        "pickHeaderColor": "اختر لونًا لخلفية رأس الجدول.",
+        "showHeaderSeparator": "إظهار فاصل الرأس",
+        "showHeaderColSeparator": "إظهار فواصل أعمدة الرأس",
+        "showBodyColSeparator": "إظهار فواصل أعمدة الجسم"
       }
     },
     "filter": {
@@ -923,7 +929,8 @@
     "noData": {
       "title": "لم يتم العثور على بيانات",
       "description": "حاول تعديل البحث أو التصفية للعثور على ما تبحث عنه."
-    }
+    },
+    "filterOptions": "خيارات التصفية"
   },
   "customers": {
     "title": "إدارة العملاء",
@@ -1196,5 +1203,6 @@
     },
     "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
     "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."
-  }
+  },
+  "filterOptions": "خيارات التصفية"
 }

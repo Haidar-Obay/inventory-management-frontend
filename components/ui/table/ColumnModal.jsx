@@ -185,6 +185,9 @@ const DeleteConfirmModal = React.memo(({
   );
 });
 
+// Try to import Toggle from components/ui/toggle if available
+import { Toggle } from "../toggle";
+
 export const ColumnModal = React.memo(({
   isOpen,
   tableName,
@@ -205,6 +208,12 @@ export const ColumnModal = React.memo(({
   onResetSettings,
   selectedTemplateId: externalSelectedTemplateId,
   onSelectedTemplateChange,
+  headerColor,
+  showHeaderSeparator,
+  showBodySeparator,
+  onOtherSettingsChange,
+  showHeaderColSeparator,
+  showBodyColSeparator,
 }) => {
   const t = useTranslations("table");
   const locale = useLocale();
@@ -225,6 +234,22 @@ export const ColumnModal = React.memo(({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [templateToDelete, setTemplateToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  // Persisted Other Settings
+  const otherSettingsKey = tableName ? `table:${tableName}:otherSettings` : null;
+  const getPersistedOtherSettings = () => {
+    if (!otherSettingsKey) return {};
+    try {
+      const raw = localStorage.getItem(otherSettingsKey);
+      return raw ? JSON.parse(raw) : {};
+    } catch {
+      return {};
+    }
+  };
+  const persisted = getPersistedOtherSettings();
+  const [otherHeaderColor, setOtherHeaderColor] = useState(persisted.headerColor ?? headerColor ?? "");
+  const [otherShowHeaderSeparator, setOtherShowHeaderSeparator] = useState(persisted.showHeaderSeparator ?? (showHeaderSeparator !== undefined ? showHeaderSeparator : true));
+  const [otherShowHeaderColSeparator, setOtherShowHeaderColSeparator] = useState(persisted.showHeaderColSeparator ?? (showHeaderColSeparator !== undefined ? showHeaderColSeparator : true));
+  const [otherShowBodyColSeparator, setOtherShowBodyColSeparator] = useState(persisted.showBodyColSeparator ?? (showBodyColSeparator !== undefined ? showBodyColSeparator : true));
 
   // Memoized values
   const orderedColumns = useMemo(() => 
@@ -499,7 +524,73 @@ export const ColumnModal = React.memo(({
     }
   }, [currentTemplate, visibleColumns, columnWidths, columnOrder, isTemplateMatch]);
 
+  useEffect(() => {
+    setOtherHeaderColor(headerColor || "");
+  }, [headerColor]);
+  useEffect(() => {
+    setOtherShowHeaderSeparator(showHeaderSeparator !== undefined ? showHeaderSeparator : true);
+  }, [showHeaderSeparator]);
+  useEffect(() => {
+    setOtherShowHeaderColSeparator(showHeaderColSeparator !== undefined ? showHeaderColSeparator : true);
+  }, [showHeaderColSeparator]);
+  useEffect(() => {
+    setOtherShowBodyColSeparator(showBodyColSeparator !== undefined ? showBodyColSeparator : true);
+  }, [showBodyColSeparator]);
 
+  // Persist Other Settings to localStorage on change
+  useEffect(() => {
+    if (!otherSettingsKey) return;
+    const settings = {
+      headerColor: otherHeaderColor,
+      showHeaderSeparator: otherShowHeaderSeparator,
+      showHeaderColSeparator: otherShowHeaderColSeparator,
+      showBodyColSeparator: otherShowBodyColSeparator,
+    };
+    try {
+      localStorage.setItem(otherSettingsKey, JSON.stringify(settings));
+    } catch {}
+  }, [otherHeaderColor, otherShowHeaderSeparator, otherShowHeaderColSeparator, otherShowBodyColSeparator, otherSettingsKey]);
+
+  const renderOtherSettingsTab = useCallback(() => (
+    <div className="space-y-6 px-2 py-4">
+      <div>
+        <label className="block text-sm font-medium mb-1">{t("columns.modal.headerColor")}</label>
+        <input
+          type="color"
+          value={otherHeaderColor || "#f1f5f9"}
+          onChange={e => setOtherHeaderColor(e.target.value)}
+          className="w-12 h-8 p-0 border border-border rounded cursor-pointer"
+        />
+        <span className="ml-3 text-xs text-muted-foreground">{t("columns.modal.pickHeaderColor")}</span>
+      </div>
+      <div className="flex flex-col gap-2">
+        <label className="flex items-center gap-2">
+          <Toggle
+            pressed={otherShowHeaderSeparator}
+            onPressedChange={setOtherShowHeaderSeparator}
+            className="accent-primary"
+          />
+          <span className="text-sm">{t("columns.modal.showHeaderSeparator")}</span>
+        </label>
+        <label className="flex items-center gap-2">
+          <Toggle
+            pressed={otherShowHeaderColSeparator}
+            onPressedChange={setOtherShowHeaderColSeparator}
+            className="accent-primary"
+          />
+          <span className="text-sm">{t("columns.modal.showHeaderColSeparator")}</span>
+        </label>
+        <label className="flex items-center gap-2">
+          <Toggle
+            pressed={otherShowBodyColSeparator}
+            onPressedChange={setOtherShowBodyColSeparator}
+            className="accent-primary"
+          />
+          <span className="text-sm">{t("columns.modal.showBodyColSeparator")}</span>
+        </label>
+      </div>
+    </div>
+  ), [otherHeaderColor, otherShowHeaderSeparator, otherShowHeaderColSeparator, otherShowBodyColSeparator, t]);
 
   // Tab content renderers
   const renderColumnSettingsTab = useCallback(() => (
@@ -661,6 +752,7 @@ export const ColumnModal = React.memo(({
               <TabButton isActive={activeTab === "templates"} onClick={() => setActiveTab("templates")}> 
                 {t("columns.modal.templates")}
               </TabButton>
+              <TabButton isActive={activeTab === "other"} onClick={() => setActiveTab("other")}>{t("columns.modal.otherSettings")}</TabButton>
             </div>
           </div>
 
@@ -668,6 +760,7 @@ export const ColumnModal = React.memo(({
           <div className="flex-1 min-h-0 overflow-y-auto">
             {activeTab === "settings" && renderColumnSettingsTab()}
             {activeTab === "templates" && renderTemplatesTab()}
+            {activeTab === "other" && renderOtherSettingsTab()}
           </div>
 
           {/* Template Prompt */}
@@ -721,7 +814,19 @@ export const ColumnModal = React.memo(({
                   </Button>
                 </>
               )}
-              <Button variant="primary" onClick={onSave} className="bg-primary text-primary-foreground hover:bg-primary/90">
+              <Button variant="primary" onClick={() => {
+                onSave();
+                setTimeout(() => {
+                  if (onOtherSettingsChange) {
+                    onOtherSettingsChange({
+                      headerColor: otherHeaderColor,
+                      showHeaderSeparator: otherShowHeaderSeparator,
+                      showHeaderColSeparator: otherShowHeaderColSeparator,
+                      showBodyColSeparator: otherShowBodyColSeparator,
+                    });
+                  }
+                }, 0);
+              }} className="bg-primary text-primary-foreground hover:bg-primary/90">
                 {t("columns.modal.apply")}
               </Button>
             </div>
