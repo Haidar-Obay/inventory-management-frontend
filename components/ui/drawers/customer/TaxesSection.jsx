@@ -60,17 +60,32 @@ const TaxesSection = React.memo(({ formData, onFormDataChange, isRTL, t, handleF
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
-                  {t('management.addedTax') || 'Added Tax'}
-                </Typography>
-                <RTLTextField
-                  value={formData?.added_tax || ''}
-                  onChange={handleFieldChange('added_tax')}
-                  placeholder=""
-                />
-              </Grid>
             </>
+          )}
+
+          {/* Subjected to Tax Checkbox */}
+          <Grid item xs={12} md={6} sx={{ width: '100%' }}>
+            <Checkbox
+              checked={formData?.subjected_to_tax || false}
+              onChange={e => onFormDataChange({ ...formData, subjected_to_tax: e.target.checked })}
+              label={t('management.subjectedToTax') || 'Subjected to Tax'}
+              isRTL={isRTL}
+            />
+          </Grid>
+
+          {/* Added Tax Field - Show when subjected_to_tax is checked */}
+          {formData?.subjected_to_tax && (
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
+                {t('management.addedTax') || 'Added Tax'}
+              </Typography>
+              <RTLTextField
+                type="number"
+                value={formData?.added_tax || ''}
+                onChange={handleFieldChange('added_tax')}
+                placeholder=""
+              />
+            </Grid>
           )}
           
           {/* Exempted Checkbox */}

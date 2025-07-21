@@ -4,6 +4,10 @@ import DynamicDrawer from "@/components/ui/DynamicDrawer";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { useTranslations, useLocale } from "next-intl";
 import { useSimpleToast } from "@/components/ui/simple-toast";
+import {
+  createCountry, createZone, createCity, createDistrict,
+  editCountry, editZone, editCity, editDistrict
+} from "@/API/AddressCodes";
 
 const AddressCodeDrawer = ({
   isOpen,
@@ -12,21 +16,31 @@ const AddressCodeDrawer = ({
   onSave,
   onSaveAndNew,
   onSaveAndClose,
-  formData,
-  onFormDataChange,
+  formData: externalFormData,
+  onFormDataChange: externalOnFormDataChange,
   isEdit = false,
 }) => {
   const t = useTranslations("addressCodes");
+  const tToast = useTranslations("toast");
   const locale = useLocale();
   const isRTL = locale === "ar";
   const [originalName, setOriginalName] = useState("");
   const [originalData, setOriginalData] = useState({});
   const { addToast } = useSimpleToast();
 
+  // Internal state fallback
+  const [internalFormData, setInternalFormData] = useState({ name: "" });
+  const formData = externalFormData !== undefined ? externalFormData : internalFormData;
+  const onFormDataChange = externalOnFormDataChange !== undefined ? externalOnFormDataChange : setInternalFormData;
+
   useEffect(() => {
     if (isOpen && isEdit) {
       setOriginalName(formData?.name || "");
       setOriginalData(JSON.parse(JSON.stringify(formData)));
+    }
+    // Reset internal state when opening for new entry
+    if (isOpen && !isEdit && !externalFormData) {
+      setInternalFormData({ name: "" });
     }
   }, [isOpen, isEdit]);
 
@@ -86,18 +100,51 @@ const AddressCodeDrawer = ({
     }
   };
 
-  const handleSave = () => {
+  // Backend logic for POST/PUT
+  const handleSave = async () => {
     if (isEdit && !isDataChanged()) {
       addToast({
         type: "error",
-        title: t("noChangesTitle") || "No changes detected",
-        description:
-          t("noChangesDesc") ||
-          "Please modify at least one field before saving.",
+        title: tToast("error"),
+        description: t("noChangesDesc") || "Please modify at least one field before saving.",
       });
       return;
     }
-    onSave && onSave();
+    try {
+      let response;
+      if (isEdit) {
+        if (type === "country") response = await editCountry(formData.id, formData);
+        if (type === "zone") response = await editZone(formData.id, formData);
+        if (type === "city") response = await editCity(formData.id, formData);
+        if (type === "district") response = await editDistrict(formData.id, formData);
+      } else {
+        if (type === "country") response = await createCountry(formData);
+        if (type === "zone") response = await createZone(formData);
+        if (type === "city") response = await createCity(formData);
+        if (type === "district") response = await createDistrict(formData);
+      }
+      if (response && response.status) {
+        addToast({
+          type: "success",
+          title: tToast("success"),
+          description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
+        });
+        onSave && onSave(response.data);
+        onClose && onClose();
+      } else {
+        addToast({
+          type: "error",
+          title: tToast("error"),
+          description: response?.message || tToast(isEdit ? "updateError" : "createError"),
+        });
+      }
+    } catch (error) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: error.message || tToast(isEdit ? "updateError" : "createError"),
+      });
+    }
   };
 
   // Check if form has data
