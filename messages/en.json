@@ -470,6 +470,8 @@
     "customer": "Customer",
     "customer_inner": "Customer",
     "customerGroup": "Customer Group",
+    "customerGroups": "Customer Groups",
+    "customerList": "Customer List",
     "salesmen": "Salesmen",
     "supplier": "Supplier",
     "supplierGroup": "Supplier Group",
@@ -608,12 +610,7 @@
       "category": "Category",
       "brand": "Brand",
       "createdAt": "Created At",
-      "updatedAt": "Updated At",
-      "costCenter": "Cost Center",
-      "department": "Department",
-      "trade": "Trade",
-      "companyCode": "Company Code",
-      "job": "Job"
+      "updatedAt": "Updated At"
     },
     "messages": {
       "exportSuccess": "exported successfully",
@@ -1082,12 +1079,7 @@
     "noChangesTitle": "No changes detected",
     "noChangesDesc": "Please modify at least one field before saving.",
     "closeAll": "Close All",
-    "customer": "Customer",
-    "management": {
-      "customer": "Customer",
-      "customerGroup": "Customer Group",
-      "salesman": "Salesman"
-    }
+    "customer": "Customer"
   },
   "items": {
     "title": "Items Management",

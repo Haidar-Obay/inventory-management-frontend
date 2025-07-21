@@ -173,16 +173,16 @@ export function useMenuItems(t) {
           roles: ["admin", "user", "owner"],
           items: [
             {
-              key: "customerGroup",
-              name: t("customerGroup"),
-              icon: "UserCog",
+              key: "customerList",
+              name: t("customerList"),
+              icon: "UserCheck",
               path: "/main/mainfiles/customer?tab=0",
               roles: ["admin", "user", "owner"],
             },
             {
-              key: "salesmen",
-              name: t("salesmen"),
-              icon: "UserCheck",
+              key: "customerGroups",
+              name: t("customerGroups"),
+              icon: "UserCog",
               path: "/main/mainfiles/customer?tab=1",
               roles: ["admin", "user", "owner"],
             },
