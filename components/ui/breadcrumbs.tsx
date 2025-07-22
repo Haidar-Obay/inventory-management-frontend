@@ -171,6 +171,12 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
           t("items"),
         ];
         tabLabel = itemsTabs[tabIndex] || "";
+      } else if (pathSegments.includes("payment")) {
+        const paymentTabs = [
+          t("payment.paymentTerms"),
+          t("payment.paymentMethods"),
+        ];
+        tabLabel = paymentTabs[tabIndex] || "";
       }
 
       if (tabLabel) {

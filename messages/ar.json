@@ -1225,5 +1225,12 @@
     "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
     "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."
   },
-  "filterOptions": "خيارات التصفية"
+  "filterOptions": "خيارات التصفية",
+  "payment": "الدفع",
+  "paymentTerms": "شروط الدفع",
+  "paymentMethods": "طرق الدفع",
+  "nbOfDays": "عدد الأيام",
+  "isCreditCard": "بطاقة ائتمان",
+  "isOnlinePayment": "دفع إلكتروني",
+  "loading": "جار التحميل..."
 }

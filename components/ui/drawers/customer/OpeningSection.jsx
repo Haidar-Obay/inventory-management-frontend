@@ -33,85 +33,96 @@ const OpeningSection = React.memo(({ formData, onFormDataChange, isRTL, t, subsc
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
-        {subscriptionChecked && !canAddMultiCurrency && (
-          <Typography color="warning.main" sx={{ mb: 2 }}>
-            {upgradeMessage}
-          </Typography>
-        )}
-        {openingBalances.map((entry, idx) => (
-          <Grid container spacing={2} key={idx} sx={{ mb: 2, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-            <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
-                {t('management.currency') || 'Currency'}
-              </Typography>
-              <Autocomplete
-                fullWidth
-                options={createOptionsWithAdd(currencies, 'currency')}
-                getOptionLabel={(option) => {
-                  if (option?.isAddButton) return option.name;
-                  return option ? `${option.name} (${option.code})` : '';
-                }}
-                value={currencies.find((c) => c.code === entry.currency) || null}
-                onChange={(_, newValue) => {
-                  if (newValue?.isAddButton) {
-                    console.log('Add currency clicked');
-                    return;
-                  }
-                  handleOpeningBalanceChange(idx, 'currency', newValue?.code || '');
-                }}
-                renderInput={(params) => <RTLTextField {...params} placeholder="" />}
-                renderOption={(props, option) => (
-                  <Box component="li" {...props}>
-                    {option.isAddButton ? (
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
-                        <AddIcon sx={{ fontSize: '1rem' }} />
-                        {option.name}
+        {openingBalances.map((entry, idx) => {
+          // Filter out currencies already selected in other entries
+          const selectedCurrencies = openingBalances.filter((e, i) => i !== idx).map(e => e.currency);
+          const availableCurrencies = currencies.filter(c => !selectedCurrencies.includes(c.code));
+          return (
+            <Grid container spacing={2} key={idx} sx={{ mb: 2, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
+              <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
+                  {t('management.currency') || 'Currency'}
+                </Typography>
+                <Autocomplete
+                  fullWidth
+                  options={createOptionsWithAdd(availableCurrencies, 'currency')}
+                  getOptionLabel={(option) => {
+                    if (option?.isAddButton) return option.name;
+                    return option ? `${option.name} (${option.code})` : '';
+                  }}
+                  value={currencies.find((c) => c.code === entry.currency) || null}
+                  onChange={(_, newValue) => {
+                    if (newValue?.isAddButton) {
+                      console.log('Add currency clicked');
+                      return;
+                    }
+                    handleOpeningBalanceChange(idx, 'currency', newValue?.code || '');
+                  }}
+                  renderInput={(params) => <RTLTextField {...params} placeholder="" />}
+                  renderOption={(props, option) => {
+                    const { key, ...rest } = props;
+                    return (
+                      <Box component="li" key={key} {...rest}>
+                        {option.isAddButton ? (
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
+                            <AddIcon sx={{ fontSize: '1rem' }} />
+                            {option.name}
+                          </Box>
+                        ) : (
+                          `${option.name} (${option.code})`
+                        )}
                       </Box>
-                    ) : (
-                      `${option.name} (${option.code})`
-                    )}
-                  </Box>
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
-                {t('management.openingAmount') || 'Opening Amount'}
-              </Typography>
-              <RTLTextField
-                value={entry.amount}
-                onChange={e => handleOpeningBalanceChange(idx, 'amount', e.target.value)}
-                type="number"
-                placeholder=""
-              />
-            </Grid>
-            <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
-                {t('management.openingDate') || 'Opening Date'}
-              </Typography>
-              <RTLTextField
-                value={entry.date}
-                onChange={e => handleOpeningBalanceChange(idx, 'date', e.target.value)}
-                type="date"
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            {canAddMultiCurrency && openingBalances.length > 1 && (
-              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button color="error" size="small" onClick={() => handleRemoveOpeningBalance(idx)}>
-                  {t('management.remove') || 'Remove'}
-                </Button>
+                    );
+                  }}
+                />
               </Grid>
-            )}
-          </Grid>
-        ))}
-        {canAddMultiCurrency && (
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-            <Button variant="outlined" size="small" onClick={handleAddOpeningBalance}>
-              {t('management.addCurrency') || 'Add Currency'}
-            </Button>
-          </Box>
-        )}
+              <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
+                  {t('management.openingAmount') || 'Opening Amount'}
+                </Typography>
+                <RTLTextField
+                  value={entry.amount}
+                  onChange={e => handleOpeningBalanceChange(idx, 'amount', e.target.value)}
+                  type="number"
+                  placeholder=""
+                />
+              </Grid>
+              <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
+                  {t('management.openingDate') || 'Opening Date'}
+                </Typography>
+                <RTLTextField
+                  value={entry.date}
+                  onChange={e => handleOpeningBalanceChange(idx, 'date', e.target.value)}
+                  type="date"
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
+              {canAddMultiCurrency && openingBalances.length > 1 && (
+                <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button color="error" size="small" onClick={() => handleRemoveOpeningBalance(idx)}>
+                    {t('management.remove') || 'Remove'}
+                  </Button>
+                </Grid>
+              )}
+            </Grid>
+          );
+        })}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 2, mt: 2 }}>
+          {subscriptionChecked && !canAddMultiCurrency && (
+            <Typography color="warning.main" sx={{ fontWeight: 500 }}>
+              {upgradeMessage}
+            </Typography>
+          )}
+          <Button
+            variant="outlined"
+            startIcon={<AddIcon />}
+            onClick={canAddMultiCurrency ? handleAddOpeningBalance : undefined}
+            disabled={!canAddMultiCurrency}
+          >
+            {t('management.addCurrency') || 'Add Currency'}
+          </Button>
+        </Box>
       </AccordionDetails>
     </Accordion>
   );

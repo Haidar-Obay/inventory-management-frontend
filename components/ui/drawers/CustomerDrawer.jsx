@@ -217,6 +217,17 @@ const CustomerDrawer = React.memo(({
     }
   }, [isOpen, isEdit, formData]);
 
+  // Always auto-generate display_name from title, first_name, middle_name, last_name
+  useEffect(() => {
+    if (type === 'customer') {
+      const { title = '', first_name = '', middle_name = '', last_name = '', display_name = '' } = formData || {};
+      const autoDisplayName = [title, first_name, middle_name, last_name].filter(Boolean).join(' ').replace(/  +/g, ' ').trim();
+      if (autoDisplayName && display_name !== autoDisplayName) {
+        onFormDataChange(prev => ({ ...prev, display_name: autoDisplayName }));
+      }
+    }
+  }, [formData?.title, formData?.first_name, formData?.middle_name, formData?.last_name]);
+
   const fetchDropdownData = useCallback(async () => {
     try {
       setLoading(true);

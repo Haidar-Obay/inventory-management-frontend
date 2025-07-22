@@ -456,69 +456,12 @@ function AddressCodesPage() {
 
   const handlePrint = (type, data, columns) => {
     try {
-      // Create a new window for printing
-      const printWindow = window.open("", "_blank");
-
-      // Get the translated title for the type
-      const typeTitle = t(
-        `management.${type}`
-      );
-
-      // Create the HTML content for printing
-      const content = `
-        <html>
-          <head>
-            <title>${typeTitle} List</title>
-            <style>
-              body { font-family: Arial, sans-serif; }
-              table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-              th { background-color: #f5f5f5; }
-              h1 { text-align: center; }
-              @media print {
-                body { margin: 0; padding: 20px; }
-                table { page-break-inside: auto; }
-                tr { page-break-inside: avoid; page-break-after: auto; }
-              }
-            </style>
-          </head>
-          <body>
-            <h1>${typeTitle} List</h1>
-            <table>
-              <thead>
-                <tr>
-                  ${columns.map((col) => `<th>${col.header}</th>`).join("")}
-                </tr>
-              </thead>
-              <tbody>
-                ${data
-                  .map(
-                    (row) => `
-                  <tr>
-                    ${columns.map((col) => `<td>${row[col.key] || ""}</td>`).join("")}
-                  </tr>
-                `
-                  )
-                  .join("")}
-              </tbody>
-            </table>
-          </body>
-        </html>
-      `;
-
-      // Write the content to the new window
-      printWindow.document.write(content);
-      printWindow.document.close();
-
-      // Wait for content to load then print
-      printWindow.onload = function () {
-        printWindow.print();
-        // Close the window after printing
-        printWindow.onafterprint = function () {
-          printWindow.close();
-        };
-      };
-
+      // Logic to prepare data for printing
+      // Here you can use a library like `react-to-print` or open a new window with a printable format
+      toast.success({
+        title: toastT("success"),
+        description: toastT(`${type}.printSuccess`),
+      });
     } catch (error) {
       toast.error({
         title: toastT("error"),

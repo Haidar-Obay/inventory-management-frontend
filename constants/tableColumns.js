@@ -195,6 +195,23 @@ export function useTableColumns(t) {
       { header: t("attachmentsCount"), key: "attachments_count" },
       { header: t("createdAt"), key: "created_at", type: "date" },
       { header: t("updatedAt"), key: "updated_at", type: "date" },
-    ]
+    ],
+    paymentTermsColumns: [
+      { key: "id", header: t("id"), type: "text" },
+      { key: "code", header: t("code"), type: "text" },
+      { key: "nb_days", header: t("nbOfDays"), type: "number", render: (value) => (value == null || value === "" ? 0 : value) },
+      { key: "active", header: t("active"), type: "boolean" },
+      { key: "created_at", header: t("createdAt"), type: "date" },
+      { key: "updated_at", header: t("updatedAt"), type: "date" },
+    ],
+    paymentMethodsColumns: [
+      { key: "id", header: t("id"), type: "text" },
+      { key: "code", header: t("code"), type: "text" },
+      { key: "is_credit_card", header: t("isCreditCard"), type: "boolean" },
+      { key: "is_online_payment", header: t("isOnlinePayment"), type: "boolean" },
+      { key: "active", header: t("active"), type: "boolean" },
+      { key: "created_at", header: t("createdAt"), type: "date" },
+      { key: "updated_at", header: t("updatedAt"), type: "date" },
+    ],
   };
 }

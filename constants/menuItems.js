@@ -127,6 +127,30 @@ export function useMenuItems(t) {
           ],
         },
         {
+          key: "payment",
+          name: t("payment"),
+          icon: "Briefcase",
+          type: "group",
+          displayType: "popover",
+          roles: ["admin", "user", "owner"],
+          items: [
+            {
+              key: "paymentTerms",
+              name: t("paymentTerms"),
+              icon: "Tag",
+              path: "/main/mainfiles/payment?tab=0",
+              roles: ["admin", "user", "owner"],
+            },
+            {
+              key: "paymentMethods",
+              name: t("paymentMethods"),
+              icon: "Package",
+              path: "/main/mainfiles/payment?tab=1",
+              roles: ["admin", "user", "owner"],
+            },
+          ],
+        },
+        {
           key: "items",
           name: t("items"),
           icon: "ShoppingBasket",

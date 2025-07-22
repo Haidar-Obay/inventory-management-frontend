@@ -10,6 +10,8 @@ export const DeleteModal = ({ isOpen, onConfirm, onCancel }) => {
   const locale = useLocale();
   const isRTL = locale === "ar";
 
+  console.log('DeleteModal rendered', { isOpen, onConfirm });
+
   if (!isOpen) return null;
 
   const handleBackdropClick = (e) => {
@@ -67,7 +69,10 @@ export const DeleteModal = ({ isOpen, onConfirm, onCancel }) => {
               </Button>
               <Button
                 variant="destructive"
-                onClick={onConfirm}
+                onClick={() => {
+                  console.log('Confirm button clicked');
+                  onConfirm();
+                }}
                 className="bg-red-600 text-white hover:bg-red-700"
               >
                 {t("delete.modal.confirm")}
