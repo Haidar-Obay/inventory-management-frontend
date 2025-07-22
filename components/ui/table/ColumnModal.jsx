@@ -84,14 +84,16 @@ const TemplateItem = React.memo(({
       >
         {t("columns.modal.select")}
       </Button>
-      <Button
-        variant="destructive"
-        size="sm"
-        onClick={() => onDelete(template)}
-        className="bg-red-600 text-white hover:bg-red-700"
-      >
-        {t("columns.modal.delete")}
-      </Button>
+      {onDelete && (
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={() => onDelete(template)}
+          className="bg-red-600 text-white hover:bg-red-700"
+        >
+          {t("columns.modal.delete")}
+        </Button>
+      )}
     </div>
   </div>
 ));
@@ -223,6 +225,9 @@ const DeleteConfirmModal = React.memo(({
 // Try to import Toggle from components/ui/toggle if available
 import { Toggle } from "../toggle";
 
+// Define DEFAULT_TEMPLATE_ID at the top
+const DEFAULT_TEMPLATE_ID = '__default__';
+
 export const ColumnModal = React.memo(({
   isOpen,
   tableName,
@@ -250,6 +255,8 @@ export const ColumnModal = React.memo(({
   showHeaderColSeparator,
   showBodyColSeparator,
 }) => {
+  // Define defaultTemplateKey at the top of the component
+  const defaultTemplateKey = tableName ? `table:${tableName}:defaultTemplate` : null;
   const t = useTranslations("table");
   const locale = useLocale();
   const isRTL = locale === "ar";
@@ -478,7 +485,7 @@ export const ColumnModal = React.memo(({
     const templateId = template.id || template.name;
     setSelectedTemplateId(templateId);
     setAppliedTemplateId(templateId);
-    setCurrentTemplate(template);
+    setCurrentTemplate(templateId === DEFAULT_TEMPLATE_ID ? null : template);
     setHasChanges(false);
     if (onSelectedTemplateChange) {
       onSelectedTemplateChange(templateId);
@@ -492,8 +499,20 @@ export const ColumnModal = React.memo(({
 
   // Save functionality
   const handleSave = useCallback(async () => {
-    if (!currentTemplate) return;
-    
+    // If saving the default template, persist to localStorage
+    if (!currentTemplate || (currentTemplate.id === DEFAULT_TEMPLATE_ID)) {
+      if (defaultTemplateKey) {
+        const updatedDefault = {
+          visible_columns: { ...visibleColumns },
+          column_widths: { ...columnWidths },
+          column_order: [...columnOrder],
+        };
+        localStorage.setItem(defaultTemplateKey, JSON.stringify(updatedDefault));
+        setHasChanges(false);
+        setCurrentTemplate(null); // Ensure UI reflects default template as selected
+      }
+      return;
+    }
     setIsSaving(true);
     const updatedTemplate = {
       ...currentTemplate,
@@ -501,19 +520,16 @@ export const ColumnModal = React.memo(({
       column_widths: { ...columnWidths },
       column_order: [...columnOrder],
     };
-    
     try {
       await updateTableTemplate(tableName, currentTemplate.id, updatedTemplate);
       await loadTemplatesFromAPI();
       setHasChanges(false);
-
     } catch (error) {
       console.error("Error updating template:", error);
-
     } finally {
       setIsSaving(false);
     }
-  }, [currentTemplate, visibleColumns, columnWidths, columnOrder, tableName, loadTemplatesFromAPI]);
+  }, [currentTemplate, visibleColumns, columnWidths, columnOrder, tableName, loadTemplatesFromAPI, defaultTemplateKey]);
 
   const handleSaveAs = useCallback(async () => {
     setTemplateName(currentTemplate ? `${currentTemplate.name} (Copy)` : "");
@@ -550,15 +566,56 @@ export const ColumnModal = React.memo(({
     }
   }, [templates, selectedTemplateId]);
 
-  // Detect changes when template is applied
+  // Compute the default template based on current columns and settings
+  // Load persisted default template from localStorage if available
+  const getPersistedDefaultTemplate = () => {
+    if (!defaultTemplateKey) return null;
+    try {
+      const raw = localStorage.getItem(defaultTemplateKey);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  };
+  const persistedDefault = getPersistedDefaultTemplate();
+  const defaultTemplate = useMemo(() => {
+    if (persistedDefault) {
+      return {
+        id: '__default__',
+        name: t("columns.modal.defaultTemplate") || "Default",
+        visible_columns: persistedDefault.visible_columns,
+        column_widths: persistedDefault.column_widths,
+        column_order: persistedDefault.column_order,
+        isDefault: true,
+      };
+    }
+    return {
+      id: '__default__',
+      name: t("columns.modal.defaultTemplate") || "Default",
+      visible_columns: columns.reduce((acc, col) => {
+        acc[col.key] = col.key !== "created_at" && col.key !== "updated_at";
+        return acc;
+      }, {}),
+      column_widths: columns.reduce((acc, col) => {
+        acc[col.key] = col.width || "100px";
+        return acc;
+      }, {}),
+      column_order: columns.map(col => col.key),
+      isDefault: true,
+    };
+  }, [columns, t, persistedDefault]);
+
+  // Detect changes when template is applied (MOVED AFTER defaultTemplate definition)
   useEffect(() => {
     if (currentTemplate) {
       const isActive = isTemplateMatch(currentTemplate, visibleColumns, columnWidths, columnOrder);
       setHasChanges(!isActive);
     } else {
-      setHasChanges(false);
+      // If default template is selected, compare to defaultTemplate
+      const isActive = isTemplateMatch(defaultTemplate, visibleColumns, columnWidths, columnOrder);
+      setHasChanges(!isActive);
     }
-  }, [currentTemplate, visibleColumns, columnWidths, columnOrder, isTemplateMatch]);
+  }, [currentTemplate, visibleColumns, columnWidths, columnOrder, isTemplateMatch, defaultTemplate]);
 
   useEffect(() => {
     setOtherHeaderColor(headerColor || "");
@@ -647,6 +704,9 @@ export const ColumnModal = React.memo(({
       </div>
     </div>
   ), [otherHeaderColor, otherShowHeaderSeparator, otherShowHeaderColSeparator, otherShowBodyColSeparator, t, theme]);
+
+  // Insert the default template at the start of the templates list
+  const templatesWithDefault = useMemo(() => [defaultTemplate, ...templates.filter(t => (t.id || t.name) !== DEFAULT_TEMPLATE_ID)], [defaultTemplate, templates]);
 
   // Tab content renderers
   const renderColumnSettingsTab = useCallback(() => (
@@ -769,13 +829,13 @@ export const ColumnModal = React.memo(({
         <div className="text-muted-foreground text-sm py-4 text-center">
           {t("columns.modal.loadingTemplates") || "Loading templates..."}
         </div>
-      ) : templates.length === 0 ? (
+      ) : templatesWithDefault.length === 0 ? (
         <div className="text-muted-foreground text-sm">{t("columns.modal.noTemplates")}</div>
       ) : (
-        templates.map((template) => {
+        templatesWithDefault.map((template) => {
           const templateId = template.id || template.name;
-          const isSelected = selectedTemplateId === templateId;
-          const isApplied = appliedTemplateId === templateId;
+          const isSelected = (selectedTemplateId === templateId) || (!selectedTemplateId && templateId === DEFAULT_TEMPLATE_ID);
+          const isApplied = (appliedTemplateId === templateId) || (!appliedTemplateId && templateId === DEFAULT_TEMPLATE_ID);
           return (
             <TemplateItem
               key={templateId}
@@ -783,14 +843,14 @@ export const ColumnModal = React.memo(({
               isActive={isApplied}
               isSelected={isSelected}
               onApply={handleTemplateApply}
-              onDelete={handleTemplateDelete}
+              onDelete={template.isDefault ? undefined : handleTemplateDelete}
               t={t}
             />
           );
         })
       )}
     </div>
-  ), [templates, isLoadingTemplates, handleTemplateApply, handleTemplateDelete, t, selectedTemplateId, appliedTemplateId]);
+  ), [templatesWithDefault, isLoadingTemplates, handleTemplateApply, handleTemplateDelete, t, selectedTemplateId, appliedTemplateId]);
 
   if (!isOpen) return null;
 
@@ -901,7 +961,7 @@ export const ColumnModal = React.memo(({
                   <Button 
                     variant="outline" 
                     onClick={handleSave}
-                    disabled={!currentTemplate || !hasChanges || isSaving}
+                    disabled={!hasChanges || isSaving}
                     className="ml-2"
                   >
                     {isSaving ? t("columns.modal.saving") : t("columns.modal.save")}

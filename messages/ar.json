@@ -858,7 +858,8 @@
         "pickHeaderColor": "اختر لونًا لخلفية رأس الجدول.",
         "showHeaderSeparator": "إظهار فاصل الرأس",
         "showHeaderColSeparator": "إظهار فواصل أعمدة الرأس",
-        "showBodyColSeparator": "إظهار فواصل أعمدة الجسم"
+        "showBodyColSeparator": "إظهار فواصل أعمدة الجسم",
+        "defaultTemplate": "الافتراضي"
       }
     },
     "filter": {
