@@ -34,7 +34,7 @@ export const TableHeader = ({
   const locale = useLocale();
   const isRTL = locale === "ar";
 
-  const theadStyle = headerColor && !isRTL ? { background: headerColor } : {};
+  const theadStyle = headerColor ? { background: headerColor } : {};
 
   return (
     <thead
@@ -44,10 +44,10 @@ export const TableHeader = ({
       {/* Header Row */}
       <tr
         className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900"
-        style={headerColor && !isRTL ? { background: headerColor } : {}}
+        style={headerColor ? { background: headerColor } : {}}
       >
         <th
-          className="border-b border-slate-200 dark:border-slate-700 ps-3 py-3 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-all duration-200"
+          className={`border-b border-slate-200 dark:border-slate-700 ps-3 py-3 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-all duration-200 ${showHeaderColSeparator !== false ? 'border-r border-slate-300 dark:border-slate-600' : ''}`}
           data-column="select"
           style={{ width: "36px", minWidth: "32px", maxWidth: "40px" }}
         >
@@ -98,7 +98,7 @@ export const TableHeader = ({
         </th>
         {showSearchColumn && (
           <th
-            className="border-b border-slate-200 dark:border-slate-700 px-0 py-3"
+            className={`border-b border-slate-200 dark:border-slate-700 px-0 py-3 ${showHeaderColSeparator !== false ? 'border-r border-slate-300 dark:border-slate-600' : ''}`}
             data-column="search"
             style={{ width: "18px", minWidth: "18px", maxWidth: "18px" }}
           >
@@ -283,12 +283,12 @@ export const TableHeader = ({
 
         {/* Actions column */}
         <th
-          className={`border-b border-slate-200 dark:border-slate-700 px-4 py-4 text-center bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-all duration-200 ${showHeaderColSeparator !== false ? 'border-l border-r border-slate-300 dark:border-slate-600' : ''} ${
+          className={`border-b border-slate-200 dark:border-slate-700 px-4 py-4 text-center bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-all duration-200 ${showHeaderColSeparator !== false ? 'border-l border-slate-300 dark:border-slate-600' : ''} ${showHeaderColSeparator !== false ? (isRTL ? 'border-r border-l border-slate-300 dark:border-slate-600' : 'border-r border-slate-300 dark:border-slate-600') : ''} ${
             isOverflowing
               ? "sticky end-0 z-20 backdrop-blur-sm border-s border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50/95 to-slate-100/95 dark:from-slate-800/95 dark:to-slate-900/95"
               : ""
           }`}
-          style={{ width: "75px", minWidth: "75px", maxWidth: "75px", ...(headerColor && !isRTL ? { background: headerColor } : {}) }}
+          style={{ width: "75px", minWidth: "75px", maxWidth: "75px", ...(headerColor ? { background: headerColor } : {}) }}
         >
           <span className="flex items-center justify-center w-full font-semibold text-slate-700 dark:text-slate-200 text-sm uppercase tracking-wide hover:text-slate-900 dark:hover:text-white transition-colors duration-200">
             {t("actions")}
@@ -319,14 +319,17 @@ export const TableHeader = ({
             opacity: showSearchRow ? 1 : 0,
           }}
         >
-          <td></td>
-          {showSearchColumn && <td></td>}
-          {columnOrder.map((key) => {
+          <td className={`${showHeaderColSeparator !== false ? 'border-r border-slate-300 dark:border-slate-600' : ''}`}></td>
+          {showSearchColumn && <td className={`${showHeaderColSeparator !== false ? 'border-r border-slate-300 dark:border-slate-600' : ''}`}></td>}
+          {columnOrder.map((key, idx) => {
             const column = columns.find((col) => col.key === key);
             if (!column || !visibleColumns[key]) return null;
-
+            // Add right border to all except the last data column
+            const visibleKeys = columnOrder.filter(key => visibleColumns[key]);
+            const isLastDataCol = idx === visibleKeys.length - 1;
+            const lastDataColBorder = isRTL && isLastDataCol ? 'border-r border-slate-300 dark:border-slate-600' : '';
             return (
-              <td key={`search-${key}`} className="px-6 py-2 hover:bg-slate-100 dark:hover:bg-slate-700/30 transition-colors duration-200">
+              <td key={`search-${key}`} className={`px-6 py-2 hover:bg-slate-100 dark:hover:bg-slate-700/30 transition-colors duration-200 ${showHeaderColSeparator !== false && !isLastDataCol ? 'border-r border-slate-300 dark:border-slate-600' : ''} ${showHeaderColSeparator !== false ? lastDataColBorder : ''}`}>
                 <div className="relative">
                   <div
                     className={`pointer-events-none absolute inset-y-0 ${isRTL ? "left-0" : "right-0"} flex items-center ${isRTL ? "pl-2" : "pr-2"}`}
@@ -363,7 +366,7 @@ export const TableHeader = ({
             );
           })}
           <td
-            className={`border-b border-slate-200 dark:border-slate-700 px-4 py-2 bg-slate-50 dark:bg-slate-800/50 ${
+            className={`border-b border-slate-200 dark:border-slate-700 px-4 py-2 bg-slate-50 dark:bg-slate-800/50 ${showHeaderColSeparator !== false ? 'border-l border-slate-300 dark:border-slate-600' : ''} ${showHeaderColSeparator !== false && isRTL ? 'border-r border-slate-300 dark:border-slate-600' : ''} ${
               isOverflowing
                 ? "sticky end-0 z-10 backdrop-blur-sm border-s border-slate-200 dark:border-slate-700 bg-slate-50/95 dark:bg-slate-800/95"
                 : ""

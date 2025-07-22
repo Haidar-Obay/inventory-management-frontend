@@ -264,6 +264,7 @@ const BookmarksSection = ({
                     isBookmarked={bookmarks.includes(item.uniqueId)}
                     t={t}
                     isRTL={isRTL}
+                    className="text-sm"
                   />
                 </li>
               );
@@ -458,6 +459,7 @@ const GroupHeader = ({
                                   t={t}
                                   isRTL={isRTL}
                                   compact={true}
+                                  className="text-sm"
                                 />
                               );
                             })}
@@ -491,6 +493,7 @@ const GroupHeader = ({
                       t={t}
                       isRTL={isRTL}
                       compact={true}
+                      className="text-sm"
                     />
                   );
                 })}
@@ -586,6 +589,7 @@ const GroupItems = ({
               }
               t={t}
               isRTL={isRTL}
+              className="text-sm"
             />
           </li>
         );
@@ -648,7 +652,7 @@ const NestedGroup = ({
         >
           <div className="flex items-center gap-2">
             <Icon className="h-5 w-5" />
-            <span>{item.name}</span>
+            <span className="text-sm">{item.name}</span>
           </div>
           <ChevronRight
             className={cn(
@@ -701,6 +705,7 @@ const NestedGroup = ({
                 t={t}
                 isRTL={isRTL}
                 compact={!isCollapsed}
+                className="text-sm"
               />
             );
           })}
@@ -808,6 +813,7 @@ const NestedGroup = ({
                   t={t}
                   isRTL={isRTL}
                   compact={!isCollapsed}
+                  className="text-sm"
                 />
               </li>
             );

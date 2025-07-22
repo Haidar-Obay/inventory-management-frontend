@@ -166,7 +166,7 @@ export const TableBody = ({
             >
               {/* Row selection checkbox */}
               <td
-                className="border-b border-border ps-2 py-2"
+                className={`border-b border-border ps-2 py-2 ${(showBodyColSeparator !== false) ? 'border-r border-slate-300 dark:border-slate-600' : ''}`}
                 style={{ width: "36px", minWidth: "32px", maxWidth: "40px" }}
               >
                 <div className="flex flex-row items-center justify-center w-full gap-1">
@@ -185,7 +185,7 @@ export const TableBody = ({
               {/* Row handle (search column) */}
               {showSearchColumn && (
                 <td
-                  className="border-b border-border px-0 py-2"
+                  className={`border-b border-border px-0 py-2 ${(showBodyColSeparator !== false) ? 'border-l border-r border-slate-300 dark:border-slate-600' : ''}`}
                   style={{ width: "18px", minWidth: "18px", maxWidth: "18px" }}
                 >
                   <div
@@ -239,7 +239,7 @@ export const TableBody = ({
                     rightBorder = true; // All columns get right border in RTL
                   } else {
                     leftBorder = isFirstColumn;
-                    rightBorder = !isLastColumn;
+                    rightBorder = true; // Always add right border in LTR
                   }
                 }
 
@@ -368,17 +368,21 @@ export const TableBody = ({
 
               {/* Actions */}
               <td
-                className={`border-b border-border px-1 py-2 transition-colors duration-200 ${showBodyColSeparator !== false ? 'border-l border-r border-slate-300 dark:border-slate-600' : ''} ${
-                  isOverflowing
+                className={`border-b border-border px-1 py-2 transition-colors duration-200
+                  ${showBodyColSeparator !== false
+                    ? (isRTL
+                        ? 'border-r border-slate-300 dark:border-slate-600'
+                        : 'border-l border-slate-300 dark:border-slate-600')
+                    : ''}
+                  ${isOverflowing
                     ? "sticky end-0 z-10 backdrop-blur-sm border-s border-gray-200 dark:border-gray-700"
-                    : ""
-                } ${
-                  selectedRows.has(row.id)
+                    : ""}
+                  ${selectedRows.has(row.id)
                     ? "bg-primary/10 hover:bg-primary/20"
                     : rowIndex % 2 === 0
                       ? "bg-white dark:bg-background hover:bg-gray-100 dark:hover:bg-muted"
-                      : "bg-gray-50 dark:bg-muted/50 hover:bg-gray-100 dark:hover:bg-muted"
-                }`}
+                      : "bg-gray-50 dark:bg-muted/50 hover:bg-gray-100 dark:hover:bg-muted"}
+                `}
                 style={{ width: "75px", minWidth: "75px", maxWidth: "75px" }}
               >
                 <CustomActions
