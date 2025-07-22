@@ -88,6 +88,7 @@ const TemplateItem = React.memo(({
         variant="destructive"
         size="sm"
         onClick={() => onDelete(template)}
+        className="bg-red-600 text-white hover:bg-red-700"
       >
         {t("columns.modal.delete")}
       </Button>
@@ -154,13 +155,42 @@ const DeleteConfirmModal = React.memo(({
   isDeleting
 }) => {
   if (!isOpen || !template) return null;
+
+  // Add backdrop click handler
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onCancel();
+    }
+  };
   
   return (
-    <div className="fixed inset-0 z-[2147483648] flex items-center justify-center bg-black/40">
+    <div className="fixed inset-0 z-[2147483648] flex items-center justify-center bg-black/40" onClick={handleBackdropClick}>
       <div className="bg-background p-6 rounded-lg shadow-lg border border-border w-full max-w-sm">
-        <h4 className="text-lg font-medium mb-2 text-destructive">
-          {t("columns.modal.deleteConfirmTitle") || "Delete Template"}
-        </h4>
+        <div className="mb-4 flex items-center justify-between">
+          <h4 className="text-lg font-medium text-destructive">
+            {t("columns.modal.deleteConfirmTitle") || "Delete Template"}
+          </h4>
+          <button
+            onClick={onCancel}
+            className="rounded-full p-1 hover:bg-muted text-muted-foreground"
+            aria-label="Close"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
         <p className="text-muted-foreground mb-4">
           {t("columns.modal.deleteConfirmMessage", { templateName: template.name }) || 
            `Are you sure you want to delete the template "${template.name}"? This action cannot be undone.`}
@@ -169,7 +199,9 @@ const DeleteConfirmModal = React.memo(({
           <Button variant="outline" size="sm" onClick={onCancel} disabled={isDeleting}>
             {t("columns.modal.cancel")}
           </Button>
-          <Button variant="destructive" size="sm" onClick={onConfirm} disabled={isDeleting}>
+          <Button variant="destructive" size="sm" onClick={onConfirm} disabled={isDeleting}
+            className="bg-red-600 text-white hover:bg-red-700"
+          >
             {isDeleting ? (
               <>
                 <svg className="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
