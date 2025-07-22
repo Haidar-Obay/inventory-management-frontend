@@ -89,6 +89,9 @@ function CustomerPage() {
     customers: false,
   });
 
+  const locale = useLocale();
+  const isRTL = locale === "ar";
+
   const t = useTranslations("customers");
   const tableT = useTranslations("tableColumns");
   const toastT = useTranslations("toast");
@@ -716,6 +719,9 @@ function CustomerPage() {
             value={value}
             onChange={handleChange}
             aria-label="customer tabs"
+            sx={{
+              direction: isRTL ? "rtl" : "ltr",
+            }}
           >
             <Tab label={t("tabs.customerGroups")} />
             <Tab label={t("tabs.salesmen")} />

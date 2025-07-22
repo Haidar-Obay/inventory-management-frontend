@@ -84,21 +84,21 @@ export function useMenuItems(t) {
           items: [
             {
               key: "project",
-              name: t("project"),
+              name: t("projects"),
               icon: "Presentation",
               path: "/main/mainfiles/sections?tab=0",
               roles: ["admin", "user", "owner"],
             },
             {
               key: "costCenter",
-              name: t("costCenter"),
+              name: t("costCenters"),
               icon: "HandCoins",
               path: "/main/mainfiles/sections?tab=1",
               roles: ["admin", "user", "owner"],
             },
             {
               key: "department",
-              name: t("department"),
+              name: t("departments"),
               icon: "Building2",
               path: "/main/mainfiles/sections?tab=2",
               roles: ["admin", "user", "owner"],
@@ -190,23 +190,23 @@ export function useMenuItems(t) {
         },
         {
           key: "customer",
-          name: t("customer"),
+          name: t("customers"),
           icon: "Users",
           type: "group",
           displayType: "popover",
           roles: ["admin", "user", "owner"],
           items: [
             {
-              key: "customerList",
-              name: t("customerList"),
-              icon: "UserCheck",
+              key: "customerGroup",
+              name: t("customerGroups"),
+              icon: "UserCog",
               path: "/main/mainfiles/customer?tab=0",
               roles: ["admin", "user", "owner"],
             },
             {
-              key: "customerGroups",
-              name: t("customerGroups"),
-              icon: "UserCog",
+              key: "salesmen",
+              name: t("salesmen"),
+              icon: "UserCheck",
               path: "/main/mainfiles/customer?tab=1",
               roles: ["admin", "user", "owner"],
             },
@@ -221,7 +221,7 @@ export function useMenuItems(t) {
         },
         {
           key: "supplier",
-          name: t("supplier"),
+          name: t("suppliers"),
           icon: "Truck",
           type: "group",
           displayType: "popover",
@@ -229,14 +229,14 @@ export function useMenuItems(t) {
           items: [
             {
               key: "supplierGroup",
-              name: t("supplierGroup"),
+              name: t("supplierGroups"),
               icon: "Users",
               path: "/main/supplier/supplier-group",
               roles: ["admin", "user", "owner"],
             },
             {
-              key: "suppliers",
-              name: t("suppliers"),
+              key: "supplier_inner",
+              name: t("supplier_inner"),
               icon: "Truck",
               path: "/rs",
               roles: ["admin", "user", "owner"],

@@ -97,7 +97,8 @@ function ItemsPage() {
     brands: false,
     items: false,
   });
-
+  const locale = useLocale();
+  const isRTL = locale === "ar";
   const t = useTranslations("items");
   const tableT = useTranslations("tableColumns");
   const toastT = useTranslations("toast");
@@ -707,6 +708,9 @@ function ItemsPage() {
             value={value}
             onChange={handleChange}
             aria-label="items tabs"
+            sx={{
+              direction: isRTL ? "rtl" : "ltr",
+            }}
           >
             <Tab label={t("tabs.productLines")} />
             <Tab label={t("tabs.categories")} />

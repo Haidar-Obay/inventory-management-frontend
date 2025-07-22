@@ -32,8 +32,8 @@ const CustomTabs = ({ value, onChange, children, ...props }) => {
         width: `${width}px`,
         position: "absolute",
         bottom: 0,
-        height: "2px",
-        backgroundColor: "var(--mui-palette-primary-main, #1976d2)",
+        height: "2.5px",
+        backgroundColor: "hsl(var(--primary))", // changed to match sidebar purple
         transition: "all 0.3s ease-in-out",
         transform: "translateX(0)",
       });
@@ -91,6 +91,12 @@ const CustomTabs = ({ value, onChange, children, ...props }) => {
 
   return (
     <Box sx={{ position: "relative", width: "100%" }}>
+      {/* Global style override for selected tab color */}
+      <style>{`
+        .MuiTab-root.Mui-selected {
+          color: hsl(var(--primary)) !important;
+        }
+      `}</style>
       <Tabs
         ref={tabsRef}
         key={`custom-tabs-${isRTL ? "rtl" : "ltr"}-${layoutKey}`}
@@ -105,9 +111,6 @@ const CustomTabs = ({ value, onChange, children, ...props }) => {
             textTransform: "none",
             fontWeight: 500,
             fontSize: "0.875rem",
-            "&.Mui-selected": {
-              color: "primary.main",
-            },
           },
           direction: isRTL ? "rtl" : "ltr",
         }}

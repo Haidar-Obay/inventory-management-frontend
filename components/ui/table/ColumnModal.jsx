@@ -3,6 +3,9 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Modal, Button, Checkbox, Input } from "./CustomControls";
 import { useTranslations, useLocale } from "next-intl";
+import { useTheme } from "next-themes";
+import { lightTheme } from "../../../lib/themes/light";
+import { darkTheme } from "../../../lib/themes/dark";
 
 import Portal from "../Portal";
 import { 
@@ -85,6 +88,7 @@ const TemplateItem = React.memo(({
         variant="destructive"
         size="sm"
         onClick={() => onDelete(template)}
+        className="bg-red-600 text-white hover:bg-red-700"
       >
         {t("columns.modal.delete")}
       </Button>
@@ -151,13 +155,42 @@ const DeleteConfirmModal = React.memo(({
   isDeleting
 }) => {
   if (!isOpen || !template) return null;
+
+  // Add backdrop click handler
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onCancel();
+    }
+  };
   
   return (
-    <div className="fixed inset-0 z-[2147483648] flex items-center justify-center bg-black/40">
+    <div className="fixed inset-0 z-[2147483648] flex items-center justify-center bg-black/40" onClick={handleBackdropClick}>
       <div className="bg-background p-6 rounded-lg shadow-lg border border-border w-full max-w-sm">
-        <h4 className="text-lg font-medium mb-2 text-destructive">
-          {t("columns.modal.deleteConfirmTitle") || "Delete Template"}
-        </h4>
+        <div className="mb-4 flex items-center justify-between">
+          <h4 className="text-lg font-medium text-destructive">
+            {t("columns.modal.deleteConfirmTitle") || "Delete Template"}
+          </h4>
+          <button
+            onClick={onCancel}
+            className="rounded-full p-1 hover:bg-muted text-muted-foreground"
+            aria-label="Close"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
         <p className="text-muted-foreground mb-4">
           {t("columns.modal.deleteConfirmMessage", { templateName: template.name }) || 
            `Are you sure you want to delete the template "${template.name}"? This action cannot be undone.`}
@@ -166,7 +199,9 @@ const DeleteConfirmModal = React.memo(({
           <Button variant="outline" size="sm" onClick={onCancel} disabled={isDeleting}>
             {t("columns.modal.cancel")}
           </Button>
-          <Button variant="destructive" size="sm" onClick={onConfirm} disabled={isDeleting}>
+          <Button variant="destructive" size="sm" onClick={onConfirm} disabled={isDeleting}
+            className="bg-red-600 text-white hover:bg-red-700"
+          >
             {isDeleting ? (
               <>
                 <svg className="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -218,6 +253,7 @@ export const ColumnModal = React.memo(({
   const t = useTranslations("table");
   const locale = useLocale();
   const isRTL = locale === "ar";
+  const { theme } = useTheme();
 
   // State
   const [activeTab, setActiveTab] = useState("settings");
@@ -553,7 +589,7 @@ export const ColumnModal = React.memo(({
 
   // Add a reset handler for the "other" tab
   const handleResetOtherSettings = useCallback(() => {
-    setOtherHeaderColor(headerColor || "");
+    setOtherHeaderColor(""); // Use empty string to indicate "theme default"
     setOtherShowHeaderSeparator(showHeaderSeparator !== undefined ? showHeaderSeparator : true);
     setOtherShowHeaderColSeparator(showHeaderColSeparator !== undefined ? showHeaderColSeparator : true);
     setOtherShowBodyColSeparator(showBodyColSeparator !== undefined ? showBodyColSeparator : true);
@@ -561,7 +597,15 @@ export const ColumnModal = React.memo(({
     if (otherSettingsKey) {
       localStorage.removeItem(otherSettingsKey);
     }
-  }, [headerColor, showHeaderSeparator, showHeaderColSeparator, showBodyColSeparator, otherSettingsKey]);
+  }, [showHeaderSeparator, showHeaderColSeparator, showBodyColSeparator, otherSettingsKey]);
+
+  // Add an effect to update the preview color when theme changes and color is empty:
+  useEffect(() => {
+    if (!otherHeaderColor) {
+      // This will trigger a re-render with the correct color for the theme
+      setOtherHeaderColor(""); // Keep as empty, input will show correct color
+    }
+  }, [theme]);
 
   const renderOtherSettingsTab = useCallback(() => (
     <div className="space-y-6 px-2 py-4">
@@ -569,7 +613,7 @@ export const ColumnModal = React.memo(({
         <label className="block text-sm font-medium mb-1">{t("columns.modal.headerColor")}</label>
         <input
           type="color"
-          value={otherHeaderColor || "#f1f5f9"}
+          value={otherHeaderColor || (theme === 'dark' ? '#1e293b' : '#f1f5f9')}
           onChange={e => setOtherHeaderColor(e.target.value)}
           className="w-12 h-8 p-0 border border-border rounded cursor-pointer"
         />
@@ -602,7 +646,7 @@ export const ColumnModal = React.memo(({
         </label>
       </div>
     </div>
-  ), [otherHeaderColor, otherShowHeaderSeparator, otherShowHeaderColSeparator, otherShowBodyColSeparator, t]);
+  ), [otherHeaderColor, otherShowHeaderSeparator, otherShowHeaderColSeparator, otherShowBodyColSeparator, t, theme]);
 
   // Tab content renderers
   const renderColumnSettingsTab = useCallback(() => (
@@ -635,10 +679,6 @@ export const ColumnModal = React.memo(({
             <div
               key={column.key}
               className="flex items-center py-3 border-b border-border last:border-0"
-              draggable
-              onDragStart={(e) => handleDragStart(e, column.key)}
-              onDragOver={handleDragOver}
-              onDrop={(e) => handleDrop(e, column.key)}
               style={{ gap: "1rem" }}
             >
               {/* Order Number */}
@@ -693,6 +733,25 @@ export const ColumnModal = React.memo(({
                     <polyline points="6,9 12,15 18,9"></polyline>
                   </svg>
                 </button>
+              </div>
+              {/* Drag Handle */}
+              <div
+                className="cursor-grab p-2 ml-2 flex items-center"
+                draggable
+                onDragStart={(e) => handleDragStart(e, column.key)}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, column.key)}
+                title="Drag to reorder"
+                style={{ userSelect: 'none' }}
+              >
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor" className="text-muted-foreground">
+                  <circle cx="5" cy="6" r="1.5" />
+                  <circle cx="5" cy="10" r="1.5" />
+                  <circle cx="5" cy="14" r="1.5" />
+                  <circle cx="10" cy="6" r="1.5" />
+                  <circle cx="10" cy="10" r="1.5" />
+                  <circle cx="10" cy="14" r="1.5" />
+                </svg>
               </div>
             </div>
           ))
@@ -761,18 +820,18 @@ export const ColumnModal = React.memo(({
               <TabButton isActive={activeTab === "settings"} onClick={() => setActiveTab("settings")}> 
                 {t("columns.modal.settings") || "Column Settings"}
               </TabButton>
+              <TabButton isActive={activeTab === "other"} onClick={() => setActiveTab("other")}>{t("columns.modal.otherSettings")}</TabButton>
               <TabButton isActive={activeTab === "templates"} onClick={() => setActiveTab("templates")}> 
                 {t("columns.modal.templates")}
               </TabButton>
-              <TabButton isActive={activeTab === "other"} onClick={() => setActiveTab("other")}>{t("columns.modal.otherSettings")}</TabButton>
             </div>
           </div>
 
           {/* Tab Content */}
           <div className="flex-1 min-h-0 overflow-y-auto">
             {activeTab === "settings" && renderColumnSettingsTab()}
-            {activeTab === "templates" && renderTemplatesTab()}
             {activeTab === "other" && renderOtherSettingsTab()}
+            {activeTab === "templates" && renderTemplatesTab()}
           </div>
 
           {/* Template Prompt */}
@@ -805,8 +864,27 @@ export const ColumnModal = React.memo(({
                 onClick={() => {
                   if (activeTab === "other") {
                     handleResetOtherSettings();
-                  } else {
-                    onResetSettings(activeTab);
+                  } else if (activeTab === "settings") {
+                    // Reset preview for column settings to default values (do not persist yet)
+                    // Visibility
+                    const defaultVisible = {};
+                    columns.forEach((col) => {
+                      defaultVisible[col.key] = col.key !== "created_at" && col.key !== "updated_at";
+                    });
+                    onToggleColumn(null, null, defaultVisible);
+                    // Order
+                    onColumnOrderChange(columns.map((col) => col.key));
+                    // Widths
+                    const defaultWidths = {
+                      select: "28px",
+                      search: "28px",
+                    };
+                    columns.forEach((col) => {
+                      defaultWidths[col.key] = col.width || "100px";
+                    });
+                    Object.entries(defaultWidths).forEach(([key, width]) => {
+                      onColumnWidthChange(key, width);
+                    });
                   }
                 }}
                 className="border-border mr-2"

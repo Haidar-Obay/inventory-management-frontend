@@ -5,7 +5,7 @@ import { Tabs, Tab, Box, Typography, CircularProgress } from "@mui/material";
 import Table from "@/components/ui/table/Table";
 import AddressCodeDrawer from "@/components/ui/drawers/AddressCodeDrawer";
 import CustomTabs from "@/components/ui/CustomTabs";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import {
   getCountries,
   getZones,
@@ -85,6 +85,8 @@ function AddressCodesPage() {
     useTableColumns(tableT);
   const searchParams = useSearchParams();
   const router = useRouter();
+  const locale = useLocale();
+  const isRTL = locale === "ar";
   const [value, setValue] = useState(0);
   const [countriesData, setCountriesData] = useState([]);
   const [zonesData, setZonesData] = useState([]);
@@ -509,6 +511,9 @@ function AddressCodesPage() {
             value={value}
             onChange={handleChange}
             aria-label="address code tabs"
+            sx={{
+              direction: isRTL ? "rtl" : "ltr",
+            }}
           >
             <Tab label={t("tabs.countries")} />
             <Tab label={t("tabs.cities")} />

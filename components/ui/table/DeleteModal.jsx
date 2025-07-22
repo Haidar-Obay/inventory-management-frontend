@@ -28,7 +28,7 @@ export const DeleteModal = ({ isOpen, onConfirm, onCancel }) => {
       >
         <div className="w-full max-w-md rounded-lg bg-background p-6 shadow-lg border border-border">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-lg font-medium text-foreground">
+            <h3 className="text-lg font-medium text-destructive">
               {t("delete.modal.title")}
             </h3>
             <button

@@ -153,11 +153,21 @@ const Table = (props) => {
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
   const [previewRow, setPreviewRow] = useState(null);
   const [selectedTemplateId, setSelectedTemplateId] = useState(() => {
-    // Load selected template ID from localStorage on component mount
-    const tableId = tableProps.tableId || "default";
-    const stored = localStorage.getItem(`selectedTemplate_${tableId}`);
-    return stored || null;
+    if (typeof window !== "undefined") {
+      const tableId = tableProps.tableId || "default";
+      const stored = localStorage.getItem(`selectedTemplate_${tableId}`);
+      return stored || null;
+    }
+    return null;
   });
+
+  useEffect(() => {
+    const tableId = tableProps.tableId || "default";
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem(`selectedTemplate_${tableId}`);
+      setSelectedTemplateId(stored || null);
+    }
+  }, [tableProps.tableId]);
 
   // Persisted Other Settings
   const tableId = tableProps.tableId || "default";

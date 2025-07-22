@@ -790,7 +790,7 @@ function SectionsPage() {
           <CustomTabs
             value={value}
             onChange={handleChange}
-            aria-label="sections tabs"
+            aria-label="address code tabs"
             sx={{
               direction: isRTL ? "rtl" : "ltr",
             }}
