@@ -164,7 +164,7 @@ export function SidebarItem({
             isRTL ? "ml-2" : "mr-2"
           )}
         />
-        <span className={cn("whitespace-nowrap", compact ? "text-sm" : "")}>
+        <span className={cn("whitespace-nowrap", "text-sm")}>
           {label}
         </span>
       </Link>
