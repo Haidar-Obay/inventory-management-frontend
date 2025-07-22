@@ -551,6 +551,18 @@ export const ColumnModal = React.memo(({
     } catch {}
   }, [otherHeaderColor, otherShowHeaderSeparator, otherShowHeaderColSeparator, otherShowBodyColSeparator, otherSettingsKey]);
 
+  // Add a reset handler for the "other" tab
+  const handleResetOtherSettings = useCallback(() => {
+    setOtherHeaderColor(headerColor || "");
+    setOtherShowHeaderSeparator(showHeaderSeparator !== undefined ? showHeaderSeparator : true);
+    setOtherShowHeaderColSeparator(showHeaderColSeparator !== undefined ? showHeaderColSeparator : true);
+    setOtherShowBodyColSeparator(showBodyColSeparator !== undefined ? showBodyColSeparator : true);
+    // Optionally, clear persisted settings in localStorage
+    if (otherSettingsKey) {
+      localStorage.removeItem(otherSettingsKey);
+    }
+  }, [headerColor, showHeaderSeparator, showHeaderColSeparator, showBodyColSeparator, otherSettingsKey]);
+
   const renderOtherSettingsTab = useCallback(() => (
     <div className="space-y-6 px-2 py-4">
       <div>
@@ -786,10 +798,22 @@ export const ColumnModal = React.memo(({
           />
 
           {/* Footer */}
-          <div className="mt-6 flex justify-between items-center">
-            <Button variant="outline" onClick={() => onResetSettings(activeTab)} className="border-border">
-              {t("columns.modal.reset")}
-            </Button>
+          <div className="mt-6 flex justify-end items-center">
+            {(activeTab === "settings" || activeTab === "other") && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  if (activeTab === "other") {
+                    handleResetOtherSettings();
+                  } else {
+                    onResetSettings(activeTab);
+                  }
+                }}
+                className="border-border mr-2"
+              >
+                {t("columns.modal.reset")}
+              </Button>
+            )}
             <div className="flex" style={{ gap: "0.5rem" }}>
               <Button variant="outline" onClick={onCancel} className="border-border">
                 {t("columns.modal.cancel")}

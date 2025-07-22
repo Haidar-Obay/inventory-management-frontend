@@ -21,6 +21,28 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
     return [addOption, ...options];
   };
 
+  // Helper to check if at least one field in the main shipping address is filled
+  const canAddShippingAddress = () => {
+    // List all relevant fields for the main shipping address
+    const fields = [
+      formData?.shipping_country_id,
+      formData?.shipping_zone_id,
+      formData?.shipping_city_id,
+      formData?.shipping_district_id,
+      formData?.shipping_address_line1,
+      formData?.shipping_address_line2,
+      formData?.shipping_building,
+      formData?.shipping_block,
+      formData?.shipping_floor,
+      formData?.shipping_side,
+      formData?.shipping_apartment,
+      formData?.shipping_zip_code,
+    ];
+    return fields.some(val => val && val.toString().trim() !== '');
+  };
+
+  // Remove handleMarkAsPrimary and all Mark as Primary button logic
+
   return (
     <Accordion expanded={expanded} onChange={onAccordionChange}>
       <AccordionSummary
@@ -351,7 +373,9 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
           <Box key={address.id} sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Typography variant="subtitle2" sx={{ fontWeight: 500 }}>
-                {t("management.additionalShippingAddress") || "Additional Shipping Address"} {index + 1}
+                {index === 0
+                  ? t("management.primaryShippingAddress") || "Primary Shipping Address"
+                  : `${t("management.additionalShippingAddress") || "Additional Shipping Address"} ${index}`}
               </Typography>
               <Box sx={{ display: 'flex', gap: 1 }}>
                 <Button
@@ -371,6 +395,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 </IconButton>
               </Box>
             </Box>
+            {/* Mark as Primary button removed */}
             <Grid container spacing={2}>
               <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
@@ -589,13 +614,14 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
         ))}
         {/* Add button at the end */}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-          <IconButton
-            size="small"
+          <Button
+            variant="outlined"
+            startIcon={<AddIcon />}
             onClick={handleAddShippingAddress}
-            sx={{ color: 'primary.main', '&:hover': { backgroundColor: 'primary.light', color: 'white' } }}
+            disabled={!canAddShippingAddress()}
           >
-            <AddIcon />
-          </IconButton>
+            {t('management.add') || 'Add'}
+          </Button>
         </Box>
       </AccordionDetails>
     </Accordion>
