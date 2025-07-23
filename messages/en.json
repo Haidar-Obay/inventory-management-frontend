@@ -784,7 +784,8 @@
         "pickHeaderColor": "Pick a color for the table header background.",
         "showHeaderSeparator": "Show header separator",
         "showHeaderColSeparator": "Show header column separators",
-        "showBodyColSeparator": "Show body column separators"
+        "showBodyColSeparator": "Show body column separators",
+        "defaultTemplate": "Default"
       }
     },
     "filter": {
