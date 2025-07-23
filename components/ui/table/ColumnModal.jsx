@@ -61,50 +61,57 @@ const TemplateItem = React.memo(({
   t, 
   isDeleting = false,
   deletingId = null
-}) => (
-  <div className={classNames(
-    'flex items-center justify-between border-b border-border px-4 py-3 last:border-0',
-    isSelected && !isActive && 'bg-primary/5 dark:bg-primary/10 rounded-lg',
-    isActive && 'bg-primary/20 dark:bg-primary/30 rounded-lg'
-  )}>
-    <span className="text-foreground font-medium flex items-center gap-2">
-      {template.name}
-      {isActive && (
-        <span title="Active template" className="inline-block align-middle">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-        </span>
-      )}
-    </span>
-    <div className="flex gap-2">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => onApply(template)}
-        className={isSelected ? 'border-primary' : ''}
-      >
-        {t("columns.modal.select")}
-      </Button>
-      {onDelete && (
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={() => onDelete(template)}
-          className="bg-red-600 text-white hover:bg-red-700"
-          disabled={isDeleting && deletingId === (template.id || template.name)}
-        >
-          {t("columns.modal.delete")}
-          {isDeleting && deletingId === (template.id || template.name) && (
-            <span className="ml-2 inline-block align-middle">
-              <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity=".25"/><path d="M22 12a10 10 0 0 1-10 10"/></svg>
-            </span>
-          )}
-        </Button>
-      )}
+}) => {
+  const isDefault = template.isDefault || template.id === '__default__';
+  return (
+    <div className={classNames(
+      'flex items-center justify-between border-b border-border px-4 py-3 last:border-0',
+      isSelected && !isActive && 'bg-primary/5 dark:bg-primary/10 rounded-lg',
+      isActive && 'bg-primary/20 dark:bg-primary/30 rounded-lg'
+    )}>
+      <span className="text-foreground font-medium flex items-center gap-2">
+        {template.name}
+        {isActive && (
+          <span title="Active template" className="inline-block align-middle">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </span>
+        )}
+      </span>
+      <div className="flex gap-2">
+        {/* Only show select/apply button if not already selected/applied, and never for default if already selected */}
+        {onApply && !isActive && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onApply(template)}
+            className={isSelected ? 'border-primary' : ''}
+          >
+            {t("columns.modal.select")}
+          </Button>
+        )}
+        {/* Only show delete for non-default templates */}
+        {onDelete && !isDefault && (
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => onDelete(template)}
+            className="bg-red-600 text-white hover:bg-red-700"
+            disabled={isDeleting && deletingId === (template.id || template.name)}
+          >
+            {t("columns.modal.delete")}
+            {isDeleting && deletingId === (template.id || template.name) && (
+              <span className="ml-2 inline-block align-middle">
+                <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity=".25"/><path d="M22 12a10 10 0 0 1-10 10"/></svg>
+              </span>
+            )}
+          </Button>
+        )}
+      </div>
     </div>
-  </div>
-));
+  );
+});
 
 const TemplatePrompt = React.memo(({ 
   isOpen, 
@@ -902,7 +909,8 @@ export const ColumnModal = React.memo(({
               isActive={isApplied}
               isSelected={isSelected}
               onApply={handleTemplateApply}
-              onDelete={template.isDefault ? undefined : handleTemplateDelete}
+              // Remove onDelete for default template so it cannot be reset/deleted from templates tab
+              onDelete={(!template.isDefault) ? handleTemplateDelete : undefined}
               t={t}
               isDeleting={isDeleting}
               deletingId={templateToDelete ? (templateToDelete.id || templateToDelete.name) : null}
@@ -1008,13 +1016,15 @@ export const ColumnModal = React.memo(({
 
           {/* Footer */}
           <div className="mt-6 flex justify-end items-center">
-            <Button
-              variant="outline"
-              onClick={handleGlobalReset}
-              className="border-border mr-2"
-            >
-              {t("columns.modal.reset")}
-            </Button>
+            {(activeTab === "settings" || activeTab === "other") && (
+              <Button
+                variant="outline"
+                onClick={handleGlobalReset}
+                className="border-border mr-2"
+              >
+                {t("columns.modal.reset")}
+              </Button>
+            )}
             <div className="flex" style={{ gap: "0.5rem" }}>
               <Button variant="outline" onClick={onCancel} className="border-border">
                 {t("columns.modal.cancel")}
