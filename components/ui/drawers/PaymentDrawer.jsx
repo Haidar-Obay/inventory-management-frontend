@@ -30,7 +30,7 @@ const PaymentDrawer = ({
   const { addToast } = useSimpleToast();
 
   // Local form state only
-  const [formData, setFormData] = useState({ code: "", nb_days: 0, active: false, is_credit_card: false, is_online_payment: false });
+  const [formData, setFormData] = useState({ code: "", name: "", nb_days: 0, active: false, is_credit_card: false, is_online_payment: false });
 
   useEffect(() => {
     if (isOpen && isEdit && initialData) {
@@ -40,7 +40,7 @@ const PaymentDrawer = ({
     }
     // Reset local state when opening for new entry
     if (isOpen && !isEdit) {
-      setFormData({ code: "", nb_days: 0, active: false, is_credit_card: false, is_online_payment: false });
+      setFormData({ code: "", name: "", nb_days: 0, active: false, is_credit_card: false, is_online_payment: false });
       setOriginalName("");
       setOriginalData({});
     }
@@ -54,6 +54,13 @@ const PaymentDrawer = ({
     setFormData({
       ...formData,
       code: event.target.value,
+    });
+  };
+
+  const handleNameChange = (event) => {
+    setFormData({
+      ...formData,
+      name: event.target.value,
     });
   };
 
@@ -99,6 +106,21 @@ const PaymentDrawer = ({
           <RTLTextField
             value={formData?.code || ""}
             onChange={handleCodeChange}
+            required
+            placeholder=""
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}
+          >
+            {t("name")} *
+          </Typography>
+          <RTLTextField
+            value={formData?.name || ""}
+            onChange={handleNameChange}
             required
             placeholder=""
           />
@@ -272,7 +294,7 @@ const PaymentDrawer = ({
           description: tToast("createSuccess"),
         });
         if (onSaveAndNew) onSaveAndNew(response.data);
-        setFormData({ code: "", nb_days: 0, active: false, is_credit_card: false, is_online_payment: false });
+        setFormData({ code: "", name: "", nb_days: 0, active: false, is_credit_card: false, is_online_payment: false });
       } else {
         addToast({
           type: "error",
@@ -328,7 +350,7 @@ const PaymentDrawer = ({
   };
 
   // Check if form has data
-  const hasFormData = formData?.code && formData.code.trim() !== "" && (type !== "paymentTerm" || (formData.nb_days !== undefined && formData.nb_days !== null));
+  const hasFormData = formData?.code && formData.code.trim() !== "" && formData?.name && formData.name.trim() !== "" && (type !== "paymentTerm" || (formData.nb_days !== undefined && formData.nb_days !== null));
 
   return (
     <DynamicDrawer
