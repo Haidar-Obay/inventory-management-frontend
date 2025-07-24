@@ -102,7 +102,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
           </Typography>
           <Grid container spacing={2}>
             {/* Country, Zone, City, District, Address fields for primary shipping address */}
-            <Grid item xs={12} md={6} sx={{ minWidth: 150 }}>
+            <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                 {t("management.country") || "Country"}
               </Typography>
@@ -153,7 +153,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
               />
             </Grid>
           
-            <Grid item xs={12} md={6} sx={{ minWidth: 150 }}>
+            <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                 {t("management.city") || "City"}
               </Typography>
@@ -197,7 +197,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 )}
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ minWidth: 150 }}>
+            <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                 {t("management.district") || "District"}
               </Typography>
@@ -240,7 +240,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 )}
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ minWidth: 150 }}>
+            <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                 {t("management.zone") || "Zone"}
               </Typography>
@@ -286,7 +286,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
               />
             </Grid>
             {/* Address Line 1 inside details, only when expanded */}
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{ minWidth: 400 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                 {t("management.addressLine1") || "Address Line 1"}
               </Typography>
@@ -296,7 +296,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 placeholder=""
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{ minWidth: 400 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                 {t("management.addressLine2") || "Address Line 2"}
               </Typography>
@@ -306,7 +306,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 placeholder=""
               />
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                 {t("management.building") || "Building"}
               </Typography>
@@ -316,7 +316,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 placeholder=""
               />
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                 {t("management.block") || "Block"}
               </Typography>
@@ -326,7 +326,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 placeholder=""
               />
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                 {t("management.floor") || "Floor"}
               </Typography>
@@ -336,7 +336,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 placeholder=""
               />
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                 {t("management.side") || "Side"}
               </Typography>
@@ -346,7 +346,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 placeholder=""
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6} sx={{ minWidth: 250 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                 {t("management.apartment") || "Apartment"}
               </Typography>
@@ -356,7 +356,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 placeholder=""
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6} sx={{ minWidth: 250 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
                 {t("management.zipCode") || "Zip Code"}
               </Typography>
@@ -395,7 +395,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 </IconButton>
               </Box>
             </Box>
-            {/* Mark as Primary button removed */}
+    
             <Grid container spacing={2}>
               <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
