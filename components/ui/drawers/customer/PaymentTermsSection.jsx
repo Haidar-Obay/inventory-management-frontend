@@ -7,9 +7,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useDrawerStack } from "@/components/ui/DrawerStackContext";
 
 const PaymentTermsSection = React.memo((props) => {
-  const { paymentTerms, setPaymentTerms, ...rest } = props;
+  const { paymentTerms, setPaymentTerms, paymentMethods, setPaymentMethods, ...rest } = props;
   const { openDrawer } = useDrawerStack();
-  const { formData, onFormDataChange, isRTL, t, paymentTerms: propPaymentTerms, paymentMethods, selectedPaymentTerm, setSelectedPaymentTerm, selectedPaymentMethod, setSelectedPaymentMethod, allowCredit, setAllowCredit, openingBalances, creditLimits, handleCreditLimitChange, acceptCheques, setAcceptCheques, maxCheques, handleMaxChequesChange, paymentDay, setPaymentDay, trackPayment, setTrackPayment, settlementMethod, setSettlementMethod, expanded, onAccordionChange, allCollapsed, setAllCollapsed } = rest;
+  const { formData, onFormDataChange, isRTL, t, paymentTerms: propPaymentTerms, paymentMethods: propPaymentMethods, selectedPaymentTerm, setSelectedPaymentTerm, selectedPaymentMethod, setSelectedPaymentMethod, allowCredit, setAllowCredit, openingBalances, creditLimits, handleCreditLimitChange, acceptCheques, setAcceptCheques, maxCheques, handleMaxChequesChange, paymentDay, setPaymentDay, trackPayment, setTrackPayment, settlementMethod, setSettlementMethod, expanded, onAccordionChange, allCollapsed, setAllCollapsed } = rest;
 
   React.useEffect(() => {
     if (allCollapsed && expanded) {
