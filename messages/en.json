@@ -1085,7 +1085,9 @@
       "enterMessage": "Enter your message...",
       "closeAll": "Close All",
       "quickOptions": "Quick Options",
-      "selectPaymentDay": "Select Payment Day"
+      "selectPaymentDay": "Select Payment Day",
+      "fifo": "FIFO",
+      "manual": "Manual"
     },
     "noChangesTitle": "No changes detected",
     "noChangesDesc": "Please modify at least one field before saving.",

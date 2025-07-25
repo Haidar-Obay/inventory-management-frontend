@@ -199,6 +199,7 @@ export function useTableColumns(t) {
     paymentTermsColumns: [
       { key: "id", header: t("id"), type: "text" },
       { key: "code", header: t("code"), type: "text" },
+      { key: "name", header: t("name"), type: "text" },
       { key: "nb_days", header: t("nbOfDays"), type: "number", render: (value) => (value == null || value === "" ? 0 : value) },
       { key: "active", header: t("active"), type: "boolean" },
       { key: "created_at", header: t("createdAt"), type: "date" },
@@ -207,6 +208,7 @@ export function useTableColumns(t) {
     paymentMethodsColumns: [
       { key: "id", header: t("id"), type: "text" },
       { key: "code", header: t("code"), type: "text" },
+      { key: "name", header: t("name"), type: "text" },
       { key: "is_credit_card", header: t("isCreditCard"), type: "boolean" },
       { key: "is_online_payment", header: t("isOnlinePayment"), type: "boolean" },
       { key: "active", header: t("active"), type: "boolean" },

@@ -372,7 +372,8 @@ export const importTradesFromExcel = async (file) => {
 // Function to get only trade names for dropdowns
 export const getTradeNames = async () => {
   try {
-    const response = await tenantApiService('GET', 'names/trades');
+    // Use the same endpoint as getTrades to fetch all trades
+    const response = await tenantApiService('GET', 'trades');
     return response;
   } catch (error) {
     console.error('Error fetching trade names:', error);
@@ -391,15 +392,15 @@ export const getBusinessTypes = async () => {
   }
 };
 
-export const getBusinessTypeNames = async () => {
-  try {
-    const response = await tenantApiService('GET', 'business-types');
-    return response;
-  } catch (error) {
-    console.error('Error fetching business type names:', error);
-    throw error;
-  }
-};
+// export const getBusinessTypeNames = async () => {
+//   try {
+//     const response = await tenantApiService('GET', 'business-types');
+//     return response;
+//   } catch (error) {
+//     console.error('Error fetching business type names:', error);
+//     throw error;
+//   }
+// };
 
 // Sales Channel API functions
 export const getSalesChannels = async () => {
@@ -664,6 +665,8 @@ export const getPaymentMethods = async () => {
     throw error;
   }
 };
+
+
 
 
 

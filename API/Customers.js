@@ -250,7 +250,8 @@ export const getCustomerNames = async () => {
 // Function to get customer group names for dropdowns
 export const getCustomerGroupNames = async () => {
   try {
-    const response = await tenantApiService('GET', 'names/customer-groups');
+    // Use the same endpoint as getCustomerGroups to fetch all customer groups
+    const response = await tenantApiService('GET', 'customer-groups');
     return response;
   } catch (error) {
     console.error('Error fetching customer group names:', error);

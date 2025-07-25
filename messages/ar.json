@@ -697,7 +697,9 @@
       "floor": "الطابق",
       "salesmenAccordion": "مندوبو المبيعات",
       "discount": "خصم",
-      "addMessage": "أضف رسالة"
+      "addMessage": "أضف رسالة",
+      "fifo": "الوارد أولاً يصرف أولاً",
+      "manual": "يدوي"
     },
     "messages": {
       "exportSuccess": "تم التصدير بنجاح",
@@ -1157,7 +1159,9 @@
       "floor": "الطابق",
       "salesmenAccordion": "مندوبو المبيعات",
       "discount": "خصم",
-      "addMessage": "أضف رسالة"
+      "addMessage": "أضف رسالة",
+      "fifo": "الوارد أولاً يصرف أولاً",
+      "manual": "يدوي"
     },
     "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
     "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."

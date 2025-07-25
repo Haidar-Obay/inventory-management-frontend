@@ -14,13 +14,19 @@ import {
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { getCustomerNames } from "@/API/Customers";
-import { getCostCenterNames as getCostCenterNamesFromSections } from "@/API/Sections";
-import { getDepartmentNames as getDepartmentNamesFromSections } from "@/API/Sections";
-import { getProjectNames as getProjectNamesFromSections } from "@/API/Sections";
 import { useTranslations, useLocale } from "next-intl";
 import { useSimpleToast } from "@/components/ui/simple-toast";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  createProject, editProject,
+  createCostCenter, editCostCenter,
+  createDepartment, editDepartment,
+  createTrade, editTrade,
+  createCompanyCode, editCompanyCode,
+  createJob, editJob,
+  getCostCenterNames, getDepartmentNames, getProjectNames
+} from "@/API/Sections";
+import { getCustomerNames } from "@/API/Customers";
 
 const SectionDrawer = ({
   isOpen,
@@ -29,148 +35,174 @@ const SectionDrawer = ({
   onSave,
   onSaveAndNew,
   onSaveAndClose,
-  formData,
-  onFormDataChange,
-  isEdit = false,
+  editData, // pass this for edit mode, otherwise undefined
 }) => {
+  const t = useTranslations("sections");
+  const tToast = useTranslations("toast");
+  const locale = useLocale();
+  const isRTL = locale === "ar";
+  const { addToast } = useSimpleToast();
+
+  // Internal state
+  const [formData, setFormData] = useState({});
+  const [originalData, setOriginalData] = useState({});
+  const [originalName, setOriginalName] = useState("");
   const [customers, setCustomers] = useState([]);
   const [costCenterOptions, setCostCenterOptions] = useState([]);
   const [departmentOptions, setDepartmentOptions] = useState([]);
   const [projectOptions, setProjectOptions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const t = useTranslations("sections");
-  const locale = useLocale();
-  const isRTL = locale === "ar";
-  const [originalName, setOriginalName] = useState("");
-  const [originalData, setOriginalData] = useState({});
-  const { addToast } = useSimpleToast();
+  const isEdit = !!editData;
 
+  // Reset state on open
   useEffect(() => {
-    if (type === "project" && isOpen) {
-      fetchCustomers();
+    if (isOpen) {
+      if (isEdit && editData) {
+        setFormData(editData);
+        setOriginalData(JSON.parse(JSON.stringify(editData)));
+        setOriginalName(editData?.name || "");
+      } else {
+        setFormData({ active: true });
+        setOriginalData({});
+        setOriginalName("");
+      }
+      if (type === "project") fetchCustomers();
+      if (type === "costCenter") fetchCostCenterNames();
+      if (type === "department") fetchDepartmentNames();
+      if (type === "job") fetchProjectNames();
     }
-    if (type === "costCenter" && isOpen) {
-      fetchCostCenterNames();
-    }
-    if (type === "department" && isOpen) {
-      fetchDepartmentNames();
-    }
-    if (type === "job" && isOpen) {
-      fetchProjectNames();
-    }
-    if (isOpen && isEdit) {
-      setOriginalName(formData?.name || "");
-      setOriginalData(JSON.parse(JSON.stringify(formData)));
-    }
-  }, [type, isOpen, isEdit]);
+    // eslint-disable-next-line
+  }, [isOpen, type, isEdit, editData]);
 
   const fetchCustomers = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       const response = await getCustomerNames();
       setCustomers(response.data || []);
-    } catch (error) {
-      console.error("Error fetching customers:", error);
-    } finally {
-      setLoading(false);
-    }
+    } catch {}
+    setLoading(false);
   };
-
   const fetchCostCenterNames = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await getCostCenterNamesFromSections();
+      const response = await getCostCenterNames();
       setCostCenterOptions(response.data || []);
-    } catch (error) {
-      console.error("Error fetching cost center names:", error);
-    } finally {
-      setLoading(false);
-    }
+    } catch {}
+    setLoading(false);
   };
-
   const fetchDepartmentNames = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await getDepartmentNamesFromSections();
+      const response = await getDepartmentNames();
       setDepartmentOptions(response.data || []);
-    } catch (error) {
-      console.error("Error fetching department names:", error);
-    } finally {
-      setLoading(false);
-    }
+    } catch {}
+    setLoading(false);
   };
-
   const fetchProjectNames = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await getProjectNamesFromSections();
+      const response = await getProjectNames();
       setProjectOptions(response.data || []);
-    } catch (error) {
-      console.error("Error fetching project names:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleFieldChange = (field) => (event) => {
-    onFormDataChange({
-      ...formData,
-      [field]: event.target.value,
-    });
-  };
-
-  const handleDateChange = (field) => (date) => {
-    onFormDataChange({
-      ...formData,
-      [field]: date,
-    });
-  };
-
-  const handleCustomerChange = (event, newValue) => {
-    onFormDataChange({
-      ...formData,
-      customer_id: newValue?.id || "",
-      customer_name: newValue?.name || "",
-    });
-  };
-
-  const handleSubCostCenterChange = (event, newValue) => {
-    onFormDataChange({
-      ...formData,
-      sub_cost_center_of: newValue?.id || "",
-    });
-  };
-
-  const handleSubDepartmentChange = (event, newValue) => {
-    onFormDataChange({
-      ...formData,
-      sub_department_of: newValue?.id || "",
-    });
-  };
-
-  const handleProjectChange = (event, newValue) => {
-    onFormDataChange({
-      ...formData,
-      project_id: newValue?.id || "",
-    });
+    } catch {}
+    setLoading(false);
   };
 
   function isDataChanged() {
     return JSON.stringify(formData) !== JSON.stringify(originalData);
   }
 
-  const handleSave = () => {
+  // Handlers
+  const handleFieldChange = (field) => (event) => {
+    setFormData({ ...formData, [field]: event.target.value });
+  };
+  const handleDateChange = (field) => (date) => {
+    setFormData({ ...formData, [field]: date });
+  };
+  const handleCustomerChange = (event, newValue) => {
+    setFormData({
+      ...formData,
+      customer_id: newValue?.id || "",
+      customer_name: newValue?.name || "",
+    });
+  };
+  const handleSubCostCenterChange = (event, newValue) => {
+    setFormData({ ...formData, sub_cost_center_of: newValue?.id || "" });
+  };
+  const handleSubDepartmentChange = (event, newValue) => {
+    setFormData({ ...formData, sub_department_of: newValue?.id || "" });
+  };
+  const handleProjectChange = (event, newValue) => {
+    setFormData({ ...formData, project_id: newValue?.id || "" });
+  };
+
+  // Save logic
+  const handleSave = async () => {
     if (isEdit && !isDataChanged()) {
       addToast({
         type: "error",
-        title: t("noChangesTitle") || "No changes detected",
-        description:
-          t("noChangesDesc") ||
-          "Please modify at least one field before saving.",
+        title: tToast("error"),
+        description: t("noChangesDesc") || "Please modify at least one field before saving.",
       });
       return;
     }
-    onSave && onSave();
+    try {
+      let response;
+      if (isEdit) {
+        if (type === "project") response = await editProject(formData.id, formData);
+        if (type === "costCenter") response = await editCostCenter(formData.id, formData);
+        if (type === "department") response = await editDepartment(formData.id, formData);
+        if (type === "trade") response = await editTrade(formData.id, formData);
+        if (type === "companyCode") response = await editCompanyCode(formData.id, formData);
+        if (type === "job") response = await editJob(formData.id, formData);
+      } else {
+        if (type === "project") response = await createProject(formData);
+        if (type === "costCenter") response = await createCostCenter(formData);
+        if (type === "department") response = await createDepartment(formData);
+        if (type === "trade") response = await createTrade(formData);
+        if (type === "companyCode") response = await createCompanyCode(formData);
+        if (type === "job") response = await createJob(formData);
+      }
+      if (response && response.status) {
+        addToast({
+          type: "success",
+          title: tToast("success"),
+          description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
+        });
+        onSave && onSave(response.data);
+        onClose && onClose();
+      } else {
+        addToast({
+          type: "error",
+          title: tToast("error"),
+          description: response?.message || tToast(isEdit ? "updateError" : "createError"),
+        });
+      }
+    } catch (error) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: error.message || tToast(isEdit ? "updateError" : "createError"),
+      });
+    }
+  };
+
+  // Check if form has data
+  const hasFormData = () => {
+    return formData && (
+      formData.name ||
+      formData.description ||
+      formData.customer_id ||
+      formData.cost_center_id ||
+      formData.department_id ||
+      formData.project_id ||
+      formData.start_date ||
+      formData.end_date ||
+      formData.expected_date ||
+      formData.code ||
+      Object.entries(formData).some(([key, value]) =>
+        key !== 'active' && value && value.toString().trim() !== ""
+      )
+    );
   };
 
   const getContent = () => {
@@ -358,7 +390,7 @@ const SectionDrawer = ({
             <Checkbox
               checked={formData?.active !== false}
               onChange={(e) =>
-                onFormDataChange({
+                setFormData({
                   ...formData,
                   active: e.target.checked,
                 })
@@ -448,7 +480,7 @@ const SectionDrawer = ({
             <Checkbox
               checked={formData?.active !== false}
               onChange={(e) =>
-                onFormDataChange({
+                setFormData({
                   ...formData,
                   active: e.target.checked,
                 })
@@ -511,7 +543,7 @@ const SectionDrawer = ({
             <Checkbox
               checked={formData?.active !== false}
               onChange={(e) =>
-                onFormDataChange({
+                setFormData({
                   ...formData,
                   active: e.target.checked,
                 })
@@ -728,27 +760,6 @@ const SectionDrawer = ({
     } else {
       return t(`management.add${type.charAt(0).toUpperCase() + type.slice(1)}`);
     }
-  };
-
-  // Check if form has data
-  const hasFormData = () => {
-    // Check if any form field has data, excluding 'active' since it's true by default
-    return formData && (
-      formData.name ||
-      formData.description ||
-      formData.customer_id ||
-      formData.cost_center_id ||
-      formData.department_id ||
-      formData.project_id ||
-      formData.start_date ||
-      formData.end_date ||
-      formData.expected_date ||
-      formData.code ||
-      // Check other fields excluding 'active'
-      Object.entries(formData).some(([key, value]) => 
-        key !== 'active' && value && value.toString().trim() !== ""
-      )
-    );
   };
 
   return (
