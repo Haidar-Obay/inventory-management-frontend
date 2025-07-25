@@ -4,6 +4,10 @@ import React from "react";
 import { useDrawerStack } from "./DrawerStackContext";
 import CustomerDrawer from "./drawers/CustomerDrawer";
 import AddressCodeDrawer from "./drawers/AddressCodeDrawer";
+import SectionDrawer from "./drawers/SectionDrawer";
+import CustomerGroupDrawer from "./drawers/customerGroup/CustomerGroupDrawer";
+import PaymentDrawer from "./drawers/PaymentDrawer";
+import SalesmanDrawer from "./drawers/salesmen/SalesmanDrawer";
 
 export default function DrawerStackManager() {
   const { drawerStack, closeTopDrawer } = useDrawerStack();
@@ -15,6 +19,12 @@ export default function DrawerStackManager() {
     zone: (props) => <AddressCodeDrawer {...props} type="zone" />,      // Optionally add for zone
     city: (props) => <AddressCodeDrawer {...props} type="city" />,      // Optionally add for city
     district: (props) => <AddressCodeDrawer {...props} type="district" />, // Optionally add for district
+    trade: (props) => <SectionDrawer {...props} type="trade" />, // Add trade drawer
+    companyCode: (props) => <SectionDrawer {...props} type="companyCode" />, // Add company code drawer
+    customerGroup: (props) => <CustomerGroupDrawer {...props} />, // Add customer group drawer
+    paymentTerm: (props) => <PaymentDrawer {...props} type="paymentTerm" />, // Add payment term drawer
+    paymentMethod: (props) => <PaymentDrawer {...props} type="paymentMethod" />, // Add payment method drawer
+    salesman: (props) => <SalesmanDrawer {...props} />, // Use the new SalesmanDrawer
     // Add other drawer types here
   };
 

@@ -368,6 +368,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
             </Grid>
           </Grid>
         </Box>
+
         {/* Additional Shipping Addresses */}
         {shippingAddresses.map((address, index) => (
           <Box key={address.id} sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>

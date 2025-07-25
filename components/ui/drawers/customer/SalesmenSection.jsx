@@ -3,14 +3,17 @@ import { Grid, Typography, Autocomplete, Accordion, AccordionSummary, AccordionD
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
 import RTLTextField from "@/components/ui/RTLTextField";
+import { useDrawerStack } from "@/components/ui/DrawerStackContext";
 
-const SalesmenSection = React.memo(({ formData, onFormDataChange, isRTL, t, salesmen, collectors, supervisors, managers, handleSalesmanSelect, handleCollectorSelect, handleSupervisorSelect, handleManagerSelect, expanded, onAccordionChange, allCollapsed, setAllCollapsed }) => {
+const SalesmenSection = React.memo(({ formData, onFormDataChange, isRTL, t, salesmen, collectors, supervisors, managers, handleSalesmanSelect, handleCollectorSelect, handleSupervisorSelect, handleManagerSelect, expanded, onAccordionChange, allCollapsed, setAllCollapsed, setSalesmen }) => {
   React.useEffect(() => {
     if (allCollapsed && expanded) {
       onAccordionChange(null, false);
       setAllCollapsed(false);
     }
   }, [allCollapsed]);
+
+  const { openDrawer } = useDrawerStack();
 
   // Create options with Add button as first option
   const createOptionsWithAdd = (options, type) => {
@@ -50,7 +53,18 @@ const SalesmenSection = React.memo(({ formData, onFormDataChange, isRTL, t, sale
                   value={salesmen.find(s => s.id === formData?.salesman_id) || null}
                   onChange={(event, newValue) => {
                     if (newValue?.isAddButton) {
-                      console.log('Add salesman clicked');
+                      openDrawer({
+                        type: "salesman",
+                        props: {
+                          onSave: (newSalesman) => {
+                            if (typeof setSalesmen === 'function') {
+                              setSalesmen(prev => [...(Array.isArray(prev) ? prev : []), newSalesman]);
+                            }
+                            handleSalesmanSelect(event, newSalesman);
+                          },
+                          type: "salesman"
+                        },
+                      });
                       return;
                     }
                     handleSalesmanSelect(event, newValue);
@@ -93,10 +107,21 @@ const SalesmenSection = React.memo(({ formData, onFormDataChange, isRTL, t, sale
                 value={salesmen.find(s => s.id === formData?.salesman_id) || null}
                 onChange={(event, newValue) => {
                   if (newValue?.isAddButton) {
-                    console.log('Add salesman clicked');
+                    openDrawer({
+                      type: "salesman",
+                      props: {
+                        onSave: (newSalesman) => {
+                          if (typeof setSalesmen === 'function') {
+                            setSalesmen(prev => [...(Array.isArray(prev) ? prev : []), newSalesman]);
+                          }
+                          handleCollectorSelect(event, newSalesman);
+                        },
+                        type: "salesman"
+                      },
+                    });
                     return;
                   }
-                  handleSalesmanSelect(event, newValue);
+                  handleCollectorSelect(event, newValue);
                 }}
                 renderInput={params => <RTLTextField {...params} placeholder="" />}
                 renderOption={(props, option) => (
@@ -111,6 +136,7 @@ const SalesmenSection = React.memo(({ formData, onFormDataChange, isRTL, t, sale
                     )}
                   </Box>
                 )}
+                sx={{ background: 'background.paper' }}
               />
             </Grid>
             <Grid item xs={12} md={6} sx={{ minWidth: 375 }}>
@@ -127,7 +153,18 @@ const SalesmenSection = React.memo(({ formData, onFormDataChange, isRTL, t, sale
                 value={collectors.find(s => s.id === formData?.collector_id) || null}
                 onChange={(event, newValue) => {
                   if (newValue?.isAddButton) {
-                    console.log('Add collector clicked');
+                    openDrawer({
+                      type: "salesman",
+                      props: {
+                        onSave: (newSalesman) => {
+                          if (typeof setSalesmen === 'function') {
+                            setSalesmen(prev => [...(Array.isArray(prev) ? prev : []), newSalesman]);
+                          }
+                          handleSupervisorSelect(event, newSalesman);
+                        },
+                        type: "salesman"
+                      },
+                    });
                     return;
                   }
                   handleCollectorSelect(event, newValue);
@@ -161,7 +198,18 @@ const SalesmenSection = React.memo(({ formData, onFormDataChange, isRTL, t, sale
                 value={supervisors.find(s => s.id === formData?.supervisor_id) || null}
                 onChange={(event, newValue) => {
                   if (newValue?.isAddButton) {
-                    console.log('Add supervisor clicked');
+                    openDrawer({
+                      type: "salesman",
+                      props: {
+                        onSave: (newSalesman) => {
+                          if (typeof setSalesmen === 'function') {
+                            setSalesmen(prev => [...(Array.isArray(prev) ? prev : []), newSalesman]);
+                          }
+                          handleManagerSelect(event, newSalesman);
+                        },
+                        type: "salesman"
+                      },
+                    });
                     return;
                   }
                   handleSupervisorSelect(event, newValue);
@@ -195,7 +243,18 @@ const SalesmenSection = React.memo(({ formData, onFormDataChange, isRTL, t, sale
                 value={managers.find(s => s.id === formData?.manager_id) || null}
                 onChange={(event, newValue) => {
                   if (newValue?.isAddButton) {
-                    console.log('Add manager clicked');
+                    openDrawer({
+                      type: "salesman",
+                      props: {
+                        onSave: (newSalesman) => {
+                          if (typeof setSalesmen === 'function') {
+                            setSalesmen(prev => [...(Array.isArray(prev) ? prev : []), newSalesman]);
+                          }
+                          handleManagerSelect(event, newSalesman);
+                        },
+                        type: "salesman"
+                      },
+                    });
                     return;
                   }
                   handleManagerSelect(event, newValue);

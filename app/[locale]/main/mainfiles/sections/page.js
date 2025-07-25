@@ -132,8 +132,7 @@ function SectionsPage() {
   const [loading, setLoading] = useState(true);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeDrawerType, setActiveDrawerType] = useState("");
-  const [formData, setFormData] = useState({});
-  const [isEditMode, setIsEditMode] = useState(false);
+  const [editData, setEditData] = useState(undefined);
   const [dataFetched, setDataFetched] = useState({
     projects: false,
     costCenters: false,
@@ -299,21 +298,8 @@ function SectionsPage() {
   };
 
   const handleEdit = (type, row) => {
-    setFormData({
-      id: row.id,
-      name: row.name,
-      code: row.code,
-      active: row.active,
-      start_date: row.start_date ? new Date(row.start_date) : null,
-      end_date: row.end_date ? new Date(row.end_date) : null,
-      expected_date: row.expected_date ? new Date(row.expected_date) : null,
-      customer_id: row.customer_id || "",
-      sub_cost_center_of: row.sub_cost_center_of || "",
-      sub_department_of: row.sub_department_of || "",
-      project_id: row.project_id || "",
-    });
     setActiveDrawerType(type);
-    setIsEditMode(true);
+    setEditData({ ...row });
     setIsDrawerOpen(true);
   };
 
@@ -375,79 +361,27 @@ function SectionsPage() {
 
   const handleAddNew = (type) => {
     setActiveDrawerType(type);
-    setIsEditMode(false);
-    // Set default values for new items
-    const defaultData = {
-      active: true, // Default to active for new items
-    };
-    setFormData(defaultData);
+    setEditData(undefined);
     setIsDrawerOpen(true);
   };
 
   const handleCloseDrawer = () => {
     setIsDrawerOpen(false);
     setActiveDrawerType("");
-    setFormData({});
-    setIsEditMode(false);
+    setEditData(undefined);
   };
 
-  const handleFormDataChange = (data) => {
-    setFormData(data);
-  };
-
-  const handleSave = async () => {
-    const type = activeDrawerType;
-    const handler = entityHandlers[type];
-
-    try {
-      // Prepare the data with proper types
-      const preparedData = {
-        ...formData,
-        active: formData.active === "true" || formData.active === true,
-      };
-
-      let response;
-      if (isEditMode) {
-        response = await handler.editFn(formData.id, preparedData);
-        if (response.status) {
-          entityHandlers[type].setData((prev) =>
-            prev.map((item) =>
-              item.id === formData.id ? { ...item, ...formData } : item
-            )
-          );
-        }
-      } else {
-        response = await handler.createFn(preparedData);
-        if (response.status) {
-          entityHandlers[type].setData((prev) => [...prev, response.data]);
-        }
-      }
-
-      if (response.status) {
-        toast.success({
-          title: toastT("success"),
-          description: toastT(
-            isEditMode ? `${type}.updateSuccess` : `${type}.createSuccess`
-          ),
-        });
-        setIsEditMode(false);
-      }
-    } catch (error) {
-      toast.error({
-        title: toastT("error"),
-        description:
-          error.message ||
-          toastT(isEditMode ? `${type}.updateError` : `${type}.createError`),
-      });
-    }
+  const handleSave = () => {
+    // After save, refresh the current tab's data
+    fetchData(value, true);
+    handleCloseDrawer();
   };
 
   const handleSaveAndNew = async () => {
     await handleSave();
-    setFormData({});
-    if (isEditMode) {
-      setIsEditMode(false);
-      setFormData({});
+    setEditData({});
+    if (activeDrawerType === "project") {
+      setEditData({});
     }
   };
 
@@ -956,9 +890,7 @@ function SectionsPage() {
           onSave={handleSave}
           onSaveAndNew={handleSaveAndNew}
           onSaveAndClose={handleSaveAndClose}
-          formData={formData}
-          onFormDataChange={handleFormDataChange}
-          isEdit={isEditMode}
+          editData={editData}
         />
       </Box>
     </div>

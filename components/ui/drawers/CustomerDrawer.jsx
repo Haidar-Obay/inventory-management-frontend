@@ -12,7 +12,7 @@ import RTLTextField from "@/components/ui/RTLTextField";
 import { useTranslations, useLocale } from "next-intl";
 import { getCustomerGroupNames, getSalesmen } from "@/API/Customers";
 import { getCountries, getZones, getCities, getDistricts } from "@/API/AddressCodes";
-import { getTradeNames, getCompanyCodeNames, getBusinessTypeNames, getSalesChannelNames, getDistributionChannelNames, getMediaChannelNames, getPaymentTerms, getPaymentMethods } from "@/API/Sections";
+import { getTradeNames, getCompanyCodeNames, getBusinessTypes, getSalesChannelNames, getDistributionChannelNames, getMediaChannelNames, getPaymentTerms, getPaymentMethods } from "@/API/Sections";
 import { useSimpleToast } from "@/components/ui/simple-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -73,8 +73,7 @@ const ContactsSection = dynamic(() => import('./customer/ContactsSection'));
 // const RoutingSection = dynamic(() => import('./customer/RoutingSection'));
 const AttachmentsSection = dynamic(() => import('./customer/AttachmentsSection'));
 const MessageSection = dynamic(() => import('./customer/MessageSection'));
-const CustomerGroupSection = dynamic(() => import('./customerGroup/CustomerGroupSection'));
-const SalesmanSection = dynamic(() => import('./salesmen/SalesmanSection'));
+const SalesmanSection = dynamic(() => import('./customer/SalesmenSection'));
 
 const CustomerDrawer = React.memo(({
   isOpen,
@@ -255,7 +254,7 @@ const CustomerDrawer = React.memo(({
         getDistricts(),
         getTradeNames(),
         getCompanyCodeNames(),
-        getBusinessTypeNames(),
+        getBusinessTypes(),
         getSalesChannelNames(),
         getDistributionChannelNames(),
         getMediaChannelNames(),
@@ -277,7 +276,7 @@ const CustomerDrawer = React.memo(({
       setMediaChannels(mediaChannelsRes.data || []);
       setPaymentTerms(paymentTermsRes.data || []);
       setPaymentMethods(paymentMethodsRes.data || []);
-      
+      setBusinessTypes(businessTypesRes.data || []);
     } catch (error) {
       console.error("Error fetching dropdown data:", error);
     } finally {
@@ -304,13 +303,11 @@ const CustomerDrawer = React.memo(({
     }
   }, [isOpen]);
 
-  // Fetch payment terms and methods on open
+  // Only fetch payment methods once on mount
   useEffect(() => {
-    if (isOpen) {
-      getPaymentTerms().then((res) => setPaymentTerms(res.data || []));
-      getPaymentMethods().then((res) => setPaymentMethods(res.data || []));
-    }
-  }, [isOpen]);
+    getPaymentTerms().then((res) => setPaymentTerms(res.data || []));
+    getPaymentMethods().then((res) => setPaymentMethods(res.data || []));
+  }, []);
 
   // Optimized handleFieldChange - doesn't depend on formData to prevent re-renders
   const handleFieldChange = useCallback((field) => (event) => {
@@ -376,6 +373,7 @@ const CustomerDrawer = React.memo(({
     }));
   }, [onFormDataChange]);
 
+  
   const handleDisplayNameChange = useCallback((event, newValue) => {
     onFormDataChange((prevFormData) => ({
       ...prevFormData,
@@ -580,18 +578,6 @@ const CustomerDrawer = React.memo(({
   const content = useMemo(() => {
     if (!type) return null;
 
-    if (type === "customerGroup") {
-      return (
-        <CustomerGroupSection
-          formData={formData}
-          onFormDataChange={onFormDataChange}
-          isRTL={isRTL}
-          t={t}
-          handleFieldChange={handleFieldChange}
-        />
-      );
-    }
-
     if (type === "salesman") {
       return (
         <SalesmanSection
@@ -709,6 +695,9 @@ const CustomerDrawer = React.memo(({
                 onAccordionChange={handleAccordionChange('categorize')}
                 allCollapsed={allCollapsed}
                 setAllCollapsed={setAllCollapsed}
+                setTrades={setTrades}
+                setCompanyCodes={setCompanyCodes}
+                setCustomerGroups={setCustomerGroups}
               />
               <OpeningSection
                 formData={formData}
@@ -745,6 +734,7 @@ const CustomerDrawer = React.memo(({
                 onAccordionChange={handleAccordionChange('salesmen')}
                 allCollapsed={allCollapsed}
                 setAllCollapsed={setAllCollapsed}
+                setSalesmen={setSalesmen}
               />
               <PaymentTermsSection
                 formData={formData}
@@ -752,7 +742,9 @@ const CustomerDrawer = React.memo(({
                 isRTL={isRTL}
                 t={t}
                 paymentTerms={paymentTerms}
+                setPaymentTerms={setPaymentTerms}
                 paymentMethods={paymentMethods}
+                setPaymentMethods={setPaymentMethods}
                 selectedPaymentTerm={selectedPaymentTerm}
                 setSelectedPaymentTerm={setSelectedPaymentTerm}
                 selectedPaymentMethod={selectedPaymentMethod}
@@ -1032,7 +1024,9 @@ const CustomerDrawer = React.memo(({
     handleSupervisorSelect,
     handleManagerSelect,
     paymentTerms,
+    setPaymentTerms,
     paymentMethods,
+    setPaymentMethods,
     selectedPaymentTerm,
     setSelectedPaymentTerm,
     selectedPaymentMethod,

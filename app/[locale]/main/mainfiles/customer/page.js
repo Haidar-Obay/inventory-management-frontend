@@ -34,6 +34,7 @@ import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useCustomActions } from "@/components/ui/table/useCustomActions";
 import { ActiveStatusAction } from "@/components/ui/table/ActiveStatusAction";
+import { useDrawerStack } from "@/components/ui/DrawerStackContext";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -98,6 +99,8 @@ function CustomerPage() {
 
   const { customerGroupColumns, salesmenColumns, customerColumns } =
     useTableColumns(tableT);
+
+  const { openDrawer } = useDrawerStack();
 
   // Initialize tab value from URL or localStorage
   useEffect(() => {
@@ -735,7 +738,14 @@ function CustomerPage() {
             <Table
               data={customerGroupsData}
               columns={customerGroupColumns}
-              onAdd={() => handleAddNew("customerGroup")}
+              onAdd={() => openDrawer({
+                type: "customerGroup",
+                props: {
+                  onSave: (newGroup) => {
+                    setCustomerGroupsData(prev => [...(Array.isArray(prev) ? prev : []), newGroup]);
+                  },
+                },
+              })}
               loading={loading}
               enableCellEditing={false}
               onExportExcel={() => handleExportExcel("customerGroup")}
@@ -763,14 +773,19 @@ function CustomerPage() {
             <Table
               data={salesmenData}
               columns={salesmenColumns}
-              onAdd={() => handleAddNew("salesman")}
+              onAdd={() => openDrawer({
+                type: "salesman",
+                props: {
+                  onSave: (newSalesman) => {
+                    setSalesmenData(prev => [...(Array.isArray(prev) ? prev : []), newSalesman]);
+                  },
+                },
+              })}
               loading={loading}
               enableCellEditing={false}
               onExportExcel={() => handleExportExcel("salesman")}
               onExportPdf={() => handleExportPdf("salesman")}
-              onPrint={() =>
-                handlePrint("salesman", salesmenData, salesmenColumns)
-              }
+              onPrint={() => handlePrint("salesman", salesmenData, salesmenColumns)}
               onRefresh={() => fetchData(1, true)}
               onImportExcel={(file) => handleImportExcel("salesman", file)}
               tableId="salesmen"

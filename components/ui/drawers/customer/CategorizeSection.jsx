@@ -3,14 +3,17 @@ import { Grid, Typography, Autocomplete, Accordion, AccordionSummary, AccordionD
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
 import RTLTextField from "@/components/ui/RTLTextField";
+import { useDrawerStack } from "@/components/ui/DrawerStackContext";
 
-const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, trades, companyCodes, customerGroups, businessTypes, salesChannels, distributionChannels, mediaChannels, loading, handleTradeChange, handleCompanyCodeChange, handleCustomerGroupChange, handleBusinessTypeChange, handleSalesChannelChange, handleDistributionChannelChange, handleMediaChannelChange, handleFieldChange, expanded, onAccordionChange, allCollapsed, setAllCollapsed }) => {
+const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, trades, companyCodes, customerGroups, businessTypes, salesChannels, distributionChannels, mediaChannels, loading, handleTradeChange, handleCompanyCodeChange, handleCustomerGroupChange, handleBusinessTypeChange, handleSalesChannelChange, handleDistributionChannelChange, handleMediaChannelChange, handleFieldChange, expanded, onAccordionChange, allCollapsed, setAllCollapsed, setTrades, setCompanyCodes, setCustomerGroups }) => {
   React.useEffect(() => {
     if (allCollapsed && expanded) {
       onAccordionChange(null, false);
       setAllCollapsed(false);
     }
   }, [allCollapsed]);
+
+  const { openDrawer } = useDrawerStack();
 
   // Create options with Add button as first option
   const createOptionsWithAdd = (options, type) => {
@@ -46,7 +49,18 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
                   value={customerGroups.find((group) => group.id === formData?.customer_group_id) || null}
                   onChange={(event, newValue) => {
                     if (newValue?.isAddButton) {
-                      console.log('Add customer group clicked');
+                      openDrawer({
+                        type: "customerGroup",
+                        props: {
+                          onSave: (newGroup) => {
+                            if (typeof setCustomerGroups === 'function') {
+                              setCustomerGroups(prev => [...(Array.isArray(prev) ? prev : []), newGroup]);
+                            }
+                            // Select the new customer group
+                            onFormDataChange({ ...formData, customer_group_id: newGroup.id });
+                          },
+                        },
+                      });
                       return;
                     }
                     handleCustomerGroupChange(event, newValue);
@@ -88,7 +102,18 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               value={trades.find((trade) => trade.id === formData?.trade_id) || null}
               onChange={(event, newValue) => {
                 if (newValue?.isAddButton) {
-                  console.log('Add trade clicked');
+                  openDrawer({
+                    type: "trade",
+                    props: {
+                      onSave: (newTrade) => {
+                        if (typeof setTrades === 'function') {
+                          setTrades(prev => [...(Array.isArray(prev) ? prev : []), newTrade]);
+                        }
+                        // Select the new trade
+                        onFormDataChange({ ...formData, trade_id: newTrade.id });
+                      },
+                    },
+                  });
                   return;
                 }
                 handleTradeChange(event, newValue);
@@ -160,7 +185,18 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
                 value={customerGroups.find((group) => group.id === formData?.customer_group_id) || null}
                 onChange={(event, newValue) => {
                   if (newValue?.isAddButton) {
-                    console.log('Add customer group clicked');
+                    openDrawer({
+                      type: "customerGroup",
+                      props: {
+                        onSave: (newGroup) => {
+                          if (typeof setCustomerGroups === 'function') {
+                            setCustomerGroups(prev => [...(Array.isArray(prev) ? prev : []), newGroup]);
+                          }
+                          // Select the new customer group
+                          onFormDataChange({ ...formData, customer_group_id: newGroup.id });
+                        },
+                      },
+                    });
                     return;
                   }
                   handleCustomerGroupChange(event, newValue);

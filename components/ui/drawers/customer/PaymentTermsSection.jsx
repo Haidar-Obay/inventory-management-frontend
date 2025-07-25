@@ -4,8 +4,13 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useDrawerStack } from "@/components/ui/DrawerStackContext";
 
-const PaymentTermsSection = React.memo(({ formData, onFormDataChange, isRTL, t, paymentTerms, paymentMethods, selectedPaymentTerm, setSelectedPaymentTerm, selectedPaymentMethod, setSelectedPaymentMethod, allowCredit, setAllowCredit, openingBalances, creditLimits, handleCreditLimitChange, acceptCheques, setAcceptCheques, maxCheques, handleMaxChequesChange, paymentDay, setPaymentDay, trackPayment, setTrackPayment, settlementMethod, setSettlementMethod, expanded, onAccordionChange, allCollapsed, setAllCollapsed }) => {
+const PaymentTermsSection = React.memo((props) => {
+  const { paymentTerms, setPaymentTerms, ...rest } = props;
+  const { openDrawer } = useDrawerStack();
+  const { formData, onFormDataChange, isRTL, t, paymentTerms: propPaymentTerms, paymentMethods, selectedPaymentTerm, setSelectedPaymentTerm, selectedPaymentMethod, setSelectedPaymentMethod, allowCredit, setAllowCredit, openingBalances, creditLimits, handleCreditLimitChange, acceptCheques, setAcceptCheques, maxCheques, handleMaxChequesChange, paymentDay, setPaymentDay, trackPayment, setTrackPayment, settlementMethod, setSettlementMethod, expanded, onAccordionChange, allCollapsed, setAllCollapsed } = rest;
+
   React.useEffect(() => {
     if (allCollapsed && expanded) {
       onAccordionChange(null, false);
@@ -36,7 +41,18 @@ const PaymentTermsSection = React.memo(({ formData, onFormDataChange, isRTL, t, 
   // Handler for payment term selection
   const handlePaymentTermChange = (_, newValue) => {
     if (newValue?.isAddButton) {
-      console.log('Add payment term clicked');
+      openDrawer({
+        type: "paymentTerm",
+        props: {
+          onSave: (newTerm) => {
+            if (typeof setPaymentTerms === 'function') {
+              setPaymentTerms(prev => [...(Array.isArray(prev) ? prev : []), newTerm]);
+            }
+            setSelectedPaymentTerm(newTerm.id);
+          },
+          type: "paymentTerm"
+        },
+      });
       return;
     }
     setSelectedPaymentTerm(newValue?.id || null);
@@ -72,6 +88,7 @@ const PaymentTermsSection = React.memo(({ formData, onFormDataChange, isRTL, t, 
               >
                 <Autocomplete
                   fullWidth
+                  freeSolo={false}
                   options={createOptionsWithAdd(paymentTerms, 'paymentTerm')}
                   getOptionLabel={option => {
                     if (option?.isAddButton) return option.name;
@@ -164,7 +181,18 @@ const PaymentTermsSection = React.memo(({ formData, onFormDataChange, isRTL, t, 
                 value={paymentMethods.find(pm => pm.id === selectedPaymentMethod) || null}
                 onChange={(_, newValue) => {
                   if (newValue?.isAddButton) {
-                    console.log('Add payment method clicked');
+                    openDrawer({
+                      type: "paymentMethod",
+                      props: {
+                        onSave: (newMethod) => {
+                          if (typeof setPaymentMethods === 'function') {
+                            setPaymentMethods(prev => [...(Array.isArray(prev) ? prev : []), newMethod]);
+                          }
+                          setSelectedPaymentMethod(newMethod.id); // <-- ensure selection
+                        },
+                        type: "paymentMethod"
+                      },
+                    });
                     return;
                   }
                   setSelectedPaymentMethod(newValue?.id || null);
