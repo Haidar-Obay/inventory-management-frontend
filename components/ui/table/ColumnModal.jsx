@@ -312,6 +312,8 @@ export const ColumnModal = React.memo(({
 
   // Add a state to track which template to select after saving
   const [pendingTemplateIdOrName, setPendingTemplateIdOrName] = useState(null);
+  // Add a flag to track if the current template was just updated
+  const [templateJustUpdated, setTemplateJustUpdated] = useState(false);
 
   // Memoized values
   const orderedColumns = useMemo(() => 
@@ -450,6 +452,7 @@ export const ColumnModal = React.memo(({
       setTemplateError("");
       // Set the newly created template as pending to be selected after reload
       setPendingTemplateIdOrName(templateName.trim());
+      setTemplateJustUpdated(true); // Mark that the template was just updated
     } catch (error) {
       console.error("Error saving template:", error);
       setTemplateError("Failed to save template");
@@ -566,6 +569,7 @@ export const ColumnModal = React.memo(({
       await updateTableTemplate(tableName, currentTemplate.id, updatedTemplate);
       await loadTemplatesFromAPI();
       setPendingTemplateIdOrName(currentTemplate.id || currentTemplate.name);
+      setTemplateJustUpdated(true); // Mark that the template was just updated
     } catch (error) {
       console.error("Error updating template:", error);
     } finally {
@@ -965,6 +969,29 @@ export const ColumnModal = React.memo(({
     }
   }, [columns, onToggleColumn, onColumnOrderChange, onColumnWidthChange, otherSettingsKey]);
 
+  // Custom cancel handler
+  const handleCustomCancel = useCallback(() => {
+    // If the applied template is the same as the selected template and it was just updated, apply the new settings
+    if (
+      appliedTemplateId &&
+      selectedTemplateId &&
+      appliedTemplateId === selectedTemplateId &&
+      templateJustUpdated
+    ) {
+      if (onSave) onSave();
+      if (onOtherSettingsChange) {
+        onOtherSettingsChange({
+          headerColor: otherHeaderColor,
+          showHeaderSeparator: otherShowHeaderSeparator,
+          showHeaderColSeparator: otherShowHeaderColSeparator,
+          showBodyColSeparator: otherShowBodyColSeparator,
+        });
+      }
+      setTemplateJustUpdated(false); // Reset the flag
+    }
+    onCancel();
+  }, [appliedTemplateId, selectedTemplateId, templateJustUpdated, onSave, onOtherSettingsChange, otherHeaderColor, otherShowHeaderSeparator, otherShowHeaderColSeparator, otherShowBodyColSeparator, onCancel]);
+
   if (!isOpen) return null;
 
   return (
@@ -979,7 +1006,7 @@ export const ColumnModal = React.memo(({
             <h3 className="text-lg font-medium text-foreground">
               {t("columns.modal.title")}
             </h3>
-            <button onClick={onCancel} className="rounded-full p-1 hover:bg-muted text-muted-foreground">
+            <button onClick={handleCustomCancel} className="rounded-full p-1 hover:bg-muted text-muted-foreground">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -1041,7 +1068,7 @@ export const ColumnModal = React.memo(({
               </Button>
             )}
             <div className="flex" style={{ gap: "0.5rem" }}>
-              <Button variant="outline" onClick={onCancel} className="border-border">
+              <Button variant="outline" onClick={handleCustomCancel} className="border-border">
                 {t("columns.modal.cancel")}
               </Button>
               {(activeTab === "settings" || activeTab === "other") && (
