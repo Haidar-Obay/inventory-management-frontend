@@ -88,13 +88,12 @@ const TemplateItem = React.memo(({
         )}
       </span>
       <div className="flex gap-2">
-        {/* Only show select/apply button if not already selected/applied, and never for default if already selected */}
-        {onApply && !isActive && (
+        {/* Only show select/apply button if it's not the template currently loaded in the modal */}
+        {onApply && !isSelected && (
           <Button
             variant="outline"
             size="sm"
             onClick={() => onApply(template)}
-            className={isSelected ? 'border-primary' : ''}
           >
             {t("columns.modal.select")}
           </Button>
@@ -446,47 +445,18 @@ export const ColumnModal = React.memo(({
     try {
       await createTableTemplate(tableName, template);
       await loadTemplatesFromAPI();
-      // Do not change the selected template after saving a new one
       setShowTemplatePrompt(false);
-      setHasChanges(false);
-      // Reapply the currently selected template's settings
-      if (selectedTemplateId && templates.length > 0) {
-        const selectedTemplate = templates.find(t => (t.id || t.name) === selectedTemplateId);
-        if (selectedTemplate) {
-          // Directly apply the selected template settings
-          let visibleColumns = selectedTemplate.visible_columns || selectedTemplate.visibleColumns;
-          const columnWidths = selectedTemplate.column_widths || selectedTemplate.columnWidths;
-          const columnOrder = selectedTemplate.column_order || selectedTemplate.columnOrder;
-          const templateId = selectedTemplate.id || selectedTemplate.name;
-
-          // If default template, set timestamps to false only
-          if (templateId === DEFAULT_TEMPLATE_ID || selectedTemplate.is_default) {
-            visibleColumns = { ...visibleColumns };
-            if ('created_at' in visibleColumns) visibleColumns['created_at'] = false;
-            if ('updated_at' in visibleColumns) visibleColumns['updated_at'] = false;
-          }
-
-          onToggleColumn(null, null, visibleColumns);
-          Object.entries(columnWidths).forEach(([key, width]) => {
-            onColumnWidthChange(key, width);
-          });
-          onColumnOrderChange([...columnOrder]);
-          // Set other settings from template if present
-          if (typeof selectedTemplate.headerColor !== 'undefined') setOtherHeaderColor(selectedTemplate.headerColor);
-          if (typeof selectedTemplate.showHeaderSeparator !== 'undefined') setOtherShowHeaderSeparator(selectedTemplate.showHeaderSeparator);
-          if (typeof selectedTemplate.showHeaderColSeparator !== 'undefined') setOtherShowHeaderColSeparator(selectedTemplate.showHeaderColSeparator);
-          if (typeof selectedTemplate.showBodyColSeparator !== 'undefined') setOtherShowBodyColSeparator(selectedTemplate.showBodyColSeparator);
-          setCurrentTemplate(selectedTemplate);
-          setHasChanges(false);
-        }
-      }
+      setTemplateName("");
+      setTemplateError("");
+      // Set the newly created template as pending to be selected after reload
+      setPendingTemplateIdOrName(templateName.trim());
     } catch (error) {
       console.error("Error saving template:", error);
       setTemplateError("Failed to save template");
     } finally {
       setIsSaving(false);
     }
-  }, [templateName, templates, visibleColumns, columnWidths, columnOrder, tableName, loadTemplatesFromAPI, t, otherHeaderColor, otherShowHeaderSeparator, otherShowHeaderColSeparator, otherShowBodyColSeparator, onSelectedTemplateChange, selectedTemplateId, onToggleColumn, onColumnWidthChange, onColumnOrderChange]);
+  }, [templateName, templates, visibleColumns, columnWidths, columnOrder, tableName, loadTemplatesFromAPI, otherHeaderColor, otherShowHeaderSeparator, otherShowHeaderColSeparator, otherShowBodyColSeparator]);
 
   const handleTemplateDelete = useCallback((template) => {
     setTemplateToDelete(template);
@@ -505,13 +475,21 @@ export const ColumnModal = React.memo(({
       if (currentTemplate && currentTemplate.id === templateToDelete.id) {
         setCurrentTemplate(null);
         setSelectedTemplateId(null);
+        setHasChanges(true); // Mark as having changes since we're no longer using a template
+      }
+      
+      // If we're deleting the applied template, clear appliedTemplateId and localStorage
+      if (appliedTemplateId === templateToDelete.id) {
         setAppliedTemplateId(null);
-        setHasChanges(false);
+        if (tableName) {
+          try {
+            localStorage.removeItem(`table:${tableName}:lastSelectedTemplate`);
+          } catch {}
+        }
         if (onSelectedTemplateChange) {
           onSelectedTemplateChange(null);
         }
       }
-      
 
     } catch (error) {
       console.error("Error deleting template:", error);
@@ -521,7 +499,7 @@ export const ColumnModal = React.memo(({
       setTemplateToDelete(null);
       setIsDeleting(false);
     }
-  }, [templateToDelete, tableName, loadTemplatesFromAPI, currentTemplate]);
+  }, [templateToDelete, tableName, loadTemplatesFromAPI, currentTemplate, appliedTemplateId, onSelectedTemplateChange]);
 
   const handleCancelDelete = useCallback(() => {
     setShowDeleteConfirm(false);
@@ -552,19 +530,10 @@ export const ColumnModal = React.memo(({
     if (typeof template.showHeaderColSeparator !== 'undefined') setOtherShowHeaderColSeparator(template.showHeaderColSeparator);
     if (typeof template.showBodyColSeparator !== 'undefined') setOtherShowBodyColSeparator(template.showBodyColSeparator);
     setSelectedTemplateId(templateId);
-    setAppliedTemplateId(templateId);
     setCurrentTemplate(template);
     setHasChanges(false);
-    if (onSelectedTemplateChange) {
-      onSelectedTemplateChange(templateId);
-    }
-    // Persist last selected template
-    if (tableName) {
-      try {
-        localStorage.setItem(`table:${tableName}:lastSelectedTemplate`, templateId);
-      } catch {}
-    }
-  }, [onToggleColumn, onColumnWidthChange, onColumnOrderChange, tableName, onSelectedTemplateChange]);
+    // Note: We do NOT update appliedTemplateId here - that only happens when the main "Apply" button is clicked
+  }, [onToggleColumn, onColumnWidthChange, onColumnOrderChange]);
 
   const handleTemplateNameChange = useCallback((value) => {
     setTemplateName(value);
@@ -597,7 +566,6 @@ export const ColumnModal = React.memo(({
       await updateTableTemplate(tableName, currentTemplate.id, updatedTemplate);
       await loadTemplatesFromAPI();
       setPendingTemplateIdOrName(currentTemplate.id || currentTemplate.name);
-      setHasChanges(false);
     } catch (error) {
       console.error("Error updating template:", error);
     } finally {
@@ -615,7 +583,7 @@ export const ColumnModal = React.memo(({
   useEffect(() => {
     if (isOpen && tableName) {
       loadTemplatesFromAPI();
-      // Try to restore last selected template
+      // Try to restore last applied template (not just selected)
       try {
         const last = localStorage.getItem(`table:${tableName}:lastSelectedTemplate`);
         if (last) {
@@ -626,7 +594,7 @@ export const ColumnModal = React.memo(({
     }
   }, [isOpen, tableName, loadTemplatesFromAPI]);
 
-  // After loading templates, if only default exists, select it
+  // After loading templates, if only default exists, select and apply it
   useEffect(() => {
     if (templates.length === 1) {
       const only = templates[0];
@@ -641,7 +609,7 @@ export const ColumnModal = React.memo(({
 
   // Sync external selected template ID
   useEffect(() => {
-    if (externalSelectedTemplateId !== selectedTemplateId) {
+    if (externalSelectedTemplateId !== appliedTemplateId) {
       setSelectedTemplateId(externalSelectedTemplateId || null);
       setAppliedTemplateId(externalSelectedTemplateId || null);
       // Also sync currentTemplate if we have templates loaded
@@ -652,7 +620,7 @@ export const ColumnModal = React.memo(({
         setCurrentTemplate(selectedTemplate || null);
       }
     }
-  }, [externalSelectedTemplateId, templates]);
+  }, [externalSelectedTemplateId, templates, appliedTemplateId]);
 
   // Persist selected template when templates are reloaded
   useEffect(() => {
@@ -663,14 +631,17 @@ export const ColumnModal = React.memo(({
       if (!selectedTemplate) {
         // If the selected template no longer exists, clear the selection
         setSelectedTemplateId(null);
-        setAppliedTemplateId(null);
         setCurrentTemplate(null);
+        // Only clear appliedTemplateId if it was the same as selectedTemplateId
+        if (appliedTemplateId === selectedTemplateId) {
+          setAppliedTemplateId(null);
+        }
       } else {
         // Ensure currentTemplate is set when selectedTemplateId exists
         setCurrentTemplate(selectedTemplate);
       }
     }
-  }, [templates, selectedTemplateId]);
+  }, [templates, selectedTemplateId, appliedTemplateId]);
 
   // Add a useEffect to update currentTemplate after templates are reloaded
   useEffect(() => {
@@ -678,7 +649,7 @@ export const ColumnModal = React.memo(({
       const found = templates.find(t => (t.id || t.name) === pendingTemplateIdOrName);
       setCurrentTemplate(found || null);
       setSelectedTemplateId(found ? (found.id || found.name) : null);
-      setAppliedTemplateId(found ? (found.id || found.name) : null);
+      // Don't update appliedTemplateId here - it should only change when explicitly applied
       setPendingTemplateIdOrName(null);
     }
   }, [pendingTemplateIdOrName, templates]);
@@ -944,14 +915,14 @@ export const ColumnModal = React.memo(({
       ) : (
         templates.map((template) => {
           const templateId = template.id || template.name;
-          const isSelected = (selectedTemplateId === templateId) || (!selectedTemplateId && templateId === DEFAULT_TEMPLATE_ID);
           const isApplied = (appliedTemplateId === templateId) || (!appliedTemplateId && templateId === DEFAULT_TEMPLATE_ID);
+          const isSelectedInModal = selectedTemplateId === templateId;
           return (
             <TemplateItem
               key={templateId}
               template={template}
               isActive={isApplied}
-              isSelected={isSelected}
+              isSelected={isSelectedInModal} // Highlight if selected in modal (not necessarily applied)
               onApply={handleTemplateApply}
               // Remove onDelete for default template so it cannot be reset/deleted from templates tab
               onDelete={(!template.isDefault) ? handleTemplateDelete : undefined}
@@ -1100,6 +1071,19 @@ export const ColumnModal = React.memo(({
               )}
               <Button variant="primary" onClick={() => {
                 onSave();
+                // Update appliedTemplateId when the main "Apply" button is clicked
+                if (selectedTemplateId) {
+                  setAppliedTemplateId(selectedTemplateId);
+                  if (onSelectedTemplateChange) {
+                    onSelectedTemplateChange(selectedTemplateId);
+                  }
+                  // Persist the applied template
+                  if (tableName) {
+                    try {
+                      localStorage.setItem(`table:${tableName}:lastSelectedTemplate`, selectedTemplateId);
+                    } catch {}
+                  }
+                }
                 setTimeout(() => {
                   if (onOtherSettingsChange) {
                     onOtherSettingsChange({
