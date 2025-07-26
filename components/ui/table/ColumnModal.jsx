@@ -446,11 +446,39 @@ export const ColumnModal = React.memo(({
     try {
       await createTableTemplate(tableName, template);
       await loadTemplatesFromAPI();
-      setPendingTemplateIdOrName(template.name); // Use name as identifier
+      // Do not change the selected template after saving a new one
       setShowTemplatePrompt(false);
       setHasChanges(false);
-      if (onSelectedTemplateChange) {
-        onSelectedTemplateChange(template.name);
+      // Reapply the currently selected template's settings
+      if (selectedTemplateId && templates.length > 0) {
+        const selectedTemplate = templates.find(t => (t.id || t.name) === selectedTemplateId);
+        if (selectedTemplate) {
+          // Directly apply the selected template settings
+          let visibleColumns = selectedTemplate.visible_columns || selectedTemplate.visibleColumns;
+          const columnWidths = selectedTemplate.column_widths || selectedTemplate.columnWidths;
+          const columnOrder = selectedTemplate.column_order || selectedTemplate.columnOrder;
+          const templateId = selectedTemplate.id || selectedTemplate.name;
+
+          // If default template, set timestamps to false only
+          if (templateId === DEFAULT_TEMPLATE_ID || selectedTemplate.is_default) {
+            visibleColumns = { ...visibleColumns };
+            if ('created_at' in visibleColumns) visibleColumns['created_at'] = false;
+            if ('updated_at' in visibleColumns) visibleColumns['updated_at'] = false;
+          }
+
+          onToggleColumn(null, null, visibleColumns);
+          Object.entries(columnWidths).forEach(([key, width]) => {
+            onColumnWidthChange(key, width);
+          });
+          onColumnOrderChange([...columnOrder]);
+          // Set other settings from template if present
+          if (typeof selectedTemplate.headerColor !== 'undefined') setOtherHeaderColor(selectedTemplate.headerColor);
+          if (typeof selectedTemplate.showHeaderSeparator !== 'undefined') setOtherShowHeaderSeparator(selectedTemplate.showHeaderSeparator);
+          if (typeof selectedTemplate.showHeaderColSeparator !== 'undefined') setOtherShowHeaderColSeparator(selectedTemplate.showHeaderColSeparator);
+          if (typeof selectedTemplate.showBodyColSeparator !== 'undefined') setOtherShowBodyColSeparator(selectedTemplate.showBodyColSeparator);
+          setCurrentTemplate(selectedTemplate);
+          setHasChanges(false);
+        }
       }
     } catch (error) {
       console.error("Error saving template:", error);
@@ -458,7 +486,7 @@ export const ColumnModal = React.memo(({
     } finally {
       setIsSaving(false);
     }
-  }, [templateName, templates, visibleColumns, columnWidths, columnOrder, tableName, loadTemplatesFromAPI, t, otherHeaderColor, otherShowHeaderSeparator, otherShowHeaderColSeparator, otherShowBodyColSeparator, onSelectedTemplateChange]);
+  }, [templateName, templates, visibleColumns, columnWidths, columnOrder, tableName, loadTemplatesFromAPI, t, otherHeaderColor, otherShowHeaderSeparator, otherShowHeaderColSeparator, otherShowBodyColSeparator, onSelectedTemplateChange, selectedTemplateId, onToggleColumn, onColumnWidthChange, onColumnOrderChange]);
 
   const handleTemplateDelete = useCallback((template) => {
     setTemplateToDelete(template);
@@ -525,7 +553,7 @@ export const ColumnModal = React.memo(({
     if (typeof template.showBodyColSeparator !== 'undefined') setOtherShowBodyColSeparator(template.showBodyColSeparator);
     setSelectedTemplateId(templateId);
     setAppliedTemplateId(templateId);
-    setCurrentTemplate(templateId === DEFAULT_TEMPLATE_ID ? null : template);
+    setCurrentTemplate(template);
     setHasChanges(false);
     if (onSelectedTemplateChange) {
       onSelectedTemplateChange(templateId);
@@ -545,7 +573,13 @@ export const ColumnModal = React.memo(({
 
   // Save functionality
   const handleSave = useCallback(async () => {
-    if (!currentTemplate) return;
+    // If no current template (default template selected), use save as instead
+    if (!currentTemplate) {
+      setTemplateName("");
+      setTemplateError("");
+      setShowTemplatePrompt(true);
+      return;
+    }
     setIsSaving(true);
     try {
       const updatedTemplate = {
@@ -610,8 +644,15 @@ export const ColumnModal = React.memo(({
     if (externalSelectedTemplateId !== selectedTemplateId) {
       setSelectedTemplateId(externalSelectedTemplateId || null);
       setAppliedTemplateId(externalSelectedTemplateId || null);
+      // Also sync currentTemplate if we have templates loaded
+      if (templates.length > 0 && externalSelectedTemplateId) {
+        const selectedTemplate = templates.find(template => 
+          (template.id || template.name) === externalSelectedTemplateId
+        );
+        setCurrentTemplate(selectedTemplate || null);
+      }
     }
-  }, [externalSelectedTemplateId]);
+  }, [externalSelectedTemplateId, templates]);
 
   // Persist selected template when templates are reloaded
   useEffect(() => {
@@ -623,6 +664,10 @@ export const ColumnModal = React.memo(({
         // If the selected template no longer exists, clear the selection
         setSelectedTemplateId(null);
         setAppliedTemplateId(null);
+        setCurrentTemplate(null);
+      } else {
+        // Ensure currentTemplate is set when selectedTemplateId exists
+        setCurrentTemplate(selectedTemplate);
       }
     }
   }, [templates, selectedTemplateId]);
@@ -1033,7 +1078,7 @@ export const ColumnModal = React.memo(({
                   <Button 
                     variant="outline" 
                     onClick={handleSave}
-                    disabled={false}
+                    disabled={!currentTemplate || isSaving}
                     className="ml-2"
                   >
                     {isSaving ? t("columns.modal.saving") : t("columns.modal.save")}

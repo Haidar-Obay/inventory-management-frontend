@@ -775,7 +775,7 @@
         "settings": "Settings",
         "save": "Save",
         "saveAs": "Save As",
-        "saving": "Saving...",
+        "saving": "Saving",
         "deleteConfirmTitle": "Delete Template",
         "deleteConfirmMessage": "Are you sure you want to delete the template \"{templateName}\"? This action cannot be undone.",
         "deleting": "Deleting...",
