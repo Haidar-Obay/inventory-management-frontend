@@ -182,12 +182,18 @@ const Table = (props) => {
   };
   const persisted = getPersistedOtherSettings();
   const [headerColor, setHeaderColor] = useState(persisted.headerColor ?? "");
+  const [headerFontSize, setHeaderFontSize] = useState(persisted.headerFontSize ?? 16);
+  const [headerFontStyle, setHeaderFontStyle] = useState(persisted.headerFontStyle ?? 'normal');
+  const [headerFontColor, setHeaderFontColor] = useState(persisted.headerFontColor ?? '#000000');
   const [showHeaderSeparator, setShowHeaderSeparator] = useState(persisted.showHeaderSeparator ?? true);
   const [showHeaderColSeparator, setShowHeaderColSeparator] = useState(persisted.showHeaderColSeparator ?? true);
   const [showBodyColSeparator, setShowBodyColSeparator] = useState(persisted.showBodyColSeparator ?? true);
 
   const handleOtherSettingsChange = (settings) => {
     if (settings.headerColor !== undefined) setHeaderColor(settings.headerColor);
+    if (settings.headerFontSize !== undefined) setHeaderFontSize(settings.headerFontSize);
+    if (settings.headerFontStyle !== undefined) setHeaderFontStyle(settings.headerFontStyle);
+    if (settings.headerFontColor !== undefined) setHeaderFontColor(settings.headerFontColor);
     if (settings.showHeaderSeparator !== undefined) setShowHeaderSeparator(settings.showHeaderSeparator);
     if (settings.showHeaderColSeparator !== undefined) setShowHeaderColSeparator(settings.showHeaderColSeparator);
     if (settings.showBodyColSeparator !== undefined) setShowBodyColSeparator(settings.showBodyColSeparator);
@@ -303,6 +309,9 @@ const Table = (props) => {
           selectedTemplateId={selectedTemplateId}
           onSelectedTemplateChange={handleSelectedTemplateChange}
           headerColor={headerColor}
+          headerFontSize={headerFontSize}
+          headerFontStyle={headerFontStyle}
+          headerFontColor={headerFontColor}
           showHeaderSeparator={showHeaderSeparator}
           showHeaderColSeparator={showHeaderColSeparator}
           showBodyColSeparator={showBodyColSeparator}
@@ -419,6 +428,9 @@ const Table = (props) => {
                 t={props.t}
                 isOverflowing={isOverflowing}
                 headerColor={headerColor}
+                headerFontSize={headerFontSize}
+                headerFontStyle={headerFontStyle}
+                headerFontColor={headerFontColor}
                 showHeaderSeparator={showHeaderSeparator}
                 showHeaderColSeparator={showHeaderColSeparator}
               />

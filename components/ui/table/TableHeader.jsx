@@ -3,6 +3,7 @@
 import React from "react";
 import { Button, Checkbox, Input, Badge } from "./CustomControls";
 import { useTranslations, useLocale } from "next-intl";
+import { useTheme } from "next-themes";
 
 export const TableHeader = ({
   columnOrder,
@@ -27,14 +28,27 @@ export const TableHeader = ({
   columnWidths,
   isOverflowing,
   headerColor,
+  headerFontSize,
+  headerFontStyle,
+  headerFontColor,
   showHeaderSeparator,
   showHeaderColSeparator,
 }) => {
   const t = useTranslations("table");
   const locale = useLocale();
   const isRTL = locale === "ar";
+  const { theme } = useTheme();
 
-  const theadStyle = headerColor ? { background: headerColor } : {};
+  const theadStyle = headerColor ? { 
+    background: headerColor,
+    fontSize: headerFontSize ? `${headerFontSize}px` : '16px',
+    fontStyle: headerFontStyle || 'normal',
+    color: headerFontColor || (theme === 'dark' ? '#e2e8f0' : '#1e293b')
+  } : {
+    fontSize: headerFontSize ? `${headerFontSize}px` : '16px',
+    fontStyle: headerFontStyle || 'normal',
+    color: headerFontColor || (theme === 'dark' ? '#e2e8f0' : '#1e293b')
+  };
 
   return (
     <thead
@@ -44,7 +58,16 @@ export const TableHeader = ({
       {/* Header Row */}
       <tr
         className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900"
-        style={headerColor ? { background: headerColor } : {}}
+        style={headerColor ? { 
+          background: headerColor,
+          fontSize: headerFontSize ? `${headerFontSize}px` : '16px',
+          fontStyle: headerFontStyle || 'normal',
+          color: headerFontColor || (theme === 'dark' ? '#e2e8f0' : '#1e293b')
+        } : {
+          fontSize: headerFontSize ? `${headerFontSize}px` : '16px',
+          fontStyle: headerFontStyle || 'normal',
+          color: headerFontColor || (theme === 'dark' ? '#e2e8f0' : '#1e293b')
+        }}
       >
         <th
           className={`border-b border-slate-200 dark:border-slate-700 ps-3 py-3 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-all duration-200 ${showHeaderColSeparator !== false ? 'border-r border-slate-300 dark:border-slate-600' : ''}`}
@@ -183,7 +206,17 @@ export const TableHeader = ({
             >
               <div className="flex flex-col">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-slate-700 dark:text-slate-200 text-sm uppercase tracking-wide group-hover:text-slate-900 dark:group-hover:text-white transition-colors duration-200">{column.header}</span>
+                                     <span
+                     className="font-semibold text-slate-700 dark:text-slate-200 text-sm uppercase tracking-wide group-hover:text-slate-900 dark:group-hover:text-white transition-colors duration-200"
+                     style={{
+                       fontSize: headerFontSize ? `${headerFontSize}px` : undefined,
+                       color: headerFontColor || (theme === 'dark' ? '#e2e8f0' : '#1e293b'),
+                       fontWeight: headerFontStyle && headerFontStyle.includes('bold') ? 'bold' : undefined,
+                       fontStyle: headerFontStyle && headerFontStyle.includes('italic') ? 'italic' : undefined,
+                     }}
+                   >
+                     {column.header}
+                   </span>
                   <div className="flex items-center space-x-2">
                     {column.sortable && (
                       <Button
@@ -290,9 +323,17 @@ export const TableHeader = ({
           }`}
           style={{ width: "75px", minWidth: "75px", maxWidth: "75px", ...(headerColor ? { background: headerColor } : {}) }}
         >
-          <span className="flex items-center justify-center w-full font-semibold text-slate-700 dark:text-slate-200 text-sm uppercase tracking-wide hover:text-slate-900 dark:hover:text-white transition-colors duration-200">
-            {t("actions")}
-          </span>
+                      <span
+              className="flex items-center justify-center w-full font-semibold text-slate-700 dark:text-slate-200 text-sm uppercase tracking-wide hover:text-slate-900 dark:hover:text-white transition-colors duration-200"
+              style={{
+                fontSize: headerFontSize ? `${headerFontSize}px` : undefined,
+                color: headerFontColor || (theme === 'dark' ? '#e2e8f0' : '#1e293b'),
+                fontWeight: headerFontStyle && headerFontStyle.includes('bold') ? 'bold' : undefined,
+                fontStyle: headerFontStyle && headerFontStyle.includes('italic') ? 'italic' : undefined,
+              }}
+            >
+              {t("actions")}
+            </span>
         </th>
       </tr>
 

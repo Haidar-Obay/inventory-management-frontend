@@ -861,7 +861,8 @@
         "showHeaderSeparator": "إظهار فاصل الرأس",
         "showHeaderColSeparator": "إظهار فواصل أعمدة الرأس",
         "showBodyColSeparator": "إظهار فواصل أعمدة الجسم",
-        "defaultTemplate": "الافتراضي"
+        "defaultTemplate": "الافتراضي",
+        "headerStyling": "تنسيق الرأس"
       }
     },
     "filter": {

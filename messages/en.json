@@ -785,7 +785,8 @@
         "showHeaderSeparator": "Show header separator",
         "showHeaderColSeparator": "Show header column separators",
         "showBodyColSeparator": "Show body column separators",
-        "defaultTemplate": "Default"
+        "defaultTemplate": "Default",
+        "headerStyling": "Header Styling"
       }
     },
     "filter": {
