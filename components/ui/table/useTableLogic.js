@@ -155,6 +155,27 @@ export function useTableLogic({
     return initialFilterTypes;
   });
 
+
+
+  // Helper function to calculate appropriate width
+  const calculateWidth = (column, savedWidth) => {
+    if (savedWidth) return savedWidth;
+    if (column.width) return column.width;
+    
+    // Use smaller default widths
+    if (column.key === "id") return "60px";
+    if (column.key === "code") return "80px";
+    if (column.key === "name" || column.key === "title" || column.key === "firstName" || column.key === "lastName") return "100px";
+    if (column.key === "phone" || column.key.includes("phone")) return "90px";
+    if (column.key === "email") return "120px";
+    if (column.key === "address") return "130px";
+    if (column.key === "description" || column.key === "notes") return "150px";
+    if (column.type === "boolean") return "70px";
+    if (column.type === "date") return "90px";
+    
+    return "80px";
+  };
+
   // Add column widths state with localStorage
   const [columnWidths, setColumnWidths] = useState(() => {
     // Check if we're in a browser environment
@@ -171,8 +192,7 @@ export function useTableLogic({
             search: Math.max(parseInt(parsedWidths.search || 28), 15) + "px",
           };
           columns.forEach((column) => {
-            validWidths[column.key] =
-              parsedWidths[column.key] || column.width || "100px";
+            validWidths[column.key] = calculateWidth(column, parsedWidths[column.key]);
           });
           return validWidths;
         } catch (error) {
@@ -185,7 +205,7 @@ export function useTableLogic({
       select: "28px",
       search: "28px",
       ...columns.reduce((acc, column) => {
-        acc[column.key] = column.width || "100px";
+        acc[column.key] = calculateWidth(column, null);
         return acc;
       }, {}),
     };
@@ -821,7 +841,7 @@ export function useTableLogic({
         select: "28px",
         search: "28px",
         ...columns.reduce((acc, column) => {
-          acc[column.key] = column.width || "100px";
+          acc[column.key] = calculateWidth(column, null);
           return acc;
         }, {}),
       };
@@ -885,16 +905,16 @@ export function useTableLogic({
     paginatedData.length > 0 &&
     paginatedData.every((row) => selectedRows.has(row.id));
 
-  // Reset column widths with animation
-  const resetColumnWidths = () => {
-    const defaultWidths = {
-      select: "28px",
-      search: "28px",
-      ...columns.reduce((acc, column) => {
-        acc[column.key] = column.width || "auto";
-        return acc;
-      }, {}),
-    };
+      // Reset column widths with animation
+    const resetColumnWidths = () => {
+      const defaultWidths = {
+        select: "28px",
+        search: "28px",
+        ...columns.reduce((acc, column) => {
+          acc[column.key] = calculateWidth(column, null);
+          return acc;
+        }, {}),
+      };
 
     // Animate the width changes
     Object.entries(defaultWidths).forEach(([key, width]) => {

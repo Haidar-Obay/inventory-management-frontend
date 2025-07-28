@@ -72,7 +72,7 @@ export const TableHeader = ({
         <th
           className={`border-b border-slate-200 dark:border-slate-700 ps-3 py-3 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-all duration-200 ${showHeaderColSeparator !== false ? 'border-r border-slate-300 dark:border-slate-600' : ''}`}
           data-column="select"
-          style={{ width: "36px", minWidth: "32px", maxWidth: "40px" }}
+          style={{ width: "36px" }}
         >
           <div className="flex flex-row items-center justify-center w-full gap-1">
             <Checkbox
@@ -123,7 +123,7 @@ export const TableHeader = ({
           <th
             className={`border-b border-slate-200 dark:border-slate-700 px-0 py-3 ${showHeaderColSeparator !== false ? 'border-r border-slate-300 dark:border-slate-600' : ''}`}
             data-column="search"
-            style={{ width: "18px", minWidth: "18px", maxWidth: "18px" }}
+            style={{ width: "18px" }}
           >
             <div className="flex items-center justify-center w-full">
               <button
@@ -174,6 +174,7 @@ export const TableHeader = ({
 
           const hasActiveFilter = activeColumnFilters[key];
           const width = columnWidths[key];
+          console.log(`Column ${key} width:`, width);
           const isFirstColumn = index === 0;
           const isLastColumn = index === columnOrder.filter(k => visibleColumns[k]).length - 1;
 
@@ -198,8 +199,15 @@ export const TableHeader = ({
                 hover:bg-gray-200 dark:hover:bg-slate-700/50
                 ${leftBorder ? 'border-l border-slate-300 dark:border-slate-600' : ''}
                 ${rightBorder ? 'border-r border-slate-300 dark:border-slate-600' : ''}
+                table-cell
               `}
-              style={{ width: width === "auto" ? "auto" : width }}
+              style={{ 
+                width: width === "auto" ? "auto" : width,
+                maxWidth: "none",
+                minWidth: "none",
+                flexShrink: 0,
+                flexGrow: 0
+              }}
               draggable
               onDragStart={() => handleColumnDragStart(key)}
               onDragOver={(e) => handleColumnDragOver(e, key)}
@@ -321,7 +329,7 @@ export const TableHeader = ({
               ? "sticky end-0 z-20 backdrop-blur-sm border-s border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50/95 to-slate-100/95 dark:from-slate-800/95 dark:to-slate-900/95"
               : ""
           }`}
-          style={{ width: "75px", minWidth: "75px", maxWidth: "75px", ...(headerColor ? { background: headerColor } : {}) }}
+          style={{ width: "75px", ...(headerColor ? { background: headerColor } : {}) }}
         >
                       <span
               className="flex items-center justify-center w-full font-semibold text-slate-700 dark:text-slate-200 text-sm uppercase tracking-wide hover:text-slate-900 dark:hover:text-white transition-colors duration-200"
@@ -369,8 +377,19 @@ export const TableHeader = ({
             const visibleKeys = columnOrder.filter(key => visibleColumns[key]);
             const isLastDataCol = idx === visibleKeys.length - 1;
             const lastDataColBorder = isRTL && isLastDataCol ? 'border-r border-slate-300 dark:border-slate-600' : '';
+            const width = columnWidths[key] || "auto";
             return (
-              <td key={`search-${key}`} className={`px-6 py-2 hover:bg-slate-100 dark:hover:bg-slate-700/30 transition-colors duration-200 ${showHeaderColSeparator !== false && !isLastDataCol ? 'border-r border-slate-300 dark:border-slate-600' : ''} ${showHeaderColSeparator !== false ? lastDataColBorder : ''}`}>
+              <td 
+                key={`search-${key}`} 
+                className={`px-6 py-2 hover:bg-slate-100 dark:hover:bg-slate-700/30 transition-colors duration-200 ${showHeaderColSeparator !== false && !isLastDataCol ? 'border-r border-slate-300 dark:border-slate-600' : ''} ${showHeaderColSeparator !== false ? lastDataColBorder : ''}`}
+                style={{ 
+                  width: width === "auto" ? "auto" : width,
+                  maxWidth: "none",
+                  minWidth: "none",
+                  flexShrink: 0,
+                  flexGrow: 0
+                }}
+              >
                 <div className="relative">
                   <div
                     className={`pointer-events-none absolute inset-y-0 ${isRTL ? "left-0" : "right-0"} flex items-center ${isRTL ? "pl-2" : "pr-2"}`}
@@ -412,7 +431,7 @@ export const TableHeader = ({
                 ? "sticky end-0 z-10 backdrop-blur-sm border-s border-slate-200 dark:border-slate-700 bg-slate-50/95 dark:bg-slate-800/95"
                 : ""
             }`}
-            style={{ width: "75px", minWidth: "75px", maxWidth: "75px" }}
+            style={{ width: "75px" }}
           ></td>
         </tr>
       )}
