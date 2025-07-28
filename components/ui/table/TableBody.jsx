@@ -166,9 +166,6 @@ export const TableBody = ({
                     ? "bg-white dark:bg-background"
                     : "bg-gray-50 dark:bg-muted/50 hover:bg-gray-100 dark:hover:bg-muted"
               } border-b border-border`}
-              draggable
-              onDragStart={() => handleRowDragStart(actualRowIndex)}
-              onDragOver={(e) => handleRowDragOver(e, actualRowIndex)}
             >
               {/* Row selection checkbox */}
               <td
@@ -197,6 +194,9 @@ export const TableBody = ({
                   <div
                     className="flex items-center justify-center w-full h-full"
                     style={{ cursor: "grab" }}
+                    draggable
+                    onDragStart={() => handleRowDragStart(actualRowIndex)}
+                    onDragOver={(e) => handleRowDragOver(e, actualRowIndex)}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
