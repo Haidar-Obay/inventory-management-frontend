@@ -66,7 +66,7 @@ export const TableBody = ({
             {/* Row selection checkbox skeleton */}
             <td
               className="border-b border-border ps-2 py-2"
-              style={{ width: "36px", minWidth: "32px", maxWidth: "40px" }}
+              style={{ width: "36px" }}
             >
               <div className="flex flex-row items-center justify-center w-full gap-1">
                 <div className="h-4 w-4 rounded bg-gray-200 dark:bg-muted animate-pulse"></div>
@@ -77,7 +77,7 @@ export const TableBody = ({
             {showSearchColumn && (
               <td
                 className="border-b border-border px-0 py-2"
-                style={{ width: "18px", minWidth: "18px", maxWidth: "18px" }}
+                style={{ width: "18px" }}
               >
                 <div className="flex items-center justify-center w-full h-full">
                   <div className="h-3 w-3 rounded bg-gray-200 dark:bg-muted animate-pulse"></div>
@@ -96,7 +96,13 @@ export const TableBody = ({
                 <td
                   key={key}
                   className={`border-b border-border px-4 py-2 ${!isLastColumn && colBorderClass}`}
-                  style={{ width: width === "auto" ? "auto" : width }}
+                  style={{ 
+                    width: width === "auto" ? "auto" : width,
+                    maxWidth: "none",
+                    minWidth: "none",
+                    flexShrink: 0,
+                    flexGrow: 0
+                  }}
                 >
                   <div className="min-h-[24px] flex items-center">
                     {column.type === "boolean" ? (
@@ -132,7 +138,7 @@ export const TableBody = ({
             {/* Actions skeleton */}
             <td
               className="border-b border-border px-1 py-2 border-l border-slate-300 dark:border-slate-600"
-              style={{ width: "75px", minWidth: "75px", maxWidth: "75px" }}
+              style={{ width: "75px" }}
             >
               <div className="flex justify-center">
                 <div className="h-8 w-8 rounded bg-gray-200 dark:bg-muted animate-pulse flex items-center justify-center">
@@ -167,7 +173,7 @@ export const TableBody = ({
               {/* Row selection checkbox */}
               <td
                 className={`border-b border-border ps-2 py-2 ${(showBodyColSeparator !== false) ? 'border-r border-slate-300 dark:border-slate-600' : ''}`}
-                style={{ width: "36px", minWidth: "32px", maxWidth: "40px" }}
+                style={{ width: "36px" }}
               >
                 <div className="flex flex-row items-center justify-center w-full gap-1">
                   <Checkbox
@@ -186,7 +192,7 @@ export const TableBody = ({
               {showSearchColumn && (
                 <td
                   className={`border-b border-border px-0 py-2 ${(showBodyColSeparator !== false) ? 'border-l border-r border-slate-300 dark:border-slate-600' : ''}`}
-                  style={{ width: "18px", minWidth: "18px", maxWidth: "18px" }}
+                  style={{ width: "18px" }}
                 >
                   <div
                     className="flex items-center justify-center w-full h-full"
@@ -226,6 +232,7 @@ export const TableBody = ({
                   editingCell.columnKey === key;
 
                 const width = columnWidths[key];
+                console.log(`Body Column ${key} width:`, width);
                 const cellValue = row[key];
                 const isFirstColumn = columnIndex === 0;
                 const isLastColumn = columnIndex === columnOrder.filter(k => visibleColumns[k]).length - 1;
@@ -246,11 +253,17 @@ export const TableBody = ({
                 return (
                   <td
                     key={`${rowIndex}-${key}`}
-                    className={`border-b border-border px-4 py-2
+                    className={`border-b border-border px-4 py-2 table-cell
                       ${leftBorder ? 'border-l border-slate-300 dark:border-slate-600' : ''}
                       ${rightBorder ? 'border-r border-slate-300 dark:border-slate-600' : ''}
                     `}
-                    style={{ width: width === "auto" ? "auto" : width }}
+                    style={{ 
+                      width: width === "auto" ? "auto" : width,
+                      maxWidth: "none",
+                      minWidth: "none",
+                      flexShrink: 0,
+                      flexGrow: 0
+                    }}
                     onDoubleClick={() =>
                       enableCellEditing &&
                       handleCellDoubleClick(actualRowIndex, key)
@@ -383,7 +396,7 @@ export const TableBody = ({
                       ? "bg-white dark:bg-background hover:bg-gray-100 dark:hover:bg-muted"
                       : "bg-gray-50 dark:bg-muted/50 hover:bg-gray-100 dark:hover:bg-muted"}
                 `}
-                style={{ width: "75px", minWidth: "75px", maxWidth: "75px" }}
+                style={{ width: "75px" }}
               >
                 <CustomActions
                   row={row}

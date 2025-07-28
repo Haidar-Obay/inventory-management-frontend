@@ -259,7 +259,7 @@ const Table = (props) => {
   }, [tableData, visibleColumns]); // Re-check when data or columns change
 
   return (
-    <div className="w-full rounded-lg border border-border bg-background shadow-sm">
+    <div className="rounded-lg border border-border bg-background shadow-sm" style={{ width: "auto", minWidth: "auto" }}>
       <DeleteModal
         isOpen={deleteModalOpen}
         onConfirm={handleConfirmDelete}
@@ -396,14 +396,13 @@ const Table = (props) => {
         </div>
       )}
 
-      <div className="w-full">
+      <div>
         <div
           className="overflow-x-auto"
-          style={{ scrollbarWidth: "thin" }}
+          style={{ scrollbarWidth: "thin", width: "100%", minWidth: "100%" }}
           ref={scrollContainerRef}
         >
-          <div style={{ minWidth: "max-content", width: "100%" }}>
-            <table className="w-full border-collapse">
+          <table className="border-collapse" style={{ tableLayout: "fixed", minWidth: "max-content", width: "auto", flexShrink: 0 }}>
               <TableHeader
                 columnOrder={columnOrder}
                 columns={columnsArray}
@@ -471,7 +470,6 @@ const Table = (props) => {
                 }}
               />
             </table>
-          </div>
         </div>
       </div>
 

@@ -244,7 +244,7 @@ import { Toggle } from "../toggle";
 // Define DEFAULT_TEMPLATE_ID at the top
 const DEFAULT_TEMPLATE_ID = '__default__';
 
-// Enhanced Header Styling Component
+// Enhanced Header Styling Component with Modal
 const HeaderStyler = React.memo(({ 
   backgroundColor, 
   onBackgroundColorChange, 
@@ -257,10 +257,10 @@ const HeaderStyler = React.memo(({
   label, 
   className = "" 
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [customBgColor, setCustomBgColor] = useState(backgroundColor);
   const [customFontColor, setCustomFontColor] = useState(fontColor);
-  const dropdownRef = useRef(null);
+  const modalRef = useRef(null);
   
   // Update colors when props change
   useEffect(() => {
@@ -271,22 +271,22 @@ const HeaderStyler = React.memo(({
     setCustomFontColor(fontColor);
   }, [fontColor]);
   
-  // Close dropdown when clicking outside
+  // Close modal when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setIsModalOpen(false);
       }
     };
 
-    if (isOpen) {
+    if (isModalOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isModalOpen]);
   
   const presetColors = [
     '#1e293b', // slate-800
@@ -350,6 +350,10 @@ const HeaderStyler = React.memo(({
     onFontColorChange(color);
   };
 
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className={`relative ${className}`}>
       <label className="block text-sm font-medium mb-2">{label}</label>
@@ -358,7 +362,7 @@ const HeaderStyler = React.memo(({
       <div className="flex items-center gap-3">
         <button
           type="button"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => setIsModalOpen(true)}
           className="flex items-center gap-2 p-2 border border-border rounded-md hover:bg-muted transition-colors"
         >
           <div 
@@ -380,159 +384,192 @@ const HeaderStyler = React.memo(({
             fill="none" 
             stroke="currentColor" 
             strokeWidth="2"
-            className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}
           >
             <polyline points="6,9 12,15 18,9" />
           </svg>
         </button>
       </div>
 
-      {/* Enhanced Styling Dropdown */}
-      {isOpen && (
-        <div ref={dropdownRef} className="absolute top-full left-0 mt-2 p-4 bg-background border border-border rounded-lg shadow-lg z-50 min-w-[320px]">
-          
-          {/* Background Color Section */}
-          <div className="mb-4">
-            <h4 className="text-sm font-medium mb-2">Background Color</h4>
-            <div className="grid grid-cols-8 gap-2 mb-3">
-              {presetColors.map((color) => (
-                <button
-                  key={color}
-                  type="button"
-                  onClick={() => handleBgColorSelect(color)}
-                  className="w-8 h-8 rounded border border-border hover:scale-110 transition-transform"
-                  style={{ backgroundColor: color }}
-                  title={color}
-                />
-              ))}
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">Custom:</span>
-              <input
-                type="color"
-                value={customBgColor}
-                onChange={handleCustomBgColorChange}
-                className="w-6 h-6 p-0 border border-border rounded cursor-pointer"
-              />
-              <input
-                type="text"
-                value={customBgColor}
-                onChange={(e) => handleBgColorSelect(e.target.value)}
-                className="flex-1 px-2 py-1 text-xs border border-border rounded bg-background text-foreground"
-                placeholder="#000000"
-              />
-            </div>
-          </div>
-
-          {/* Font Color Section */}
-          <div className="mb-4">
-            <h4 className="text-sm font-medium mb-2">Font Color</h4>
-            <div className="grid grid-cols-8 gap-2 mb-3">
-              {presetColors.map((color) => (
-                <button
-                  key={`font-${color}`}
-                  type="button"
-                  onClick={() => handleFontColorSelect(color)}
-                  className="w-8 h-8 rounded border border-border hover:scale-110 transition-transform"
-                  style={{ backgroundColor: color }}
-                  title={color}
-                />
-              ))}
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">Custom:</span>
-              <input
-                type="color"
-                value={customFontColor}
-                onChange={handleCustomFontColorChange}
-                className="w-6 h-6 p-0 border border-border rounded cursor-pointer"
-              />
-              <input
-                type="text"
-                value={customFontColor}
-                onChange={(e) => handleFontColorSelect(e.target.value)}
-                className="flex-1 px-2 py-1 text-xs border border-border rounded bg-background text-foreground"
-                placeholder="#000000"
-              />
-            </div>
-          </div>
-
-          {/* Font Size Section */}
-          <div className="mb-4">
-            <h4 className="text-sm font-medium mb-2">Font Size</h4>
-            <div className="flex items-center gap-2">
-              <input
-                type="range"
-                min="10"
-                max="24"
-                value={fontSize}
-                onChange={(e) => onFontSizeChange(parseInt(e.target.value))}
-                className="flex-1"
-              />
-              <span className="text-xs text-muted-foreground w-8 text-center">{fontSize}px</span>
-            </div>
-            <div className="flex gap-1 mt-2">
-              {[12, 14, 16, 18, 20].map((size) => (
-                <button
-                  key={size}
-                  type="button"
-                  onClick={() => onFontSizeChange(size)}
-                  className={`px-2 py-1 text-xs rounded border ${
-                    fontSize === size 
-                      ? 'bg-primary text-primary-foreground border-primary' 
-                      : 'bg-background text-foreground border-border hover:bg-muted'
-                  }`}
+      {/* Header Styling Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[2147483648] flex items-center justify-center bg-black/50">
+          <div ref={modalRef} className="bg-background p-4 rounded-lg shadow-lg border border-border w-full max-w-lg">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-medium text-foreground">Header Styling</h3>
+              <button
+                onClick={handleModalClose}
+                className="rounded-full p-1 hover:bg-muted text-muted-foreground"
+                aria-label="Close"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16" height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
-                  {size}px
-                </button>
-              ))}
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
             </div>
-          </div>
 
-          {/* Font Style Section */}
-          <div className="mb-4">
-            <h4 className="text-sm font-medium mb-2">Font Style</h4>
-            <div className="flex gap-2">
-              {[
-                { value: 'normal', label: 'Normal' },
-                { value: 'italic', label: 'Italic' },
-                { value: 'bold', label: 'Bold' },
-                { value: 'bold italic', label: 'Bold Italic' }
-              ].map((style) => (
-                <button
-                  key={style.value}
-                  type="button"
-                  onClick={() => onFontStyleChange(style.value)}
-                  className={`px-3 py-1 text-xs rounded border ${
-                    fontStyle === style.value 
-                      ? 'bg-primary text-primary-foreground border-primary' 
-                      : 'bg-background text-foreground border-border hover:bg-muted'
-                  }`}
-                  style={{ 
-                    fontStyle: style.value.includes('italic') ? 'italic' : 'normal',
-                    fontWeight: style.value.includes('bold') ? 'bold' : 'normal'
-                  }}
-                >
-                  {style.label}
-                </button>
-              ))}
+            {/* Live Preview - Moved to top */}
+            <div className="mb-4">
+              <h4 className="text-xs font-medium mb-2 text-muted-foreground">Preview</h4>
+              <div 
+                className="p-3 rounded border border-border text-center"
+                style={{ 
+                  backgroundColor: customBgColor,
+                  color: customFontColor,
+                  fontSize: `${fontSize}px`,
+                  fontStyle: fontStyle.includes('italic') ? 'italic' : 'normal',
+                  fontWeight: fontStyle.includes('bold') ? 'bold' : 'normal'
+                }}
+              >
+                Header Text Preview
+              </div>
             </div>
-          </div>
 
-          {/* Live Preview */}
-          <div className="pt-3 border-t border-border">
-            <h4 className="text-sm font-medium mb-2">Preview</h4>
-            <div 
-              className="p-3 rounded border border-border"
-              style={{ 
-                backgroundColor: customBgColor,
-                color: customFontColor,
-                fontSize: `${fontSize}px`,
-                fontStyle: fontStyle.includes('italic') ? 'italic' : 'normal',
-                fontWeight: fontStyle.includes('bold') ? 'bold' : 'normal'
-              }}
-            >
-              Header Text Preview
+            <div className="space-y-4">
+              {/* Background Color Section */}
+              <div>
+                <h4 className="text-xs font-medium mb-2">Background Color</h4>
+                <div className="grid grid-cols-8 gap-1 mb-2">
+                  {presetColors.slice(0, 24).map((color) => (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => handleBgColorSelect(color)}
+                      className="w-6 h-6 rounded border border-border hover:scale-110 transition-transform"
+                      style={{ backgroundColor: color }}
+                      title={color}
+                    />
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Custom:</span>
+                  <input
+                    type="color"
+                    value={customBgColor}
+                    onChange={handleCustomBgColorChange}
+                    className="w-5 h-5 p-0 border border-border rounded cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={customBgColor}
+                    onChange={(e) => handleBgColorSelect(e.target.value)}
+                    className="flex-1 px-2 py-1 text-xs border border-border rounded bg-background text-foreground"
+                    placeholder="#000000"
+                  />
+                </div>
+              </div>
+
+              {/* Font Color Section */}
+              <div>
+                <h4 className="text-xs font-medium mb-2">Font Color</h4>
+                <div className="grid grid-cols-8 gap-1 mb-2">
+                  {presetColors.slice(0, 24).map((color) => (
+                    <button
+                      key={`font-${color}`}
+                      type="button"
+                      onClick={() => handleFontColorSelect(color)}
+                      className="w-6 h-6 rounded border border-border hover:scale-110 transition-transform"
+                      style={{ backgroundColor: color }}
+                      title={color}
+                    />
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Custom:</span>
+                  <input
+                    type="color"
+                    value={customFontColor}
+                    onChange={handleCustomFontColorChange}
+                    className="w-5 h-5 p-0 border border-border rounded cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={customFontColor}
+                    onChange={(e) => handleFontColorSelect(e.target.value)}
+                    className="flex-1 px-2 py-1 text-xs border border-border rounded bg-background text-foreground"
+                    placeholder="#000000"
+                  />
+                </div>
+              </div>
+
+              {/* Font Size Section */}
+              <div>
+                <h4 className="text-xs font-medium mb-2">Font Size</h4>
+                <div className="flex items-center gap-2 mb-2">
+                  <input
+                    type="range"
+                    min="10"
+                    max="24"
+                    value={fontSize}
+                    onChange={(e) => onFontSizeChange(parseInt(e.target.value))}
+                    className="flex-1"
+                  />
+                  <span className="text-xs text-muted-foreground w-8 text-center">{fontSize}px</span>
+                </div>
+                <div className="flex gap-1 flex-wrap">
+                  {[12, 14, 16, 18, 20].map((size) => (
+                    <button
+                      key={size}
+                      type="button"
+                      onClick={() => onFontSizeChange(size)}
+                      className={`px-2 py-1 text-xs rounded border ${
+                        fontSize === size 
+                          ? 'bg-primary text-primary-foreground border-primary' 
+                          : 'bg-background text-foreground border-border hover:bg-muted'
+                      }`}
+                    >
+                      {size}px
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Font Style Section */}
+              <div>
+                <h4 className="text-xs font-medium mb-2">Font Style</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { value: 'normal', label: 'Normal' },
+                    { value: 'italic', label: 'Italic' },
+                    { value: 'bold', label: 'Bold' },
+                    { value: 'bold italic', label: 'Bold Italic' }
+                  ].map((style) => (
+                    <button
+                      key={style.value}
+                      type="button"
+                      onClick={() => onFontStyleChange(style.value)}
+                      className={`px-2 py-1 text-xs rounded border ${
+                        fontStyle === style.value 
+                          ? 'bg-primary text-primary-foreground border-primary' 
+                          : 'bg-background text-foreground border-border hover:bg-muted'
+                      }`}
+                      style={{ 
+                        fontStyle: style.value.includes('italic') ? 'italic' : 'normal',
+                        fontWeight: style.value.includes('bold') ? 'bold' : 'normal'
+                      }}
+                    >
+                      {style.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-border">
+              <Button variant="outline" size="sm" onClick={handleModalClose}>
+                Close
+              </Button>
             </div>
           </div>
         </div>
@@ -1153,17 +1190,30 @@ export const ColumnModal = React.memo(({
                 <span className="text-xs text-muted-foreground w-12">Width:</span>
                 <Input
                   type="number"
-                  min="20"
+                  min="1"
                   max="500"
                   value={
-                    typeof columnWidths[column.key] === 'string'
-                      ? parseInt(columnWidths[column.key].replace("px", ""))
-                      : (typeof columnWidths[column.key] === 'number' ? columnWidths[column.key] : 100)
+                    (() => {
+                      if (typeof columnWidths[column.key] === 'string') {
+                        const parsed = parseInt(columnWidths[column.key].replace("px", ""));
+                        return isNaN(parsed) ? 100 : parsed;
+                      }
+                      if (typeof columnWidths[column.key] === 'number') {
+                        return isNaN(columnWidths[column.key]) ? 100 : columnWidths[column.key];
+                      }
+                      return 100;
+                    })()
                   }
-                  onChange={(e) => onColumnWidthChange(column.key, `${e.target.value}px`)}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value);
+                    if (value > 0) {
+                      onColumnWidthChange(column.key, `${value}px`);
+                    }
+                  }}
                   className="w-20 text-center"
                 />
                 <span className="text-xs text-muted-foreground">{t("columns.modal.px")}</span>
+                <span className="text-xs text-orange-500 ml-1 whitespace-nowrap">(min: 110px)</span>
               </div>
               
               {/* Order Controls */}
