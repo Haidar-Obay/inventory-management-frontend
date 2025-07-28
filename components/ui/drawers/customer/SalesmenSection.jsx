@@ -27,6 +27,7 @@ const SalesmenSection = React.memo(({ formData, onFormDataChange, isRTL, t, sale
         expandIcon={<ExpandMoreIcon />}
         aria-controls="salesmen-content"
         id="salesmen-header"
+        tabIndex={-1}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>

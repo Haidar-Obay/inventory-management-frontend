@@ -27,6 +27,7 @@ const OpeningSection = React.memo(({ formData, onFormDataChange, isRTL, t, subsc
         expandIcon={<ExpandMoreIcon />}
         aria-controls="opening-content"
         id="opening-header"
+        tabIndex={-1}
       >
         <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
           {t('management.opening') || 'Opening'}

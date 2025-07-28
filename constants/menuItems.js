@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 export function useMenuItems(t) {
   return {
@@ -124,6 +124,43 @@ export function useMenuItems(t) {
               path: "/main/mainfiles/sections?tab=5",
               roles: ["admin", "user", "owner"],
             },
+          ],
+        },
+        {
+          key:"generalFiles",
+          name:t("generalFiles"),
+          icon:"FolderOpen",
+          type:"group",
+          displayType:"popover",
+          roles:["admin","user","owner"],
+          items:[{
+            key:"businessTypes",
+            name:t("businessTypes"),
+            icon:"Briefcase",
+            path:"/main/mainfiles/generalfiles?tab=0",
+            roles:["admin","user","owner"],
+          },
+          {
+            key:"salesChannels",
+            name:t("salesChannels"),
+            icon:"Route",
+            path:"/main/mainfiles/generalfiles?tab=1",
+            roles:["admin","user","owner"],
+          },
+          {
+            key:"distributionChannels",
+            name:t("distributionChannels"),
+            icon:"Truck",
+            path:"/main/mainfiles/generalfiles?tab=2",
+            roles:["admin","user","owner"],
+          },
+          {
+            key:"mediaChannels",
+            name:t("mediaChannels"),
+            icon:"Newspaper",
+            path:"/main/mainfiles/generalfiles?tab=3",
+            roles:["admin","user","owner"],
+          },
           ],
         },
         {

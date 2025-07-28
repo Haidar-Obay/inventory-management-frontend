@@ -107,6 +107,7 @@ const AddressCodeDrawer = ({
         type: "error",
         title: tToast("error"),
         description: t("noChangesDesc") || "Please modify at least one field before saving.",
+        duration: 3000,
       });
       return;
     }
@@ -128,6 +129,7 @@ const AddressCodeDrawer = ({
           type: "success",
           title: tToast("success"),
           description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
+          duration: 3000,
         });
         onSave && onSave(response.data);
         onClose && onClose();
@@ -136,6 +138,7 @@ const AddressCodeDrawer = ({
           type: "error",
           title: tToast("error"),
           description: response?.message || tToast(isEdit ? "updateError" : "createError"),
+          duration: 3000,
         });
       }
     } catch (error) {
@@ -143,6 +146,7 @@ const AddressCodeDrawer = ({
         type: "error",
         title: tToast("error"),
         description: error.message || tToast(isEdit ? "updateError" : "createError"),
+        duration: 3000,
       });
     }
   };

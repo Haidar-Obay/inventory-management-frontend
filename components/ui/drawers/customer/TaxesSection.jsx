@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Box } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -18,10 +18,15 @@ const TaxesSection = React.memo(({ formData, onFormDataChange, isRTL, t, handleF
         expandIcon={<ExpandMoreIcon />}
         aria-controls="taxes-content"
         id="taxes-header"
+        // tabIndex={-1}
       >
-        <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-          {t('management.taxesAccordion') || 'Taxes'}
-        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+            {t('management.taxesAccordion') || 'Taxes'}
+          </Typography>
+          {/* Show taxable checkbox under header only when collapsed */}
+   
+        </Box>
       </AccordionSummary>
       <AccordionDetails>
         <Grid container spacing={2}>

@@ -49,6 +49,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
         expandIcon={<ExpandMoreIcon />}
         aria-controls="shipping-address-content"
         id="shipping-address-header"
+        tabIndex={-1}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
@@ -76,6 +77,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 size="small"
                 onClick={e => { e.stopPropagation(); handleCopyFromBillingAddress(); }}
                 sx={{ minWidth: 'auto', px: 2, py: 0.5, fontSize: '0.75rem', textTransform: 'none', whiteSpace: 'nowrap' }}
+                tabIndex={-1}
               >
                 {t("management.copyFromBillingAddress") || "Copy from Billing Address"}
               </Button>
@@ -91,6 +93,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
             size="small"
             onClick={handleCopyFromBillingAddress}
             sx={{ minWidth: 'auto', px: 2, py: 0.5, fontSize: '0.75rem', textTransform: 'none' }}
+            tabIndex={-1}
           >
             {t("management.copyFromBillingAddress") || "Copy from Billing Address"}
           </Button>

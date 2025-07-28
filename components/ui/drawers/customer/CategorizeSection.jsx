@@ -5,7 +5,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { useDrawerStack } from "@/components/ui/DrawerStackContext";
 
-const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, trades, companyCodes, customerGroups, businessTypes, salesChannels, distributionChannels, mediaChannels, loading, handleTradeChange, handleCompanyCodeChange, handleCustomerGroupChange, handleBusinessTypeChange, handleSalesChannelChange, handleDistributionChannelChange, handleMediaChannelChange, handleFieldChange, expanded, onAccordionChange, allCollapsed, setAllCollapsed, setTrades, setCompanyCodes, setCustomerGroups }) => {
+const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, trades, companyCodes, customerGroups, businessTypes, salesChannels, distributionChannels, mediaChannels, loading, handleTradeChange, handleCompanyCodeChange, handleCustomerGroupChange, handleBusinessTypeChange, handleSalesChannelChange, handleDistributionChannelChange, handleMediaChannelChange, handleFieldChange, expanded, onAccordionChange, allCollapsed, setAllCollapsed, setTrades, setCompanyCodes, setCustomerGroups, setBusinessTypes, setSalesChannels, setDistributionChannels, setMediaChannels }) => {
   React.useEffect(() => {
     if (allCollapsed && expanded) {
       onAccordionChange(null, false);
@@ -27,6 +27,7 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
         expandIcon={<ExpandMoreIcon />}
         aria-controls="categorize-content"
         id="categorize-header"
+        tabIndex={-1}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
@@ -57,7 +58,7 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
                               setCustomerGroups(prev => [...(Array.isArray(prev) ? prev : []), newGroup]);
                             }
                             // Select the new customer group
-                            onFormDataChange({ ...formData, customer_group_id: newGroup.id });
+                            onFormDataChange(prev => ({ ...prev, customer_group_id: newGroup.id }));
                           },
                         },
                       });
@@ -110,7 +111,7 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
                           setTrades(prev => [...(Array.isArray(prev) ? prev : []), newTrade]);
                         }
                         // Select the new trade
-                        onFormDataChange({ ...formData, trade_id: newTrade.id });
+                        onFormDataChange(prev => ({ ...prev, trade_id: newTrade.id }));
                       },
                     },
                   });
@@ -148,7 +149,18 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               value={companyCodes.find((code) => code.id === formData?.company_code_id) || null}
               onChange={(event, newValue) => {
                 if (newValue?.isAddButton) {
-                  console.log('Add company code clicked');
+                  openDrawer({
+                    type: "companyCode",
+                    props: {
+                      onSave: (newCompanyCode) => {
+                        if (typeof setCompanyCodes === 'function') {
+                          setCompanyCodes(prev => [...(Array.isArray(prev) ? prev : []), newCompanyCode]);
+                        }
+                        // Select the new company code
+                        onFormDataChange(prev => ({ ...prev, company_code_id: newCompanyCode.id }));
+                      },
+                    },
+                  });
                   return;
                 }
                 handleCompanyCodeChange(event, newValue);
@@ -193,7 +205,7 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
                             setCustomerGroups(prev => [...(Array.isArray(prev) ? prev : []), newGroup]);
                           }
                           // Select the new customer group
-                          onFormDataChange({ ...formData, customer_group_id: newGroup.id });
+                          onFormDataChange(prev => ({ ...prev, customer_group_id: newGroup.id }));
                         },
                       },
                     });
@@ -232,7 +244,18 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               value={businessTypes.find((type) => type.id === formData?.business_type_id) || null}
               onChange={(event, newValue) => {
                 if (newValue?.isAddButton) {
-                  console.log('Add business type clicked');
+                  openDrawer({
+                    type: "businessType",
+                    props: {
+                      onSave: (newBusinessType) => {
+                        if (typeof setBusinessTypes === 'function') {
+                          setBusinessTypes(prev => [...(Array.isArray(prev) ? prev : []), newBusinessType]);
+                        }
+                        // Select the new business type
+                        onFormDataChange(prev => ({ ...prev, business_type_id: newBusinessType.id }));
+                      },
+                    },
+                  });
                   return;
                 }
                 handleBusinessTypeChange(event, newValue);
@@ -267,7 +290,18 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               value={salesChannels.find((channel) => channel.id === formData?.sales_channel_id) || null}
               onChange={(event, newValue) => {
                 if (newValue?.isAddButton) {
-                  console.log('Add sales channel clicked');
+                  openDrawer({
+                    type: "salesChannel",
+                    props: {
+                      onSave: (newSalesChannel) => {
+                        if (typeof setSalesChannels === 'function') {
+                          setSalesChannels(prev => [...(Array.isArray(prev) ? prev : []), newSalesChannel]);
+                        }
+                        // Select the new sales channel
+                        onFormDataChange(prev => ({ ...prev, sales_channel_id: newSalesChannel.id }));
+                      },
+                    },
+                  });
                   return;
                 }
                 handleSalesChannelChange(event, newValue);
@@ -302,7 +336,18 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               value={distributionChannels.find((channel) => channel.id === formData?.distribution_channel_id) || null}
               onChange={(event, newValue) => {
                 if (newValue?.isAddButton) {
-                  console.log('Add distribution channel clicked');
+                  openDrawer({
+                    type: "distributionChannel",
+                    props: {
+                      onSave: (newDistributionChannel) => {
+                        if (typeof setDistributionChannels === 'function') {
+                          setDistributionChannels(prev => [...(Array.isArray(prev) ? prev : []), newDistributionChannel]);
+                        }
+                        // Select the new distribution channel
+                        onFormDataChange(prev => ({ ...prev, distribution_channel_id: newDistributionChannel.id }));
+                      },
+                    },
+                  });
                   return;
                 }
                 handleDistributionChannelChange(event, newValue);
@@ -337,7 +382,18 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               value={mediaChannels.find((channel) => channel.id === formData?.media_channel_id) || null}
               onChange={(event, newValue) => {
                 if (newValue?.isAddButton) {
-                  console.log('Add media channel clicked');
+                  openDrawer({
+                    type: "mediaChannel",
+                    props: {
+                      onSave: (newMediaChannel) => {
+                        if (typeof setMediaChannels === 'function') {
+                          setMediaChannels(prev => [...(Array.isArray(prev) ? prev : []), newMediaChannel]);
+                        }
+                        // Select the new media channel
+                        onFormDataChange(prev => ({ ...prev, media_channel_id: newMediaChannel.id }));
+                      },
+                    },
+                  });
                   return;
                 }
                 handleMediaChannelChange(event, newValue);

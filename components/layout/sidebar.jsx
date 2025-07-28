@@ -38,6 +38,8 @@ import {
   Wrench,
   Building,
   Briefcase,
+  Route,
+  Newspaper,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -57,7 +59,7 @@ import { toast } from "@/components/ui/simple-toast";
 import {
   SidebarItem,
   SidebarTooltipItem,
-} from "@/components/layout/SidebarItem";
+} from "@/components/layout/SidebarItem.jsx";
 import { useMenuItems } from "@/constants/menuItems";
 import {
   Popover,
@@ -101,6 +103,8 @@ const iconMap = {
   Wrench,
   Building,
   Briefcase,
+  Route,
+  Newspaper,
 };
 
 // ================= MENU ITEM FLATTENING =================
@@ -455,11 +459,10 @@ const GroupHeader = ({
                                     toggleBookmark(subItem.name)
                                   }
                                   padding="px-2"
-                                  className="whitespace-nowrap"
+                                  className="whitespace-nowrap text-sm"
                                   t={t}
                                   isRTL={isRTL}
                                   compact={true}
-                                  className="text-sm"
                                 />
                               );
                             })}
@@ -489,11 +492,10 @@ const GroupHeader = ({
                       onNavigate={() => handlePopoverNavigation(item.name)}
                       onToggleBookmark={() => toggleBookmark(item.name)}
                       padding="px-2"
-                      className="whitespace-nowrap"
+                      className="whitespace-nowrap text-sm"
                       t={t}
                       isRTL={isRTL}
                       compact={true}
-                      className="text-sm"
                     />
                   );
                 })}
@@ -578,18 +580,17 @@ const GroupItems = ({
               isActive={activeItem === item.name.toLowerCase()}
               onNavigate={handleNavigation}
               onToggleBookmark={toggleBookmark}
-              padding={
-                isMainFiles
-                  ? isRTL
-                    ? "pr-8"
-                    : "pl-8"
-                  : isRTL
-                    ? "pr-20"
-                    : "pl-20"
-              }
-              t={t}
-              isRTL={isRTL}
-              className="text-sm"
+                                padding={
+                    isMainFiles
+                      ? isRTL
+                        ? "pr-8"
+                        : "pl-8"
+                      : isRTL
+                        ? "pr-20"
+                        : "pl-20"
+                  }
+                  t={t}
+                  isRTL={isRTL}
             />
           </li>
         );
@@ -701,11 +702,10 @@ const NestedGroup = ({
                       ? "pr-20"
                       : "pl-20"
                 }
-                className="whitespace-nowrap"
+                className="whitespace-nowrap text-sm"
                 t={t}
                 isRTL={isRTL}
                 compact={!isCollapsed}
-                className="text-sm"
               />
             );
           })}

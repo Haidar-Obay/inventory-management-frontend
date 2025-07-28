@@ -1,25 +1,65 @@
-import React from "react";
-import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import React, { useRef, useState, useEffect } from "react";
+import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Box } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import RTLTextField from "@/components/ui/RTLTextField";
 
 const MoreOptionsSection = React.memo(({ formData, onFormDataChange, isRTL, t, active, setActive, blackListed, setBlackListed, oneTimeAccount, setOneTimeAccount, specialAccount, setSpecialAccount, posCustomer, setPosCustomer, freeDeliveryCharge, setFreeDeliveryCharge, printInvoiceLanguage, setPrintInvoiceLanguage, sendInvoice, setSendInvoice, notes, setNotes, expanded, onAccordionChange, allCollapsed, setAllCollapsed }) => {
+  const firstFieldRef = useRef(null);
+  const [shouldRefocus, setShouldRefocus] = useState(false);
+  const [focusedFieldId, setFocusedFieldId] = useState(null);
+
+  useEffect(() => {
+    if (expanded && shouldRefocus && focusedFieldId) {
+      // Use requestAnimationFrame to ensure DOM is ready
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          if (firstFieldRef.current) {
+            firstFieldRef.current.focus();
+            console.log('Refocusing field after expansion:', focusedFieldId);
+          }
+        }, 50);
+      });
+      setShouldRefocus(false);
+      setFocusedFieldId(null);
+    }
+  }, [expanded, shouldRefocus, focusedFieldId]);
+
   React.useEffect(() => {
     if (allCollapsed && expanded) {
       onAccordionChange(null, false);
       setAllCollapsed(false);
     }
   }, [allCollapsed]);
+
+  const handleFieldFocus = (e, fieldId = 'printInvoiceLanguage') => {
+    e.stopPropagation();
+    console.log('Field focused:', fieldId, 'expanded:', expanded);
+    
+    if (!expanded && typeof onAccordionChange === 'function') {
+      console.log('Expanding accordion for field:', fieldId);
+      setFocusedFieldId(fieldId);
+      setShouldRefocus(true);
+      
+      // Expand the accordion immediately
+      onAccordionChange({}, true);
+    }
+  };
+
   return (
     <Accordion expanded={expanded} onChange={onAccordionChange}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="more-options-content"
         id="more-options-header"
+        // tabIndex={-1}
       >
-        <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-          {t('management.moreOptionsAccordion') || 'More Options'}
-        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+            {t('management.moreOptionsAccordion') || 'More Options'}
+          </Typography>
+          {/* Show print invoice language under header only when collapsed */}
+        
+        </Box>
       </AccordionSummary>
       <AccordionDetails>
         <Grid container spacing={2}>
@@ -32,6 +72,8 @@ const MoreOptionsSection = React.memo(({ formData, onFormDataChange, isRTL, t, a
               value={printInvoiceLanguage}
               onChange={e => setPrintInvoiceLanguage(e.target.value)}
               SelectProps={{ native: true }}
+              inputRef={firstFieldRef}
+              onFocus={(e) => handleFieldFocus(e, 'printInvoiceLanguage')}
             >
               <option value="ar">{t('management.arabic') || 'Arabic'}</option>
               <option value="en">{t('management.english') || 'English'}</option>
