@@ -98,6 +98,8 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
         label = t("sections");
       } else if (segment === "items") {
         label = t("items");
+      } else if (segment === "generalfiles") {
+        label = t("generalFiles");
       } else if (segment === "settings") {
         label = t("settings");
       } else if (segment === "profile") {
@@ -119,6 +121,7 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
         "addresscodes",
         "sections",
         "items",
+        "generalfiles",
         "settings",
         "payment",
       ].includes(segment);
@@ -180,6 +183,14 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
           t("paymentTabs.paymentMethods"),
         ];
         tabLabel = paymentTabs[tabIndex] || "";
+      } else if (pathSegments.includes("generalfiles")) {
+        const generalFilesTabs = [
+          t("generalFiles.tabs.businessTypes"),
+          t("generalFiles.tabs.salesChannels"),
+          t("generalFiles.tabs.distributionChannels"),
+          t("generalFiles.tabs.mediaChannels"),
+        ];
+        tabLabel = generalFilesTabs[tabIndex] || "";
       }
 
       if (tabLabel) {
