@@ -15,6 +15,7 @@ import { getCountries, getZones, getCities, getDistricts } from "@/API/AddressCo
 import { getTradeNames, getCompanyCodeNames, getBusinessTypes, getSalesChannelNames, getDistributionChannelNames, getMediaChannelNames, getPaymentTerms, getPaymentMethods } from "@/API/Sections";
 import { useSimpleToast } from "@/components/ui/simple-toast";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useTabNavigation } from "@/hooks/useTabNavigation";
 
 import { getCurrencies, getSubscriptionStatus } from '@/API/Currency';
 import dynamic from 'next/dynamic';
@@ -144,6 +145,9 @@ const CustomerDrawer = React.memo(({
   const [showMessageField, setShowMessageField] = useState(false);
   const [allCollapsed, setAllCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState({});
+
+  // Initialize tab navigation for accordion expansion only
+  const tabNavigation = useTabNavigation(expandedSections, setExpandedSections);
 
   // Open Personal Information and Opening sections by default when opening customer drawer
   useEffect(() => {
@@ -608,6 +612,8 @@ const CustomerDrawer = React.memo(({
                 onAccordionChange={handleAccordionChange('personalInformation')}
                 allCollapsed={allCollapsed}
                 setAllCollapsed={setAllCollapsed}
+                tabNavigation={tabNavigation}
+                sectionId="personalInformation"
               />
               <BillingAddressSection
                 formData={formData}
@@ -627,6 +633,8 @@ const CustomerDrawer = React.memo(({
                 onAccordionChange={handleAccordionChange('billingAddress')}
                 allCollapsed={allCollapsed}
                 setAllCollapsed={setAllCollapsed}
+                tabNavigation={tabNavigation}
+                sectionId="billingAddress"
               />
               <ShippingAddressSection
                 formData={formData}
@@ -653,6 +661,8 @@ const CustomerDrawer = React.memo(({
                 onAccordionChange={handleAccordionChange('shippingAddress')}
                 allCollapsed={allCollapsed}
                 setAllCollapsed={setAllCollapsed}
+                tabNavigation={tabNavigation}
+                sectionId="shippingAddress"
               />
               <BusinessInformationSection
                 formData={formData}
@@ -698,6 +708,10 @@ const CustomerDrawer = React.memo(({
                 setTrades={setTrades}
                 setCompanyCodes={setCompanyCodes}
                 setCustomerGroups={setCustomerGroups}
+                setBusinessTypes={setBusinessTypes}
+                setSalesChannels={setSalesChannels}
+                setDistributionChannels={setDistributionChannels}
+                setMediaChannels={setMediaChannels}
               />
               <OpeningSection
                 formData={formData}
@@ -1096,18 +1110,22 @@ const CustomerDrawer = React.memo(({
       return (
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
           <span>{`${t("management.edit")} ${t(`management.${type}`)}${originalName ? ` / ${originalName}` : ""}`}</span>
-          <Button size="small" variant="outlined" onClick={handleCloseAll} sx={{ ml: 2 }}>
-            {t('management.closeAll') || 'Close All'}
-          </Button>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Button size="small" variant="outlined" onClick={handleCloseAll} sx={{ ml: 2 }} tabIndex={-1}>
+              {t('management.closeAll') || 'Close All'}
+            </Button>
+          </Box>
         </Box>
       );
     } else {
       return (
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
           <span>{t(`management.add${type.charAt(0).toUpperCase() + type.slice(1)}`)}</span>
-          <Button size="small" variant="outlined" onClick={handleCloseAll} sx={{ ml: 2 }}>
-            {t('management.closeAll') || 'Close All'}
-          </Button>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Button size="small" variant="outlined" onClick={handleCloseAll} sx={{ ml: 2 }} tabIndex={-1}>
+              {t('management.closeAll') || 'Close All'}
+            </Button>
+          </Box>
         </Box>
       );
     }
@@ -1201,18 +1219,21 @@ const CustomerDrawer = React.memo(({
   };
 
   return (
-    <DynamicDrawer
-      isOpen={isOpen}
-      onClose={onClose}
-      title={getTitle()}
-      content={content}
-      onSave={handleSave}
-      onSaveAndNew={onSaveAndNew}
-      onSaveAndClose={onSaveAndClose}
-      anchor={isRTL ? "left" : "right"}
-      width={1200}
-      hasFormData={hasFormData()}
-    />
+    <>
+      <DynamicDrawer
+        isOpen={isOpen}
+        onClose={onClose}
+        title={getTitle()}
+        content={content}
+        onSave={handleSave}
+        onSaveAndNew={onSaveAndNew}
+        onSaveAndClose={onSaveAndClose}
+        anchor={isRTL ? "left" : "right"}
+        width={1200}
+        hasFormData={hasFormData()}
+      />
+
+    </>
   );
 });
 

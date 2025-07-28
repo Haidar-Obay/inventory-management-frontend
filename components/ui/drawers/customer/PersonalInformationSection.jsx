@@ -18,6 +18,8 @@ const PersonalInformationSection = React.memo(
     onAccordionChange,
     allCollapsed,
     setAllCollapsed,
+    tabNavigation,
+    sectionId,
   }) => {
     React.useEffect(() => {
       if (allCollapsed && expanded) {
@@ -28,12 +30,20 @@ const PersonalInformationSection = React.memo(
 
     const displayNameSuggestions = generateDisplayNameSuggestions ? generateDisplayNameSuggestions() : []
 
+    // Handle field focus to expand accordion if needed
+    const handleFieldFocus = (fieldId) => {
+      if (tabNavigation?.handleFieldFocus) {
+        tabNavigation.handleFieldFocus(fieldId);
+      }
+    };
+
     return (
       <Accordion expanded={true}>
         <AccordionSummary
           // Remove expandIcon to prevent toggling
           aria-controls="personal-info-content"
           id="personal-info-header"
+          tabIndex={-1}
         >
           <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
             {t("management.personalInformation") || "Personal Information"}
@@ -52,6 +62,7 @@ const PersonalInformationSection = React.memo(
         value={formData?.title || ""}
         onChange={handleFieldChange("title")}
         SelectProps={{ native: true }}
+        onFocus={() => handleFieldFocus("title")}
       >
         <option value="">{t("management.selectTitle") || "Title"}</option>
         <option value="Mr.">Mr.</option>
@@ -71,6 +82,7 @@ const PersonalInformationSection = React.memo(
         value={formData?.first_name || ""}
         onChange={handleFieldChange("first_name")}
         required
+        onFocus={() => handleFieldFocus("first_name")}
       />
     </Grid>
 
@@ -82,6 +94,7 @@ const PersonalInformationSection = React.memo(
         fullWidth
         value={formData?.middle_name || ""}
         onChange={handleFieldChange("middle_name")}
+        onFocus={() => handleFieldFocus("middle_name")}
       />
     </Grid>
 
@@ -94,6 +107,7 @@ const PersonalInformationSection = React.memo(
         value={formData?.last_name || ""}
         onChange={handleFieldChange("last_name")}
         required
+        onFocus={() => handleFieldFocus("last_name")}
       />
     </Grid>
   </Grid>
@@ -110,7 +124,12 @@ const PersonalInformationSection = React.memo(
         options={displayNameSuggestions}
         value={formData?.display_name || ""}
         onChange={handleDisplayNameChange}
-        renderInput={(params) => <RTLTextField {...params} />}
+        renderInput={(params) => (
+          <RTLTextField 
+            {...params} 
+            onFocus={() => handleFieldFocus("display_name")}
+          />
+        )}
       />
     </Grid>
 
@@ -122,6 +141,7 @@ const PersonalInformationSection = React.memo(
         fullWidth
         value={formData?.company_name || ""}
         onChange={handleFieldChange("company_name")}
+        onFocus={() => handleFieldFocus("company_name")}
       />
     </Grid>
   </Grid>
@@ -137,6 +157,7 @@ const PersonalInformationSection = React.memo(
         value={formData?.phone1 || ""}
         onChange={handleFieldChange("phone1")}
         required
+        onFocus={() => handleFieldFocus("phone1")}
       />
     </Grid>
 
@@ -148,6 +169,7 @@ const PersonalInformationSection = React.memo(
         fullWidth
         value={formData?.phone2 || ""}
         onChange={handleFieldChange("phone2")}
+        onFocus={() => handleFieldFocus("phone2")}
       />
     </Grid>
 
@@ -159,6 +181,7 @@ const PersonalInformationSection = React.memo(
         fullWidth
         value={formData?.phone3 || ""}
         onChange={handleFieldChange("phone3")}
+        onFocus={() => handleFieldFocus("phone3")}
       />
     </Grid>
   </Grid>

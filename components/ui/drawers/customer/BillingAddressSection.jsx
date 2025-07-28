@@ -27,6 +27,7 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
         expandIcon={<ExpandMoreIcon />}
         aria-controls="billing-address-content"
         id="billing-address-header"
+        tabIndex={-1}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>

@@ -70,6 +70,7 @@ const PaymentTermsSection = React.memo((props) => {
         expandIcon={<ExpandMoreIcon />}
         aria-controls="payment-terms-content"
         id="payment-terms-header"
+        tabIndex={-1}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
@@ -252,21 +253,7 @@ const PaymentTermsSection = React.memo((props) => {
                     ))}
                   </RTLTextField>
                 </Grid>
-                <Grid item xs={12} md={4} sx={{ minWidth: 200 }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
-                    {t('management.settlementMethod') || 'Settlement Method'}
-                  </Typography>
-                  <RTLTextField
-                    select
-                    fullWidth
-                    value={settlementMethod || 'fifo'}
-                    onChange={e => setSettlementMethod(e.target.value)}
-                    SelectProps={{ native: true }}
-                  >
-                    <option value="fifo">{t('management.fifo') || 'FIFO'}</option>
-                    <option value="manual">{t('management.manual') || 'Manual'}</option>
-                  </RTLTextField>
-                </Grid>
+
                 <Grid item xs={12} md={4} sx={{ minWidth: 150 , display: 'flex', alignItems: 'center', gap: 0 }}>
                   <Checkbox
                     checked={!!trackPayment}
@@ -275,7 +262,30 @@ const PaymentTermsSection = React.memo((props) => {
                     isRTL={isRTL}
                   />
                 </Grid>
-                <Grid item xs={12} md={6} sx={{ minWidth: 800, display: 'flex', alignItems: 'center', gap: 0 }}>
+                
+                {trackPayment && (
+                  <Grid item xs={12} md={4} sx={{ minWidth: 200 }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
+                      {t('management.settlementMethod') || 'Settlement Method'}
+                    </Typography>
+                    <RTLTextField
+                      select
+                      fullWidth
+                      value={settlementMethod || 'fifo'}
+                      onChange={e => setSettlementMethod(e.target.value)}
+                      SelectProps={{ native: true }}
+                    >
+                      <option value="fifo">{t('management.fifo') || 'FIFO'}</option>
+                      <option value="manual">{t('management.manual') || 'Manual'}</option>
+                    </RTLTextField>
+                  </Grid>
+                )}
+               
+              </>
+            )}
+            
+            {/* Accept Cheques section - always visible */}
+            <Grid item xs={12} md={6} sx={{ minWidth: 800, display: 'flex', alignItems: 'center', gap: 0 }}>
               <Checkbox
                 checked={acceptCheques}
                 onChange={e => setAcceptCheques(e.target.checked)}
@@ -300,8 +310,6 @@ const PaymentTermsSection = React.memo((props) => {
                 </Box>
               ))}
             </Grid>
-              </>
-            )}
           </>}
         </Grid>
       </AccordionDetails>

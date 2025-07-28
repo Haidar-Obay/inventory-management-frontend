@@ -215,5 +215,40 @@ export function useTableColumns(t) {
       { key: "created_at", header: t("createdAt"), type: "date" },
       { key: "updated_at", header: t("updatedAt"), type: "date" },
     ],
+
+    businessTypesColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("code"), key: "code" },
+      { header: t("name"), key: "name" },
+      { header: t("createdAt"), key: "created_at", type: "date" },
+      { header: t("updatedAt"), key: "updated_at", type: "date" },
+    ],
+
+    salesChannelsColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("code"), key: "code" },
+      { header: t("name"), key: "name" },
+      { header: t("subOf"), key: "sub_sales_of" },
+      { header: t("createdAt"), key: "created_at", type: "date" },
+      { header: t("updatedAt"), key: "updated_at", type: "date" },
+    ],
+
+    distributionChannelsColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("code"), key: "code" },
+      { header: t("name"), key: "name" },
+      { header: t("subOf"), key: "sub_distribution_of" },
+      { header: t("createdAt"), key: "created_at", type: "date" },
+      { header: t("updatedAt"), key: "updated_at", type: "date" },
+    ],
+
+    mediaChannelsColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("code"), key: "code" },
+      { header: t("name"), key: "name" },
+      { header: t("subOf"), key: "sub_media_of" },
+      { header: t("createdAt"), key: "created_at", type: "date" },
+      { header: t("updatedAt"), key: "updated_at", type: "date" },
+    ],
   };
 }

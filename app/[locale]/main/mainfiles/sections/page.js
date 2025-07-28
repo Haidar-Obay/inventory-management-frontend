@@ -298,8 +298,8 @@ function SectionsPage() {
   };
 
   const handleEdit = (type, row) => {
+    setEditData(row);
     setActiveDrawerType(type);
-    setEditData({ ...row });
     setIsDrawerOpen(true);
   };
 
@@ -329,23 +329,14 @@ function SectionsPage() {
 
   const handleToggleActive = async (type, row) => {
     try {
-      // Prepare the data with only the active field changed
-      const updatedData = {
-        ...row,
-        active: !row.active, // Toggle the active status
-      };
-
-      // Call the edit function (same as drawer uses)
+      const updatedData = { ...row, active: !row.active };
       const response = await entityHandlers[type].editFn(row.id, updatedData);
-
       if (response.status) {
-        // Update existing item in the state
         entityHandlers[type].setData((prev) =>
           prev.map((item) =>
-            item.id === row.id ? { ...item, active: updatedData.active } : item
+            item.id === row.id ? { ...item, active: !item.active } : item
           )
         );
-
         toast.success({
           title: toastT("success"),
           description: toastT(`${type}.updateSuccess`),
@@ -361,33 +352,57 @@ function SectionsPage() {
 
   const handleAddNew = (type) => {
     setActiveDrawerType(type);
-    setEditData(undefined);
+    setEditData(null);
     setIsDrawerOpen(true);
   };
 
   const handleCloseDrawer = () => {
     setIsDrawerOpen(false);
     setActiveDrawerType("");
-    setEditData(undefined);
+    setEditData(null);
   };
 
-  const handleSave = () => {
-    // After save, refresh the current tab's data
-    fetchData(value, true);
-    handleCloseDrawer();
-  };
-
-  const handleSaveAndNew = async () => {
-    await handleSave();
-    setEditData({});
-    if (activeDrawerType === "project") {
-      setEditData({});
+  // Simple handlers for the independent drawer
+  const handleSave = (newData) => {
+    // Update local state directly
+    if (newData) {
+      const setDataFunction = entityHandlers[activeDrawerType]?.setData;
+      if (setDataFunction) {
+        setDataFunction(prev => {
+          // If editing, replace the item; if creating, add new item
+          if (editData) {
+            return prev.map(item => item.id === newData.id ? newData : item);
+          } else {
+            return [...prev, newData];
+          }
+        });
+      }
     }
+    handleCloseDrawer();
   };
 
-  const handleSaveAndClose = async () => {
-    await handleSave();
-    handleCloseDrawer();
+  const handleSaveAndNew = async (newData) => {
+    // Update local state directly without closing drawer
+    if (newData) {
+      const setDataFunction = entityHandlers[activeDrawerType]?.setData;
+      if (setDataFunction) {
+        setDataFunction(prev => {
+          // If editing, replace the item; if creating, add new item
+          if (editData) {
+            return prev.map(item => item.id === newData.id ? newData : item);
+          } else {
+            return [...prev, newData];
+          }
+        });
+      }
+    }
+    // Reset editData to null for new entry (drawer will clear fields)
+    setEditData(null);
+    // Don't close the drawer - let the drawer handle clearing fields
+  };
+
+  const handleSaveAndClose = async (newData) => {
+    await handleSave(newData);
   };
 
   const handleExportExcel = async (type) => {

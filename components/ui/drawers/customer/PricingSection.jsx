@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Box } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import RTLTextField from "@/components/ui/RTLTextField";
 
@@ -16,10 +16,15 @@ const PricingSection = React.memo(({ formData, onFormDataChange, isRTL, t, price
         expandIcon={<ExpandMoreIcon />}
         aria-controls="pricing-content"
         id="pricing-header"
+        // tabIndex={-1}
       >
-        <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-          {t('management.pricingAccordion') || 'Pricing'}
-        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+            {t('management.pricingAccordion') || 'Pricing'}
+          </Typography>
+          {/* Show price choice under header only when collapsed */}
+         
+        </Box>
       </AccordionSummary>
       <AccordionDetails>
         <Grid container spacing={2}>

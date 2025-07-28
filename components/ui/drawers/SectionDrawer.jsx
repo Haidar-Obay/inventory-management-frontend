@@ -75,36 +75,36 @@ const SectionDrawer = ({
   }, [isOpen, type, isEdit, editData]);
 
   const fetchCustomers = async () => {
-    setLoading(true);
+      setLoading(true);
     try {
       const response = await getCustomerNames();
       setCustomers(response.data || []);
     } catch {}
-    setLoading(false);
+      setLoading(false);
   };
   const fetchCostCenterNames = async () => {
-    setLoading(true);
+      setLoading(true);
     try {
       const response = await getCostCenterNames();
       setCostCenterOptions(response.data || []);
     } catch {}
-    setLoading(false);
+      setLoading(false);
   };
   const fetchDepartmentNames = async () => {
-    setLoading(true);
+      setLoading(true);
     try {
       const response = await getDepartmentNames();
       setDepartmentOptions(response.data || []);
     } catch {}
-    setLoading(false);
+      setLoading(false);
   };
   const fetchProjectNames = async () => {
-    setLoading(true);
+      setLoading(true);
     try {
       const response = await getProjectNames();
       setProjectOptions(response.data || []);
     } catch {}
-    setLoading(false);
+      setLoading(false);
   };
 
   function isDataChanged() {
@@ -142,6 +142,7 @@ const SectionDrawer = ({
         type: "error",
         title: tToast("error"),
         description: t("noChangesDesc") || "Please modify at least one field before saving.",
+        duration: 3000,
       });
       return;
     }
@@ -167,6 +168,7 @@ const SectionDrawer = ({
           type: "success",
           title: tToast("success"),
           description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
+          duration: 3000,
         });
         onSave && onSave(response.data);
         onClose && onClose();
@@ -175,6 +177,7 @@ const SectionDrawer = ({
           type: "error",
           title: tToast("error"),
           description: response?.message || tToast(isEdit ? "updateError" : "createError"),
+          duration: 3000,
         });
       }
     } catch (error) {
@@ -182,6 +185,119 @@ const SectionDrawer = ({
         type: "error",
         title: tToast("error"),
         description: error.message || tToast(isEdit ? "updateError" : "createError"),
+        duration: 3000,
+      });
+    }
+  };
+
+  // Save and New
+  const handleSaveAndNew = async () => {
+    if (isEdit && !isDataChanged()) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: t("noChangesDesc") || "Please modify at least one field before saving.",
+        duration: 3000,
+        });
+      return;
+    }
+    try {
+      let response;
+      if (isEdit) {
+        if (type === "project") response = await editProject(formData.id, formData);
+        if (type === "costCenter") response = await editCostCenter(formData.id, formData);
+        if (type === "department") response = await editDepartment(formData.id, formData);
+        if (type === "trade") response = await editTrade(formData.id, formData);
+        if (type === "companyCode") response = await editCompanyCode(formData.id, formData);
+        if (type === "job") response = await editJob(formData.id, formData);
+      } else {
+        if (type === "project") response = await createProject(formData);
+        if (type === "costCenter") response = await createCostCenter(formData);
+        if (type === "department") response = await createDepartment(formData);
+        if (type === "trade") response = await createTrade(formData);
+        if (type === "companyCode") response = await createCompanyCode(formData);
+        if (type === "job") response = await createJob(formData);
+      }
+      if (response && response.status) {
+        addToast({
+          type: "success",
+          title: tToast("success"),
+          description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
+          duration: 3000,
+        });
+        if (onSaveAndNew) onSaveAndNew(response.data);
+        setFormData({ active: true });
+        setOriginalData({});
+        setOriginalName("");
+      } else {
+        addToast({
+          type: "error",
+          title: tToast("error"),
+          description: response?.message || tToast(isEdit ? "updateError" : "createError"),
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: error.message || tToast(isEdit ? "updateError" : "createError"),
+        duration: 3000,
+      });
+    }
+  };
+
+  // Save and Close
+  const handleSaveAndClose = async () => {
+    if (isEdit && !isDataChanged()) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: t("noChangesDesc") || "Please modify at least one field before saving.",
+        duration: 3000,
+      });
+      return;
+    }
+    try {
+      let response;
+      if (isEdit) {
+        if (type === "project") response = await editProject(formData.id, formData);
+        if (type === "costCenter") response = await editCostCenter(formData.id, formData);
+        if (type === "department") response = await editDepartment(formData.id, formData);
+        if (type === "trade") response = await editTrade(formData.id, formData);
+        if (type === "companyCode") response = await editCompanyCode(formData.id, formData);
+        if (type === "job") response = await editJob(formData.id, formData);
+      } else {
+        if (type === "project") response = await createProject(formData);
+        if (type === "costCenter") response = await createCostCenter(formData);
+        if (type === "department") response = await createDepartment(formData);
+        if (type === "trade") response = await createTrade(formData);
+        if (type === "companyCode") response = await createCompanyCode(formData);
+        if (type === "job") response = await createJob(formData);
+      }
+      if (response && response.status) {
+        addToast({
+          type: "success",
+          title: tToast("success"),
+          description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
+          duration: 3000,
+        });
+        if (onSaveAndClose) onSaveAndClose(response.data);
+        if (onClose) onClose();
+      } else {
+        addToast({
+          type: "error",
+          title: tToast("error"),
+          description: response?.message || tToast(isEdit ? "updateError" : "createError"),
+          duration: 3000,
+          });
+      }
+    } catch (error) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: error.message || tToast(isEdit ? "updateError" : "createError"),
+        duration: 3000,
       });
     }
   };
@@ -211,7 +327,7 @@ const SectionDrawer = ({
     if (type === "project") {
       return (
         <Grid container spacing={2} sx={{ p: 2 }}>
-          <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+          <Grid sx={{ minWidth: 250, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -227,6 +343,32 @@ const SectionDrawer = ({
               onChange={handleFieldChange("name")}
               required
               placeholder=""
+            />
+          </Grid>
+          <Grid sx={{ minWidth: 250, gridColumn: 'span 12' }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                mb: 1,
+                textAlign: isRTL ? "right" : "left",
+              }}
+            >
+              {t("management.customer")}
+            </Typography>
+            <Autocomplete
+              fullWidth
+              options={customers}
+              getOptionLabel={(option) => option.name || ""}
+              value={
+                customers.find((c) => c.id === formData?.customer_id) ||
+                null
+              }
+              onChange={handleCustomerChange}
+              loading={loading}
+              renderInput={(params) => (
+                <RTLTextField {...params} placeholder="" />
+              )}
             />
           </Grid>
           <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
@@ -283,32 +425,7 @@ const SectionDrawer = ({
               placeholder=""
             />
           </Grid>
-          <Grid sx={{ gridColumn: 'span 12' }}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.customer")}
-            </Typography>
-            <Autocomplete
-              fullWidth
-              options={customers}
-              getOptionLabel={(option) => option.name || ""}
-              value={
-                customers.find((c) => c.id === formData?.customer_id) ||
-                null
-              }
-              onChange={handleCustomerChange}
-              loading={loading}
-              renderInput={(params) => (
-                <RTLTextField {...params} placeholder="" />
-              )}
-            />
-          </Grid>
+          
         </Grid>
       );
     }
@@ -355,7 +472,7 @@ const SectionDrawer = ({
                   placeholder=""
                 />
               </Grid>
-              <Grid sx={{ gridColumn: 'span 12', width: "53%" }}>
+              <Grid sx={{ minWidth: 250, gridColumn: 'span 12', width: "53%" }}>
                 <Typography
                   variant="body2"
                   color="text.secondary"
@@ -445,7 +562,7 @@ const SectionDrawer = ({
                   placeholder=""
                 />
               </Grid>
-              <Grid sx={{ gridColumn: 'span 12', width: "53%" }}>
+              <Grid sx={{ minWidth: 250, gridColumn: 'span 12', width: "53%" }}>
                 <Typography
                   variant="body2"
                   color="text.secondary"
@@ -602,7 +719,7 @@ const SectionDrawer = ({
     if (type === "job") {
       return (
         <Grid container spacing={2} sx={{ p: 2 }}>
-          <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' }, width: "100%" }}>
+          <Grid sx={{ minWidth: 200, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -614,36 +731,13 @@ const SectionDrawer = ({
               {t("management.code")} *
             </Typography>
             <RTLTextField
-              fullWidth
-              variant="outlined"
-              size="small"
               value={formData?.code || ""}
               onChange={handleFieldChange("code")}
               required
               placeholder=""
             />
           </Grid>
-          <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' }, width: "100%" }}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 1,
-                textAlign: isRTL ? "right" : "left",
-              }}
-            >
-              {t("management.description")}
-            </Typography>
-            <RTLTextField
-              fullWidth
-              value={formData?.description || ""}
-              onChange={handleFieldChange("description")}
-              multiline
-              rows={4}
-              placeholder=""
-            />
-          </Grid>
-          <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' }, width: "100%" }}>
+          <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -667,6 +761,80 @@ const SectionDrawer = ({
               renderInput={(params) => (
                 <RTLTextField {...params} placeholder="" required />
               )}
+            />
+          </Grid>
+          <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                mb: 1,
+                textAlign: isRTL ? "right" : "left",
+              }}
+            >
+              {t("management.startDate")}
+            </Typography>
+            <RTLTextField
+              type="date"
+              value={formData?.start_date ? new Date(formData.start_date).toISOString().split('T')[0] : ""}
+              onChange={handleFieldChange("start_date")}
+              placeholder=""
+            />
+          </Grid>
+          <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                mb: 1,
+                textAlign: isRTL ? "right" : "left",
+              }}
+            >
+              {t("management.expectedDate")}
+            </Typography>
+            <RTLTextField
+              type="date"
+              value={formData?.expected_date ? new Date(formData.expected_date).toISOString().split('T')[0] : ""}
+              onChange={handleFieldChange("expected_date")}
+              placeholder=""
+            />
+          </Grid>
+          <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                mb: 1,
+                textAlign: isRTL ? "right" : "left",
+              }}
+            >
+              {t("management.endDate")}
+            </Typography>
+            <RTLTextField
+              type="date"
+              value={formData?.end_date ? new Date(formData.end_date).toISOString().split('T')[0] : ""}
+              onChange={handleFieldChange("end_date")}
+              placeholder=""
+            />
+          </Grid>
+          <Grid sx={{ minWidth: 400, gridColumn: 'span 12' }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                mb: 1,
+                textAlign: isRTL ? "right" : "left",
+              }}
+            >
+              {t("management.description")}
+            </Typography>
+            <RTLTextField
+              fullWidth
+              value={formData?.description || ""}
+              onChange={handleFieldChange("description")}
+              multiline
+              rows={4}
+              placeholder=""
             />
           </Grid>
         </Grid>
@@ -769,8 +937,8 @@ const SectionDrawer = ({
       title={getTitle()}
       content={getContent()}
       onSave={handleSave}
-      onSaveAndNew={onSaveAndNew}
-      onSaveAndClose={onSaveAndClose}
+      onSaveAndNew={handleSaveAndNew}
+      onSaveAndClose={handleSaveAndClose}
       anchor={isRTL ? "left" : "right"}
       width={getDrawerWidth(type)}
       hasFormData={hasFormData()}

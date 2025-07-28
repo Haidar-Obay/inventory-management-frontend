@@ -26,6 +26,7 @@ const BusinessInformationSection = React.memo(({ formData, onFormDataChange, isR
         expandIcon={<ExpandMoreIcon />}
         aria-controls="business-info-content"
         id="business-info-header"
+        tabIndex={-1}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
