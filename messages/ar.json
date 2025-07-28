@@ -49,9 +49,8 @@
     "jobs": "الوظائف",
     "settings": "الإعدادات",
     "profile": "الملف الشخصي",
-    "paymentTerms": "شروط الدفع",
-    "paymentMethods": "طرق الدفع",
-    "payment": {
+    "payment": "الدفع",
+    "paymentTabs": {
       "paymentTerms": "شروط الدفع",
       "paymentMethods": "طرق الدفع"
     }
@@ -1364,7 +1363,7 @@
     },
     "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
     "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."
-  }
+  },
   "loading": "جار التحميل...",
   "payment": {
     "title": "إدارة الدفع",

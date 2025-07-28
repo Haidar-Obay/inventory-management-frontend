@@ -102,6 +102,8 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
         label = t("settings");
       } else if (segment === "profile") {
         label = t("profile");
+      } else if (segment === "payment") {
+        label = t("payment");
       }
 
       // Check if this is the last segment (current page)
@@ -118,6 +120,7 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
         "sections",
         "items",
         "settings",
+        "payment",
       ].includes(segment);
       const hasTab = searchParams.get("tab") !== null;
 
@@ -173,8 +176,8 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
         tabLabel = itemsTabs[tabIndex] || "";
       } else if (pathSegments.includes("payment")) {
         const paymentTabs = [
-          t("payment.paymentTerms"),
-          t("payment.paymentMethods"),
+          t("paymentTabs.paymentTerms"),
+          t("paymentTabs.paymentMethods"),
         ];
         tabLabel = paymentTabs[tabIndex] || "";
       }

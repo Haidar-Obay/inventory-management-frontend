@@ -49,9 +49,8 @@
     "jobs": "Jobs",
     "settings": "Settings",
     "profile": "Profile",
-    "paymentTerms": "Payment Terms",
-    "paymentMethods": "Payment Methods",
-    "payment": {
+    "payment": "Payment",
+    "paymentTabs": {
       "paymentTerms": "Payment Terms",
       "paymentMethods": "Payment Methods"
     }
