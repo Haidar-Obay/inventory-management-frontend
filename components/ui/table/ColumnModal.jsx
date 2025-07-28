@@ -829,11 +829,6 @@ export const ColumnModal = React.memo(({
       // If we're deleting the applied template, clear appliedTemplateId and localStorage
       if (appliedTemplateId === templateToDelete.id) {
         setAppliedTemplateId(null);
-        if (tableName) {
-          try {
-            localStorage.removeItem(`table:${tableName}:lastSelectedTemplate`);
-          } catch {}
-        }
         if (onSelectedTemplateChange) {
           onSelectedTemplateChange(null);
         }
@@ -949,18 +944,24 @@ export const ColumnModal = React.memo(({
 
   // Effect 2: Restore last selected template when templates are loaded
   useEffect(() => {
-    if (isOpen && tableName && templates.length > 0) {
-      try {
-        const last = localStorage.getItem(`table:${tableName}:lastSelectedTemplate`);
-        if (last) {
-          setSelectedTemplateId(last);
-          setAppliedTemplateId(last);
-          const selectedTemplate = templates.find(t => (t.id || t.name) === last);
-          setCurrentTemplate(selectedTemplate || null);
-        }
-      } catch {}
-    }
+    // No localStorage restoration - templates will be selected manually or auto-selected if default is the only one
   }, [isOpen, tableName, templates]);
+
+  // Effect 3: Auto-select default template when it's the only template available
+  useEffect(() => {
+    if (isOpen && tableName && templates.length === 1 && !isLoadingTemplates) {
+      const defaultTemplate = templates.find(t => t.is_default || t.id === DEFAULT_TEMPLATE_ID);
+      if (defaultTemplate) {
+        setSelectedTemplateId(defaultTemplate.id || defaultTemplate.name);
+        setAppliedTemplateId(defaultTemplate.id || defaultTemplate.name);
+        setCurrentTemplate(defaultTemplate);
+        // Also update the parent component
+        if (onSelectedTemplateChange) {
+          onSelectedTemplateChange(defaultTemplate.id || defaultTemplate.name);
+        }
+      }
+    }
+  }, [isOpen, tableName, templates, isLoadingTemplates, onSelectedTemplateChange]);
 
   // After loading templates, if only default exists, select and apply it
   // DISABLED: This useEffect was causing infinite loops
@@ -1314,7 +1315,7 @@ export const ColumnModal = React.memo(({
       search: "28px",
     };
     columns.forEach((col) => {
-      defaultWidths[col.key] = typeof col.width === 'string' ? col.width : "100px";
+      defaultWidths[col.key] = "110px";
     });
     Object.entries(defaultWidths).forEach(([key, width]) => {
       onColumnWidthChange(key, width);
@@ -1469,12 +1470,6 @@ export const ColumnModal = React.memo(({
                   setAppliedTemplateId(selectedTemplateId);
                   if (onSelectedTemplateChange) {
                     onSelectedTemplateChange(selectedTemplateId);
-                  }
-                  // Persist the applied template
-                  if (tableName) {
-                    try {
-                      localStorage.setItem(`table:${tableName}:lastSelectedTemplate`, selectedTemplateId);
-                    } catch {}
                   }
                 }
                 setTimeout(() => {

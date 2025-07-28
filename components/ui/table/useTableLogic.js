@@ -39,33 +39,6 @@ export function useTableLogic({
   const [columnSearch, setColumnSearch] = useState({});
   const [globalSearch, setGlobalSearch] = useState("");
   const [visibleColumns, setVisibleColumns] = useState(() => {
-    // Create a unique key for this table using tableId
-    const storageKey = `tableColumnVisibility_${tableId}`;
-
-    // Check if we're in a browser environment
-    if (typeof window !== "undefined") {
-      // Try to get saved settings from localStorage
-      const savedSettings = localStorage.getItem(storageKey);
-      if (savedSettings) {
-        try {
-          const parsedSettings = JSON.parse(savedSettings);
-          // Validate that all current columns have a visibility setting
-          const validSettings = {};
-          columns.forEach((col) => {
-            validSettings[col.key] =
-              parsedSettings[col.key] ??
-              (col.key !== "created_at" && col.key !== "updated_at");
-          });
-          return validSettings;
-        } catch (error) {
-          console.error(
-            "Error parsing saved column visibility settings:",
-            error
-          );
-        }
-      }
-    }
-
     // Default settings if no saved settings or error
     const defaultSettings = {};
     columns.forEach((col) => {
@@ -78,32 +51,7 @@ export function useTableLogic({
   const [tempVisibleColumns, setTempVisibleColumns] = useState({});
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [columnOrder, setColumnOrder] = useState(() => {
-    // Check if we're in a browser environment
-    if (typeof window !== "undefined") {
-      // Try to load saved order from localStorage
-      const storageKey = `tableColumnOrder_${tableId}`;
-      const savedOrder = localStorage.getItem(storageKey);
-      if (savedOrder) {
-        try {
-          const parsedOrder = JSON.parse(savedOrder);
-          // Validate that all current columns are in the order
-          const currentColumnKeys = columns.map((col) => col.key);
-          const validOrder = parsedOrder.filter((key) =>
-            currentColumnKeys.includes(key)
-          );
-          // Add any missing columns at the end
-          currentColumnKeys.forEach((key) => {
-            if (!validOrder.includes(key)) {
-              validOrder.push(key);
-            }
-          });
-          return validOrder;
-        } catch (error) {
-          console.error("Error parsing saved column order:", error);
-        }
-      }
-    }
-    // If no saved order or error, use default order
+    // Use default order
     return columns.map((col) => col.key);
   });
   const [draggedColumn, setDraggedColumn] = useState(null);
@@ -178,28 +126,6 @@ export function useTableLogic({
 
   // Add column widths state with localStorage
   const [columnWidths, setColumnWidths] = useState(() => {
-    // Check if we're in a browser environment
-    if (typeof window !== "undefined") {
-      // Try to load saved widths from localStorage
-      const storageKey = `tableColumnWidths_${tableId}`;
-      const savedWidths = localStorage.getItem(storageKey);
-      if (savedWidths) {
-        try {
-          const parsedWidths = JSON.parse(savedWidths);
-          // Validate that all columns have a width
-          const validWidths = {
-            select: Math.max(parseInt(parsedWidths.select || 28), 15) + "px",
-            search: Math.max(parseInt(parsedWidths.search || 28), 15) + "px",
-          };
-          columns.forEach((column) => {
-            validWidths[column.key] = calculateWidth(column, parsedWidths[column.key]);
-          });
-          return validWidths;
-        } catch (error) {
-          console.error("Error parsing saved column widths:", error);
-        }
-      }
-    }
     // If no saved widths or error, use default widths
     return {
       select: "28px",
@@ -212,11 +138,7 @@ export function useTableLogic({
   });
 
   // Save column widths to localStorage whenever they change
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("tableColumnWidths", JSON.stringify(columnWidths));
-    }
-  }, [columnWidths]);
+  // Remove useEffect that saves columnWidths to localStorage
 
   // Extract unique values for each column
   useEffect(() => {
@@ -569,16 +491,10 @@ export function useTableLogic({
   };
 
   const handleColumnVisibilityToggle = (key) => {
-    setVisibleColumns((prev) => {
-      const newSettings = {
-        ...prev,
-        [key]: !prev[key],
-      };
-      // Save to localStorage with table-specific key
-      const storageKey = `tableColumnVisibility_${tableId}`;
-      localStorage.setItem(storageKey, JSON.stringify(newSettings));
-      return newSettings;
-    });
+    setVisibleColumns((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
   };
 
   const handleGlobalSearch = (e) => {
@@ -772,16 +688,6 @@ export function useTableLogic({
     setVisibleColumns(tempVisibleColumns);
     setColumnWidths(tempColumnWidths);
     setColumnOrder(tempColumnOrder);
-
-    // Save to localStorage with table-specific keys
-    const visibilityKey = `tableColumnVisibility_${tableId}`;
-    const widthsKey = `tableColumnWidths_${tableId}`;
-    const orderKey = `tableColumnOrder_${tableId}`;
-
-    localStorage.setItem(visibilityKey, JSON.stringify(tempVisibleColumns));
-    localStorage.setItem(widthsKey, JSON.stringify(tempColumnWidths));
-    localStorage.setItem(orderKey, JSON.stringify(tempColumnOrder));
-
     setShowColumnModal(false);
   };
 
@@ -834,8 +740,6 @@ export function useTableLogic({
       });
       setTempVisibleColumns(defaultSettings);
       setVisibleColumns(defaultSettings);
-      const visibilityKey = `tableColumnVisibility_${tableId}`;
-      localStorage.setItem(visibilityKey, JSON.stringify(defaultSettings));
     } else if (tab === "size") {
       const defaultWidths = {
         select: "28px",
@@ -847,14 +751,10 @@ export function useTableLogic({
       };
       setTempColumnWidths(defaultWidths);
       setColumnWidths(defaultWidths);
-      const widthsKey = `tableColumnWidths_${tableId}`;
-      localStorage.setItem(widthsKey, JSON.stringify(defaultWidths));
     } else if (tab === "order") {
       const defaultOrder = columns.map((col) => col.key);
       setTempColumnOrder(defaultOrder);
       setColumnOrder(defaultOrder);
-      const orderKey = `tableColumnOrder_${tableId}`;
-      localStorage.setItem(orderKey, JSON.stringify(defaultOrder));
     }
   };
 
@@ -911,7 +811,7 @@ export function useTableLogic({
         select: "28px",
         search: "28px",
         ...columns.reduce((acc, column) => {
-          acc[column.key] = calculateWidth(column, null);
+          acc[column.key] = "110px";
           return acc;
         }, {}),
       };
@@ -939,9 +839,6 @@ export function useTableLogic({
         col.key !== "created_at" && col.key !== "updated_at";
     });
     setVisibleColumns(defaultSettings);
-    // Save to localStorage with table-specific key
-    const storageKey = `tableColumnVisibility_${tableId}`;
-    localStorage.setItem(storageKey, JSON.stringify(defaultSettings));
   };
 
   // Get visible columns

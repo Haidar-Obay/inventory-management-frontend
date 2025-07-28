@@ -152,21 +152,11 @@ const Table = (props) => {
   const [openDropdownRowId, setOpenDropdownRowId] = useState(null);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
   const [previewRow, setPreviewRow] = useState(null);
-  const [selectedTemplateId, setSelectedTemplateId] = useState(() => {
-    if (typeof window !== "undefined") {
-      const tableId = tableProps.tableId || "default";
-      const stored = localStorage.getItem(`selectedTemplate_${tableId}`);
-      return stored || null;
-    }
-    return null;
-  });
+  const [selectedTemplateId, setSelectedTemplateId] = useState(null);
 
   useEffect(() => {
-    const tableId = tableProps.tableId || "default";
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem(`selectedTemplate_${tableId}`);
-      setSelectedTemplateId(stored || null);
-    }
+    // No localStorage for selectedTemplateId for columns settings
+    setSelectedTemplateId(null);
   }, [tableProps.tableId]);
 
   // Persisted Other Settings
@@ -201,12 +191,6 @@ const Table = (props) => {
 
   // Custom setter that saves to localStorage
   const handleSelectedTemplateChange = (templateId) => {
-    const tableId = tableProps.tableId || "default";
-    if (templateId) {
-      localStorage.setItem(`selectedTemplate_${tableId}`, templateId);
-    } else {
-      localStorage.removeItem(`selectedTemplate_${tableId}`);
-    }
     setSelectedTemplateId(templateId);
   };
 
