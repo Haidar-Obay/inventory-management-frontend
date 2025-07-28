@@ -48,7 +48,13 @@
     "companyCodes": "أكواد الشركة",
     "jobs": "الوظائف",
     "settings": "الإعدادات",
-    "profile": "الملف الشخصي"
+    "profile": "الملف الشخصي",
+    "paymentTerms": "شروط الدفع",
+    "paymentMethods": "طرق الدفع",
+    "payment": {
+      "paymentTerms": "شروط الدفع",
+      "paymentMethods": "طرق الدفع"
+    }
   },
   "login": {
     "title": "تسجيل الدخول إلى حسابك",
@@ -202,6 +208,9 @@
     "supplierGroups": "مجموعات الموردين",
     "suppliers": "الموردين",
     "supplier_inner": "الموردين",
+    "payment": "الدفع",
+    "paymentTerms": "شروط الدفع",
+    "paymentMethods": "طرق الدفع",
     "generalFiles": "الملفات العامة",
     "settings": "الإعدادات",
     "userManagement": "إدارة المستخدمين",
@@ -787,7 +796,10 @@
     "paymentMethod": "طريقة الدفع",
     "addressesCount": "عدد العناوين",
     "contactsCount": "عدد جهات الاتصال",
-    "attachmentsCount": "عدد المرفقات"
+    "attachmentsCount": "عدد المرفقات",
+    "nbOfDays": "عدد الأيام",
+    "isCreditCard": "بطاقة ائتمان",
+    "isOnlinePayment": "دفع إلكتروني"
   },
   "table": {
     "title": "الجدول",
@@ -1237,5 +1249,22 @@
   "nbOfDays": "عدد الأيام",
   "isCreditCard": "بطاقة ائتمان",
   "isOnlinePayment": "دفع إلكتروني",
-  "loading": "جار التحميل..."
+  "loading": "جار التحميل...",
+  "payment": {
+    "title": "إدارة الدفع",
+    "loading": "جاري تحميل بيانات الدفع...",
+    "add": "إضافة",
+    "code": "الرمز",
+    "name": "الاسم",
+    "active": "نشط",
+    "table": {
+      "setInactiveLabel": "تعيين كغير نشط",
+      "setActiveLabel": "تعيين كنشط"
+    },
+    "paymentTerms": "شروط الدفع",
+    "paymentMethods": "طرق الدفع",
+    "nbOfDays": "عدد الأيام",
+    "isCreditCard": "بطاقة ائتمان",
+    "isOnlinePayment": "دفع إلكتروني"
+  }
 }
