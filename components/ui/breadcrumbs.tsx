@@ -22,6 +22,12 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const t = useTranslations("breadcrumbs");
+  const tGeneralFiles = useTranslations("generalFiles");
+  const tAddressCodes = useTranslations("addressCodes");
+  const tSections = useTranslations("sections");
+  const tItems = useTranslations("items");
+  const tPayment = useTranslations("payment");
+  const tCustomers = useTranslations("customers");
   const currentLocale = useLocale();
   const isRTL = currentLocale === "ar";
   const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([]);
@@ -146,49 +152,50 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
       // Map tab indices to labels based on current page
       if (pathSegments.includes("customer")) {
         const customerTabs = [
-          t("customerGroups"),
-          t("salesmen"),
-          t("customers"),
+          tCustomers("tabs.customerGroups"),
+          tCustomers("tabs.salesmen"),
+          tCustomers("tabs.customers"),
         ];
         tabLabel = customerTabs[tabIndex] || "";
       } else if (pathSegments.includes("addresscodes")) {
         const addressTabs = [
-          t("countries"),
-          t("cities"),
-          t("districts"),
-          t("zones"),
+          tAddressCodes("tabs.countries"),
+          tAddressCodes("tabs.zones"),
+          tAddressCodes("tabs.provinces"),
+          tAddressCodes("tabs.cities"),
+          tAddressCodes("tabs.districts"),
         ];
         tabLabel = addressTabs[tabIndex] || "";
       } else if (pathSegments.includes("sections")) {
         const sectionTabs = [
-          t("projects"),
-          t("costCenters"),
-          t("departments"),
-          t("trades"),
-          t("companyCodes"),
-          t("jobs"),
+          tSections("tabs.projects"),
+          tSections("tabs.costCenters"),
+          tSections("tabs.departments"),
+          tSections("tabs.trades"),
+          tSections("tabs.companyCodes"),
+          tSections("tabs.jobs"),
         ];
         tabLabel = sectionTabs[tabIndex] || "";
       } else if (pathSegments.includes("items")) {
         const itemsTabs = [
-          t("productLines"),
-          t("categories"),
-          t("brands"),
-          t("items"),
+          tItems("tabs.productLines"),
+          tItems("tabs.categories"),
+          tItems("tabs.brands"),
+          tItems("tabs.items"),
         ];
         tabLabel = itemsTabs[tabIndex] || "";
       } else if (pathSegments.includes("payment")) {
         const paymentTabs = [
-          t("paymentTabs.paymentTerms"),
-          t("paymentTabs.paymentMethods"),
+          tPayment("tabs.paymentTerms"),
+          tPayment("tabs.paymentMethods"),
         ];
         tabLabel = paymentTabs[tabIndex] || "";
       } else if (pathSegments.includes("generalfiles")) {
         const generalFilesTabs = [
-          t("generalFiles.tabs.businessTypes"),
-          t("generalFiles.tabs.salesChannels"),
-          t("generalFiles.tabs.distributionChannels"),
-          t("generalFiles.tabs.mediaChannels"),
+          tGeneralFiles("tabs.businessTypes"),
+          tGeneralFiles("tabs.salesChannels"),
+          tGeneralFiles("tabs.distributionChannels"),
+          tGeneralFiles("tabs.mediaChannels"),
         ];
         tabLabel = generalFilesTabs[tabIndex] || "";
       }
@@ -208,7 +215,7 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
   useEffect(() => {
     const newBreadcrumbs = generateBreadcrumbs();
     setBreadcrumbs(newBreadcrumbs);
-  }, [pathname, searchParams, currentLocale, t]);
+  }, [pathname, searchParams, currentLocale, t, tGeneralFiles, tAddressCodes, tSections, tItems, tPayment, tCustomers]);
 
   // Allow single breadcrumbs for profile page
   if (breadcrumbs.length <= 1 && !pathname.includes("profile")) {
