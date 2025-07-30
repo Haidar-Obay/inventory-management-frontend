@@ -347,7 +347,7 @@ export const ColumnModal = React.memo(({
       };
       localStorage.setItem(key, JSON.stringify(templateToSave));
     } catch (error) {
-      console.error("Error saving last applied template:", error);
+      // Error saving last applied template
     }
   }, [tableName]);
 
@@ -359,7 +359,7 @@ export const ColumnModal = React.memo(({
       const saved = localStorage.getItem(key);
       return saved ? JSON.parse(saved) : null;
     } catch (error) {
-      console.error("Error loading last applied template:", error);
+      // Error loading last applied template
       return null;
     }
   }, [tableName]);
@@ -371,7 +371,7 @@ export const ColumnModal = React.memo(({
     try {
       localStorage.removeItem(key);
     } catch (error) {
-      console.error("Error clearing last applied template:", error);
+      // Error clearing last applied template
     }
   }, [tableName]);
 
@@ -399,7 +399,6 @@ export const ColumnModal = React.memo(({
       const response = await getTableTemplates(tableName);
       setTemplates(response || []);
     } catch (error) {
-      console.error("Error loading templates:", error);
       setTemplates([]);
     } finally {
       setIsLoadingTemplates(false);
@@ -513,7 +512,6 @@ export const ColumnModal = React.memo(({
       setPendingTemplateIdOrName(templateName.trim());
       setTemplateJustUpdated(true); // Mark that the template was just updated
     } catch (error) {
-      console.error("Error saving template:", error);
       setTemplateError("Failed to save template");
     } finally {
       setIsSaving(false);
@@ -551,8 +549,7 @@ export const ColumnModal = React.memo(({
       }
 
     } catch (error) {
-      console.error("Error deleting template:", error);
-
+      // Error deleting template
     } finally {
       setShowDeleteConfirm(false);
       setTemplateToDelete(null);
@@ -632,7 +629,7 @@ export const ColumnModal = React.memo(({
       setPendingTemplateIdOrName(currentTemplate.id || currentTemplate.name);
       setTemplateJustUpdated(true); // Mark that the template was just updated
     } catch (error) {
-      console.error("Error updating template:", error);
+      // Error updating template
     } finally {
       setIsSaving(false);
     }

@@ -324,7 +324,6 @@ function PaymentPage() {
             is_credit_card: !!formData.is_credit_card,
             is_online_payment: !!formData.is_online_payment,
           };
-          console.log('Saving payment method (edit):', { formData, payload });
           response = await editPaymentMethod(formData.id, payload);
           if (response && response.status && response.data) {
             setPaymentMethods((prev) =>
@@ -342,7 +341,6 @@ function PaymentPage() {
             is_credit_card: !!formData.is_credit_card,
             is_online_payment: !!formData.is_online_payment,
           };
-          console.log('Saving payment method (create):', { formData, payload });
           response = await createPaymentMethod(payload);
           if (response && response.status && response.data) {
             setPaymentMethods((prev) => [...prev, response.data]);
@@ -378,7 +376,6 @@ function PaymentPage() {
           is_credit_card: !!formData.is_credit_card,
           is_online_payment: !!formData.is_online_payment,
         };
-        console.log('Saving payment method (create & new):', { formData, payload });
         response = await createPaymentMethod(payload);
         if (response && response.status && response.data) {
           setPaymentMethods((prev) => [...prev, response.data]);
@@ -413,7 +410,6 @@ function PaymentPage() {
           is_credit_card: !!formData.is_credit_card,
           is_online_payment: !!formData.is_online_payment,
         };
-        console.log('Saving payment method (create & close):', { formData, payload });
         response = await createPaymentMethod(payload);
         if (response && response.status && response.data) {
           setPaymentMethods((prev) => [...prev, response.data]);

@@ -232,7 +232,6 @@ export const TableBody = ({
                   editingCell.columnKey === key;
 
                 const width = columnWidths[key];
-                console.log(`Body Column ${key} width:`, width);
                 const cellValue = row[key];
                 const isFirstColumn = columnIndex === 0;
                 const isLastColumn = columnIndex === columnOrder.filter(k => visibleColumns[k]).length - 1;

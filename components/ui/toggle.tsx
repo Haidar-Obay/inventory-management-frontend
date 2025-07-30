@@ -33,7 +33,6 @@ const Toggle = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof TogglePrimitive.Root> &
     VariantProps<typeof toggleVariants>
 >(({ className, variant, size, pressed, ...props }, ref) => {
-  console.log('Toggle pressed:', pressed);
   return (
     <TogglePrimitive.Root
       ref={ref}

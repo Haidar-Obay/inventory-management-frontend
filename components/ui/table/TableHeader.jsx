@@ -174,7 +174,6 @@ export const TableHeader = ({
 
           const hasActiveFilter = activeColumnFilters[key];
           const width = columnWidths[key];
-          console.log(`Column ${key} width:`, width);
           const isFirstColumn = index === 0;
           const isLastColumn = index === columnOrder.filter(k => visibleColumns[k]).length - 1;
 

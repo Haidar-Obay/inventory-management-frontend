@@ -54,7 +54,6 @@ const OpeningSection = React.memo(({ formData, onFormDataChange, isRTL, t, subsc
                   value={currencies.find((c) => c.code === entry.currency) || null}
                   onChange={(_, newValue) => {
                     if (newValue?.isAddButton) {
-                      console.log('Add currency clicked');
                       return;
                     }
                     handleOpeningBalanceChange(idx, 'currency', newValue?.code || '');
