@@ -31,6 +31,7 @@ import { useTableColumns } from "@/constants/tableColumns";
 import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useCustomActions } from "@/components/ui/table/useCustomActions";
+import { getPluralFileName } from "@/lib/utils";
 import { useDrawerStack } from "@/components/ui/DrawerStackContext";
 
 function TabPanel(props) {
@@ -71,6 +72,7 @@ export default function GeneralFilesPageWrapper() {
 // The actual component that uses useSearchParams
 function GeneralFilesPage() {
   const t = useTranslations("generalFiles");
+  const commonT = useTranslations("common");
   const tableT = useTranslations("tableColumns");
   const toastT = useTranslations("toast");
   const { 
@@ -315,6 +317,34 @@ function GeneralFilesPage() {
 
   const handleExportExcel = async (type) => {
     try {
+      // Check if the table is empty before exporting
+      let dataArray;
+      switch (type) {
+        case "businessType":
+          dataArray = businessTypesData;
+          break;
+        case "salesChannel":
+          dataArray = salesChannelsData;
+          break;
+        case "distributionChannel":
+          dataArray = distributionChannelsData;
+          break;
+        case "mediaChannel":
+          dataArray = mediaChannelsData;
+          break;
+        default:
+          return;
+      }
+
+      // Check if data array is empty
+      if (!dataArray || dataArray.length === 0) {
+        toast.error({
+          title: toastT("error"),
+          description: toastT("noDataToExport"),
+        });
+        return;
+      }
+
       let response;
       switch (type) {
         case "businessType":
@@ -337,15 +367,10 @@ function GeneralFilesPage() {
       const url = window.URL.createObjectURL(new Blob([response]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `${type}s.xlsx`);
+      link.setAttribute("download", `${getPluralFileName(type)}.xlsx`);
       document.body.appendChild(link);
       link.click();
       link.remove();
-
-      toast.success({
-        title: toastT("success"),
-        description: toastT(`${type}.exportSuccess`),
-      });
     } catch (error) {
       toast.error({
         title: toastT("error"),
@@ -356,6 +381,34 @@ function GeneralFilesPage() {
 
   const handleExportPdf = async (type) => {
     try {
+      // Check if the table is empty before exporting
+      let dataArray;
+      switch (type) {
+        case "businessType":
+          dataArray = businessTypesData;
+          break;
+        case "salesChannel":
+          dataArray = salesChannelsData;
+          break;
+        case "distributionChannel":
+          dataArray = distributionChannelsData;
+          break;
+        case "mediaChannel":
+          dataArray = mediaChannelsData;
+          break;
+        default:
+          return;
+      }
+
+      // Check if data array is empty
+      if (!dataArray || dataArray.length === 0) {
+        toast.error({
+          title: toastT("error"),
+          description: toastT("noDataToExport"),
+        });
+        return;
+      }
+
       let response;
       switch (type) {
         case "businessType":
@@ -378,15 +431,10 @@ function GeneralFilesPage() {
       const url = window.URL.createObjectURL(new Blob([response]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `${type}s.pdf`);
+      link.setAttribute("download", `${getPluralFileName(type)}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
-
-      toast.success({
-        title: toastT("success"),
-        description: toastT(`${type}.exportSuccess`),
-      });
     } catch (error) {
       toast.error({
         title: toastT("error"),
@@ -433,12 +481,77 @@ function GeneralFilesPage() {
 
   const handlePrint = (type, data, columns) => {
     try {
-      // Logic to prepare data for printing
-      // Here you can use a library like `react-to-print` or open a new window with a printable format
-      toast.success({
-        title: toastT("success"),
-        description: toastT(`${type}.printSuccess`),
-      });
+      // Create a new window for printing
+      const printWindow = window.open("", "_blank");
+
+      // Map singular type to plural translation key
+      const typeMapping = {
+        businessType: "businessTypes",
+        salesChannel: "salesChannels", 
+        distributionChannel: "distributionChannels",
+        mediaChannel: "mediaChannels"
+      };
+
+      // Get the translated title for the type
+      const typeTitle = t(
+        `management.${typeMapping[type]}`
+      );
+
+      // Create the HTML content for printing
+      const content = `
+        <html>
+          <head>
+            <title>${isRTL ? `${commonT("list")} ${typeTitle}` : `${typeTitle} ${commonT("list")}`}</title>
+            <style>
+              body { font-family: Arial, sans-serif; }
+              table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+              th { background-color: #f5f5f5; }
+              h1 { text-align: center; }
+              @media print {
+                body { margin: 0; padding: 20px; }
+                table { page-break-inside: auto; }
+                tr { page-break-inside: avoid; page-break-after: auto; }
+              }
+            </style>
+          </head>
+          <body>
+            <h1>${isRTL ? `${commonT("list")} ${typeTitle}` : `${typeTitle} ${commonT("list")}`}</h1>
+            <table>
+              <thead>
+                <tr>
+                  ${columns.map((col) => `<th>${col.header}</th>`).join("")}
+                </tr>
+              </thead>
+              <tbody>
+                ${data
+                  .map(
+                    (row) => `
+                  <tr>
+                    ${columns.map((col) => `<td>${row[col.key] || ""}</td>`).join("")}
+                  </tr>
+                `
+                  )
+                  .join("")}
+              </tbody>
+            </table>
+          </body>
+        </html>
+      `;
+
+      // Write the content to the new window
+      printWindow.document.write(content);
+      printWindow.document.close();
+
+      // Wait for content to load then print
+      printWindow.onload = function () {
+        printWindow.print();
+        // Close the window after printing
+        printWindow.onafterprint = function () {
+          printWindow.close();
+        };
+      };
+
     } catch (error) {
       toast.error({
         title: toastT("error"),

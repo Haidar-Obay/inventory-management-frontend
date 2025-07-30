@@ -33,6 +33,7 @@ import { useTableColumns } from "@/constants/tableColumns";
 import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useCustomActions } from "@/components/ui/table/useCustomActions";
+import { getPluralFileName } from "@/lib/utils";
 import { ActiveStatusAction } from "@/components/ui/table/ActiveStatusAction";
 import { useDrawerStack } from "@/components/ui/DrawerStackContext";
 
@@ -94,6 +95,7 @@ function CustomerPage() {
   const isRTL = locale === "ar";
 
   const t = useTranslations("customers");
+  const commonT = useTranslations("common");
   const tableT = useTranslations("tableColumns");
   const toastT = useTranslations("toast");
 
@@ -459,6 +461,31 @@ function CustomerPage() {
 
   const handleExportExcel = async (type) => {
     try {
+      // Check if the table is empty before exporting
+      let dataArray;
+      switch (type) {
+        case "customerGroup":
+          dataArray = customerGroupsData;
+          break;
+        case "salesman":
+          dataArray = salesmenData;
+          break;
+        case "customer":
+          dataArray = customersData;
+          break;
+        default:
+          return;
+      }
+
+      // Check if data array is empty
+      if (!dataArray || dataArray.length === 0) {
+        toast.error({
+          title: toastT("error"),
+          description: toastT("noDataToExport"),
+        });
+        return;
+      }
+
       let response;
       switch (type) {
         case "customerGroup":
@@ -478,15 +505,10 @@ function CustomerPage() {
       const url = window.URL.createObjectURL(new Blob([response]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `${type}s.xlsx`);
+      link.setAttribute("download", `${getPluralFileName(type)}.xlsx`);
       document.body.appendChild(link);
       link.click();
       link.remove();
-
-      toast.success({
-        title: toastT("success"),
-        description: toastT(`${type}.exportSuccess`),
-      });
     } catch (error) {
       toast.error({
         title: toastT("error"),
@@ -497,6 +519,31 @@ function CustomerPage() {
 
   const handleExportPdf = async (type) => {
     try {
+      // Check if the table is empty before exporting
+      let dataArray;
+      switch (type) {
+        case "customerGroup":
+          dataArray = customerGroupsData;
+          break;
+        case "salesman":
+          dataArray = salesmenData;
+          break;
+        case "customer":
+          dataArray = customersData;
+          break;
+        default:
+          return;
+      }
+
+      // Check if data array is empty
+      if (!dataArray || dataArray.length === 0) {
+        toast.error({
+          title: toastT("error"),
+          description: toastT("noDataToExport"),
+        });
+        return;
+      }
+
       let response;
       switch (type) {
         case "customerGroup":
@@ -516,15 +563,10 @@ function CustomerPage() {
       const url = window.URL.createObjectURL(new Blob([response]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `${type}s.pdf`);
+      link.setAttribute("download", `${getPluralFileName(type)}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
-
-      toast.success({
-        title: toastT("success"),
-        description: toastT(`${type}.exportSuccess`),
-      });
     } catch (error) {
       toast.error({
         title: toastT("error"),
@@ -580,7 +622,7 @@ function CustomerPage() {
       const content = `
         <html>
           <head>
-            <title>${typeTitle} List</title>
+            <title>${isRTL ? `${commonT("list")} ${typeTitle}` : `${typeTitle} ${commonT("list")}`}</title>
             <style>
               body { font-family: Arial, sans-serif; }
               table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -595,7 +637,7 @@ function CustomerPage() {
             </style>
           </head>
           <body>
-            <h1>${typeTitle} List</h1>
+            <h1>${isRTL ? `${commonT("list")} ${typeTitle}` : `${typeTitle} ${commonT("list")}`}</h1>
             <table>
               <thead>
                 <tr>
@@ -630,11 +672,6 @@ function CustomerPage() {
           printWindow.close();
         };
       };
-
-      toast.success({
-        title: toastT("success"),
-        description: toastT(`${type}.printSuccess`),
-      });
     } catch (error) {
       toast.error({
         title: toastT("error"),

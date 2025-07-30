@@ -11,10 +11,14 @@ import {
   createPaymentTerm,
   editPaymentTerm,
   deletePaymentTerm,
+  exportPaymentTermsToExcel,
+  exportPaymentTermsToPdf,
   getPaymentMethods,
   createPaymentMethod,
   editPaymentMethod,
   deletePaymentMethod,
+  exportPaymentMethodsToExcel,
+  exportPaymentMethodsToPdf,
 } from "@/API/Payment";
 import { useSearchParams, useRouter } from "next/navigation";
 import PaymentDrawer from "@/components/ui/drawers/PaymentDrawer";
@@ -57,6 +61,7 @@ export default function PaymentPageWrapper() {
 
 function PaymentPage() {
   const t = useTranslations("payment");
+  const commonT = useTranslations("common");
   const tableT = useTranslations("tableColumns");
   const { paymentTermsColumns, paymentMethodsColumns } = useTableColumns(tableT);
   const searchParams = useSearchParams();
@@ -209,13 +214,36 @@ function PaymentPage() {
   // Toolbar actions
   const handleExportExcel = async () => {
     try {
-      // await export logic
-      addToast({
-        type: "success",
-        title: tToast("success"),
-        description: tToast("exportSuccess"),
-        duration: 5000,
-      });
+      // Determine which tab is active and get the appropriate data
+      const isPaymentTermsTab = tab === 0;
+      const data = isPaymentTermsTab ? paymentTerms : paymentMethods;
+
+      // Check if data array is empty
+      if (!data || data.length === 0) {
+        addToast({
+          type: "error",
+          title: tToast("error"),
+          description: tToast("noDataToExport"),
+          duration: 5000,
+        });
+        return;
+      }
+
+      let response;
+      if (isPaymentTermsTab) {
+        response = await exportPaymentTermsToExcel();
+      } else {
+        response = await exportPaymentMethodsToExcel();
+      }
+
+      // Create a download link for the Excel file
+      const url = window.URL.createObjectURL(new Blob([response]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", isPaymentTermsTab ? "payment-terms.xlsx" : "payment-methods.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
     } catch (error) {
       addToast({
         type: "error",
@@ -227,13 +255,36 @@ function PaymentPage() {
   };
   const handleExportPdf = async () => {
     try {
-      // await export logic
-      addToast({
-        type: "success",
-        title: tToast("success"),
-        description: tToast("exportSuccess"),
-        duration: 5000,
-      });
+      // Determine which tab is active and get the appropriate data
+      const isPaymentTermsTab = tab === 0;
+      const data = isPaymentTermsTab ? paymentTerms : paymentMethods;
+
+      // Check if data array is empty
+      if (!data || data.length === 0) {
+        addToast({
+          type: "error",
+          title: tToast("error"),
+          description: tToast("noDataToExport"),
+          duration: 5000,
+        });
+        return;
+      }
+
+      let response;
+      if (isPaymentTermsTab) {
+        response = await exportPaymentTermsToPdf();
+      } else {
+        response = await exportPaymentMethodsToPdf();
+      }
+
+      // Create a download link for the PDF file
+      const url = window.URL.createObjectURL(new Blob([response]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", isPaymentTermsTab ? "payment-terms.pdf" : "payment-methods.pdf");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
     } catch (error) {
       addToast({
         type: "error",
@@ -245,13 +296,69 @@ function PaymentPage() {
   };
   const handlePrint = async () => {
     try {
-      // await print logic
-      addToast({
-        type: "success",
-        title: tToast("success"),
-        description: tToast("printSuccess"),
-        duration: 5000,
-      });
+      // Create a new window for printing
+      const printWindow = window.open("", "_blank");
+
+      // Determine which tab is active and get the appropriate data and columns
+      const isPaymentTermsTab = tab === 0;
+      const data = isPaymentTermsTab ? paymentTerms : paymentMethods;
+      const columns = isPaymentTermsTab ? paymentTermsColumns : paymentMethodsColumns;
+      const typeTitle = isPaymentTermsTab ? t("tabs.paymentTerms") : t("tabs.paymentMethods");
+
+      // Create the HTML content for printing
+      const content = `
+        <html>
+          <head>
+            <title>${isRTL ? `${commonT("list")} ${typeTitle}` : `${typeTitle} ${commonT("list")}`}</title>
+            <style>
+              body { font-family: Arial, sans-serif; }
+              table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+              th { background-color: #f5f5f5; }
+              h1 { text-align: center; }
+              @media print {
+                body { margin: 0; padding: 20px; }
+                table { page-break-inside: auto; }
+                tr { page-break-inside: avoid; page-break-after: auto; }
+              }
+            </style>
+          </head>
+          <body>
+            <h1>${isRTL ? `${commonT("list")} ${typeTitle}` : `${typeTitle} ${commonT("list")}`}</h1>
+            <table>
+              <thead>
+                <tr>
+                  ${columns.map((col) => `<th>${col.header}</th>`).join("")}
+                </tr>
+              </thead>
+              <tbody>
+                ${data
+                  .map(
+                    (row) => `
+                  <tr>
+                    ${columns.map((col) => `<td>${row[col.key] || ""}</td>`).join("")}
+                  </tr>
+                `
+                  )
+                  .join("")}
+              </tbody>
+            </table>
+          </body>
+        </html>
+      `;
+
+      // Write the content to the new window
+      printWindow.document.write(content);
+      printWindow.document.close();
+
+      // Wait for content to load then print
+      printWindow.onload = function () {
+        printWindow.print();
+        // Close the window after printing
+        printWindow.onafterprint = function () {
+          printWindow.close();
+        };
+      };
     } catch (error) {
       addToast({
         type: "error",

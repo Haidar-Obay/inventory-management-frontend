@@ -69,6 +69,7 @@ import {
 import { useTableColumns } from "@/constants/tableColumns";
 import { useCustomActions } from "@/components/ui/table/useCustomActions";
 import { ActiveStatusAction } from "@/components/ui/table/ActiveStatusAction";
+import { getPluralFileName } from "@/lib/utils";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -108,6 +109,7 @@ export default function SectionsPageWrapper() {
 // The actual component that uses useSearchParams
 function SectionsPage() {
   const t = useTranslations("sections");
+  const commonT = useTranslations("common");
   const tableT = useTranslations("tableColumns");
   const toastT = useTranslations("toast");
   const {
@@ -407,6 +409,40 @@ function SectionsPage() {
 
   const handleExportExcel = async (type) => {
     try {
+      // Check if the table is empty before exporting
+      let dataArray;
+      switch (type) {
+        case "project":
+          dataArray = projectsData;
+          break;
+        case "costCenter":
+          dataArray = costCentersData;
+          break;
+        case "job":
+          dataArray = jobsData;
+          break;
+        case "trade":
+          dataArray = tradesData;
+          break;
+        case "companyCode":
+          dataArray = companyCodesData;
+          break;
+        case "department":
+          dataArray = departmentsData;
+          break;
+        default:
+          return;
+      }
+
+      // Check if data array is empty
+      if (!dataArray || dataArray.length === 0) {
+        toast.error({
+          title: toastT("error"),
+          description: toastT("noDataToExport"),
+        });
+        return;
+      }
+
       let response;
       switch (type) {
         case "project":
@@ -435,15 +471,10 @@ function SectionsPage() {
       const url = window.URL.createObjectURL(new Blob([response]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `${type}s.xlsx`);
+      link.setAttribute("download", `${getPluralFileName(type)}.xlsx`);
       document.body.appendChild(link);
       link.click();
       link.remove();
-
-      toast.success({
-        title: toastT("success"),
-        description: toastT(`${type}.exportSuccess`),
-      });
     } catch (error) {
       toast.error({
         title: toastT("error"),
@@ -454,6 +485,40 @@ function SectionsPage() {
 
   const handleExportPdf = async (type) => {
     try {
+      // Check if the table is empty before exporting
+      let dataArray;
+      switch (type) {
+        case "project":
+          dataArray = projectsData;
+          break;
+        case "costCenter":
+          dataArray = costCentersData;
+          break;
+        case "job":
+          dataArray = jobsData;
+          break;
+        case "trade":
+          dataArray = tradesData;
+          break;
+        case "companyCode":
+          dataArray = companyCodesData;
+          break;
+        case "department":
+          dataArray = departmentsData;
+          break;
+        default:
+          return;
+      }
+
+      // Check if data array is empty
+      if (!dataArray || dataArray.length === 0) {
+        toast.error({
+          title: toastT("error"),
+          description: toastT("noDataToExport"),
+        });
+        return;
+      }
+
       let response;
       switch (type) {
         case "project":
@@ -482,15 +547,10 @@ function SectionsPage() {
       const url = window.URL.createObjectURL(new Blob([response]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `${type}s.pdf`);
+      link.setAttribute("download", `${getPluralFileName(type)}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
-
-      toast.success({
-        title: toastT("success"),
-        description: toastT(`${type}.exportSuccess`),
-      });
     } catch (error) {
       toast.error({
         title: toastT("error"),
@@ -555,7 +615,7 @@ function SectionsPage() {
       const content = `
         <html>
           <head>
-            <title>${typeTitle} List</title>
+            <title>${isRTL ? `${commonT("list")} ${typeTitle}` : `${typeTitle} ${commonT("list")}`}</title>
             <style>
               body { font-family: Arial, sans-serif; }
               table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -570,7 +630,7 @@ function SectionsPage() {
             </style>
           </head>
           <body>
-            <h1>${typeTitle} List</h1>
+            <h1>${isRTL ? `${commonT("list")} ${typeTitle}` : `${typeTitle} ${commonT("list")}`}</h1>
             <table>
               <thead>
                 <tr>

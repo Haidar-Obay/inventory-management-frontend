@@ -466,6 +466,7 @@
       "printSuccess": "Media channels list prepared for printing",
       "printError": "Failed to print media channels list"
     },
+    "noDataToExport": "No data available to export",
     "noChangesTitle": "No changes detected",
     "noChangesDesc": "Please modify at least one field before saving."
   },
@@ -493,7 +494,8 @@
     "exitConfirmationTitle": "Exit Confirmation",
     "exitConfirmationMessage": "Are you sure you want to exit? Any unsaved changes will be lost.",
     "cancel": "Cancel",
-    "exit": "Ignore Changes"
+    "exit": "Ignore Changes",
+    "list": "List"
   },
   "home": {
     "welcome": "Welcome to Your Inventory Management System",
@@ -759,7 +761,7 @@
       "active": "Active",
       "yes": "Yes",
       "no": "No",
-      "project": "Project",
+      "project": "Projects",
       "productLine": "Product Line",
       "category": "Category",
       "brand": "Brand",
@@ -1081,8 +1083,8 @@
       "website": "Website",
       "taxNumber": "Tax Number",
       "taxOffice": "Tax Office",
-      "customerGroup": "Customer Group",
-      "customer": "Customer",
+      "customerGroup": "Customer Groups",
+      "customer": "Customers",
       "active": "Active",
       "isManager": "Is Manager",
       "isSupervisor": "Is Supervisor",
@@ -1141,7 +1143,7 @@
       "openingDate": "Opening Date",
       "addCurrency": "Add Currency",
       "salesmenAccordion": "Salesmen",
-      "salesman": "Salesman",
+      "salesman": "Salesmen",
       "collector": "Collector",
       "supervisor": "Supervisor",
       "manager": "Manager",
