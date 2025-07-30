@@ -62,6 +62,8 @@ function PaymentPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [tab, setTab] = useState(0);
+  const locale = useLocale();
+  const isRTL = locale === "ar";
   const [paymentTerms, setPaymentTerms] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -429,10 +431,17 @@ function PaymentPage() {
   return (
     <Box className="p-4">
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={tab} onChange={handleChange} aria-label="payment tabs">
+      <CustomTabs
+            value={tab}
+            onChange={handleChange}
+            aria-label="payments tabs"
+            sx={{
+              direction: isRTL ? "rtl" : "ltr",
+            }}
+          >
           <Tab label={t("paymentTerms")} />
           <Tab label={t("paymentMethods")} />
-        </Tabs>
+        </CustomTabs>
       </Box>
       <TabPanel value={tab} index={0}>
         <Table
