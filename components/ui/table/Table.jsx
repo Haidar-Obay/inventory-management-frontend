@@ -170,14 +170,75 @@ const Table = (props) => {
       return {};
     }
   };
+  
+  // Helper function to load last applied template
+  const getLastAppliedTemplateKey = () => tableId ? `table:${tableId}:lastAppliedTemplate` : null;
+  const loadLastAppliedTemplate = () => {
+    const key = getLastAppliedTemplateKey();
+    if (!key) return null;
+    
+    try {
+      const saved = localStorage.getItem(key);
+      return saved ? JSON.parse(saved) : null;
+    } catch (error) {
+      console.error("Error loading last applied template:", error);
+      return null;
+    }
+  };
+  
   const persisted = getPersistedOtherSettings();
-  const [headerColor, setHeaderColor] = useState(persisted.headerColor ?? "");
-  const [headerFontSize, setHeaderFontSize] = useState(persisted.headerFontSize ?? 16);
-  const [headerFontStyle, setHeaderFontStyle] = useState(persisted.headerFontStyle ?? 'normal');
-  const [headerFontColor, setHeaderFontColor] = useState(persisted.headerFontColor ?? '#000000');
-  const [showHeaderSeparator, setShowHeaderSeparator] = useState(persisted.showHeaderSeparator ?? true);
-  const [showHeaderColSeparator, setShowHeaderColSeparator] = useState(persisted.showHeaderColSeparator ?? true);
-  const [showBodyColSeparator, setShowBodyColSeparator] = useState(persisted.showBodyColSeparator ?? true);
+  const lastAppliedTemplate = loadLastAppliedTemplate();
+  
+  // Initialize other settings from last applied template if available, otherwise from persisted settings
+  const [headerColor, setHeaderColor] = useState(() => {
+    if (lastAppliedTemplate && lastAppliedTemplate.headerColor !== undefined) {
+      return lastAppliedTemplate.headerColor;
+    }
+    return persisted.headerColor ?? "";
+  });
+  
+  const [headerFontSize, setHeaderFontSize] = useState(() => {
+    if (lastAppliedTemplate && lastAppliedTemplate.headerFontSize !== undefined) {
+      const fontSize = lastAppliedTemplate.headerFontSize ? parseInt(lastAppliedTemplate.headerFontSize.replace('px', '')) : 16;
+      return fontSize;
+    }
+    return persisted.headerFontSize ?? 16;
+  });
+  
+  const [headerFontStyle, setHeaderFontStyle] = useState(() => {
+    if (lastAppliedTemplate && lastAppliedTemplate.headerFontStyle !== undefined) {
+      return lastAppliedTemplate.headerFontStyle;
+    }
+    return persisted.headerFontStyle ?? 'normal';
+  });
+  
+  const [headerFontColor, setHeaderFontColor] = useState(() => {
+    if (lastAppliedTemplate && lastAppliedTemplate.headerFontColor !== undefined) {
+      return lastAppliedTemplate.headerFontColor;
+    }
+    return persisted.headerFontColor ?? '#000000';
+  });
+  
+  const [showHeaderSeparator, setShowHeaderSeparator] = useState(() => {
+    if (lastAppliedTemplate && lastAppliedTemplate.showHeaderSeparator !== undefined) {
+      return lastAppliedTemplate.showHeaderSeparator;
+    }
+    return persisted.showHeaderSeparator ?? true;
+  });
+  
+  const [showHeaderColSeparator, setShowHeaderColSeparator] = useState(() => {
+    if (lastAppliedTemplate && lastAppliedTemplate.showHeaderColSeparator !== undefined) {
+      return lastAppliedTemplate.showHeaderColSeparator;
+    }
+    return persisted.showHeaderColSeparator ?? true;
+  });
+  
+  const [showBodyColSeparator, setShowBodyColSeparator] = useState(() => {
+    if (lastAppliedTemplate && lastAppliedTemplate.showBodyColSeparator !== undefined) {
+      return lastAppliedTemplate.showBodyColSeparator;
+    }
+    return persisted.showBodyColSeparator ?? true;
+  });
 
   const handleOtherSettingsChange = (settings) => {
     if (settings.headerColor !== undefined) setHeaderColor(settings.headerColor);

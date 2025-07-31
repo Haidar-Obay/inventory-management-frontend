@@ -383,9 +383,10 @@ export const TableBody = ({
                 className={`border-b border-border px-1 py-2 transition-colors duration-200
                   ${showBodyColSeparator !== false
                     ? (isRTL
-                        ? 'border-r border-slate-300 dark:border-slate-600'
+                        ? 'border-r border-slate-300 dark:border-slate-600' 
                         : 'border-l border-slate-300 dark:border-slate-600')
                     : ''}
+                  ${showBodyColSeparator !== false ? (isRTL ? 'border-l border-slate-300 dark:border-slate-600' : 'border-r border-slate-300 dark:border-slate-600') : ''}
                   ${isOverflowing
                     ? "sticky end-0 z-10 backdrop-blur-sm border-s border-gray-200 dark:border-gray-700"
                     : ""}

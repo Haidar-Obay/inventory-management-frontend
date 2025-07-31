@@ -15,7 +15,6 @@ const MoreOptionsSection = React.memo(({ formData, onFormDataChange, isRTL, t, a
         setTimeout(() => {
           if (firstFieldRef.current) {
             firstFieldRef.current.focus();
-            console.log('Refocusing field after expansion:', focusedFieldId);
           }
         }, 50);
       });
@@ -33,10 +32,8 @@ const MoreOptionsSection = React.memo(({ formData, onFormDataChange, isRTL, t, a
 
   const handleFieldFocus = (e, fieldId = 'printInvoiceLanguage') => {
     e.stopPropagation();
-    console.log('Field focused:', fieldId, 'expanded:', expanded);
     
     if (!expanded && typeof onAccordionChange === 'function') {
-      console.log('Expanding accordion for field:', fieldId);
       setFocusedFieldId(fieldId);
       setShouldRefocus(true);
       

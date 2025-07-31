@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useTheme } from "next-themes";
 
 // Utility function to check if an element is a descendant of another
@@ -38,7 +38,33 @@ export function useTableLogic({
   const [filters, setFilters] = useState({});
   const [columnSearch, setColumnSearch] = useState({});
   const [globalSearch, setGlobalSearch] = useState("");
+  
+  // Helper functions for localStorage persistence
+  const getLastAppliedTemplateKey = () => tableId ? `table:${tableId}:lastAppliedTemplate` : null;
+  
+  const loadLastAppliedTemplate = useCallback(() => {
+    const key = getLastAppliedTemplateKey();
+    if (!key) return null;
+    
+    try {
+      const saved = localStorage.getItem(key);
+      return saved ? JSON.parse(saved) : null;
+    } catch (error) {
+      console.error("Error loading last applied template:", error);
+      return null;
+    }
+  }, [tableId]);
+
+  // Add a ref to track if the last applied template has been loaded
+  const hasLoadedLastAppliedTemplate = useRef(false);
+
   const [visibleColumns, setVisibleColumns] = useState(() => {
+    // Try to load from last applied template first
+    const lastAppliedTemplate = loadLastAppliedTemplate();
+    if (lastAppliedTemplate && lastAppliedTemplate.visible_columns) {
+      return lastAppliedTemplate.visible_columns;
+    }
+    
     // Default settings if no saved settings or error
     const defaultSettings = {};
     columns.forEach((col) => {
@@ -47,13 +73,22 @@ export function useTableLogic({
     });
     return defaultSettings;
   });
+  
   const [selectedSearchColumns, setSelectedSearchColumns] = useState({});
   const [tempVisibleColumns, setTempVisibleColumns] = useState({});
   const [showColumnModal, setShowColumnModal] = useState(false);
+  
   const [columnOrder, setColumnOrder] = useState(() => {
+    // Try to load from last applied template first
+    const lastAppliedTemplate = loadLastAppliedTemplate();
+    if (lastAppliedTemplate && lastAppliedTemplate.column_order) {
+      return lastAppliedTemplate.column_order;
+    }
+    
     // Use default order
     return columns.map((col) => col.key);
   });
+  
   const [draggedColumn, setDraggedColumn] = useState(null);
   const [draggedRow, setDraggedRow] = useState(null);
   const [editingCell, setEditingCell] = useState(null);
@@ -103,8 +138,6 @@ export function useTableLogic({
     return initialFilterTypes;
   });
 
-
-
   // Helper function to calculate appropriate width
   const calculateWidth = (column, savedWidth) => {
     if (savedWidth) return savedWidth;
@@ -126,6 +159,16 @@ export function useTableLogic({
 
   // Add column widths state with localStorage
   const [columnWidths, setColumnWidths] = useState(() => {
+    // Try to load from last applied template first
+    const lastAppliedTemplate = loadLastAppliedTemplate();
+    if (lastAppliedTemplate && lastAppliedTemplate.column_widths) {
+      return {
+        select: "28px",
+        search: "28px",
+        ...lastAppliedTemplate.column_widths,
+      };
+    }
+    
     // If no saved widths or error, use default widths
     return {
       select: "28px",
@@ -136,9 +179,6 @@ export function useTableLogic({
       }, {}),
     };
   });
-
-  // Save column widths to localStorage whenever they change
-  // Remove useEffect that saves columnWidths to localStorage
 
   // Extract unique values for each column
   useEffect(() => {
@@ -169,6 +209,34 @@ export function useTableLogic({
   useEffect(() => {
     setTableData(data);
   }, [data]);
+
+  // Effect to apply last applied template settings on initialization
+  useEffect(() => {
+    if (!hasLoadedLastAppliedTemplate.current) {
+      const lastAppliedTemplate = loadLastAppliedTemplate();
+      if (lastAppliedTemplate && lastAppliedTemplate.id) {
+        // Apply column visibility
+        if (lastAppliedTemplate.visible_columns) {
+          setVisibleColumns(lastAppliedTemplate.visible_columns);
+        }
+        
+        // Apply column widths
+        if (lastAppliedTemplate.column_widths) {
+          setColumnWidths({
+            select: "28px",
+            search: "28px",
+            ...lastAppliedTemplate.column_widths,
+          });
+        }
+        
+        // Apply column order
+        if (lastAppliedTemplate.column_order) {
+          setColumnOrder(lastAppliedTemplate.column_order);
+        }
+      }
+      hasLoadedLastAppliedTemplate.current = true;
+    }
+  }, []); // Empty dependency array to run only once
 
   // Initialize selectedSearchColumns when visibleColumns is set
   useEffect(() => {

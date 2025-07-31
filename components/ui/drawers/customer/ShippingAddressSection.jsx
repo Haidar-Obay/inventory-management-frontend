@@ -410,10 +410,8 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                   options={createOptionsWithAdd(countries, 'country')}
                   getOptionLabel={(option) => option.name || ""}
                   value={countries.find((country) => country.id === address.country_id) || null}
-                  onChange={(event, newValue) => {
+                  onChange={(_, newValue) => {
                     if (newValue?.isAddButton) {
-                      // Handle add country action
-                      console.log('Add country clicked');
                       return;
                     }
                     handleShippingAddressChange(index, 'country_id', newValue?.id || "");
@@ -443,10 +441,8 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                   options={createOptionsWithAdd(zones, 'zone')}
                   getOptionLabel={(option) => option.name || ""}
                   value={zones.find((zone) => zone.id === address.zone_id) || null}
-                  onChange={(event, newValue) => {
+                  onChange={(_, newValue) => {
                     if (newValue?.isAddButton) {
-                      // Handle add zone action
-                      console.log('Add zone clicked');
                       return;
                     }
                     handleShippingAddressChange(index, 'zone_id', newValue?.id || "");
@@ -476,10 +472,8 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                   options={createOptionsWithAdd(cities, 'city')}
                   getOptionLabel={(option) => option.name || ""}
                   value={cities.find((city) => city.id === address.city_id) || null}
-                  onChange={(event, newValue) => {
+                  onChange={(_, newValue) => {
                     if (newValue?.isAddButton) {
-                      // Handle add city action
-                      console.log('Add city clicked');
                       return;
                     }
                     handleShippingAddressChange(index, 'city_id', newValue?.id || "");
@@ -509,10 +503,8 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                   options={createOptionsWithAdd(districts, 'district')}
                   getOptionLabel={(option) => option.name || ""}
                   value={districts.find((district) => district.id === address.district_id) || null}
-                  onChange={(event, newValue) => {
+                  onChange={(_, newValue) => {
                     if (newValue?.isAddButton) {
-                      // Handle add district action
-                      console.log('Add district clicked');
                       return;
                     }
                     handleShippingAddressChange(index, 'district_id', newValue?.id || "");

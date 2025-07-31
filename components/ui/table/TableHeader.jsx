@@ -323,24 +323,27 @@ export const TableHeader = ({
 
         {/* Actions column */}
         <th
-          className={`border-b border-slate-200 dark:border-slate-700 px-4 py-4 text-center bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-all duration-200 ${showHeaderColSeparator !== false ? 'border-l border-slate-300 dark:border-slate-600' : ''} ${showHeaderColSeparator !== false ? (isRTL ? 'border-r border-l border-slate-300 dark:border-slate-600' : 'border-r border-slate-300 dark:border-slate-600') : ''} ${
-            isOverflowing
+          className={`border-b border-slate-200 dark:border-slate-700 px-4 py-4 text-center bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-all duration-200
+            ${showHeaderColSeparator !== false ? 'border-l border-slate-300 dark:border-slate-600' : ''}
+            ${showHeaderColSeparator !== false ? (isRTL ? 'border-r border-l border-slate-300 dark:border-slate-600' : 'border-r border-slate-300 dark:border-slate-600') : ''}
+            ${showHeaderColSeparator !== false ? (isRTL ? 'border-l border-slate-300 dark:border-slate-600' : 'border-r border-slate-300 dark:border-slate-600') : ''}
+            ${isOverflowing
               ? "sticky end-0 z-20 backdrop-blur-sm border-s border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50/95 to-slate-100/95 dark:from-slate-800/95 dark:to-slate-900/95"
-              : ""
-          }`}
+              : ""}
+          `}
           style={{ width: "75px", ...(headerColor ? { background: headerColor } : {}) }}
         >
-                      <span
-              className="flex items-center justify-center w-full font-semibold text-slate-700 dark:text-slate-200 text-sm uppercase tracking-wide hover:text-slate-900 dark:hover:text-white transition-colors duration-200"
-              style={{
-                fontSize: headerFontSize ? `${headerFontSize}px` : undefined,
-                color: headerFontColor || (theme === 'dark' ? '#e2e8f0' : '#1e293b'),
-                fontWeight: headerFontStyle && headerFontStyle.includes('bold') ? 'bold' : undefined,
-                fontStyle: headerFontStyle && headerFontStyle.includes('italic') ? 'italic' : undefined,
-              }}
-            >
-              {t("actions")}
-            </span>
+          <span
+            className="flex items-center justify-center w-full font-semibold text-slate-700 dark:text-slate-200 text-sm uppercase tracking-wide hover:text-slate-900 dark:hover:text-white transition-colors duration-200"
+            style={{
+              fontSize: headerFontSize ? `${headerFontSize}px` : undefined,
+              color: headerFontColor || (theme === 'dark' ? '#e2e8f0' : '#1e293b'),
+              fontWeight: headerFontStyle && headerFontStyle.includes('bold') ? 'bold' : undefined,
+              fontStyle: headerFontStyle && headerFontStyle.includes('italic') ? 'italic' : undefined,
+            }}
+          >
+            {t("actions")}
+          </span>
         </th>
       </tr>
 
@@ -425,11 +428,14 @@ export const TableHeader = ({
             );
           })}
           <td
-            className={`border-b border-slate-200 dark:border-slate-700 px-4 py-2 bg-slate-50 dark:bg-slate-800/50 ${showHeaderColSeparator !== false ? 'border-l border-slate-300 dark:border-slate-600' : ''} ${showHeaderColSeparator !== false && isRTL ? 'border-r border-slate-300 dark:border-slate-600' : ''} ${
-              isOverflowing
+            className={`border-b border-slate-200 dark:border-slate-700 px-4 py-2 bg-slate-50 dark:bg-slate-800/50
+              ${showHeaderColSeparator !== false ? 'border-l border-slate-300 dark:border-slate-600' : ''}
+              ${showHeaderColSeparator !== false && isRTL ? 'border-r border-slate-300 dark:border-slate-600' : ''}
+              ${showHeaderColSeparator !== false && !isRTL ? 'border-r border-slate-300 dark:border-slate-600' : ''}
+              ${isOverflowing
                 ? "sticky end-0 z-10 backdrop-blur-sm border-s border-slate-200 dark:border-slate-700 bg-slate-50/95 dark:bg-slate-800/95"
-                : ""
-            }`}
+                : ""}
+            `}
             style={{ width: "75px" }}
           ></td>
         </tr>

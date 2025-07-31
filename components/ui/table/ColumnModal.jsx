@@ -6,6 +6,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { useTheme } from "next-themes";
 import { lightTheme } from "../../../lib/themes/light";
 import { darkTheme } from "../../../lib/themes/dark";
+import ProfessionalHeaderStyler from "./ProfessionalHeaderStyler";
 
 import Portal from "../Portal";
 import { 
@@ -62,7 +63,6 @@ const TemplateItem = React.memo(({
   isDeleting = false,
   deletingId = null
 }) => {
-  const isDefault = template.is_default || template.id === '__default__';
   return (
     <div className={classNames(
       'flex items-center justify-between border-b border-border px-4 py-3 last:border-0',
@@ -71,17 +71,9 @@ const TemplateItem = React.memo(({
     )}>
       <span className="text-foreground font-medium flex items-center gap-2">
         {template.name}
-        {isDefault && (
-          <span title="Default Template" className="inline-block align-middle text-yellow-500">
-            {/* Star icon */}
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.175c.969 0 1.371 1.24.588 1.81l-3.38 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.54 1.118l-3.38-2.454a1 1 0 00-1.175 0l-3.38 2.454c-.784.57-1.838-.196-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.05 9.394c-.783-.57-.38-1.81.588-1.81h4.175a1 1 0 00.95-.69l1.286-3.967z" />
-            </svg>
-          </span>
-        )}
         {isActive && (
           <span title="Active template" className="inline-block align-middle">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#22c55e" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </span>
@@ -99,7 +91,7 @@ const TemplateItem = React.memo(({
           </Button>
         )}
         {/* Only show delete for non-default templates */}
-        {onDelete && !isDefault && (
+        {onDelete && !((template.name === "Default") && (template.is_default === true)) && (
           <Button
             variant="destructive"
             size="sm"
@@ -241,345 +233,6 @@ const DeleteConfirmModal = React.memo(({
 // Try to import Toggle from components/ui/toggle if available
 import { Toggle } from "../toggle";
 
-// Define DEFAULT_TEMPLATE_ID at the top
-const DEFAULT_TEMPLATE_ID = '__default__';
-
-// Enhanced Header Styling Component with Modal
-const HeaderStyler = React.memo(({ 
-  backgroundColor, 
-  onBackgroundColorChange, 
-  fontSize, 
-  onFontSizeChange,
-  fontStyle, 
-  onFontStyleChange,
-  fontColor, 
-  onFontColorChange,
-  label, 
-  className = "" 
-}) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [customBgColor, setCustomBgColor] = useState(backgroundColor);
-  const [customFontColor, setCustomFontColor] = useState(fontColor);
-  const modalRef = useRef(null);
-  
-  // Update colors when props change
-  useEffect(() => {
-    setCustomBgColor(backgroundColor);
-  }, [backgroundColor]);
-  
-  useEffect(() => {
-    setCustomFontColor(fontColor);
-  }, [fontColor]);
-  
-  // Close modal when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
-        setIsModalOpen(false);
-      }
-    };
-
-    if (isModalOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isModalOpen]);
-  
-  const presetColors = [
-    '#1e293b', // slate-800
-    '#334155', // slate-700
-    '#475569', // slate-600
-    '#64748b', // slate-500
-    '#94a3b8', // slate-400
-    '#cbd5e1', // slate-300
-    '#e2e8f0', // slate-200
-    '#f1f5f9', // slate-100
-    '#f8fafc', // slate-50
-    '#0f172a', // slate-900
-    '#1e40af', // blue-700
-    '#3b82f6', // blue-500
-    '#60a5fa', // blue-400
-    '#93c5fd', // blue-300
-    '#dbeafe', // blue-100
-    '#1d4ed8', // blue-600
-    '#1e3a8a', // blue-800
-    '#dc2626', // red-600
-    '#ef4444', // red-500
-    '#f87171', // red-400
-    '#fecaca', // red-200
-    '#fef2f2', // red-50
-    '#059669', // emerald-600
-    '#10b981', // emerald-500
-    '#34d399', // emerald-400
-    '#a7f3d0', // emerald-200
-    '#ecfdf5', // emerald-50
-    '#d97706', // amber-600
-    '#f59e0b', // amber-500
-    '#fbbf24', // amber-400
-    '#fde68a', // amber-200
-    '#fffbeb', // amber-50
-    '#7c3aed', // violet-600
-    '#8b5cf6', // violet-500
-    '#a78bfa', // violet-400
-    '#c4b5fd', // violet-200
-    '#f5f3ff', // violet-50
-  ];
-
-  const handleBgColorSelect = (color) => {
-    setCustomBgColor(color);
-    onBackgroundColorChange(color);
-  };
-
-  const handleFontColorSelect = (color) => {
-    setCustomFontColor(color);
-    onFontColorChange(color);
-  };
-
-  const handleCustomBgColorChange = (e) => {
-    const color = e.target.value;
-    setCustomBgColor(color);
-    onBackgroundColorChange(color);
-  };
-
-  const handleCustomFontColorChange = (e) => {
-    const color = e.target.value;
-    setCustomFontColor(color);
-    onFontColorChange(color);
-  };
-
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
-
-  return (
-    <div className={`relative ${className}`}>
-      <label className="block text-sm font-medium mb-2">{label}</label>
-      
-      {/* Header Preview Button */}
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 p-2 border border-border rounded-md hover:bg-muted transition-colors"
-        >
-          <div 
-            className="w-8 h-8 rounded border border-border flex items-center justify-center text-xs"
-            style={{ 
-              backgroundColor: customBgColor,
-              color: customFontColor,
-              fontSize: `${fontSize}px`,
-              fontStyle: fontStyle
-            }}
-          >
-            Aa
-          </div>
-          <span className="text-sm text-foreground">Header Style</span>
-          <svg 
-            width="16" 
-            height="16" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2"
-          >
-            <polyline points="6,9 12,15 18,9" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Header Styling Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[2147483648] flex items-center justify-center bg-black/50">
-          <div ref={modalRef} className="bg-background p-4 rounded-lg shadow-lg border border-border w-full max-w-lg">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-medium text-foreground">Header Styling</h3>
-              <button
-                onClick={handleModalClose}
-                className="rounded-full p-1 hover:bg-muted text-muted-foreground"
-                aria-label="Close"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16" height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
-            </div>
-
-            {/* Live Preview - Moved to top */}
-            <div className="mb-4">
-              <h4 className="text-xs font-medium mb-2 text-muted-foreground">Preview</h4>
-              <div 
-                className="p-3 rounded border border-border text-center"
-                style={{ 
-                  backgroundColor: customBgColor,
-                  color: customFontColor,
-                  fontSize: `${fontSize}px`,
-                  fontStyle: fontStyle.includes('italic') ? 'italic' : 'normal',
-                  fontWeight: fontStyle.includes('bold') ? 'bold' : 'normal'
-                }}
-              >
-                Header Text Preview
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              {/* Background Color Section */}
-              <div>
-                <h4 className="text-xs font-medium mb-2">Background Color</h4>
-                <div className="grid grid-cols-8 gap-1 mb-2">
-                  {presetColors.slice(0, 24).map((color) => (
-                    <button
-                      key={color}
-                      type="button"
-                      onClick={() => handleBgColorSelect(color)}
-                      className="w-6 h-6 rounded border border-border hover:scale-110 transition-transform"
-                      style={{ backgroundColor: color }}
-                      title={color}
-                    />
-                  ))}
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">Custom:</span>
-                  <input
-                    type="color"
-                    value={customBgColor}
-                    onChange={handleCustomBgColorChange}
-                    className="w-5 h-5 p-0 border border-border rounded cursor-pointer"
-                  />
-                  <input
-                    type="text"
-                    value={customBgColor}
-                    onChange={(e) => handleBgColorSelect(e.target.value)}
-                    className="flex-1 px-2 py-1 text-xs border border-border rounded bg-background text-foreground"
-                    placeholder="#000000"
-                  />
-                </div>
-              </div>
-
-              {/* Font Color Section */}
-              <div>
-                <h4 className="text-xs font-medium mb-2">Font Color</h4>
-                <div className="grid grid-cols-8 gap-1 mb-2">
-                  {presetColors.slice(0, 24).map((color) => (
-                    <button
-                      key={`font-${color}`}
-                      type="button"
-                      onClick={() => handleFontColorSelect(color)}
-                      className="w-6 h-6 rounded border border-border hover:scale-110 transition-transform"
-                      style={{ backgroundColor: color }}
-                      title={color}
-                    />
-                  ))}
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">Custom:</span>
-                  <input
-                    type="color"
-                    value={customFontColor}
-                    onChange={handleCustomFontColorChange}
-                    className="w-5 h-5 p-0 border border-border rounded cursor-pointer"
-                  />
-                  <input
-                    type="text"
-                    value={customFontColor}
-                    onChange={(e) => handleFontColorSelect(e.target.value)}
-                    className="flex-1 px-2 py-1 text-xs border border-border rounded bg-background text-foreground"
-                    placeholder="#000000"
-                  />
-                </div>
-              </div>
-
-              {/* Font Size Section */}
-              <div>
-                <h4 className="text-xs font-medium mb-2">Font Size</h4>
-                <div className="flex items-center gap-2 mb-2">
-                  <input
-                    type="range"
-                    min="10"
-                    max="24"
-                    value={fontSize}
-                    onChange={(e) => onFontSizeChange(parseInt(e.target.value))}
-                    className="flex-1"
-                  />
-                  <span className="text-xs text-muted-foreground w-8 text-center">{fontSize}px</span>
-                </div>
-                <div className="flex gap-1 flex-wrap">
-                  {[12, 14, 16, 18, 20].map((size) => (
-                    <button
-                      key={size}
-                      type="button"
-                      onClick={() => onFontSizeChange(size)}
-                      className={`px-2 py-1 text-xs rounded border ${
-                        fontSize === size 
-                          ? 'bg-primary text-primary-foreground border-primary' 
-                          : 'bg-background text-foreground border-border hover:bg-muted'
-                      }`}
-                    >
-                      {size}px
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Font Style Section */}
-              <div>
-                <h4 className="text-xs font-medium mb-2">Font Style</h4>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { value: 'normal', label: 'Normal' },
-                    { value: 'italic', label: 'Italic' },
-                    { value: 'bold', label: 'Bold' },
-                    { value: 'bold italic', label: 'Bold Italic' }
-                  ].map((style) => (
-                    <button
-                      key={style.value}
-                      type="button"
-                      onClick={() => onFontStyleChange(style.value)}
-                      className={`px-2 py-1 text-xs rounded border ${
-                        fontStyle === style.value 
-                          ? 'bg-primary text-primary-foreground border-primary' 
-                          : 'bg-background text-foreground border-border hover:bg-muted'
-                      }`}
-                      style={{ 
-                        fontStyle: style.value.includes('italic') ? 'italic' : 'normal',
-                        fontWeight: style.value.includes('bold') ? 'bold' : 'normal'
-                      }}
-                    >
-                      {style.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-border">
-              <Button variant="outline" size="sm" onClick={handleModalClose}>
-                Close
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-});
-
-HeaderStyler.displayName = "HeaderStyler";
-
 export const ColumnModal = React.memo(({
   isOpen,
   tableName,
@@ -632,6 +285,7 @@ export const ColumnModal = React.memo(({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [templateToDelete, setTemplateToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  
   // Persisted Other Settings
   const otherSettingsKey = tableName ? `table:${tableName}:otherSettings` : null;
   const getPersistedOtherSettings = () => {
@@ -656,6 +310,70 @@ export const ColumnModal = React.memo(({
   const [pendingTemplateIdOrName, setPendingTemplateIdOrName] = useState(null);
   // Add a flag to track if the current template was just updated
   const [templateJustUpdated, setTemplateJustUpdated] = useState(false);
+  // Add a ref to track if the last applied template has been loaded
+  const hasLoadedLastAppliedTemplate = useRef(false);
+  // Store callback functions in refs to avoid dependency issues
+  const callbackRefs = useRef({
+    onToggleColumn,
+    onColumnWidthChange,
+    onColumnOrderChange,
+    onSelectedTemplateChange
+  });
+
+  // Update callback refs when they change
+  useEffect(() => {
+    callbackRefs.current = {
+      onToggleColumn,
+      onColumnWidthChange,
+      onColumnOrderChange,
+      onSelectedTemplateChange
+    };
+  }, [onToggleColumn, onColumnWidthChange, onColumnOrderChange, onSelectedTemplateChange]);
+
+  // Helper functions for localStorage persistence
+  const getLastAppliedTemplateKey = () => tableName ? `table:${tableName}:lastAppliedTemplate` : null;
+  
+  const saveLastAppliedTemplate = useCallback((templateId, templateData) => {
+    const key = getLastAppliedTemplateKey();
+    if (!key) return;
+    
+    try {
+      const templateToSave = {
+        id: templateId,
+        name: templateData.name || templateId, // Include name for proper restoration
+        is_default: templateData.is_default, // Include is_default for proper identification
+        appliedAt: new Date().toISOString(),
+        ...templateData
+      };
+      localStorage.setItem(key, JSON.stringify(templateToSave));
+    } catch (error) {
+      // Error saving last applied template
+    }
+  }, [tableName]);
+
+  const loadLastAppliedTemplate = useCallback(() => {
+    const key = getLastAppliedTemplateKey();
+    if (!key) return null;
+    
+    try {
+      const saved = localStorage.getItem(key);
+      return saved ? JSON.parse(saved) : null;
+    } catch (error) {
+      // Error loading last applied template
+      return null;
+    }
+  }, [tableName]);
+
+  const clearLastAppliedTemplate = useCallback(() => {
+    const key = getLastAppliedTemplateKey();
+    if (!key) return;
+    
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      // Error clearing last applied template
+    }
+  }, [tableName]);
 
   // Memoized values
   const orderedColumns = useMemo(() => 
@@ -681,7 +399,6 @@ export const ColumnModal = React.memo(({
       const response = await getTableTemplates(tableName);
       setTemplates(response || []);
     } catch (error) {
-      console.error("Error loading templates:", error);
       setTemplates([]);
     } finally {
       setIsLoadingTemplates(false);
@@ -765,10 +482,6 @@ export const ColumnModal = React.memo(({
       setTemplateError("Name required");
       return;
     }
-    if (templateName.trim() === 'Default') {
-      setTemplateError("Cannot use 'Default' as a template name.");
-      return;
-    }
     if (templates.some((t) => t.name === templateName.trim())) {
       setTemplateError("Name already exists");
       return;
@@ -799,7 +512,6 @@ export const ColumnModal = React.memo(({
       setPendingTemplateIdOrName(templateName.trim());
       setTemplateJustUpdated(true); // Mark that the template was just updated
     } catch (error) {
-      console.error("Error saving template:", error);
       setTemplateError("Failed to save template");
     } finally {
       setIsSaving(false);
@@ -832,17 +544,18 @@ export const ColumnModal = React.memo(({
         if (onSelectedTemplateChange) {
           onSelectedTemplateChange(null);
         }
+        // Clear the last applied template from localStorage
+        clearLastAppliedTemplate();
       }
 
     } catch (error) {
-      console.error("Error deleting template:", error);
-
+      // Error deleting template
     } finally {
       setShowDeleteConfirm(false);
       setTemplateToDelete(null);
       setIsDeleting(false);
     }
-  }, [templateToDelete, tableName, loadTemplatesFromAPI, currentTemplate, appliedTemplateId, onSelectedTemplateChange]);
+  }, [templateToDelete, tableName, loadTemplatesFromAPI, currentTemplate, appliedTemplateId, onSelectedTemplateChange, clearLastAppliedTemplate]);
 
   const handleCancelDelete = useCallback(() => {
     setShowDeleteConfirm(false);
@@ -854,13 +567,6 @@ export const ColumnModal = React.memo(({
     const columnWidths = template.column_widths || template.columnWidths;
     const columnOrder = template.column_order || template.columnOrder;
     const templateId = template.id || template.name;
-
-    // If default template, set timestamps to false only
-    if (templateId === DEFAULT_TEMPLATE_ID || template.is_default) {
-      visibleColumns = { ...visibleColumns };
-      if ('created_at' in visibleColumns) visibleColumns['created_at'] = false;
-      if ('updated_at' in visibleColumns) visibleColumns['updated_at'] = false;
-    }
 
     onToggleColumn(null, null, visibleColumns);
     Object.entries(columnWidths).forEach(([key, width]) => {
@@ -900,6 +606,7 @@ export const ColumnModal = React.memo(({
       setShowTemplatePrompt(true);
       return;
     }
+    
     setIsSaving(true);
     try {
       const updatedTemplate = {
@@ -922,7 +629,7 @@ export const ColumnModal = React.memo(({
       setPendingTemplateIdOrName(currentTemplate.id || currentTemplate.name);
       setTemplateJustUpdated(true); // Mark that the template was just updated
     } catch (error) {
-      console.error("Error updating template:", error);
+      // Error updating template
     } finally {
       setIsSaving(false);
     }
@@ -946,26 +653,6 @@ export const ColumnModal = React.memo(({
   useEffect(() => {
     // No localStorage restoration - templates will be selected manually or auto-selected if default is the only one
   }, [isOpen, tableName, templates]);
-
-  // Effect 3: Auto-select default template when it's the only template available
-  useEffect(() => {
-    if (isOpen && tableName && templates.length === 1 && !isLoadingTemplates) {
-      const defaultTemplate = templates.find(t => t.is_default || t.id === DEFAULT_TEMPLATE_ID);
-      if (defaultTemplate) {
-        setSelectedTemplateId(defaultTemplate.id || defaultTemplate.name);
-        setAppliedTemplateId(defaultTemplate.id || defaultTemplate.name);
-        setCurrentTemplate(defaultTemplate);
-        // Also update the parent component
-        if (onSelectedTemplateChange) {
-          onSelectedTemplateChange(defaultTemplate.id || defaultTemplate.name);
-        }
-      }
-    }
-  }, [isOpen, tableName, templates, isLoadingTemplates, onSelectedTemplateChange]);
-
-  // After loading templates, if only default exists, select and apply it
-  // DISABLED: This useEffect was causing infinite loops
-  // Default template application is now handled manually by user selection
 
   // Sync external selected template ID
   useEffect(() => {
@@ -1007,7 +694,7 @@ export const ColumnModal = React.memo(({
     }
     
     // Determine the template to compare against
-    const template = currentTemplate || templates.find(t => t.id === DEFAULT_TEMPLATE_ID);
+    const template = currentTemplate;
     if (!template) {
       setHasChanges(true);
       return;
@@ -1097,7 +784,7 @@ export const ColumnModal = React.memo(({
 
   const renderOtherSettingsTab = useCallback(() => (
     <div className="space-y-6 px-2 py-4">
-      <HeaderStyler
+      <ProfessionalHeaderStyler
         backgroundColor={otherHeaderColor || (theme === 'dark' ? '#1e293b' : '#f1f5f9')}
         onBackgroundColorChange={setOtherHeaderColor}
         fontSize={otherHeaderFontSize}
@@ -1280,7 +967,7 @@ export const ColumnModal = React.memo(({
       ) : (
         templates.map((template) => {
           const templateId = template.id || template.name;
-          const isApplied = (appliedTemplateId === templateId) || (!appliedTemplateId && templateId === DEFAULT_TEMPLATE_ID);
+          const isApplied = appliedTemplateId === templateId;
           const isSelectedInModal = selectedTemplateId === templateId;
           return (
             <TemplateItem
@@ -1289,8 +976,7 @@ export const ColumnModal = React.memo(({
               isActive={isApplied}
               isSelected={isSelectedInModal} // Highlight if selected in modal (not necessarily applied)
               onApply={handleTemplateApply}
-              // Remove onDelete for default template so it cannot be reset/deleted from templates tab
-              onDelete={(!template.isDefault) ? handleTemplateDelete : undefined}
+              onDelete={handleTemplateDelete}
               t={t}
               isDeleting={isDeleting}
               deletingId={templateToDelete ? (templateToDelete.id || templateToDelete.name) : null}
@@ -1358,6 +1044,88 @@ export const ColumnModal = React.memo(({
     }
     onCancel();
   }, [appliedTemplateId, selectedTemplateId, templateJustUpdated, onSave, onOtherSettingsChange, otherHeaderColor, otherHeaderFontSize, otherHeaderFontStyle, otherHeaderFontColor, otherShowHeaderSeparator, otherShowHeaderColSeparator, otherShowBodyColSeparator, onCancel]);
+
+  // Effect to load last applied template when modal opens
+  useEffect(() => {
+    if (isOpen && tableName && !hasLoadedLastAppliedTemplate.current) {
+      const lastAppliedTemplate = loadLastAppliedTemplate();
+      if (lastAppliedTemplate && lastAppliedTemplate.id) {
+        // Set the last applied template as the current template
+        setAppliedTemplateId(lastAppliedTemplate.id);
+        setSelectedTemplateId(lastAppliedTemplate.id);
+        
+        // Apply the template settings using refs to avoid dependency issues
+        if (lastAppliedTemplate.visible_columns) {
+          callbackRefs.current.onToggleColumn(null, null, lastAppliedTemplate.visible_columns);
+        }
+        if (lastAppliedTemplate.column_widths) {
+          Object.entries(lastAppliedTemplate.column_widths).forEach(([key, width]) => {
+            callbackRefs.current.onColumnWidthChange(key, width);
+          });
+        }
+        if (lastAppliedTemplate.column_order) {
+          callbackRefs.current.onColumnOrderChange([...lastAppliedTemplate.column_order]);
+        }
+        
+        // Apply other settings
+        if (lastAppliedTemplate.headerColor !== undefined) setOtherHeaderColor(lastAppliedTemplate.headerColor);
+        if (lastAppliedTemplate.headerFontSize !== undefined) {
+          const fontSize = lastAppliedTemplate.headerFontSize ? parseInt(lastAppliedTemplate.headerFontSize.replace('px', '')) : 16;
+          setOtherHeaderFontSize(fontSize);
+        }
+        if (lastAppliedTemplate.headerFontStyle !== undefined) setOtherHeaderFontStyle(lastAppliedTemplate.headerFontStyle);
+        if (lastAppliedTemplate.headerFontColor !== undefined) setOtherHeaderFontColor(lastAppliedTemplate.headerFontColor);
+        if (lastAppliedTemplate.showHeaderSeparator !== undefined) setOtherShowHeaderSeparator(lastAppliedTemplate.showHeaderSeparator);
+        if (lastAppliedTemplate.showHeaderColSeparator !== undefined) setOtherShowHeaderColSeparator(lastAppliedTemplate.showHeaderColSeparator);
+        if (lastAppliedTemplate.showBodyColSeparator !== undefined) setOtherShowBodyColSeparator(lastAppliedTemplate.showBodyColSeparator);
+        
+        // Update the external selected template
+        if (callbackRefs.current.onSelectedTemplateChange) {
+          callbackRefs.current.onSelectedTemplateChange(lastAppliedTemplate.id);
+        }
+        
+        // Set currentTemplate to enable save button
+        // Create a template object from the localStorage data
+        const templateFromStorage = {
+          id: lastAppliedTemplate.id,
+          name: lastAppliedTemplate.name || lastAppliedTemplate.id, // Include name property for validation
+          is_default: lastAppliedTemplate.is_default, // Include is_default property
+          visible_columns: lastAppliedTemplate.visible_columns,
+          column_widths: lastAppliedTemplate.column_widths,
+          column_order: lastAppliedTemplate.column_order,
+          headerColor: lastAppliedTemplate.headerColor,
+          headerFontSize: lastAppliedTemplate.headerFontSize,
+          headerFontStyle: lastAppliedTemplate.headerFontStyle,
+          headerFontColor: lastAppliedTemplate.headerFontColor,
+          showHeaderSeparator: lastAppliedTemplate.showHeaderSeparator,
+          showHeaderColSeparator: lastAppliedTemplate.showHeaderColSeparator,
+          showBodyColSeparator: lastAppliedTemplate.showBodyColSeparator,
+        };
+        
+        setCurrentTemplate(templateFromStorage);
+      }
+      hasLoadedLastAppliedTemplate.current = true;
+    }
+  }, [isOpen, tableName, loadLastAppliedTemplate]); // Only depend on stable values
+
+  // Effect to set currentTemplate when templates are loaded and we have a selected template
+  useEffect(() => {
+    if (templates.length > 0 && selectedTemplateId && !currentTemplate) {
+      const foundTemplate = templates.find(template => 
+        (template.id || template.name) === selectedTemplateId
+      );
+      if (foundTemplate) {
+        setCurrentTemplate(foundTemplate);
+      }
+    }
+  }, [templates, selectedTemplateId, currentTemplate]);
+
+  // Reset the flag when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      hasLoadedLastAppliedTemplate.current = false;
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -1471,6 +1239,28 @@ export const ColumnModal = React.memo(({
                   if (onSelectedTemplateChange) {
                     onSelectedTemplateChange(selectedTemplateId);
                   }
+                  
+                  // Save the applied template to localStorage
+                  const templateData = {
+                    name: currentTemplate ? currentTemplate.name : selectedTemplateId, // Include template name
+                    is_default: currentTemplate ? currentTemplate.is_default : false, // Include is_default property
+                    visible_columns: { ...visibleColumns },
+                    column_widths: Object.fromEntries(
+                      Object.entries(columnWidths).map(([key, value]) => [key, typeof value === 'string' ? value : `${value}px`])
+                    ),
+                    column_order: [...columnOrder],
+                    headerColor: otherHeaderColor || null,
+                    headerFontSize: `${otherHeaderFontSize}px`,
+                    headerFontStyle: otherHeaderFontStyle,
+                    headerFontColor: otherHeaderFontColor || null,
+                    showHeaderSeparator: otherShowHeaderSeparator,
+                    showHeaderColSeparator: otherShowHeaderColSeparator,
+                    showBodyColSeparator: otherShowBodyColSeparator,
+                  };
+                  saveLastAppliedTemplate(selectedTemplateId, templateData);
+                } else {
+                  // If no template is selected, clear the last applied template
+                  clearLastAppliedTemplate();
                 }
                 setTimeout(() => {
                   if (onOtherSettingsChange) {

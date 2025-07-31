@@ -131,62 +131,64 @@ const ItemDrawer = ({
   const getContent = () => {
     if (type === "productLine") {
       return (
-        <Box sx={{ display: 'flex', gap: 2, p: 2 }}>
-          {/* Left side - Form fields */}
-          <Box sx={{ flex: 1 }}>
-            <Grid container spacing={2}>
-              <Grid xs={12} md={6}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    mb: 1,
-                    textAlign: isRTL ? "right" : "left",
-                  }}
-                >
-                  {t("management.code")} *
-                </Typography>
-                <RTLTextField
-                  value={formData?.code || ""}
-                  onChange={handleFieldChange("code")}
-                  required
-                  placeholder=""
-                />
+        <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            {/* Left side - Form fields */}
+            <Box sx={{ flex: 1 }}>
+              <Grid container spacing={2}>
+                <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.code")} *
+                  </Typography>
+                  <RTLTextField
+                    value={formData?.code || ""}
+                    onChange={handleFieldChange("code")}
+                    required
+                    placeholder=""
+                  />
+                </Grid>
+                <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.name")} *
+                  </Typography>
+                  <RTLTextField
+                    value={formData?.name || ""}
+                    onChange={handleFieldChange("name")}
+                    required
+                    placeholder=""
+                  />
+                </Grid>
               </Grid>
-              <Grid xs={12} md={6}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    mb: 1,
-                    textAlign: isRTL ? "right" : "left",
-                  }}
-                >
-                  {t("management.name")} *
-                </Typography>
-                <RTLTextField
-                  value={formData?.name || ""}
-                  onChange={handleFieldChange("name")}
-                  required
-                  placeholder=""
-                />
-              </Grid>
-            </Grid>
-          </Box>
-          
-          {/* Right side - Checkbox */}
-          <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 2, justifyContent: 'flex-end' }}>
-            <Checkbox
-              checked={formData?.active !== false}
-              onChange={(e) =>
-                onFormDataChange({
-                  ...formData,
-                  active: e.target.checked,
-                })
-              }
-              label={t("management.active")}
-              isRTL={isRTL}
-            />
+            </Box>
+            
+            {/* Right side - Checkbox */}
+            <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
+              <Checkbox
+                checked={formData?.active !== false}
+                onChange={(e) =>
+                  onFormDataChange({
+                    ...formData,
+                    active: e.target.checked,
+                  })
+                }
+                label={t("management.active")}
+                isRTL={isRTL}
+              />
+            </Box>
           </Box>
         </Box>
       );
@@ -194,94 +196,96 @@ const ItemDrawer = ({
 
     if (type === "category") {
       return (
-        <Box sx={{ display: 'flex', gap: 2, p: 2 }}>
-          {/* Left side - Form fields */}
-          <Box sx={{ flex: 1 }}>
-            <Grid container spacing={2}>
-              <Grid xs={12} md={6}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    mb: 1,
-                    textAlign: isRTL ? "right" : "left",
-                  }}
-                >
-                  {t("management.code")} *
-                </Typography>
-                <RTLTextField
-                  value={formData?.code || ""}
-                  onChange={handleFieldChange("code")}
-                  required
-                  placeholder=""
-                />
+        <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            {/* Left side - Form fields */}
+            <Box sx={{ flex: 1 }}>
+              <Grid container spacing={2}>
+                <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }} md={6}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.code")} *
+                  </Typography>
+                  <RTLTextField
+                    value={formData?.code || ""}
+                    onChange={handleFieldChange("code")}
+                    required
+                    placeholder=""
+                  />
+                </Grid>
+                <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }} md={6}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.name")} *
+                  </Typography>
+                  <RTLTextField
+                    value={formData?.name || ""}
+                    onChange={handleFieldChange("name")}
+                    required
+                    placeholder=""
+                  />
+                </Grid>
+                <Grid xs={12} sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.subCategoryOf")}
+                  </Typography>
+                  <Autocomplete
+                    fullWidth
+                    options={categoryOptions}
+                    getOptionLabel={(option) => option.name || ""}
+                    value={
+                      categoryOptions.find(
+                        (c) => c.id === formData?.sub_category_of
+                      ) || null
+                    }
+                    onChange={(e, newValue) =>
+                      onFormDataChange({
+                        ...formData,
+                        sub_category_of: newValue?.id || "",
+                      })
+                    }
+                    loading={loading}
+                    renderInput={(params) => (
+                      <RTLTextField {...params} placeholder="" />
+                    )}
+                  />
+                </Grid>
               </Grid>
-              <Grid xs={12} md={6}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    mb: 1,
-                    textAlign: isRTL ? "right" : "left",
-                  }}
-                >
-                  {t("management.name")} *
-                </Typography>
-                <RTLTextField
-                  value={formData?.name || ""}
-                  onChange={handleFieldChange("name")}
-                  required
-                  placeholder=""
-                />
-              </Grid>
-              <Grid xs={12} sx={{ width: "53%" }}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    mb: 1,
-                    textAlign: isRTL ? "right" : "left",
-                  }}
-                >
-                  {t("management.subCategoryOf")}
-                </Typography>
-                <Autocomplete
-                  fullWidth
-                  options={categoryOptions}
-                  getOptionLabel={(option) => option.name || ""}
-                  value={
-                    categoryOptions.find(
-                      (c) => c.id === formData?.sub_category_of
-                    ) || null
-                  }
-                  onChange={(e, newValue) =>
-                    onFormDataChange({
-                      ...formData,
-                      sub_category_of: newValue?.id || "",
-                    })
-                  }
-                  loading={loading}
-                  renderInput={(params) => (
-                    <RTLTextField {...params} placeholder="" />
-                  )}
-                />
-              </Grid>
-            </Grid>
-          </Box>
-          
-          {/* Right side - Checkbox */}
-          <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 2, justifyContent: 'flex-end' }}>
-            <Checkbox
-              checked={formData?.active !== false}
-              onChange={(e) =>
-                onFormDataChange({
-                  ...formData,
-                  active: e.target.checked,
-                })
-              }
-              label={t("management.active")}
-              isRTL={isRTL}
-            />
+            </Box>
+            
+            {/* Right side - Checkbox */}
+            <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
+              <Checkbox
+                checked={formData?.active !== false}
+                onChange={(e) =>
+                  onFormDataChange({
+                    ...formData,
+                    active: e.target.checked,
+                  })
+                }
+                label={t("management.active")}
+                isRTL={isRTL}
+              />
+            </Box>
           </Box>
         </Box>
       );
@@ -289,93 +293,95 @@ const ItemDrawer = ({
 
     if (type === "brand") {
       return (
-        <Box sx={{ display: 'flex', gap: 2, p: 2 }}>
-          {/* Left side - Form fields */}
-          <Box sx={{ flex: 1 }}>
-            <Grid container spacing={2}>
-              <Grid xs={12} md={6}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    mb: 1,
-                    textAlign: isRTL ? "right" : "left",
-                  }}
-                >
-                  {t("management.code")} *
-                </Typography>
-                <RTLTextField
-                  value={formData?.code || ""}
-                  onChange={handleFieldChange("code")}
-                  required
-                  placeholder=""
-                />
+        <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            {/* Left side - Form fields */}
+            <Box sx={{ flex: 1 }}>
+              <Grid container spacing={2}>
+                <Grid xs={12} md={6} sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.code")} *
+                  </Typography>
+                  <RTLTextField
+                    value={formData?.code || ""}
+                    onChange={handleFieldChange("code")}
+                    required
+                    placeholder=""
+                  />
+                </Grid>
+                <Grid xs={12} md={6} sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.name")} *
+                  </Typography>
+                  <RTLTextField
+                    value={formData?.name || ""}
+                    onChange={handleFieldChange("name")}
+                    required
+                    placeholder=""
+                  />
+                </Grid>
+                <Grid xs={12} sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.subBrandOf")}
+                  </Typography>
+                  <Autocomplete
+                    fullWidth
+                    options={brandOptions}
+                    getOptionLabel={(option) => option.name || ""}
+                    value={
+                      brandOptions.find((b) => b.id === formData?.sub_brand_of) ||
+                      null
+                    }
+                    onChange={(e, newValue) =>
+                      onFormDataChange({
+                        ...formData,
+                        sub_brand_of: newValue?.id || "",
+                      })
+                    }
+                    loading={loading}
+                    renderInput={(params) => (
+                      <RTLTextField {...params} placeholder="" />
+                    )}
+                  />
+                </Grid>
               </Grid>
-              <Grid xs={12} md={6}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    mb: 1,
-                    textAlign: isRTL ? "right" : "left",
-                  }}
-                >
-                  {t("management.name")} *
-                </Typography>
-                <RTLTextField
-                  value={formData?.name || ""}
-                  onChange={handleFieldChange("name")}
-                  required
-                  placeholder=""
-                />
-              </Grid>
-              <Grid xs={12} sx={{ width: "53%" }}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    mb: 1,
-                    textAlign: isRTL ? "right" : "left",
-                  }}
-                >
-                  {t("management.subBrandOf")}
-                </Typography>
-                <Autocomplete
-                  fullWidth
-                  options={brandOptions}
-                  getOptionLabel={(option) => option.name || ""}
-                  value={
-                    brandOptions.find((b) => b.id === formData?.sub_brand_of) ||
-                    null
-                  }
-                  onChange={(e, newValue) =>
-                    onFormDataChange({
-                      ...formData,
-                      sub_brand_of: newValue?.id || "",
-                    })
-                  }
-                  loading={loading}
-                  renderInput={(params) => (
-                    <RTLTextField {...params} placeholder="" />
-                  )}
-                />
-              </Grid>
-            </Grid>
-          </Box>
-          
-          {/* Right side - Checkbox */}
-          <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 2, justifyContent: 'flex-end' }}>
-            <Checkbox
-              checked={formData?.active !== false}
-              onChange={(e) =>
-                onFormDataChange({
-                  ...formData,
-                  active: e.target.checked,
-                })
-              }
-              label={t("management.active")}
-              isRTL={isRTL}
-            />
+            </Box>
+            
+            {/* Right side - Checkbox */}
+            <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
+              <Checkbox
+                checked={formData?.active !== false}
+                onChange={(e) =>
+                  onFormDataChange({
+                    ...formData,
+                    active: e.target.checked,
+                  })
+                }
+                label={t("management.active")}
+                isRTL={isRTL}
+              />
+            </Box>
           </Box>
         </Box>
       );
@@ -383,140 +389,142 @@ const ItemDrawer = ({
 
     if (type === "item") {
       return (
-        <Box sx={{ display: 'flex', gap: 2, p: 2 }}>
-          {/* Left side - Form fields */}
-          <Box sx={{ flex: 1 }}>
-            <Grid container spacing={2}>
-              <Grid xs={12} md={6}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    mb: 1,
-                    textAlign: isRTL ? "right" : "left",
-                  }}
-                >
-                  {t("management.code")} *
-                </Typography>
-                <RTLTextField
-                  value={formData?.code || ""}
-                  onChange={handleFieldChange("code")}
-                  required
-                  placeholder=""
-                />
+        <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            {/* Left side - Form fields */}
+            <Box sx={{ flex: 1 }}>
+              <Grid container spacing={2}>
+                <Grid xs={12} md={6}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.code")} *
+                  </Typography>
+                  <RTLTextField
+                    value={formData?.code || ""}
+                    onChange={handleFieldChange("code")}
+                    required
+                    placeholder=""
+                  />
+                </Grid>
+                <Grid xs={12} md={6}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.name")} *
+                  </Typography>
+                  <RTLTextField
+                    value={formData?.name || ""}
+                    onChange={handleFieldChange("name")}
+                    required
+                    placeholder=""
+                  />
+                </Grid>
+                <Grid xs={12} md={6}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.productLine")} *
+                  </Typography>
+                  <Autocomplete
+                    fullWidth
+                    options={productLineOptions}
+                    getOptionLabel={(option) => option.name || ""}
+                    value={
+                      productLineOptions.find(
+                        (p) => p.id === formData?.product_line_id
+                      ) || null
+                    }
+                    onChange={handleProductLineChange}
+                    loading={loading}
+                    renderInput={(params) => (
+                      <RTLTextField {...params} placeholder="" required />
+                    )}
+                  />
+                </Grid>
+                <Grid xs={12} md={6}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.category")} *
+                  </Typography>
+                  <Autocomplete
+                    fullWidth
+                    options={categoryOptions}
+                    getOptionLabel={(option) => option.name || ""}
+                    value={
+                      categoryOptions.find((c) => c.id === formData?.category_id) ||
+                      null
+                    }
+                    onChange={handleCategoryChange}
+                    loading={loading}
+                    renderInput={(params) => (
+                      <RTLTextField {...params} placeholder="" required />
+                    )}
+                  />
+                </Grid>
+                <Grid xs={12} md={6}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 1,
+                      textAlign: isRTL ? "right" : "left",
+                    }}
+                  >
+                    {t("management.brand")} *
+                  </Typography>
+                  <Autocomplete
+                    fullWidth
+                    options={brandOptions}
+                    getOptionLabel={(option) => option.name || ""}
+                    value={
+                      brandOptions.find((b) => b.id === formData?.brand_id) || null
+                    }
+                    onChange={handleBrandChange}
+                    loading={loading}
+                    renderInput={(params) => (
+                      <RTLTextField {...params} placeholder="" required />
+                    )}
+                  />
+                </Grid>
               </Grid>
-              <Grid xs={12} md={6}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    mb: 1,
-                    textAlign: isRTL ? "right" : "left",
-                  }}
-                >
-                  {t("management.name")} *
-                </Typography>
-                <RTLTextField
-                  value={formData?.name || ""}
-                  onChange={handleFieldChange("name")}
-                  required
-                  placeholder=""
-                />
-              </Grid>
-              <Grid xs={12} md={6}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    mb: 1,
-                    textAlign: isRTL ? "right" : "left",
-                  }}
-                >
-                  {t("management.productLine")} *
-                </Typography>
-                <Autocomplete
-                  fullWidth
-                  options={productLineOptions}
-                  getOptionLabel={(option) => option.name || ""}
-                  value={
-                    productLineOptions.find(
-                      (p) => p.id === formData?.product_line_id
-                    ) || null
-                  }
-                  onChange={handleProductLineChange}
-                  loading={loading}
-                  renderInput={(params) => (
-                    <RTLTextField {...params} placeholder="" required />
-                  )}
-                />
-              </Grid>
-              <Grid xs={12} md={6}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    mb: 1,
-                    textAlign: isRTL ? "right" : "left",
-                  }}
-                >
-                  {t("management.category")} *
-                </Typography>
-                <Autocomplete
-                  fullWidth
-                  options={categoryOptions}
-                  getOptionLabel={(option) => option.name || ""}
-                  value={
-                    categoryOptions.find((c) => c.id === formData?.category_id) ||
-                    null
-                  }
-                  onChange={handleCategoryChange}
-                  loading={loading}
-                  renderInput={(params) => (
-                    <RTLTextField {...params} placeholder="" required />
-                  )}
-                />
-              </Grid>
-              <Grid xs={12} md={6}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    mb: 1,
-                    textAlign: isRTL ? "right" : "left",
-                  }}
-                >
-                  {t("management.brand")} *
-                </Typography>
-                <Autocomplete
-                  fullWidth
-                  options={brandOptions}
-                  getOptionLabel={(option) => option.name || ""}
-                  value={
-                    brandOptions.find((b) => b.id === formData?.brand_id) || null
-                  }
-                  onChange={handleBrandChange}
-                  loading={loading}
-                  renderInput={(params) => (
-                    <RTLTextField {...params} placeholder="" required />
-                  )}
-                />
-              </Grid>
-            </Grid>
-          </Box>
-          
-          {/* Right side - Checkbox */}
-          <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 2, justifyContent: 'flex-end' }}>
-            <Checkbox
-              checked={formData?.active !== false}
-              onChange={(e) =>
-                onFormDataChange({
-                  ...formData,
-                  active: e.target.checked,
-                })
-              }
-              label={t("management.active")}
-              isRTL={isRTL}
-            />
+            </Box>
+            
+            {/* Right side - Checkbox */}
+            <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 2, justifyContent: 'flex-end' }}>
+              <Checkbox
+                checked={formData?.active !== false}
+                onChange={(e) =>
+                  onFormDataChange({
+                    ...formData,
+                    active: e.target.checked,
+                  })
+                }
+                label={t("management.active")}
+                isRTL={isRTL}
+              />
+            </Box>
           </Box>
         </Box>
       );
@@ -532,7 +540,7 @@ const ItemDrawer = ({
     if (type === "category") return 500;
     if (type === "brand") return 500;
     if (type === "item") return 500;
-    return 600; // default
+    return 500; // default
   };
 
   const getTitle = () => {
@@ -587,7 +595,7 @@ const ItemDrawer = ({
       onSaveAndNew={onSaveAndNew}
       onSaveAndClose={onSaveAndClose}
       anchor={isRTL ? "left" : "right"}
-      width={getDrawerWidth()}
+      width={getDrawerWidth(type)}
       hasFormData={hasFormData()}
     />
   );

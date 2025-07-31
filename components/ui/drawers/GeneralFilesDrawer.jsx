@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Typography, Autocomplete } from "@mui/material";
+import { Grid, Typography, Autocomplete, Box } from "@mui/material";
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { useTranslations, useLocale } from "next-intl";
@@ -128,50 +128,9 @@ const GeneralFilesDrawer = ({
     if (!type) return null;
 
     return (
-      <Grid container spacing={2} sx={{ p: 2 }}>
-        <Grid xs={12}>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{
-              mb: 1,
-              textAlign: isRTL ? "right" : "left",
-            }}
-          >
-            {t("management.code")} *
-          </Typography>
-          <RTLTextField
-            value={formData?.code || ""}
-            onChange={handleFieldChange("code")}
-            required
-            placeholder=""
-            fullWidth
-            size="small"
-          />
-        </Grid>
-        <Grid xs={12}>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{
-              mb: 1,
-              textAlign: isRTL ? "right" : "left",
-            }}
-          >
-            {t(`management.${type}Name`)} *
-          </Typography>
-          <RTLTextField
-            value={formData?.name || ""}
-            onChange={handleFieldChange("name")}
-            required
-            placeholder=""
-            fullWidth
-            size="small"
-          />
-        </Grid>
-        {/* Only show sub_of field for sales channels, distribution channels, and media channels */}
-        {type !== "businessType" && (
-          <Grid xs={12}>
+      <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
+        <Grid container spacing={2}>
+          <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -180,26 +139,69 @@ const GeneralFilesDrawer = ({
                 textAlign: isRTL ? "right" : "left",
               }}
             >
-              {t("management.subOf")}
+              {t("management.code")} *
             </Typography>
-            <Autocomplete
+            <RTLTextField
+              value={formData?.code || ""}
+              onChange={handleFieldChange("code")}
+              required
+              placeholder=""
               fullWidth
-              options={subOptions}
-              getOptionLabel={(option) => `${option.code} (${option.name})`}
-              value={
-                subOptions.find(
-                  (item) => item.id === formData?.[subFieldName]
-                ) || null
-              }
-              onChange={handleSubOfChange}
-              loading={loading}
-              renderInput={(params) => (
-                <RTLTextField {...params} placeholder="" />
-              )}
+              size="small"
             />
           </Grid>
-        )}
-      </Grid>
+          <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                mb: 1,
+                textAlign: isRTL ? "right" : "left",
+              }}
+            >
+              {t(`management.${type}Name`)} *
+            </Typography>
+            <RTLTextField
+              value={formData?.name || ""}
+              onChange={handleFieldChange("name")}
+              required
+              placeholder=""
+              fullWidth
+              size="small"
+            />
+          </Grid>
+          {/* Only show sub_of field for sales channels, distribution channels, and media channels */}
+          {type !== "businessType" && (
+            <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  mb: 1,
+                  textAlign: isRTL ? "right" : "left",
+                }}
+              >
+                {t("management.subOf")}
+              </Typography>
+              <Autocomplete
+                fullWidth
+                options={subOptions}
+                getOptionLabel={(option) => `${option.code} (${option.name})`}
+                value={
+                  subOptions.find(
+                    (item) => item.id === formData?.[subFieldName]
+                  ) || null
+                }
+                onChange={handleSubOfChange}
+                loading={loading}
+                renderInput={(params) => (
+                  <RTLTextField {...params} placeholder="" />
+                )}
+              />
+            </Grid>
+          )}
+        </Grid>
+      </Box>
     );
   };
 
@@ -378,12 +380,14 @@ const GeneralFilesDrawer = ({
   const hasFormData = () => {
     const hasCode = formData?.code && formData.code.trim() !== "";
     const hasName = formData?.name && formData.name.trim() !== "";
+    const hasSubOf = formData?.[subFieldName] && formData[subFieldName] !== "";
     
+    // For businessType, only code and name are required
     if (type === "businessType") {
-      return hasCode && hasName;
+      return hasCode || hasName;
     } else {
-      // For other types, sub_of is optional
-      return hasCode && hasName;
+      // For other types, check if any field has data
+      return hasCode || hasName || hasSubOf;
     }
   };
 

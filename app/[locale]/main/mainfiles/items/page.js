@@ -40,6 +40,7 @@ import { useTableColumns } from "@/constants/tableColumns";
 import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useCustomActions } from "@/components/ui/table/useCustomActions";
+import { getPluralFileName } from "@/lib/utils";
 import { ActiveStatusAction } from "@/components/ui/table/ActiveStatusAction";
 
 function TabPanel(props) {
@@ -100,6 +101,7 @@ function ItemsPage() {
   const locale = useLocale();
   const isRTL = locale === "ar";
   const t = useTranslations("items");
+  const commonT = useTranslations("common");
   const tableT = useTranslations("tableColumns");
   const toastT = useTranslations("toast");
 
@@ -405,6 +407,34 @@ function ItemsPage() {
 
   const handleExportExcel = async (type) => {
     try {
+      // Check if the table is empty before exporting
+      let dataArray;
+      switch (type) {
+        case "productLine":
+          dataArray = productLinesData;
+          break;
+        case "category":
+          dataArray = categoriesData;
+          break;
+        case "brand":
+          dataArray = brandsData;
+          break;
+        case "item":
+          dataArray = itemsData;
+          break;
+        default:
+          return;
+      }
+
+      // Check if data array is empty
+      if (!dataArray || dataArray.length === 0) {
+        toast.error({
+          title: toastT("error"),
+          description: toastT("noDataToExport"),
+        });
+        return;
+      }
+
       let response;
       switch (type) {
         case "productLine":
@@ -427,15 +457,10 @@ function ItemsPage() {
       const url = window.URL.createObjectURL(new Blob([response]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `${type}s.xlsx`);
+      link.setAttribute("download", `${getPluralFileName(type)}.xlsx`);
       document.body.appendChild(link);
       link.click();
       link.remove();
-
-      toast.success({
-        title: toastT("success"),
-        description: toastT(`${type}.exportSuccess`),
-      });
     } catch (error) {
       toast.error({
         title: toastT("error"),
@@ -446,6 +471,34 @@ function ItemsPage() {
 
   const handleExportPdf = async (type) => {
     try {
+      // Check if the table is empty before exporting
+      let dataArray;
+      switch (type) {
+        case "productLine":
+          dataArray = productLinesData;
+          break;
+        case "category":
+          dataArray = categoriesData;
+          break;
+        case "brand":
+          dataArray = brandsData;
+          break;
+        case "item":
+          dataArray = itemsData;
+          break;
+        default:
+          return;
+      }
+
+      // Check if data array is empty
+      if (!dataArray || dataArray.length === 0) {
+        toast.error({
+          title: toastT("error"),
+          description: toastT("noDataToExport"),
+        });
+        return;
+      }
+
       let response;
       switch (type) {
         case "productLine":
@@ -468,15 +521,10 @@ function ItemsPage() {
       const url = window.URL.createObjectURL(new Blob([response]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `${type}s.pdf`);
+      link.setAttribute("download", `${getPluralFileName(type)}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
-
-      toast.success({
-        title: toastT("success"),
-        description: toastT(`${type}.exportSuccess`),
-      });
     } catch (error) {
       toast.error({
         title: toastT("error"),
@@ -535,7 +583,7 @@ function ItemsPage() {
       const content = `
         <html>
           <head>
-            <title>${typeTitle} List</title>
+            <title>${isRTL ? `${commonT("list")} ${typeTitle}` : `${typeTitle} ${commonT("list")}`}</title>
             <style>
               body { font-family: Arial, sans-serif; }
               table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -550,7 +598,7 @@ function ItemsPage() {
             </style>
           </head>
           <body>
-            <h1>${typeTitle} List</h1>
+            <h1>${isRTL ? `${commonT("list")} ${typeTitle}` : `${typeTitle} ${commonT("list")}`}</h1>
             <table>
               <thead>
                 <tr>
@@ -585,11 +633,6 @@ function ItemsPage() {
           printWindow.close();
         };
       };
-
-      toast.success({
-        title: toastT("success"),
-        description: toastT(`${type}.printSuccess`),
-      });
     } catch (error) {
       toast.error({
         title: toastT("error"),
