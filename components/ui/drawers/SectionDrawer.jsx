@@ -346,7 +346,7 @@ const SectionDrawer = ({
                 placeholder=""
               />
             </Grid>
-            <Grid sx={{ minWidth: 250, gridColumn: 'span 12' }}>
+            <Grid sx={{ minWidth: 250, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -372,7 +372,7 @@ const SectionDrawer = ({
                 )}
               />
             </Grid>
-            <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+            <Grid sx={{ minWidth: 250, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -390,7 +390,7 @@ const SectionDrawer = ({
                 placeholder=""
               />
             </Grid>
-            <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+            <Grid sx={{ minWidth: 250, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -408,7 +408,7 @@ const SectionDrawer = ({
                 placeholder=""
               />
             </Grid>
-            <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+            <Grid sx={{ minWidth: 250, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -439,7 +439,7 @@ const SectionDrawer = ({
             {/* Left side - Form fields */}
             <Box sx={{ flex: 1 }}>
               <Grid container spacing={2}>
-                <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+                <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -457,7 +457,7 @@ const SectionDrawer = ({
                     placeholder=""
                   />
                 </Grid>
-                <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+                <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -475,7 +475,7 @@ const SectionDrawer = ({
                     placeholder=""
                   />
                 </Grid>
-                <Grid sx={{ minWidth: 250, gridColumn: 'span 12', width: "53%" }}>
+                <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -506,7 +506,7 @@ const SectionDrawer = ({
             </Box>
             
             {/* Right side - Checkbox */}
-            <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 2, justifyContent: 'flex-end' }}>
+            <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
               <Checkbox
                 checked={formData?.active !== false}
                 onChange={(e) =>
@@ -531,7 +531,7 @@ const SectionDrawer = ({
             {/* Left side - Form fields */}
             <Box sx={{ flex: 1 }}>
               <Grid container spacing={2}>
-                <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+                <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -549,7 +549,7 @@ const SectionDrawer = ({
                     placeholder=""
                   />
                 </Grid>
-                <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+                <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -567,7 +567,7 @@ const SectionDrawer = ({
                     placeholder=""
                   />
                 </Grid>
-                <Grid sx={{ minWidth: 250, gridColumn: 'span 12', width: "53%" }}>
+                <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -598,7 +598,7 @@ const SectionDrawer = ({
             </Box>
             
             {/* Right side - Checkbox */}
-            <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 2, justifyContent: 'flex-end' }}>
+            <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
               <Checkbox
                 checked={formData?.active !== false}
                 onChange={(e) =>
@@ -623,7 +623,7 @@ const SectionDrawer = ({
             {/* Left side - Form fields */}
             <Box sx={{ flex: 1 }}>
               <Grid container spacing={2}>
-                <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+                <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -641,7 +641,7 @@ const SectionDrawer = ({
                     placeholder=""
                   />
                 </Grid>
-                <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+                  <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -663,7 +663,7 @@ const SectionDrawer = ({
             </Box>
             
             {/* Right side - Checkbox */}
-            <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 2, justifyContent: 'flex-end' }}>
+            <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
               <Checkbox
                 checked={formData?.active !== false}
                 onChange={(e) =>
@@ -685,7 +685,7 @@ const SectionDrawer = ({
       return (
         <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
           <Grid container spacing={2}>
-            <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+            <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -703,7 +703,7 @@ const SectionDrawer = ({
                 placeholder=""
               />
             </Grid>
-            <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+            <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -730,7 +730,7 @@ const SectionDrawer = ({
       return (
         <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
           <Grid container spacing={2}>
-            <Grid sx={{ minWidth: 200, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+            <Grid sx={{ minWidth: 350, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -748,7 +748,7 @@ const SectionDrawer = ({
                 placeholder=""
               />
             </Grid>
-            <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+            <Grid sx={{ minWidth: 350, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -774,7 +774,7 @@ const SectionDrawer = ({
                 )}
               />
             </Grid>
-            <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+            <Grid sx={{ minWidth: 350, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -792,7 +792,7 @@ const SectionDrawer = ({
                 placeholder=""
               />
             </Grid>
-            <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+            <Grid sx={{ minWidth: 350, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -810,7 +810,7 @@ const SectionDrawer = ({
                 placeholder=""
               />
             </Grid>
-            <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+            <Grid sx={{ minWidth: 350, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <Typography
                 variant="body2"
                 color="text.secondary"

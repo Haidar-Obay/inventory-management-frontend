@@ -136,7 +136,7 @@ const ItemDrawer = ({
             {/* Left side - Form fields */}
             <Box sx={{ flex: 1 }}>
               <Grid container spacing={2}>
-                <Grid xs={12} md={6}>
+                <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -154,7 +154,7 @@ const ItemDrawer = ({
                     placeholder=""
                   />
                 </Grid>
-                <Grid xs={12} md={6}>
+                <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -176,7 +176,7 @@ const ItemDrawer = ({
             </Box>
             
             {/* Right side - Checkbox */}
-            <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 2, justifyContent: 'flex-end' }}>
+            <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
               <Checkbox
                 checked={formData?.active !== false}
                 onChange={(e) =>
@@ -201,7 +201,7 @@ const ItemDrawer = ({
             {/* Left side - Form fields */}
             <Box sx={{ flex: 1 }}>
               <Grid container spacing={2}>
-                <Grid xs={12} md={6}>
+                <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }} md={6}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -219,7 +219,7 @@ const ItemDrawer = ({
                     placeholder=""
                   />
                 </Grid>
-                <Grid xs={12} md={6}>
+                <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }} md={6}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -237,7 +237,7 @@ const ItemDrawer = ({
                     placeholder=""
                   />
                 </Grid>
-                <Grid xs={12} sx={{ width: "53%" }}>
+                <Grid xs={12} sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -273,7 +273,7 @@ const ItemDrawer = ({
             </Box>
             
             {/* Right side - Checkbox */}
-            <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 2, justifyContent: 'flex-end' }}>
+            <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
               <Checkbox
                 checked={formData?.active !== false}
                 onChange={(e) =>
@@ -298,7 +298,7 @@ const ItemDrawer = ({
             {/* Left side - Form fields */}
             <Box sx={{ flex: 1 }}>
               <Grid container spacing={2}>
-                <Grid xs={12} md={6}>
+                <Grid xs={12} md={6} sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -316,7 +316,7 @@ const ItemDrawer = ({
                     placeholder=""
                   />
                 </Grid>
-                <Grid xs={12} md={6}>
+                <Grid xs={12} md={6} sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -334,7 +334,7 @@ const ItemDrawer = ({
                     placeholder=""
                   />
                 </Grid>
-                <Grid xs={12} sx={{ width: "53%" }}>
+                <Grid xs={12} sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -369,7 +369,7 @@ const ItemDrawer = ({
             </Box>
             
             {/* Right side - Checkbox */}
-            <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 2, justifyContent: 'flex-end' }}>
+            <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
               <Checkbox
                 checked={formData?.active !== false}
                 onChange={(e) =>
@@ -540,7 +540,7 @@ const ItemDrawer = ({
     if (type === "category") return 500;
     if (type === "brand") return 500;
     if (type === "item") return 500;
-    return 600; // default
+    return 500; // default
   };
 
   const getTitle = () => {
@@ -595,7 +595,7 @@ const ItemDrawer = ({
       onSaveAndNew={onSaveAndNew}
       onSaveAndClose={onSaveAndClose}
       anchor={isRTL ? "left" : "right"}
-      width={getDrawerWidth()}
+      width={getDrawerWidth(type)}
       hasFormData={hasFormData()}
     />
   );

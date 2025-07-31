@@ -90,46 +90,53 @@ const CustomerGroupDrawer = ({
 
   const content = (
     <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
-      <Grid container spacing={2}>
-        <Grid xs={12} md={6}>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}
-          >
-            {t("management.code")} *
-          </Typography>
-          <RTLTextField
-            value={formData?.code || ""}
-            onChange={handleFieldChange("code")}
-            required
-            placeholder=""
-          />
-        </Grid>
-        <Grid xs={12} md={6}>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}
-          >
-            {t("management.name")} *
-          </Typography>
-          <RTLTextField
-            value={formData?.name || ""}
-            onChange={handleFieldChange("name")}
-            required
-            placeholder=""
-          />
-        </Grid>
-        <Grid xs={12} md={6}>
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        {/* Left side - Form fields */}
+        <Box sx={{ flex: 1 }}>
+          <Grid container spacing={2}>
+            <Grid xs={12} md={6} sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}
+              >
+                {t("management.code")} *
+              </Typography>
+              <RTLTextField
+                value={formData?.code || ""}
+                onChange={handleFieldChange("code")}
+                required
+                placeholder=""
+              />
+            </Grid>
+            <Grid xs={12} md={6} sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}
+              >
+                {t("management.name")} *
+              </Typography>
+              <RTLTextField
+                value={formData?.name || ""}
+                onChange={handleFieldChange("name")}
+                required
+                placeholder=""
+              />
+            </Grid>
+          </Grid>
+        </Box>
+        
+        {/* Right side - Checkbox */}
+        <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
           <Checkbox
             checked={formData?.active !== false}
             onChange={e => setFormData({ ...formData, active: e.target.checked })}
             label={t("management.active")}
             isRTL={isRTL}
           />
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Box>
   );
 
@@ -141,7 +148,7 @@ const CustomerGroupDrawer = ({
       content={content}
       onSave={handleSave}
       anchor={isRTL ? "left" : "right"}
-      width={450}
+      width={500}
       hasFormData={hasFormData}
     />
   );

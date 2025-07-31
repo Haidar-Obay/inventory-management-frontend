@@ -130,7 +130,7 @@ const GeneralFilesDrawer = ({
     return (
       <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
         <Grid container spacing={2}>
-          <Grid xs={12}>
+          <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -150,7 +150,7 @@ const GeneralFilesDrawer = ({
               size="small"
             />
           </Grid>
-          <Grid xs={12}>
+          <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -172,7 +172,7 @@ const GeneralFilesDrawer = ({
           </Grid>
           {/* Only show sub_of field for sales channels, distribution channels, and media channels */}
           {type !== "businessType" && (
-            <Grid xs={12}>
+            <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <Typography
                 variant="body2"
                 color="text.secondary"
