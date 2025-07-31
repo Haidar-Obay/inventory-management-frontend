@@ -108,6 +108,7 @@ const SalesmanDrawer = ({
                 onChange={handleFieldChange("code")}
                 required
                 placeholder=""
+                autoFocus
               />
             </Grid>
             

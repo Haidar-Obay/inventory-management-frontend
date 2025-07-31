@@ -113,6 +113,7 @@ const PaymentDrawer = ({
                   onChange={handleCodeChange}
                   required
                   placeholder=""
+                  autoFocus
                 />
               </Grid>
               <Grid item sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>

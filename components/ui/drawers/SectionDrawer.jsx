@@ -344,6 +344,7 @@ const SectionDrawer = ({
                 onChange={handleFieldChange("name")}
                 required
                 placeholder=""
+                autoFocus
               />
             </Grid>
             <Grid sx={{ minWidth: 250, gridColumn: { xs: 'span 12', md: 'span 6' } }}>

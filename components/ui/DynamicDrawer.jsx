@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Typography,
@@ -38,11 +38,31 @@ const DynamicDrawer = ({
   showExitConfirmation = true, // New prop to control confirmation dialog
   hasFormData = false, // New prop to check if form has data
   saveLoading = false, // New prop for save loading state
+  autoFocus = true, // New prop to control auto focus behavior
 }) => {
   const locale = useLocale();
   const isRTL = locale === "ar";
   const t = useTranslations("common");
   const [showExitDialog, setShowExitDialog] = useState(false);
+  const contentRef = useRef(null);
+
+  // Auto focus first input field when drawer opens
+  useEffect(() => {
+    if (isOpen && autoFocus) {
+      // Use setTimeout to ensure the drawer is fully rendered
+      const timer = setTimeout(() => {
+        if (contentRef.current) {
+          // Find the first input field in the content
+          const firstInput = contentRef.current.querySelector('input, textarea, select');
+          if (firstInput) {
+            firstInput.focus();
+          }
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, autoFocus]);
 
   const handleCancelClick = () => {
     // Only show confirmation if there's form data and confirmation is enabled
@@ -106,6 +126,7 @@ const DynamicDrawer = ({
                 msOverflowStyle: "none",
               },
             }}
+            ref={contentRef}
           >
             <Box p={3}>
               {/* Render direct content if provided */}

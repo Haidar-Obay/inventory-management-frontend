@@ -410,6 +410,7 @@ const ItemDrawer = ({
                     onChange={handleFieldChange("code")}
                     required
                     placeholder=""
+                    autoFocus
                   />
                 </Grid>
                 <Grid xs={12} md={6}>

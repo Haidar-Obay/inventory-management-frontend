@@ -107,6 +107,7 @@ const CustomerGroupDrawer = ({
                 onChange={handleFieldChange("code")}
                 required
                 placeholder=""
+                autoFocus
               />
             </Grid>
             <Grid xs={12} md={6} sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>

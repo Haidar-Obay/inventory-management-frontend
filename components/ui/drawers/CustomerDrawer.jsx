@@ -1026,6 +1026,7 @@ const CustomerDrawer = React.memo(({
               onChange={handleFieldChange("name")}
               required
               placeholder=""
+              autoFocus
             />
           </Grid>
       </Grid>
