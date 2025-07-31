@@ -214,6 +214,7 @@ export const Dropdown = ({
           <div
             ref={dropdownRef}
             className="z-[9999] min-w-[9rem] rounded-md border border-border bg-background p-1 shadow-lg fixed"
+        data-nextjs-scroll-focus-boundary
             style={{
               top: position.top,
               left: position.left,
@@ -278,7 +279,7 @@ export const Modal = ({ isOpen, onClose, title, children }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm" data-nextjs-scroll-focus-boundary>
       <div className="w-full max-w-md rounded-lg bg-background p-6 shadow-lg border border-border">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-medium text-foreground">{title}</h3>

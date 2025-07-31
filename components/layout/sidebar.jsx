@@ -188,7 +188,8 @@ const PortalTooltip = ({ children, content, isRTL, isVisible }) => {
 
   const tooltip = (
     <div
-      className="fixed z-[999999] px-2 py-1 text-sm text-primary-foreground bg-primary rounded-md border border-white dark:border-black shadow-lg pointer-events-none whitespace-nowrap"
+              className="fixed z-[999999] px-2 py-1 text-sm text-primary-foreground bg-primary rounded-md border border-white dark:border-black shadow-lg pointer-events-none whitespace-nowrap"
+        data-nextjs-scroll-focus-boundary
       style={{
         top: position.top,
         [isRTL ? "right" : "left"]: position[isRTL ? "right" : "left"],

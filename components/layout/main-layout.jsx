@@ -222,7 +222,7 @@ export function MainLayout({ children }) {
                 
                 {/* Fullscreen exit message */}
                 {isFullscreen && (
-                  <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-background/95 backdrop-blur-sm border border-border/50 rounded-lg px-4 py-2 shadow-lg">
+                  <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-background/95 backdrop-blur-sm border border-border/50 rounded-lg px-4 py-2 shadow-lg" data-nextjs-scroll-focus-boundary>
                     <p className="text-sm text-muted-foreground">
                       Press <kbd className="px-2 py-1 text-xs bg-muted rounded border">ESC</kbd> to exit fullscreen
                     </p>

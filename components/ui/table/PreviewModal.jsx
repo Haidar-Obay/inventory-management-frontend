@@ -82,6 +82,7 @@ const PreviewModal = ({ isOpen, onClose, row, columns, columnOrder, visibleColum
         <Portal>
           <div 
             className="fixed inset-0 z-[2147483647] pointer-events-auto flex items-center justify-center bg-black/50"
+        data-nextjs-scroll-focus-boundary
             onClick={handleBackdropClick}
           >
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl max-h-[80vh] overflow-y-auto">

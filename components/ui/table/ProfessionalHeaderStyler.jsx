@@ -225,7 +225,7 @@ const ProfessionalHeaderStyler = React.memo(({
 
       {/* Professional Header Styling Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[2147483648] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[2147483648] flex items-center justify-center bg-black/50 backdrop-blur-sm" data-nextjs-scroll-focus-boundary>
           <div ref={modalRef} className="bg-background p-6 rounded-xl shadow-2xl border border-border w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="flex items-center justify-between mb-6">

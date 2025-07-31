@@ -147,7 +147,7 @@ export default function TenantLogin() {
   );
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-background">
+    <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-background" data-nextjs-scroll-focus-boundary>
       <CustomBackground className="absolute inset-0 -z-10 opacity-50" />
 
       {/* Add toolbar */}

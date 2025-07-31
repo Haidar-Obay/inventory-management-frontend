@@ -158,7 +158,7 @@ const TemplatePrompt = React.memo(({
   if (!isOpen) return null;
   
   return (
-    <div className="fixed inset-0 z-[2147483648] flex items-center justify-center bg-black/40">
+          <div className="fixed inset-0 z-[2147483648] flex items-center justify-center bg-black/40" data-nextjs-scroll-focus-boundary>
       <div className="bg-background p-6 rounded-lg shadow-lg border border-border w-full max-w-sm">
         <h4 className="text-lg font-medium mb-2">{t("columns.modal.saveAsTemplate")}</h4>
         <input
@@ -213,7 +213,7 @@ const DeleteConfirmModal = React.memo(({
   };
   
   return (
-    <div className="fixed inset-0 z-[2147483648] flex items-center justify-center bg-black/40" onClick={handleBackdropClick}>
+            <div className="fixed inset-0 z-[2147483648] flex items-center justify-center bg-black/40" onClick={handleBackdropClick} data-nextjs-scroll-focus-boundary>
       <div className="bg-background p-6 rounded-lg shadow-lg border border-border w-full max-w-sm">
         <div className="mb-4 flex items-center justify-between">
           <h4 className="text-lg font-medium text-destructive">
@@ -1166,6 +1166,7 @@ export const ColumnModal = React.memo(({
     <Portal>
       <div
         className="fixed inset-0 z-[2147483647] pointer-events-auto flex items-center justify-center bg-black/50"
+        data-nextjs-scroll-focus-boundary
         onClick={handleBackdropClick}
       >
         <div className="w-full max-w-4xl h-[500px] flex flex-col rounded-lg bg-background p-6 shadow-lg border border-border">

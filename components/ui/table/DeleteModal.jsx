@@ -22,6 +22,7 @@ export const DeleteModal = ({ isOpen, onConfirm, onCancel }) => {
     <Portal>
       <div
         className="fixed inset-0 z-[2147483647] pointer-events-auto flex items-center justify-center bg-black/50"
+      data-nextjs-scroll-focus-boundary
         onClick={handleBackdropClick}
       >
         <div className="w-full max-w-md rounded-lg bg-background p-6 shadow-lg border border-border">
