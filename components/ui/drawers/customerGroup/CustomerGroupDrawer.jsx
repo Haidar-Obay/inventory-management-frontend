@@ -86,7 +86,7 @@ const CustomerGroupDrawer = ({
     }
   };
 
-  const hasFormData = formData?.name && formData?.code;
+  const hasFormData = (formData?.name && formData.name.trim() !== "") || (formData?.code && formData.code.trim() !== "");
 
   const content = (
     <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">

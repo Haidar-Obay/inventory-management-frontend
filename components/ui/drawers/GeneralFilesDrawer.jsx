@@ -380,12 +380,14 @@ const GeneralFilesDrawer = ({
   const hasFormData = () => {
     const hasCode = formData?.code && formData.code.trim() !== "";
     const hasName = formData?.name && formData.name.trim() !== "";
+    const hasSubOf = formData?.[subFieldName] && formData[subFieldName] !== "";
     
+    // For businessType, only code and name are required
     if (type === "businessType") {
-      return hasCode && hasName;
+      return hasCode || hasName;
     } else {
-      // For other types, sub_of is optional
-      return hasCode && hasName;
+      // For other types, check if any field has data
+      return hasCode || hasName || hasSubOf;
     }
   };
 

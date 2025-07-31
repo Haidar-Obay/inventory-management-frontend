@@ -352,7 +352,7 @@ const PaymentDrawer = ({
   };
 
   // Check if form has data
-  const hasFormData = formData?.code && formData.code.trim() !== "" && formData?.name && formData.name.trim() !== "" && (type !== "paymentTerm" || (formData.nb_days !== undefined && formData.nb_days !== null));
+  const hasFormData = (formData?.code && formData.code.trim() !== "") || (formData?.name && formData.name.trim() !== "") || (formData?.nb_days !== undefined && formData?.nb_days !== null && formData.nb_days !== 0);
 
   return (
     <DynamicDrawer
