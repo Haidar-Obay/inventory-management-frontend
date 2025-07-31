@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -9,6 +9,39 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { arSA, enUS } from "date-fns/locale";
 import { MUIThemeWrapper } from "@/lib/themes/mui-theme-provider";
+
+// Helper function to safely access localStorage
+const safeLocalStorage = {
+  getItem: (key) => {
+    if (typeof window !== 'undefined') {
+      try {
+        return window.localStorage.getItem(key);
+      } catch (error) {
+        console.error("Error accessing localStorage:", error);
+        return null;
+      }
+    }
+    return null;
+  },
+  setItem: (key, value) => {
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.setItem(key, value);
+      } catch (error) {
+        console.error("Error setting localStorage:", error);
+      }
+    }
+  },
+  removeItem: (key) => {
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.removeItem(key);
+      } catch (error) {
+        console.error("Error removing from localStorage:", error);
+      }
+    }
+  }
+};
 
 export function MainLayout({ children }) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -19,6 +52,7 @@ export function MainLayout({ children }) {
   const locale = useLocale();
   const dateAdapterLocale = locale === "ar" ? arSA : enUS;
 
+  // Ensure we're on the client side
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -28,23 +62,23 @@ export function MainLayout({ children }) {
     if (!isClient) return;
 
     // Get user role from localStorage
-    const storedRole = localStorage.getItem("userRole") || "user";
+    const storedRole = safeLocalStorage.getItem("userRole") || "user";
     setUserRole(storedRole);
 
     // Get sidebar state from localStorage
-    const sidebarState = localStorage.getItem("sidebarState");
+    const sidebarState = safeLocalStorage.getItem("sidebarState");
     if (sidebarState) {
       setIsSidebarCollapsed(sidebarState === "collapsed");
     }
 
     // Get sidebar visibility from localStorage
-    const sidebarVisible = localStorage.getItem("sidebarVisible");
+    const sidebarVisible = safeLocalStorage.getItem("sidebarVisible");
     if (sidebarVisible !== null) {
       setIsSidebarVisible(sidebarVisible === "true");
     }
 
     // Get fullscreen state from localStorage
-    const fullscreenState = localStorage.getItem("fullscreenState");
+    const fullscreenState = safeLocalStorage.getItem("fullscreenState");
     if (fullscreenState !== null) {
       setIsFullscreen(fullscreenState === "true");
     }
@@ -70,21 +104,21 @@ export function MainLayout({ children }) {
     const newState = !isSidebarCollapsed;
     setIsSidebarCollapsed(newState);
     if (isClient) {
-      localStorage.setItem("sidebarState", newState ? "collapsed" : "expanded");
+      safeLocalStorage.setItem("sidebarState", newState ? "collapsed" : "expanded");
     }
   };
 
   const hideSidebar = () => {
     setIsSidebarVisible(false);
     if (isClient) {
-      localStorage.setItem("sidebarVisible", "false");
+      safeLocalStorage.setItem("sidebarVisible", "false");
     }
   };
 
   const showSidebar = () => {
     setIsSidebarVisible(true);
     if (isClient) {
-      localStorage.setItem("sidebarVisible", "true");
+      safeLocalStorage.setItem("sidebarVisible", "true");
     }
   };
 
@@ -94,7 +128,7 @@ export function MainLayout({ children }) {
     
     // Save fullscreen state to localStorage
     if (isClient) {
-      localStorage.setItem("fullscreenState", newFullscreenState.toString());
+      safeLocalStorage.setItem("fullscreenState", newFullscreenState.toString());
     }
     
     // When entering fullscreen, hide both sidebar and header
@@ -103,13 +137,13 @@ export function MainLayout({ children }) {
       // Entering fullscreen - hide sidebar
       setIsSidebarVisible(false);
       if (isClient) {
-        localStorage.setItem("sidebarVisible", "false");
+        safeLocalStorage.setItem("sidebarVisible", "false");
       }
     } else {
       // Exiting fullscreen - show sidebar
       setIsSidebarVisible(true);
       if (isClient) {
-        localStorage.setItem("sidebarVisible", "true");
+        safeLocalStorage.setItem("sidebarVisible", "true");
       }
     }
   };

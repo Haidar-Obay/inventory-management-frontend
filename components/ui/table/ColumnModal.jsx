@@ -16,6 +16,39 @@ import {
   updateTableTemplate
 } from "../../../API/TableTemplates";
 
+// Helper function to safely access localStorage
+const safeLocalStorage = {
+  getItem: (key) => {
+    if (typeof window !== 'undefined') {
+      try {
+        return window.localStorage.getItem(key);
+      } catch (error) {
+        console.error("Error accessing localStorage:", error);
+        return null;
+      }
+    }
+    return null;
+  },
+  setItem: (key, value) => {
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.setItem(key, value);
+      } catch (error) {
+        console.error("Error setting localStorage:", error);
+      }
+    }
+  },
+  removeItem: (key) => {
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.removeItem(key);
+      } catch (error) {
+        console.error("Error removing from localStorage:", error);
+      }
+    }
+  }
+};
+
 // Utility to conditionally add a class
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -291,7 +324,7 @@ export const ColumnModal = React.memo(({
   const getPersistedOtherSettings = () => {
     if (!otherSettingsKey) return {};
     try {
-      const raw = localStorage.getItem(otherSettingsKey);
+      const raw = safeLocalStorage.getItem(otherSettingsKey);
       return raw ? JSON.parse(raw) : {};
     } catch {
       return {};
@@ -345,7 +378,7 @@ export const ColumnModal = React.memo(({
         appliedAt: new Date().toISOString(),
         ...templateData
       };
-      localStorage.setItem(key, JSON.stringify(templateToSave));
+      safeLocalStorage.setItem(key, JSON.stringify(templateToSave));
     } catch (error) {
       // Error saving last applied template
     }
@@ -356,7 +389,7 @@ export const ColumnModal = React.memo(({
     if (!key) return null;
     
     try {
-      const saved = localStorage.getItem(key);
+      const saved = safeLocalStorage.getItem(key);
       return saved ? JSON.parse(saved) : null;
     } catch (error) {
       // Error loading last applied template
@@ -369,7 +402,7 @@ export const ColumnModal = React.memo(({
     if (!key) return;
     
     try {
-      localStorage.removeItem(key);
+      safeLocalStorage.removeItem(key);
     } catch (error) {
       // Error clearing last applied template
     }
@@ -755,7 +788,7 @@ export const ColumnModal = React.memo(({
       showBodyColSeparator: otherShowBodyColSeparator,
     };
     try {
-      localStorage.setItem(otherSettingsKey, JSON.stringify(settings));
+      safeLocalStorage.setItem(otherSettingsKey, JSON.stringify(settings));
     } catch {}
   }, [otherHeaderColor, otherHeaderFontSize, otherHeaderFontStyle, otherHeaderFontColor, otherShowHeaderSeparator, otherShowHeaderColSeparator, otherShowBodyColSeparator, otherSettingsKey]);
 
@@ -770,7 +803,7 @@ export const ColumnModal = React.memo(({
     setOtherShowBodyColSeparator(showBodyColSeparator !== undefined ? showBodyColSeparator : true);
     // Optionally, clear persisted settings in localStorage
     if (otherSettingsKey) {
-      localStorage.removeItem(otherSettingsKey);
+      safeLocalStorage.removeItem(otherSettingsKey);
     }
   }, [showHeaderSeparator, showHeaderColSeparator, showBodyColSeparator, otherSettingsKey]);
 
@@ -1015,7 +1048,7 @@ export const ColumnModal = React.memo(({
     setOtherShowHeaderColSeparator(true);
     setOtherShowBodyColSeparator(true);
     if (otherSettingsKey) {
-      localStorage.removeItem(otherSettingsKey);
+      safeLocalStorage.removeItem(otherSettingsKey);
     }
   }, [columns, onToggleColumn, onColumnOrderChange, onColumnWidthChange, otherSettingsKey]);
 

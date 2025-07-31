@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useTheme } from "next-themes";
 import { useTableLogic } from "./useTableLogic";
 import { TableHeader } from "./TableHeader";
@@ -12,6 +12,39 @@ import { ColumnModal } from "./ColumnModal";
 import { FilterModal } from "./FilterModal";
 import PreviewModal from "./PreviewModal";
 import { Badge } from "./CustomControls";
+
+// Helper function to safely access localStorage
+const safeLocalStorage = {
+  getItem: (key) => {
+    if (typeof window !== 'undefined') {
+      try {
+        return window.localStorage.getItem(key);
+      } catch (error) {
+        console.error("Error accessing localStorage:", error);
+        return null;
+      }
+    }
+    return null;
+  },
+  setItem: (key, value) => {
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.setItem(key, value);
+      } catch (error) {
+        console.error("Error setting localStorage:", error);
+      }
+    }
+  },
+  removeItem: (key) => {
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.removeItem(key);
+      } catch (error) {
+        console.error("Error removing from localStorage:", error);
+      }
+    }
+  }
+};
 
 const Table = (props) => {
   const { theme } = useTheme();
@@ -164,7 +197,7 @@ const Table = (props) => {
   const otherSettingsKey = `table:${tableId}:otherSettings`;
   const getPersistedOtherSettings = () => {
     try {
-      const raw = localStorage.getItem(otherSettingsKey);
+      const raw = safeLocalStorage.getItem(otherSettingsKey);
       return raw ? JSON.parse(raw) : {};
     } catch {
       return {};
@@ -178,7 +211,7 @@ const Table = (props) => {
     if (!key) return null;
     
     try {
-      const saved = localStorage.getItem(key);
+      const saved = safeLocalStorage.getItem(key);
       return saved ? JSON.parse(saved) : null;
     } catch (error) {
       console.error("Error loading last applied template:", error);

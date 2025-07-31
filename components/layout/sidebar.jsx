@@ -72,6 +72,39 @@ import tenantApiService from "@/API/TenantApiService";
 import { useRouter, useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 
+// Helper function to safely access localStorage
+const safeLocalStorage = {
+  getItem: (key) => {
+    if (typeof window !== 'undefined') {
+      try {
+        return window.localStorage.getItem(key);
+      } catch (error) {
+        console.error("Error accessing localStorage:", error);
+        return null;
+      }
+    }
+    return null;
+  },
+  setItem: (key, value) => {
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.setItem(key, value);
+      } catch (error) {
+        console.error("Error setting localStorage:", error);
+      }
+    }
+  },
+  removeItem: (key) => {
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.removeItem(key);
+      } catch (error) {
+        console.error("Error removing from localStorage:", error);
+      }
+    }
+  }
+};
+
 // ================= ICON MAP =================
 // Maps string keys to Lucide icons for menu rendering
 const iconMap = {
@@ -846,19 +879,19 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   // ====== EFFECTS: LOAD STATE FROM LOCALSTORAGE ======
   useEffect(() => {
     // Load bookmarks from localStorage
-    const storedBookmarks = localStorage.getItem("sidebarBookmarks");
+    const storedBookmarks = safeLocalStorage.getItem("sidebarBookmarks");
     if (storedBookmarks) {
       setBookmarks(JSON.parse(storedBookmarks));
     }
 
     // Load expanded groups state from localStorage
-    const storedExpandedGroups = localStorage.getItem("sidebarExpandedGroups");
+    const storedExpandedGroups = safeLocalStorage.getItem("sidebarExpandedGroups");
     if (storedExpandedGroups) {
       setExpandedGroups(JSON.parse(storedExpandedGroups));
     }
 
     // Load expanded sub-groups state from localStorage
-    const storedExpandedSubGroups = localStorage.getItem(
+    const storedExpandedSubGroups = safeLocalStorage.getItem(
       "sidebarExpandedSubGroups"
     );
     if (storedExpandedSubGroups) {
@@ -866,7 +899,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
     }
 
     // Load bookmarks expanded state from localStorage
-    const storedBookmarksExpanded = localStorage.getItem(
+    const storedBookmarksExpanded = safeLocalStorage.getItem(
       "sidebarBookmarksExpanded"
     );
     if (storedBookmarksExpanded !== null) {
@@ -905,7 +938,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
       });
 
       setExpandedGroups(initialExpandedGroups);
-      localStorage.setItem(
+      safeLocalStorage.setItem(
         "sidebarExpandedGroups",
         JSON.stringify(initialExpandedGroups)
       );
@@ -916,7 +949,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   useEffect(() => {
     // Only save after initialization to prevent overwriting during initial load
     if (isInitialized && Object.keys(expandedGroups).length > 0) {
-      localStorage.setItem(
+      safeLocalStorage.setItem(
         "sidebarExpandedGroups",
         JSON.stringify(expandedGroups)
       );
@@ -925,7 +958,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   useEffect(() => {
     // Only save after initialization to prevent overwriting during initial load
     if (isInitialized && Object.keys(expandedSubGroups).length > 0) {
-      localStorage.setItem(
+      safeLocalStorage.setItem(
         "sidebarExpandedSubGroups",
         JSON.stringify(expandedSubGroups)
       );
@@ -934,7 +967,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   useEffect(() => {
     // Only save after initialization to prevent overwriting during initial load
     if (isInitialized) {
-      localStorage.setItem(
+      safeLocalStorage.setItem(
         "sidebarBookmarksExpanded",
         JSON.stringify(isBookmarksExpanded)
       );
@@ -954,7 +987,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
       toast.info({ title: "info", description: "sidebarInfo", isTranslated: true });
     }
     setBookmarks(newBookmarks);
-    localStorage.setItem("sidebarBookmarks", JSON.stringify(newBookmarks));
+    safeLocalStorage.setItem("sidebarBookmarks", JSON.stringify(newBookmarks));
   }, [allItems, bookmarks]);
 
   const toggleGroup = useCallback((group) => {
@@ -1090,7 +1123,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
     }
 
     setBookmarks([]);
-    localStorage.removeItem("sidebarBookmarks");
+    safeLocalStorage.removeItem("sidebarBookmarks");
     toast.info({
       title: "info",
       description: "sidebarInfo",
