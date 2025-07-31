@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Typography, Checkbox, FormControlLabel } from "@mui/material";
+import { Grid, Typography, Checkbox, FormControlLabel, Box } from "@mui/material";
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { useTranslations, useLocale } from "next-intl";
@@ -94,57 +94,99 @@ const PaymentDrawer = ({
   const getContent = () => {
     if (!type) return null;
     return (
-      <Grid container spacing={2} sx={{ p: 2 }}>
-        <Grid item xs={12}>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}
-          >
-            {t("code")} *
-          </Typography>
-          <RTLTextField
-            value={formData?.code || ""}
-            onChange={handleCodeChange}
-            required
-            placeholder=""
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}
-          >
-            {t("name")} *
-          </Typography>
-          <RTLTextField
-            value={formData?.name || ""}
-            onChange={handleNameChange}
-            required
-            placeholder=""
-          />
-        </Grid>
-        {type === "paymentTerm" && (
-          <Grid container item xs={12} spacing={2} alignItems="center">
-            <Grid item xs={6}>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}
-              >
-                {t("nbOfDays")} *
-              </Typography>
-              <RTLTextField
-                type="number"
-                value={formData?.nb_days || 0}
-                onChange={handleNbDaysChange}
-                required
-                placeholder=""
-                inputProps={{ min: 0 }}
-              />
+      <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}
+            >
+              {t("code")} *
+            </Typography>
+            <RTLTextField
+              value={formData?.code || ""}
+              onChange={handleCodeChange}
+              required
+              placeholder=""
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}
+            >
+              {t("name")} *
+            </Typography>
+            <RTLTextField
+              value={formData?.name || ""}
+              onChange={handleNameChange}
+              required
+              placeholder=""
+            />
+          </Grid>
+          {type === "paymentTerm" && (
+            <Grid container item xs={12} spacing={2} alignItems="center">
+              <Grid item xs={6}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}
+                >
+                  {t("nbOfDays")} *
+                </Typography>
+                <RTLTextField
+                  type="number"
+                  value={formData?.nb_days || 0}
+                  onChange={handleNbDaysChange}
+                  required
+                  placeholder=""
+                  inputProps={{ min: 0 }}
+                />
+              </Grid>
+              <Grid item xs={6} sx={{ display: 'flex', alignItems: 'center', mt: 3 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={!!formData?.active}
+                      onChange={handleActiveChange}
+                      color="primary"
+                    />
+                  }
+                  label={t("active")}
+                  labelPlacement={isRTL ? "start" : "end"}
+                  sx={{ justifyContent: isRTL ? "flex-end" : "flex-start", m: 0 }}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={6} sx={{ display: 'flex', alignItems: 'center', mt: 3 }}>
+          )}
+          {type === "paymentMethod" && (
+            <Grid item xs={12} sx={{ display: 'flex', alignItems: 'center', mt: 3, gap: 2 }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={!!formData?.is_credit_card}
+                    onChange={handleIsCreditCardChange}
+                    color="primary"
+                  />
+                }
+                label={t("isCreditCard")}
+                labelPlacement={isRTL ? "start" : "end"}
+                sx={{ justifyContent: isRTL ? "flex-end" : "flex-start", m: 0 }}
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={!!formData?.is_online_payment}
+                    onChange={handleIsOnlinePaymentChange}
+                    color="primary"
+                  />
+                }
+                label={t("isOnlinePayment")}
+                labelPlacement={isRTL ? "start" : "end"}
+                sx={{ justifyContent: isRTL ? "flex-end" : "flex-start", m: 0 }}
+              />
               <FormControlLabel
                 control={
                   <Checkbox
@@ -158,49 +200,9 @@ const PaymentDrawer = ({
                 sx={{ justifyContent: isRTL ? "flex-end" : "flex-start", m: 0 }}
               />
             </Grid>
-          </Grid>
-        )}
-        {type === "paymentMethod" && (
-          <Grid item xs={12} sx={{ display: 'flex', alignItems: 'center', mt: 3, gap: 2 }}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={!!formData?.is_credit_card}
-                  onChange={handleIsCreditCardChange}
-                  color="primary"
-                />
-              }
-              label={t("isCreditCard")}
-              labelPlacement={isRTL ? "start" : "end"}
-              sx={{ justifyContent: isRTL ? "flex-end" : "flex-start", m: 0 }}
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={!!formData?.is_online_payment}
-                  onChange={handleIsOnlinePaymentChange}
-                  color="primary"
-                />
-              }
-              label={t("isOnlinePayment")}
-              labelPlacement={isRTL ? "start" : "end"}
-              sx={{ justifyContent: isRTL ? "flex-end" : "flex-start", m: 0 }}
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={!!formData?.active}
-                  onChange={handleActiveChange}
-                  color="primary"
-                />
-              }
-              label={t("active")}
-              labelPlacement={isRTL ? "start" : "end"}
-              sx={{ justifyContent: isRTL ? "flex-end" : "flex-start", m: 0 }}
-            />
-          </Grid>
-        )}
-      </Grid>
+          )}
+        </Grid>
+      </Box>
     );
   };
 

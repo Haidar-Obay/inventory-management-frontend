@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
-import { Grid, Typography } from "@mui/material";
+import { Grid, Typography, Box } from "@mui/material";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslations, useLocale } from "next-intl";
@@ -89,46 +89,48 @@ const CustomerGroupDrawer = ({
   const hasFormData = formData?.name && formData?.code;
 
   const content = (
-    <Grid container spacing={2} sx={{ p: 2 }}>
-      <Grid xs={12} md={6}>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}
-        >
-          {t("management.code")} *
-        </Typography>
-        <RTLTextField
-          value={formData?.code || ""}
-          onChange={handleFieldChange("code")}
-          required
-          placeholder=""
-        />
+    <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
+      <Grid container spacing={2}>
+        <Grid xs={12} md={6}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}
+          >
+            {t("management.code")} *
+          </Typography>
+          <RTLTextField
+            value={formData?.code || ""}
+            onChange={handleFieldChange("code")}
+            required
+            placeholder=""
+          />
+        </Grid>
+        <Grid xs={12} md={6}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}
+          >
+            {t("management.name")} *
+          </Typography>
+          <RTLTextField
+            value={formData?.name || ""}
+            onChange={handleFieldChange("name")}
+            required
+            placeholder=""
+          />
+        </Grid>
+        <Grid xs={12} md={6}>
+          <Checkbox
+            checked={formData?.active !== false}
+            onChange={e => setFormData({ ...formData, active: e.target.checked })}
+            label={t("management.active")}
+            isRTL={isRTL}
+          />
+        </Grid>
       </Grid>
-      <Grid xs={12} md={6}>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}
-        >
-          {t("management.name")} *
-        </Typography>
-        <RTLTextField
-          value={formData?.name || ""}
-          onChange={handleFieldChange("name")}
-          required
-          placeholder=""
-        />
-      </Grid>
-      <Grid xs={12} md={6}>
-        <Checkbox
-          checked={formData?.active !== false}
-          onChange={e => setFormData({ ...formData, active: e.target.checked })}
-          label={t("management.active")}
-          isRTL={isRTL}
-        />
-      </Grid>
-    </Grid>
+    </Box>
   );
 
   return (
