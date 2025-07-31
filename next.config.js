@@ -6,7 +6,7 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.js");
 const nextConfig = {
   experimental: {
     serverActions: {},
-    allowedDevOrigins: ["http://hadishokor.localhost:3000"],
+    allowedDevOrigins: ["*"],
   },
   reactStrictMode: true,
   images: {

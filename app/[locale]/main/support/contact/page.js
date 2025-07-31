@@ -5,7 +5,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen w-full bg-background p-8">
-        <h1>Contact Page hhhh</h1>
+        <h1>Contact Page</h1>
     </div>
   );
 }
