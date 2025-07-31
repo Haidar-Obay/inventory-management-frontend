@@ -159,11 +159,10 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
         tabLabel = customerTabs[tabIndex] || "";
       } else if (pathSegments.includes("addresscodes")) {
         const addressTabs = [
-          tAddressCodes("tabs.countries"),
-          tAddressCodes("tabs.zones"),
-          tAddressCodes("tabs.provinces"),
+          tAddressCodes("tabs.countries"), 
           tAddressCodes("tabs.cities"),
           tAddressCodes("tabs.districts"),
+          tAddressCodes("tabs.zones"),
         ];
         tabLabel = addressTabs[tabIndex] || "";
       } else if (pathSegments.includes("sections")) {
@@ -231,11 +230,11 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
       )}
     >
       {breadcrumbs.map((breadcrumb, index) => (
-        <div key={index} className="flex items-center">
+        <div key={index} className="flex items-center min-w-0">
           {index > 0 && (
             <ChevronRight
               className={cn(
-                "h-4 w-4 mx-1 text-muted-foreground/50",
+                "h-4 w-4 mx-1 text-muted-foreground/50 flex-shrink-0",
                 isRTL ? "rotate-180" : ""
               )}
             />
@@ -245,18 +244,20 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
             <Link
               href={breadcrumb.href}
               className={cn(
-                "hover:text-foreground transition-colors duration-200",
+                "hover:text-foreground transition-colors duration-200 truncate max-w-20",
                 breadcrumb.isActive && "text-foreground font-medium"
               )}
+              title={breadcrumb.label}
             >
-              {index === 0 ? <Home className="h-4 w-4" /> : breadcrumb.label}
+              {index === 0 ? <Home className="h-4 w-4 flex-shrink-0" /> : breadcrumb.label}
             </Link>
           ) : (
             <span
               className={cn(
-                "transition-colors duration-200",
+                "transition-colors duration-200 truncate max-w-20",
                 breadcrumb.isActive && "text-foreground font-medium"
               )}
+              title={breadcrumb.label}
             >
               {breadcrumb.label}
             </span>

@@ -40,7 +40,7 @@ const SearchBar = ({ searchQuery, setSearchQuery, handleSearch, t }) => {
   const isRTL = currentLocale === "ar";
 
   return (
-    <form onSubmit={handleSearch} className="relative w-full max-w-lg mx-auto">
+    <form onSubmit={handleSearch} className="relative w-full max-w-md mx-auto">
       <div className="relative">
         <Search
           className={`absolute top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground ${isRTL ? "right-3" : "left-3"}`}
@@ -305,7 +305,7 @@ export function Header({ hideSidebar, showSidebar, isSidebarVisible, onToggleFul
           style={{ transition: "all 0.3s ease-in-out" }}
         >
           {/* Left Section - Breadcrumbs */}
-          <div className="flex items-center gap-2 flex-shrink-0 w-96 pl-1">
+          <div className="flex items-center gap-2 flex-shrink-0 w-[28rem] pl-1">
             <FullscreenToggle onToggleFullscreen={onToggleFullscreen} isFullscreen={isFullscreen} />
             <Breadcrumbs className="font-medium text-sm" />
           </div>
