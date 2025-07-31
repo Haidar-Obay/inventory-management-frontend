@@ -6,6 +6,7 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.js");
 const nextConfig = {
   experimental: {
     serverActions: {},
+    allowedDevOrigins: ["http://hadishokor.localhost:3000"],
   },
   reactStrictMode: true,
   images: {
@@ -13,7 +14,7 @@ const nextConfig = {
   },
   skipTrailingSlashRedirect: true,
   output: "standalone",
-  allowedDevOrigins: ["*"],
+  
   // Configure webpack for better CSS handling
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {
