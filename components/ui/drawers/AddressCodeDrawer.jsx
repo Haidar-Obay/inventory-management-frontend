@@ -61,7 +61,7 @@ const AddressCodeDrawer = ({
     return (
       <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
         <Grid container spacing={2}>
-          <Grid xs={12}>
+          <Grid size={12}>
             <Typography
               variant="body2"
               color="text.secondary"
