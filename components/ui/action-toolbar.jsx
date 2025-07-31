@@ -153,6 +153,7 @@ export function ActionToolbar({
   dropdownDirection = "down",
   expandDirection = "right",
   className = "",
+  saveLoading = false,
 }) {
   const t = useTranslations("table.toolbar");
   const [groupStates, setGroupStates] = useState({});
@@ -217,16 +218,21 @@ export function ActionToolbar({
   // Memoize action handlers
   const handleAction = useCallback(async (actionId, callback, groupId) => {
     try {
-      setLoadingActions((prev) => ({ ...prev, [actionId]: true }));
+      // Don't set loading for save actions if saveLoading prop is provided
+      if (!(saveLoading && (actionId === 'save' || actionId === 'saveAndNew' || actionId === 'saveAndExit'))) {
+        setLoadingActions((prev) => ({ ...prev, [actionId]: true }));
+      }
       setGroupStates((prev) => ({ ...prev, [groupId]: actionId }));
       safeLocalStorage.setItem(ACTION_GROUPS[groupId].storageKey, actionId);
       await callback();
     } catch (error) {
       console.error(`Error executing action ${actionId}:`, error);
     } finally {
-      setLoadingActions((prev) => ({ ...prev, [actionId]: false }));
+      if (!(saveLoading && (actionId === 'save' || actionId === 'saveAndNew' || actionId === 'saveAndExit'))) {
+        setLoadingActions((prev) => ({ ...prev, [actionId]: false }));
+      }
     }
-  }, []);
+  }, [saveLoading]);
 
   const toggleGroup = useCallback((groupId) => {
     setGroupStates((prev) => ({
@@ -239,7 +245,8 @@ export function ActionToolbar({
   const renderActionButton = useCallback(
     (actionId, groupId) => {
       const config = ACTION_CONFIG[actionId];
-      const isLoading = loadingActions[actionId];
+      const isSaveAction = actionId === 'save' || actionId === 'saveAndNew' || actionId === 'saveAndExit';
+      const isLoading = isSaveAction ? saveLoading : loadingActions[actionId];
 
       const getLabel = () => {
         switch (actionId) {
@@ -287,7 +294,7 @@ export function ActionToolbar({
         </Button>
       );
     },
-    [handleAction, loadingActions, availableActions, t]
+    [handleAction, loadingActions, availableActions, t, saveLoading]
   );
 
   // Handle click outside to close dropdowns

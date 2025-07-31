@@ -81,6 +81,7 @@ function CustomerPage() {
   const [salesmenData, setSalesmenData] = useState([]);
   const [customersData, setCustomersData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saveLoading, setSaveLoading] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeDrawerType, setActiveDrawerType] = useState("");
   const [formData, setFormData] = useState({});
@@ -290,7 +291,6 @@ function CustomerPage() {
       phone1: row.phone1,
       phone2: row.phone2,
       fax: row.fax,
-      email: row.email,
       website: row.website,
       tax_number: row.tax_number,
       tax_office: row.tax_office,
@@ -394,6 +394,7 @@ function CustomerPage() {
     const handler = entityHandlers[type];
 
     try {
+      setSaveLoading(true);
       // Prepare the data with proper types
       const preparedData = {
         ...formData,
@@ -405,6 +406,86 @@ function CustomerPage() {
         is_collector:
           formData.is_collector === "true" || formData.is_collector === true,
       };
+
+      // Convert empty strings to null for address fields to prevent constraint violations
+      const addressFields = [
+        'billing_country_id', 'billing_zone_id', 'billing_city_id', 'billing_district_id',
+        'shipping_country_id', 'shipping_zone_id', 'shipping_city_id', 'shipping_district_id'
+      ];
+      
+      addressFields.forEach(field => {
+        if (preparedData[field] === "" || preparedData[field] === null) {
+          preparedData[field] = null;
+        }
+      });
+
+      // For customer type, prepare contacts with primary contact
+      if (type === "customer") {
+        // Create primary contact from form data
+        const primaryContactName = [formData.first_name, formData.middle_name, formData.last_name].filter(Boolean).join(' ');
+        
+        // Only include primary contact if there's meaningful contact data
+        const hasPrimaryContactData = primaryContactName || formData.work_phone || formData.mobile || formData.position;
+        
+        if (hasPrimaryContactData) {
+          const primaryContact = {
+            title: formData.title || "",
+            name: primaryContactName,
+            work_phone: formData.work_phone || "",
+            mobile: formData.mobile || "",
+            position: formData.position || "",
+            extension: formData.extension || "",
+            is_primary: true
+          };
+
+          // Get additional contacts from formData.contacts (if any)
+          const additionalContacts = (formData.contacts || []).map(contact => ({
+            ...contact,
+            is_primary: false
+          }));
+
+          preparedData.contacts = [primaryContact, ...additionalContacts];
+        } else {
+          preparedData.contacts = (formData.contacts || []).map(contact => ({
+            ...contact,
+            is_primary: false
+          }));
+        }
+
+        // Handle shipping addresses - convert empty strings to null
+        if (preparedData.shipping_addresses && Array.isArray(preparedData.shipping_addresses)) {
+          preparedData.shipping_addresses = preparedData.shipping_addresses.map(address => {
+            const addressFields = ['country_id', 'zone_id', 'city_id', 'district_id'];
+            const cleanedAddress = { ...address };
+            
+            addressFields.forEach(field => {
+              if (cleanedAddress[field] === "" || cleanedAddress[field] === null) {
+                cleanedAddress[field] = null;
+              }
+            });
+            
+            return cleanedAddress;
+          });
+        }
+
+        // Remove contact fields from top level
+        delete preparedData.work_phone;
+        delete preparedData.mobile;
+        delete preparedData.position;
+        delete preparedData.extension;
+
+        // Process attachments for backend
+        if (preparedData.attachments && Array.isArray(preparedData.attachments)) {
+          preparedData.attachments = preparedData.attachments.map(attachment => ({
+            file_name: attachment.file_name || attachment.file?.name || '',
+            file_path: attachment.file_path || '',
+            file_type: attachment.file_type || attachment.file?.type || '',
+            file_size: attachment.file_size || attachment.file?.size || 0,
+            description: attachment.description || '',
+            is_public: attachment.is_public !== undefined ? attachment.is_public : true
+          }));
+        }
+      }
 
       let response;
       if (isEditMode) {
@@ -434,6 +515,11 @@ function CustomerPage() {
         });
 
         setIsEditMode(false);
+      } else {
+        toast.error({
+          title: toastT("error"),
+          description: response?.message || toastT(isEditMode ? `${type}.updateError` : `${type}.createError`),
+        });
       }
     } catch (error) {
       toast.error({
@@ -442,6 +528,8 @@ function CustomerPage() {
           error.message ||
           toastT(isEditMode ? `${type}.updateError` : `${type}.createError`),
       });
+    } finally {
+      setSaveLoading(false);
     }
   };
 
@@ -868,6 +956,7 @@ function CustomerPage() {
           formData={formData}
           onFormDataChange={handleFormDataChange}
           isEdit={isEditMode}
+          saveLoading={saveLoading}
         />
       </Box>
     </div>

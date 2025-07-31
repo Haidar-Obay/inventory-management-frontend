@@ -18,6 +18,15 @@ const PaymentTermsSection = React.memo((props) => {
     }
   }, [allCollapsed]);
 
+  // Sync local state with formData for checkboxes
+  React.useEffect(() => {
+    if (formData) {
+      setAllowCredit(formData.allow_credit !== undefined ? formData.allow_credit : false);
+      setAcceptCheques(formData.accept_cheques !== undefined ? formData.accept_cheques : false);
+      setTrackPayment(formData.track_payment === 'yes');
+    }
+  }, [formData]);
+
   // Create options with Add button as first option
   const createOptionsWithAdd = (options, type) => {
     const addOption = { id: 'add', name: `${t('management.add') || 'Add'} ${t(`management.${type}`) || type}`, isAddButton: true };
@@ -257,7 +266,10 @@ const PaymentTermsSection = React.memo((props) => {
                 <Grid item xs={12} md={4} sx={{ minWidth: 150 , display: 'flex', alignItems: 'center', gap: 0 }}>
                   <Checkbox
                     checked={!!trackPayment}
-                    onChange={e => setTrackPayment(e.target.checked)}
+                    onChange={e => {
+                      setTrackPayment(e.target.checked);
+                      onFormDataChange({ ...formData, track_payment: e.target.checked ? 'yes' : 'no' });
+                    }}
                     label={t('management.trackPayment') || 'Track Payment'}
                     isRTL={isRTL}
                   />
@@ -288,7 +300,10 @@ const PaymentTermsSection = React.memo((props) => {
             <Grid item xs={12} md={6} sx={{ minWidth: 800, display: 'flex', alignItems: 'center', gap: 0 }}>
               <Checkbox
                 checked={acceptCheques}
-                onChange={e => setAcceptCheques(e.target.checked)}
+                onChange={e => {
+                  setAcceptCheques(e.target.checked);
+                  onFormDataChange({ ...formData, accept_cheques: e.target.checked });
+                }}
                 label={t('management.acceptCheques') || 'Accept Cheques'}
                 isRTL={isRTL}
                 disabled={!hasOpeningCurrency}

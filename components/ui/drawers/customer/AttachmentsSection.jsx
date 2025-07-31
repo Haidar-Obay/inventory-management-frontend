@@ -75,8 +75,13 @@ const AttachmentsSection = React.memo(({ formData, onFormDataChange, t }) => {
     }, 50);
 
     const newAttachments = fileArray.map(file => ({
-      file,
-      description: '',
+      file, // Keep the original file object for preview
+      file_name: file.name, // File name
+      file_path: '', // Will be set by backend after upload
+      file_type: file.type, // MIME type
+      file_size: file.size, // File size in bytes
+      description: '', // User can add description
+      is_public: true, // Default to public as requested
       id: Date.now() + Math.random(),
       uploadDate: new Date().toISOString()
     }));
@@ -330,6 +335,18 @@ const AttachmentsSection = React.memo(({ formData, onFormDataChange, t }) => {
                         <DeleteIcon />
                       </IconButton>
                     </Box>
+                  </Box>
+                  
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      {t('management.public') || 'Public'}
+                    </Typography>
+                    <Chip 
+                      label={attachment.is_public ? t('management.yes') || 'Yes' : t('management.no') || 'No'} 
+                      size="small" 
+                      color={attachment.is_public ? 'success' : 'default'}
+                      variant="outlined"
+                    />
                   </Box>
                   
                   <RTLTextField

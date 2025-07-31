@@ -86,6 +86,7 @@ const CustomerDrawer = React.memo(({
   formData,
   onFormDataChange,
   isEdit = false,
+  saveLoading = false,
 }) => {
   const [customerGroups, setCustomerGroups] = useState([]);
   const [salesmen, setSalesmen] = useState([]);
@@ -148,6 +149,18 @@ const CustomerDrawer = React.memo(({
 
   // Initialize tab navigation for accordion expansion only
   const tabNavigation = useTabNavigation(expandedSections, setExpandedSections);
+
+  // Sync local state with formData for checkboxes
+  useEffect(() => {
+    if (formData) {
+      setActive(formData.active !== undefined ? formData.active : true);
+      setBlackListed(formData.black_listed !== undefined ? formData.black_listed : false);
+      setOneTimeAccount(formData.one_time_account !== undefined ? formData.one_time_account : false);
+      setSpecialAccount(formData.special_account !== undefined ? formData.special_account : false);
+      setPosCustomer(formData.pos_customer !== undefined ? formData.pos_customer : false);
+      setFreeDeliveryCharge(formData.free_delivery_charge !== undefined ? formData.free_delivery_charge : false);
+    }
+  }, [formData]);
 
   // Open Personal Information and Opening sections by default when opening customer drawer
   useEffect(() => {
@@ -217,6 +230,33 @@ const CustomerDrawer = React.memo(({
     if (isOpen && isEdit) {
       setOriginalName(formData?.name || "");
       setOriginalData(JSON.parse(JSON.stringify(formData)));
+      
+      // Initialize search terms from form data
+      if (formData?.search_terms) {
+        let searchTermsArray = [];
+        
+        if (Array.isArray(formData.search_terms)) {
+          searchTermsArray = formData.search_terms;
+        } else if (typeof formData.search_terms === 'string') {
+          // Handle different string formats
+          let termsString = formData.search_terms;
+          
+          // Remove brackets and quotes if present
+          termsString = termsString.replace(/^\[|\]$/g, ''); // Remove [ and ]
+          termsString = termsString.replace(/"/g, ''); // Remove quotes
+          termsString = termsString.replace(/'/g, ''); // Remove single quotes
+          
+          // Split by comma and clean up
+          searchTermsArray = termsString
+            .split(',')
+            .map(term => term.trim())
+            .filter(term => term && term !== '');
+        }
+        
+        setSearchTerms(searchTermsArray);
+      } else {
+        setSearchTerms([]);
+      }
     }
   }, [isOpen, isEdit, formData]);
 
@@ -466,6 +506,7 @@ const CustomerDrawer = React.memo(({
       mobile: "",
       position: "",
       extension: "",
+      is_primary: false,  // Add is_primary field for additional contacts
     };
     setContacts((prev) => [...prev, newContact]);
   }, []);
@@ -487,14 +528,18 @@ const CustomerDrawer = React.memo(({
 
   const handleAddSearchTerm = useCallback(() => {
     if (newSearchTerm.trim() && !searchTerms.includes(newSearchTerm.trim())) {
-      setSearchTerms((prev) => [...prev, newSearchTerm.trim()]);
+      const newSearchTerms = [...searchTerms, newSearchTerm.trim()];
+      setSearchTerms(newSearchTerms);
+      onFormDataChange(prev => ({ ...prev, search_terms: newSearchTerms }));
       setNewSearchTerm("");
     }
-  }, [newSearchTerm, searchTerms]);
+  }, [newSearchTerm, searchTerms, onFormDataChange]);
 
   const handleRemoveSearchTerm = useCallback((termToRemove) => {
-    setSearchTerms((prev) => prev.filter(term => term !== termToRemove));
-  }, []);
+    const newSearchTerms = searchTerms.filter(term => term !== termToRemove);
+    setSearchTerms(newSearchTerms);
+    onFormDataChange(prev => ({ ...prev, search_terms: newSearchTerms }));
+  }, [searchTerms, onFormDataChange]);
 
   const handleSearchTermKeyPress = useCallback((event) => {
     if (event.key === 'Enter') {
@@ -503,24 +548,9 @@ const CustomerDrawer = React.memo(({
     }
   }, [handleAddSearchTerm]);
 
-  // Memoized data change check
-  const isDataChanged = useCallback(() => {
-    return JSON.stringify(formData) !== JSON.stringify(originalData);
-  }, [formData, originalData]);
-
   const handleSave = useCallback(() => {
-    if (isEdit && !isDataChanged()) {
-      addToast({
-        type: "error",
-        title: t("noChangesTitle") || "No changes detected",
-        description:
-          t("noChangesDesc") ||
-          "Please modify at least one field before saving.",
-      });
-      return;
-    }
     onSave && onSave();
-  }, [isEdit, isDataChanged, addToast, t, onSave]);
+  }, [onSave]);
 
   const handleOpeningBalanceChange = useCallback((index, field, value) => {
     setOpeningBalances((prev) => {
@@ -912,42 +942,60 @@ const CustomerDrawer = React.memo(({
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Checkbox
                   checked={active}
-                  onChange={e => setActive(e.target.checked)}
+                  onChange={e => {
+                    setActive(e.target.checked);
+                    onFormDataChange({ ...formData, active: e.target.checked });
+                  }}
                   label={t('management.active') || 'Active'}
                   isRTL={isRTL}
                 />
                 
                 <Checkbox
                   checked={blackListed}
-                  onChange={e => setBlackListed(e.target.checked)}
+                  onChange={e => {
+                    setBlackListed(e.target.checked);
+                    onFormDataChange({ ...formData, black_listed: e.target.checked });
+                  }}
                   label={t('management.blackListed') || 'Black Listed'}
                   isRTL={isRTL}
                 />
                 
                 <Checkbox
                   checked={oneTimeAccount}
-                  onChange={e => setOneTimeAccount(e.target.checked)}
+                  onChange={e => {
+                    setOneTimeAccount(e.target.checked);
+                    onFormDataChange({ ...formData, one_time_account: e.target.checked });
+                  }}
                   label={t('management.oneTimeAccount') || 'One Time Account'}
                   isRTL={isRTL}
                 />
                 
                 <Checkbox
                   checked={specialAccount}
-                  onChange={e => setSpecialAccount(e.target.checked)}
+                  onChange={e => {
+                    setSpecialAccount(e.target.checked);
+                    onFormDataChange({ ...formData, special_account: e.target.checked });
+                  }}
                   label={t('management.specialAccount') || 'Special Account'}
                   isRTL={isRTL}
                 />
                 
                 <Checkbox
                   checked={posCustomer}
-                  onChange={e => setPosCustomer(e.target.checked)}
+                  onChange={e => {
+                    setPosCustomer(e.target.checked);
+                    onFormDataChange({ ...formData, pos_customer: e.target.checked });
+                  }}
                   label={t('management.posCustomer') || 'POS Customer'}
                   isRTL={isRTL}
                 />
                 
                 <Checkbox
                   checked={freeDeliveryCharge}
-                  onChange={e => setFreeDeliveryCharge(e.target.checked)}
+                  onChange={e => {
+                    setFreeDeliveryCharge(e.target.checked);
+                    onFormDataChange({ ...formData, free_delivery_charge: e.target.checked });
+                  }}
                   label={t('management.freeDeliveryCharge') || 'Free Delivery Charge'}
                   isRTL={isRTL}
                 />
@@ -1231,6 +1279,7 @@ const CustomerDrawer = React.memo(({
         anchor={isRTL ? "left" : "right"}
         width={1200}
         hasFormData={hasFormData()}
+        saveLoading={saveLoading}
       />
 
     </>

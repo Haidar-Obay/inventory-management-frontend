@@ -37,6 +37,7 @@ const DynamicDrawer = ({
   anchor = "right", // Add anchor prop with default value
   showExitConfirmation = true, // New prop to control confirmation dialog
   hasFormData = false, // New prop to check if form has data
+  saveLoading = false, // New prop for save loading state
 }) => {
   const locale = useLocale();
   const isRTL = locale === "ar";
@@ -165,6 +166,7 @@ const DynamicDrawer = ({
                     className="[&_button]:h-10"
                     storageKey={`drawer-${title}-save-action`}
                     dropdownDirection="up"
+                    saveLoading={saveLoading}
                   />
                 </div>
               </div>
