@@ -1307,7 +1307,7 @@
     "noChangesDesc": "Please modify at least one field before saving."
   },
   "payment": {
-    "name": "name",
+    "name": "Name",
     "title": "Payment",
     "add": "Add",
     "edit": "Edit",
