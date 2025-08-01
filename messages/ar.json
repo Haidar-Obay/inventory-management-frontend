@@ -1171,6 +1171,7 @@
       "taxNumber": "الرقم الضريبي",
       "taxOffice": "المكتب الضريبي",
       "customerGroup": "مجموعات العملاء",
+      "customerGroupName": "اسم مجموعة العملاء",
       "salesman": "مندوبو المبيعات",
       "customer":"العملاء",
       "active": "نشط",

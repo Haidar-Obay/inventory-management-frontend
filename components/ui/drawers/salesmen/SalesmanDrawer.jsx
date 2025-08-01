@@ -20,6 +20,7 @@ const SalesmanDrawer = ({
   const { addToast } = useSimpleToast();
   const [formData, setFormData] = useState({ active: true });
   const [originalData, setOriginalData] = useState({});
+  const [originalName, setOriginalName] = useState("");
   const isEdit = !!editData;
 
   useEffect(() => {
@@ -27,9 +28,11 @@ const SalesmanDrawer = ({
       if (isEdit && editData) {
         setFormData(editData);
         setOriginalData(JSON.parse(JSON.stringify(editData)));
+        setOriginalName(editData?.name || editData?.code || "");
       } else {
         setFormData({ active: true });
         setOriginalData({});
+        setOriginalName("");
       }
     }
   }, [isOpen, isEdit, editData]);
@@ -87,6 +90,15 @@ const SalesmanDrawer = ({
   };
 
   const hasFormData = (formData?.name && formData.name.trim() !== "") || (formData?.code && formData.code.trim() !== "");
+
+  // Get title with name for edit mode
+  const getTitle = () => {
+    if (isEdit) {
+      return `${t("management.editSalesman")}${originalName ? ` / ${originalName}` : ""}`;
+    } else {
+      return t("management.addSalesman");
+    }
+  };
 
   const content = (
     <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
@@ -312,7 +324,7 @@ const SalesmanDrawer = ({
     <DynamicDrawer
       isOpen={isOpen}
       onClose={onClose}
-      title={isEdit ? t("management.editSalesman") : t("management.addSalesman")}
+      title={getTitle()}
       content={content}
       onSave={handleSave}
       anchor={isRTL ? "left" : "right"}

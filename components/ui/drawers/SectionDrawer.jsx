@@ -60,7 +60,12 @@ const SectionDrawer = ({
       if (isEdit && editData) {
         setFormData(editData);
         setOriginalData(JSON.parse(JSON.stringify(editData)));
-        setOriginalName(editData?.name || "");
+        // For jobs, use code instead of name since jobs don't have a name field
+        if (type === "job") {
+          setOriginalName(editData?.code || editData?.id || "");
+        } else {
+          setOriginalName(editData?.name || "");
+        }
       } else {
         setFormData({ active: true });
         setOriginalData({});
@@ -939,6 +944,12 @@ const SectionDrawer = ({
 
   const getTitle = () => {
     if (isEdit) {
+      // For jobs, use originalName (which is now set to code/id) or fallback to current form data
+      if (type === "job") {
+        const jobIdentifier = originalName || formData?.code || formData?.id || "";
+        return `${t("management.edit")} ${t(`management.${type}`)}${jobIdentifier ? ` / ${jobIdentifier}` : ""}`;
+      }
+      // For other types, use the original name logic
       return `${t("management.edit")} ${t(`management.${type}`)}${originalName ? ` / ${originalName}` : ""}`;
     } else {
       return t(`management.add${type.charAt(0).toUpperCase() + type.slice(1)}`);

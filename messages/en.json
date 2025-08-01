@@ -1084,6 +1084,7 @@
       "taxNumber": "Tax Number",
       "taxOffice": "Tax Office",
       "customerGroup": "Customer Groups",
+      "customerGroupName": "Customer Group Name",
       "customer": "Customers",
       "active": "Active",
       "isManager": "Is Manager",

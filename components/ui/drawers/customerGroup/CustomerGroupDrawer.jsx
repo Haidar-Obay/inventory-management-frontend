@@ -20,6 +20,7 @@ const CustomerGroupDrawer = ({
   const { addToast } = useSimpleToast();
   const [formData, setFormData] = useState({ active: true });
   const [originalData, setOriginalData] = useState({});
+  const [originalName, setOriginalName] = useState("");
   const isEdit = !!editData;
 
   useEffect(() => {
@@ -27,9 +28,11 @@ const CustomerGroupDrawer = ({
       if (isEdit && editData) {
         setFormData(editData);
         setOriginalData(JSON.parse(JSON.stringify(editData)));
+        setOriginalName(editData?.name || editData?.code || "");
       } else {
         setFormData({ active: true });
         setOriginalData({});
+        setOriginalName("");
       }
     }
   }, [isOpen, isEdit, editData]);
@@ -88,6 +91,15 @@ const CustomerGroupDrawer = ({
 
   const hasFormData = (formData?.name && formData.name.trim() !== "") || (formData?.code && formData.code.trim() !== "");
 
+  // Get title with name for edit mode
+  const getTitle = () => {
+    if (isEdit) {
+      return `${t("management.editCustomerGroup")}${originalName ? ` / ${originalName}` : ""}`;
+    } else {
+      return t("management.addCustomerGroup");
+    }
+  };
+
   const content = (
     <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
       <Box sx={{ display: 'flex', gap: 2 }}>
@@ -145,7 +157,7 @@ const CustomerGroupDrawer = ({
     <DynamicDrawer
       isOpen={isOpen}
       onClose={onClose}
-      title={isEdit ? t("management.editCustomerGroup") : t("management.addCustomerGroup")}
+      title={getTitle()}
       content={content}
       onSave={handleSave}
       anchor={isRTL ? "left" : "right"}

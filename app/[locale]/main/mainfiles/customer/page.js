@@ -280,34 +280,31 @@ function CustomerPage() {
         payment_term_id: row.payment_term?.id,
         payment_method_id: row.payment_method?.id,
       });
+      // Use single CustomerDrawer for customers
+      setActiveDrawerType(type);
+      setIsEditMode(true);
+      setIsDrawerOpen(true);
     } else {
-      // Handle other entity types (customer groups, salesmen)
-    setFormData({
-      id: row.id,
-      name: row.name,
-      code: row.code,
-      active: row.active,
-      address: row.address,
-      phone1: row.phone1,
-      phone2: row.phone2,
-      fax: row.fax,
-      website: row.website,
-      tax_number: row.tax_number,
-      tax_office: row.tax_office,
-      customer_group_id: row.customer_group_id,
-      salesman_id: row.salesman_id,
-      is_manager: row.is_manager,
-      is_supervisor: row.is_supervisor,
-      is_collector: row.is_collector,
-      fix_commission: row.fix_commission,
-      commission_percent: row.commission_percent,
-      commission_by_item: row.commission_by_item,
-      commission_by_turnover: row.commission_by_turnover,
-    });
+      // Use drawer stack for customer groups and salesmen
+      openDrawer({
+        type: type,
+        props: {
+          editData: row,
+          onSave: (updatedData) => {
+            // Update the data in the state
+            if (type === "customerGroup") {
+              setCustomerGroupsData(prev => 
+                prev.map(item => item.id === row.id ? updatedData : item)
+              );
+            } else if (type === "salesman") {
+              setSalesmenData(prev => 
+                prev.map(item => item.id === row.id ? updatedData : item)
+              );
+            }
+          },
+        },
+      });
     }
-    setActiveDrawerType(type);
-    setIsEditMode(true);
-    setIsDrawerOpen(true);
   };
 
   const handleDelete = async (type, row) => {
@@ -368,14 +365,32 @@ function CustomerPage() {
   };
 
   const handleAddNew = (type) => {
-    setActiveDrawerType(type);
-    setIsEditMode(false);
-    // Set default values for new items
-    const defaultData = {
-      active: true, // Default to active for new items
-    };
-    setFormData(defaultData);
-    setIsDrawerOpen(true);
+    if (type === "customer") {
+      // Use single CustomerDrawer for customers
+      setActiveDrawerType(type);
+      setIsEditMode(false);
+      // Set default values for new items
+      const defaultData = {
+        active: true, // Default to active for new items
+      };
+      setFormData(defaultData);
+      setIsDrawerOpen(true);
+    } else {
+      // Use drawer stack for customer groups and salesmen
+      openDrawer({
+        type: type,
+        props: {
+          onSave: (newData) => {
+            // Add the new data to the state
+            if (type === "customerGroup") {
+              setCustomerGroupsData(prev => [...(Array.isArray(prev) ? prev : []), newData]);
+            } else if (type === "salesman") {
+              setSalesmenData(prev => [...(Array.isArray(prev) ? prev : []), newData]);
+            }
+          },
+        },
+      });
+    }
   };
 
   const handleCloseDrawer = () => {
@@ -863,14 +878,7 @@ function CustomerPage() {
             <Table
               data={customerGroupsData}
               columns={customerGroupColumns}
-              onAdd={() => openDrawer({
-                type: "customerGroup",
-                props: {
-                  onSave: (newGroup) => {
-                    setCustomerGroupsData(prev => [...(Array.isArray(prev) ? prev : []), newGroup]);
-                  },
-                },
-              })}
+              onAdd={() => handleAddNew("customerGroup")}
               loading={loading}
               enableCellEditing={false}
               onExportExcel={() => handleExportExcel("customerGroup")}
@@ -898,14 +906,7 @@ function CustomerPage() {
             <Table
               data={salesmenData}
               columns={salesmenColumns}
-              onAdd={() => openDrawer({
-                type: "salesman",
-                props: {
-                  onSave: (newSalesman) => {
-                    setSalesmenData(prev => [...(Array.isArray(prev) ? prev : []), newSalesman]);
-                  },
-                },
-              })}
+              onAdd={() => handleAddNew("salesman")}
               loading={loading}
               enableCellEditing={false}
               onExportExcel={() => handleExportExcel("salesman")}
