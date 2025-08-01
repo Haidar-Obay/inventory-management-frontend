@@ -60,11 +60,7 @@ export const ActiveStatusAction = ({
       ? (t("setInactiveLabel") || "Set Inactive") 
       : (t("setActiveLabel") || "Set Active"),
     icon: isActive 
-      ? `<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-         <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-         <path d="M12 2v4"></path>
-         <path d="M6 6l2 2"></path>
-         <path d="M18 6l-2 2"></path>`
+      ? `<path d="M18 6L6 18"/><path d="M6 6l12 12"/>`
       : `<path d="M9 12l2 2 4-4"></path>
          <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"></path>`,
     iconClassName: isActive ? "text-orange-600" : "text-green-600",

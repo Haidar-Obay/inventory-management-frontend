@@ -25,6 +25,7 @@ import PaymentDrawer from "@/components/ui/drawers/PaymentDrawer";
 import PreviewModal from "@/components/ui/table/PreviewModal";
 import { useCustomActions } from "@/components/ui/table/useCustomActions";
 import { useSimpleToast } from "@/components/ui/simple-toast";
+import { ActiveStatusAction } from "@/components/ui/table/ActiveStatusAction";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -150,30 +151,7 @@ function PaymentPage() {
     // if (deleteRow) setDeleteOpen(true); // This line is removed
   }, []); // This useEffect is also removed
 
-  const handleSetActive = async (row, type) => {
-    const updateFn = type === "paymentTerm" ? editPaymentTerm : editPaymentMethod;
-    try {
-      await updateFn(row.id, { ...row, active: !row.active });
-      addToast({
-        type: "success",
-        title: tToast("success"),
-        description: tToast("updateSuccess"),
-        duration: 5000,
-      });
-      if (type === "paymentTerm") {
-        setPaymentTerms((prev) => prev.map((r) => r.id === row.id ? { ...r, active: !r.active } : r));
-      } else {
-        setPaymentMethods((prev) => prev.map((r) => r.id === row.id ? { ...r, active: !r.active } : r));
-      }
-    } catch (error) {
-      addToast({
-        type: "error",
-        title: tToast("error"),
-        description: error.message || tToast("updateError"),
-        duration: 5000,
-      });
-    }
-  };
+
 
   // Custom actions for table rows
   const paymentTermsActions = useCustomActions({
@@ -183,14 +161,29 @@ function PaymentPage() {
       // This action is removed
     },
     additionalActions: (row) => [
-      {
-        id: "toggleActive",
-        label: row.active ? t("table.setInactiveLabel") : t("table.setActiveLabel"),
-        icon: row.active
-          ? `<path d="M18 6L6 18"/><path d="M6 6l12 12"/>`
-          : `<path d="M5 12h14"/><path d="M12 5v14"/>`,
-        action: () => handleSetActive(row, "paymentTerm"),
-      },
+      ActiveStatusAction({
+        row,
+        editFunction: editPaymentTerm,
+        onSuccess: (row, updatedData) => {
+          setPaymentTerms((prev) => 
+            prev.map((item) => item.id === row.id ? { ...item, active: updatedData.active } : item)
+          );
+          addToast({
+            type: "success",
+            title: tToast("success"),
+            description: tToast("updateSuccess"),
+            duration: 5000,
+          });
+        },
+        onError: (row, errorMessage) => {
+          addToast({
+            type: "error",
+            title: tToast("error"),
+            description: errorMessage || tToast("updateError"),
+            duration: 5000,
+          });
+        },
+      }),
     ],
   });
   const paymentMethodsActions = useCustomActions({
@@ -200,14 +193,29 @@ function PaymentPage() {
       // This action is removed
     },
     additionalActions: (row) => [
-      {
-        id: "toggleActive",
-        label: row.active ? t("table.setInactiveLabel") : t("table.setActiveLabel"),
-        icon: row.active
-          ? `<path d="M18 6L6 18"/><path d="M6 6l12 12"/>`
-          : `<path d="M5 12h14"/><path d="M12 5v14"/>`,
-        action: () => handleSetActive(row, "paymentMethod"),
-      },
+      ActiveStatusAction({
+        row,
+        editFunction: editPaymentMethod,
+        onSuccess: (row, updatedData) => {
+          setPaymentMethods((prev) => 
+            prev.map((item) => item.id === row.id ? { ...item, active: updatedData.active } : item)
+          );
+          addToast({
+            type: "success",
+            title: tToast("success"),
+            description: tToast("updateSuccess"),
+            duration: 5000,
+          });
+        },
+        onError: (row, errorMessage) => {
+          addToast({
+            type: "error",
+            title: tToast("error"),
+            description: errorMessage || tToast("updateError"),
+            duration: 5000,
+          });
+        },
+      }),
     ],
   });
 

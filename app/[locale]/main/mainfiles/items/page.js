@@ -741,6 +741,29 @@ function ItemsPage() {
     onPreview: (row) => {
       // Preview functionality can be added here
     },
+    additionalActions: (row) => [
+      ActiveStatusAction({
+        row,
+        editFunction: entityHandlers.item.editFn,
+        onSuccess: (row, updatedData) => {
+          entityHandlers.item.setData((prev) =>
+            prev.map((item) =>
+              item.id === row.id ? { ...item, active: updatedData.active } : item
+            )
+          );
+          toast.success({
+            title: toastT("success"),
+            description: toastT("item.updateSuccess"),
+          });
+        },
+        onError: (row, errorMessage) => {
+          toast.error({
+            title: toastT("error"),
+            description: errorMessage || toastT("item.updateError"),
+          });
+        },
+      }),
+    ],
   });
 
   return (

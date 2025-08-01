@@ -213,12 +213,12 @@ export const Dropdown = ({
         <Portal>
           <div
             ref={dropdownRef}
-            className="z-[9999] min-w-[9rem] rounded-md border border-border bg-background p-1 shadow-lg fixed"
+            className="z-[9999] min-w-[12rem] rounded-md border border-border bg-background p-1 shadow-lg fixed"
         data-nextjs-scroll-focus-boundary
             style={{
               top: position.top,
               left: position.left,
-              width: position.width > 144 ? position.width : undefined,
+              width: position.width > 192 ? position.width : undefined,
             }}
           >
             {children}
