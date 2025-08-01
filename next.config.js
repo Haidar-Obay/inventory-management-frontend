@@ -15,7 +15,7 @@ const nextConfig = {
   skipTrailingSlashRedirect: true,
   output: "standalone",
   
-  // Configure webpack for better CSS handling
+  // Configure webpack for better CSS handling and suppress scroll focus warnings
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {
       // Optimize CSS extraction
@@ -26,6 +26,36 @@ const nextConfig = {
         enforce: true,
       };
     }
+
+    // Suppress console warnings about scroll focus boundaries in development
+    if (dev) {
+      // Override console.warn to filter out scroll focus warnings
+      config.plugins.push(
+        new config.webpack.DefinePlugin({
+          'process.env.SUPPRESS_SCROLL_FOCUS_WARNINGS': JSON.stringify('true'),
+        })
+      );
+
+      // Add a custom plugin to suppress specific warnings
+      config.plugins.push({
+        apply: (compiler) => {
+          compiler.hooks.done.tap('SuppressScrollFocusWarnings', () => {
+            if (typeof window !== 'undefined') {
+              const originalWarn = console.warn;
+              console.warn = (...args) => {
+                const message = args[0];
+                if (typeof message === 'string' && 
+                    message.includes('Skipping auto-scroll behavior due to `position: sticky` or `position: fixed`')) {
+                  return; // Suppress this warning
+                }
+                originalWarn.apply(console, args);
+              };
+            }
+          });
+        }
+      });
+    }
+
     return config;
   },
   async headers() {

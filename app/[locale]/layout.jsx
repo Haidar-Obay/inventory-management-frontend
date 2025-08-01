@@ -7,9 +7,11 @@ import { ThemeProvider } from "@/lib/themes/theme-provider";
 import { MUIThemeWrapper } from "@/lib/themes/mui-theme-provider";
 import "@/styles/globals.css";
 import "@/styles/toast.css";
+import "@/lib/suppress-scroll-warnings";
 import { Inter, Cairo } from "next/font/google";
 import { DrawerStackProvider } from "@/components/ui/DrawerStackContext";
 import DrawerStackManager from "@/components/ui/DrawerStackManager";
+import { ScrollWarningSuppressor } from "@/components/ui/scroll-warning-suppressor";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -52,6 +54,7 @@ export default async function LocaleLayout({ children, params }) {
   return (
     <html suppressHydrationWarning dir={locale === "ar" ? "rtl" : "ltr"}>
       <body className={`${inter.variable} ${cairo.variable} ${locale === "ar" ? cairo.className : inter.className}`}>
+        <ScrollWarningSuppressor />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

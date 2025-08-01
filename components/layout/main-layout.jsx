@@ -9,6 +9,8 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { arSA, enUS } from "date-fns/locale";
 import { MUIThemeWrapper } from "@/lib/themes/mui-theme-provider";
+import { useScrollFocusWarning } from "@/hooks/useScrollFocusWarning";
+import "@/lib/suppress-scroll-warnings";
 
 // Helper function to safely access localStorage
 const safeLocalStorage = {
@@ -51,6 +53,9 @@ export function MainLayout({ children }) {
   const [isClient, setIsClient] = useState(false);
   const locale = useLocale();
   const dateAdapterLocale = locale === "ar" ? arSA : enUS;
+
+  // Suppress scroll focus warnings for fixed/sticky positioned elements
+  useScrollFocusWarning();
 
   // Ensure we're on the client side
   useEffect(() => {
