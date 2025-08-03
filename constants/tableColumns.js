@@ -15,14 +15,14 @@ export function useTableColumns(t) {
       { key: "updated_at", header: t("updatedAt"), type: "date" },
     ],
 
-    zoneColumns: [
+    districtColumns: [
       { key: "id", header: t("id"), type: "text" },
       { key: "name", header: t("name"), type: "text" },
       { key: "created_at", header: t("createdAt"), type: "date" },
       { key: "updated_at", header: t("updatedAt"), type: "date" },
     ],
 
-    districtColumns: [
+    zoneColumns: [
       { key: "id", header: t("id"), type: "text" },
       { key: "name", header: t("name"), type: "text" },
       { key: "created_at", header: t("createdAt"), type: "date" },
@@ -112,7 +112,7 @@ export function useTableColumns(t) {
       { header: t("id"), key: "id" },
       { header: t("code"), key: "code" },
       { header: t("name"), key: "name" },
-      { header: t("subOf"), key: "subbrand_of" },
+      { header: t("subOf"), key: "sub_brand_of" },
       { header: t("active"), key: "active", type: "boolean" },
       { header: t("createdAt"), key: "created_at", type: "date" },
       { header: t("updatedAt"), key: "updated_at", type: "date" },

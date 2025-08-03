@@ -52,6 +52,8 @@ export function MainLayout({ children }) {
   const locale = useLocale();
   const dateAdapterLocale = locale === "ar" ? arSA : enUS;
 
+
+
   // Ensure we're on the client side
   useEffect(() => {
     setIsClient(true);

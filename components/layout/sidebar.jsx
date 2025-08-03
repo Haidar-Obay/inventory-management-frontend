@@ -384,7 +384,7 @@ const GroupHeader = ({
                 <PopoverContent
         side={isRTL ? "left" : "right"}
         align="start"
-        className="w-52 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
+        className="w-60 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
         sideOffset={18}
         alignOffset={-8}
       >
@@ -424,7 +424,7 @@ const GroupHeader = ({
                                 <PopoverContent
           side={isRTL ? "left" : "right"}
           align="start"
-          className="w-52 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
+          className="w-60 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
           sideOffset={3}
           alignOffset={8}
         >
@@ -667,7 +667,7 @@ const NestedGroup = ({
       <PopoverContent
         side="right"
         align="start"
-        className="w-52 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
+        className="w-60 p-1 bg-primary text-primary-foreground border-primary-foreground/10 border-l-0 shadow-none"
         sideOffset={-3}
         onOpenAutoFocus={handlePopoverOpen}
         onCloseAutoFocus={handlePopoverClose}
@@ -1018,10 +1018,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
       const fullPath = item.path.startsWith("/") ? item.path : `/${params?.route}/${item.path}`;
       router.push(fullPath);
     }
-    if (isCollapsed) {
-      toast.info({ title: "info", description: "sidebarInfo", isTranslated: true });
-    }
-  }, [allItems, isCollapsed, params?.route, router]);
+  }, [allItems, params?.route, router]);
 
   const handleLogout = useCallback(async () => {
     try {

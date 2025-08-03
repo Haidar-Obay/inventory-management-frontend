@@ -39,12 +39,12 @@ const PricingSection = React.memo(({ formData, onFormDataChange, isRTL, t, price
               SelectProps={{ native: true }}
             >
               <option value="">{t('management.selectPriceChoice') || 'Select'}</option>
-              <option value="PRICE1">PRICE1</option>
-              <option value="PRICE2">PRICE2</option>
-              <option value="PRICE3">PRICE3</option>
-              <option value="PRICE4">PRICE4</option>
-              <option value="PRICE5">PRICE5</option>
-              <option value="PRICE6">PRICE6</option>
+              <option value="PRICE1">price1</option>
+              <option value="PRICE2">price2</option>
+              <option value="PRICE3">price3</option>
+              <option value="PRICE4">price4</option>
+              <option value="PRICE5">price5</option>
+              <option value="PRICE6">price6</option>
               <option value="LAST_INVOICE_PRICE">{t('management.lastInvoicePrice') || 'Last Invoice Price'}</option>
             </RTLTextField>
           </Grid>

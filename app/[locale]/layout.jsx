@@ -51,8 +51,8 @@ export default async function LocaleLayout({ children, params }) {
 
   return (
     <html suppressHydrationWarning dir={locale === "ar" ? "rtl" : "ltr"}>
-      <body className={`${inter.variable} ${cairo.variable} ${locale === "ar" ? cairo.className : inter.className}`}>
-        <ThemeProvider
+                       <body className={`${inter.variable} ${cairo.variable} ${locale === "ar" ? cairo.className : inter.className}`}>
+                   <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem

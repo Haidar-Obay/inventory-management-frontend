@@ -316,7 +316,7 @@ function SimpleToastContainer() {
   const { toasts, startRemoveToast } = useSimpleToast();
 
   return (
-    <div className="toast-container" data-nextjs-scroll-focus-boundary>
+    <div className="toast-container">
       {toasts.map((toast) => (
         <SimpleToastItem
           key={toast.id}

@@ -77,6 +77,7 @@ const AddressCodeDrawer = ({
               onChange={handleNameChange}
               required
               placeholder=""
+              autoFocus
             />
           </Grid>
         </Grid>

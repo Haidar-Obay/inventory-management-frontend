@@ -333,7 +333,7 @@ function CustomerPage() {
             price_choice: customerData.price_choice ? customerData.price_choice.toUpperCase() : '',
             price_list: customerData.price_list,
             global_discount: customerData.global_discount,
-            discount_class: customerData.discount_class ? customerData.discount_class.toLowerCase() : '',
+            discount_class: customerData.discount_class || '',
             markup_percentage: customerData.markup_percentage,
             markdown_percentage: customerData.markdown_percentage,
             
@@ -506,14 +506,32 @@ function CustomerPage() {
   };
 
   const handleAddNew = (type) => {
-    setActiveDrawerType(type);
-    setIsEditMode(false);
-    // Set default values for new items
-    const defaultData = {
-      active: true, // Default to active for new items
-    };
-    setFormData(defaultData);
-    setIsDrawerOpen(true);
+    if (type === "customer") {
+      // Use single CustomerDrawer for customers
+      setActiveDrawerType(type);
+      setIsEditMode(false);
+      // Set default values for new items
+      const defaultData = {
+        active: true, // Default to active for new items
+      };
+      setFormData(defaultData);
+      setIsDrawerOpen(true);
+    } else {
+      // Use drawer stack for customer groups and salesmen
+      openDrawer({
+        type: type,
+        props: {
+          onSave: (newData) => {
+            // Add the new data to the state
+            if (type === "customerGroup") {
+              setCustomerGroupsData(prev => [...(Array.isArray(prev) ? prev : []), newData]);
+            } else if (type === "salesman") {
+              setSalesmenData(prev => [...(Array.isArray(prev) ? prev : []), newData]);
+            }
+          },
+        },
+      });
+    }
   };
 
   const handleCloseDrawer = () => {
@@ -573,6 +591,11 @@ function CustomerPage() {
         preparedData.search_terms = [];
       }
 
+      // Convert price_choice to lowercase for backend (frontend uses uppercase)
+      if (preparedData.price_choice) {
+        preparedData.price_choice = preparedData.price_choice.toLowerCase();
+      }
+
       // Convert empty strings to null for address fields to prevent constraint violations
       const addressFields = [
         'billing_country_id', 'billing_zone_id', 'billing_city_id', 'billing_district_id',
@@ -618,7 +641,7 @@ function CustomerPage() {
           }));
         }
 
-        // Handle shipping addresses - convert empty strings to null
+        // Handle shipping addresses - convert empty strings to null and add address_type
         if (preparedData.shipping_addresses && Array.isArray(preparedData.shipping_addresses)) {
           preparedData.shipping_addresses = preparedData.shipping_addresses.map(address => {
             const addressFields = ['country_id', 'zone_id', 'city_id', 'district_id'];
@@ -630,9 +653,34 @@ function CustomerPage() {
               }
             });
             
+            // Add address_type for shipping addresses
+            cleanedAddress.address_type = 'shipping';
+            
             return cleanedAddress;
           });
         }
+
+        // Handle billing addresses - add address_type
+        if (preparedData.billing_addresses && Array.isArray(preparedData.billing_addresses)) {
+          preparedData.billing_addresses = preparedData.billing_addresses.map(address => {
+            const addressFields = ['country_id', 'zone_id', 'city_id', 'district_id'];
+            const cleanedAddress = { ...address };
+            
+            addressFields.forEach(field => {
+              if (cleanedAddress[field] === "" || cleanedAddress[field] === null) {
+                cleanedAddress[field] = null;
+              }
+            });
+            
+            // Add address_type for billing addresses
+            cleanedAddress.address_type = 'billing';
+            
+            return cleanedAddress;
+          });
+        }
+
+                 // Remove general addresses array to avoid conflicts with billing/shipping addresses
+         delete preparedData.addresses;
 
         // Remove contact fields from top level
         delete preparedData.work_phone;
@@ -1003,6 +1051,29 @@ function CustomerPage() {
     onPreview: (row) => {
       // Preview functionality can be added here
     },
+    additionalActions: (row) => [
+      ActiveStatusAction({
+        row,
+        editFunction: entityHandlers.customer.editFn,
+        onSuccess: (row, updatedData) => {
+          entityHandlers.customer.setData((prev) =>
+            prev.map((item) =>
+              item.id === row.id ? { ...item, active: updatedData.active } : item
+            )
+          );
+          toast.success({
+            title: toastT("success"),
+            description: toastT("customer.updateSuccess"),
+          });
+        },
+        onError: (row, errorMessage) => {
+          toast.error({
+            title: toastT("error"),
+            description: errorMessage || toastT("customer.updateError"),
+          });
+        },
+      }),
+    ],
   });
 
   return (
@@ -1029,14 +1100,7 @@ function CustomerPage() {
             <Table
               data={customerGroupsData}
               columns={customerGroupColumns}
-              onAdd={() => openDrawer({
-                type: "customerGroup",
-                props: {
-                  onSave: (newGroup) => {
-                    setCustomerGroupsData(prev => [...(Array.isArray(prev) ? prev : []), newGroup]);
-                  },
-                },
-              })}
+              onAdd={() => handleAddNew("customerGroup")}
               loading={loading}
               enableCellEditing={false}
               onExportExcel={() => handleExportExcel("customerGroup")}
@@ -1064,14 +1128,7 @@ function CustomerPage() {
             <Table
               data={salesmenData}
               columns={salesmenColumns}
-              onAdd={() => openDrawer({
-                type: "salesman",
-                props: {
-                  onSave: (newSalesman) => {
-                    setSalesmenData(prev => [...(Array.isArray(prev) ? prev : []), newSalesman]);
-                  },
-                },
-              })}
+              onAdd={() => handleAddNew("salesman")}
               loading={loading}
               enableCellEditing={false}
               onExportExcel={() => handleExportExcel("salesman")}

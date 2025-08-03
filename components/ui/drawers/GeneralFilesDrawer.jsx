@@ -148,6 +148,7 @@ const GeneralFilesDrawer = ({
               placeholder=""
               fullWidth
               size="small"
+              autoFocus
             />
           </Grid>
           <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
