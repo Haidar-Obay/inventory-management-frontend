@@ -16,39 +16,6 @@ import {
   updateTableTemplate
 } from "../../../API/TableTemplates";
 
-// Helper function to safely access localStorage
-const safeLocalStorage = {
-  getItem: (key) => {
-    if (typeof window !== 'undefined') {
-      try {
-        return window.localStorage.getItem(key);
-      } catch (error) {
-        console.error("Error accessing localStorage:", error);
-        return null;
-      }
-    }
-    return null;
-  },
-  setItem: (key, value) => {
-    if (typeof window !== 'undefined') {
-      try {
-        window.localStorage.setItem(key, value);
-      } catch (error) {
-        console.error("Error setting localStorage:", error);
-      }
-    }
-  },
-  removeItem: (key) => {
-    if (typeof window !== 'undefined') {
-      try {
-        window.localStorage.removeItem(key);
-      } catch (error) {
-        console.error("Error removing from localStorage:", error);
-      }
-    }
-  }
-};
-
 // Utility to conditionally add a class
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -158,7 +125,7 @@ const TemplatePrompt = React.memo(({
   if (!isOpen) return null;
   
   return (
-          <div className="fixed inset-0 z-[2147483648] flex items-center justify-center bg-black/40" data-nextjs-scroll-focus-boundary>
+    <div className="fixed inset-0 z-[2147483648] flex items-center justify-center bg-black/40">
       <div className="bg-background p-6 rounded-lg shadow-lg border border-border w-full max-w-sm">
         <h4 className="text-lg font-medium mb-2">{t("columns.modal.saveAsTemplate")}</h4>
         <input
@@ -213,7 +180,7 @@ const DeleteConfirmModal = React.memo(({
   };
   
   return (
-            <div className="fixed inset-0 z-[2147483648] flex items-center justify-center bg-black/40" onClick={handleBackdropClick} data-nextjs-scroll-focus-boundary>
+    <div className="fixed inset-0 z-[2147483648] flex items-center justify-center bg-black/40" onClick={handleBackdropClick}>
       <div className="bg-background p-6 rounded-lg shadow-lg border border-border w-full max-w-sm">
         <div className="mb-4 flex items-center justify-between">
           <h4 className="text-lg font-medium text-destructive">
@@ -324,7 +291,7 @@ export const ColumnModal = React.memo(({
   const getPersistedOtherSettings = () => {
     if (!otherSettingsKey) return {};
     try {
-      const raw = safeLocalStorage.getItem(otherSettingsKey);
+      const raw = localStorage.getItem(otherSettingsKey);
       return raw ? JSON.parse(raw) : {};
     } catch {
       return {};
@@ -378,7 +345,7 @@ export const ColumnModal = React.memo(({
         appliedAt: new Date().toISOString(),
         ...templateData
       };
-      safeLocalStorage.setItem(key, JSON.stringify(templateToSave));
+      localStorage.setItem(key, JSON.stringify(templateToSave));
     } catch (error) {
       // Error saving last applied template
     }
@@ -389,7 +356,7 @@ export const ColumnModal = React.memo(({
     if (!key) return null;
     
     try {
-      const saved = safeLocalStorage.getItem(key);
+      const saved = localStorage.getItem(key);
       return saved ? JSON.parse(saved) : null;
     } catch (error) {
       // Error loading last applied template
@@ -402,7 +369,7 @@ export const ColumnModal = React.memo(({
     if (!key) return;
     
     try {
-      safeLocalStorage.removeItem(key);
+      localStorage.removeItem(key);
     } catch (error) {
       // Error clearing last applied template
     }
@@ -788,7 +755,7 @@ export const ColumnModal = React.memo(({
       showBodyColSeparator: otherShowBodyColSeparator,
     };
     try {
-      safeLocalStorage.setItem(otherSettingsKey, JSON.stringify(settings));
+      localStorage.setItem(otherSettingsKey, JSON.stringify(settings));
     } catch {}
   }, [otherHeaderColor, otherHeaderFontSize, otherHeaderFontStyle, otherHeaderFontColor, otherShowHeaderSeparator, otherShowHeaderColSeparator, otherShowBodyColSeparator, otherSettingsKey]);
 
@@ -803,7 +770,7 @@ export const ColumnModal = React.memo(({
     setOtherShowBodyColSeparator(showBodyColSeparator !== undefined ? showBodyColSeparator : true);
     // Optionally, clear persisted settings in localStorage
     if (otherSettingsKey) {
-      safeLocalStorage.removeItem(otherSettingsKey);
+      localStorage.removeItem(otherSettingsKey);
     }
   }, [showHeaderSeparator, showHeaderColSeparator, showBodyColSeparator, otherSettingsKey]);
 
@@ -1048,7 +1015,7 @@ export const ColumnModal = React.memo(({
     setOtherShowHeaderColSeparator(true);
     setOtherShowBodyColSeparator(true);
     if (otherSettingsKey) {
-      safeLocalStorage.removeItem(otherSettingsKey);
+      localStorage.removeItem(otherSettingsKey);
     }
   }, [columns, onToggleColumn, onColumnOrderChange, onColumnWidthChange, otherSettingsKey]);
 
@@ -1166,7 +1133,6 @@ export const ColumnModal = React.memo(({
     <Portal>
       <div
         className="fixed inset-0 z-[2147483647] pointer-events-auto flex items-center justify-center bg-black/50"
-        data-nextjs-scroll-focus-boundary
         onClick={handleBackdropClick}
       >
         <div className="w-full max-w-4xl h-[500px] flex flex-col rounded-lg bg-background p-6 shadow-lg border border-border">

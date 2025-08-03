@@ -150,7 +150,7 @@ const CustomerDrawer = React.memo(({
   // Initialize tab navigation for accordion expansion only
   const tabNavigation = useTabNavigation(expandedSections, setExpandedSections);
 
-  // Sync local state with formData for checkboxes
+  // Sync local state with formData for checkboxes, opening balances, and payment settings
   useEffect(() => {
     if (formData) {
       setActive(formData.active !== undefined ? formData.active : true);
@@ -159,6 +159,54 @@ const CustomerDrawer = React.memo(({
       setSpecialAccount(formData.special_account !== undefined ? formData.special_account : false);
       setPosCustomer(formData.pos_customer !== undefined ? formData.pos_customer : false);
       setFreeDeliveryCharge(formData.free_delivery_charge !== undefined ? formData.free_delivery_charge : false);
+      
+      // Sync opening balances from formData
+      if (formData.opening_balances_form && formData.opening_balances_form.length > 0) {
+        setOpeningBalances(formData.opening_balances_form);
+      } else {
+        setOpeningBalances([{ currency: '', amount: '', date: '' }]);
+      }
+      
+      // Sync payment settings from formData
+      setAllowCredit(formData.allow_credit !== undefined ? formData.allow_credit : false);
+      setAcceptCheques(formData.accept_cheques !== undefined ? formData.accept_cheques : false);
+      setPaymentDay(formData.payment_day || '');
+      setTrackPayment(formData.track_payment || '');
+      setSettlementMethod(formData.settlement_method || '');
+      
+      // Sync payment terms and methods - set the selected values
+      if (formData.payment_term_id) {
+        setSelectedPaymentTerm(formData.payment_term_id);
+      }
+      if (formData.payment_method_id) {
+        setSelectedPaymentMethod(formData.payment_method_id);
+      }
+      
+      // Sync pricing settings
+      setPriceChoice(formData.price_choice || '');
+      setPriceList(formData.price_list || '');
+      setGlobalDiscount(formData.global_discount || '');
+      setDiscountClass(formData.discount_class || '');
+      setMarkup(formData.markup_percentage || '');
+      setMarkdown(formData.markdown_percentage || '');
+      
+      // Sync credit limits
+      if (formData.credit_limits && formData.credit_limits.length > 0) {
+        const creditLimitsMap = {};
+        formData.credit_limits.forEach(limit => {
+          creditLimitsMap[limit.currency_code || limit.currency_id] = limit.limit_amount || limit.amount;
+        });
+        setCreditLimits(creditLimitsMap);
+      }
+      
+      // Sync cheque limits
+      if (formData.cheque_limits && formData.cheque_limits.length > 0) {
+        const chequeLimitsMap = {};
+        formData.cheque_limits.forEach(limit => {
+          chequeLimitsMap[limit.currency_code || limit.currency_id] = limit.max_cheques || limit.amount;
+        });
+        setMaxCheques(chequeLimitsMap);
+      }
     }
   }, [formData]);
 
@@ -261,15 +309,19 @@ const CustomerDrawer = React.memo(({
   }, [isOpen, isEdit, formData]);
 
   // Always auto-generate display_name from title, first_name, middle_name, last_name
-  useEffect(() => {
+  const autoDisplayName = useMemo(() => {
     if (type === 'customer') {
-      const { title = '', first_name = '', middle_name = '', last_name = '', display_name = '' } = formData || {};
-      const autoDisplayName = [title, first_name, middle_name, last_name].filter(Boolean).join(' ').replace(/  +/g, ' ').trim();
-      if (autoDisplayName && display_name !== autoDisplayName) {
-        onFormDataChange(prev => ({ ...prev, display_name: autoDisplayName }));
-      }
+      const { title = '', first_name = '', middle_name = '', last_name = '' } = formData || {};
+      return [title, first_name, middle_name, last_name].filter(Boolean).join(' ').replace(/  +/g, ' ').trim();
     }
-  }, [formData?.title, formData?.first_name, formData?.middle_name, formData?.last_name]);
+    return '';
+  }, [type, formData?.title, formData?.first_name, formData?.middle_name, formData?.last_name]);
+
+  useEffect(() => {
+    if (type === 'customer' && autoDisplayName && formData?.display_name !== autoDisplayName) {
+      onFormDataChange(prev => ({ ...prev, display_name: autoDisplayName }));
+    }
+  }, [autoDisplayName, type, onFormDataChange]);
 
   const fetchDropdownData = useCallback(async () => {
     try {

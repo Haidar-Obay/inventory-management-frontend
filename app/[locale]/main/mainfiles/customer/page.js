@@ -10,6 +10,7 @@ import {
   getCustomerGroups,
   getSalesmen,
   getCustomers,
+  getCustomerById,
   deleteCustomerGroup,
   deleteSalesman,
   deleteCustomer,
@@ -242,44 +243,181 @@ function CustomerPage() {
     },
   };
 
-  const handleEdit = (type, row) => {
+  const handleEdit = async (type, row) => {
     if (type === "customer") {
-      // Handle customer data with nested objects
-      setFormData({
-        id: row.id,
-        title: row.title,
-        first_name: row.first_name,
-        middle_name: row.middle_name,
-        last_name: row.last_name,
-        display_name: row.display_name,
-        company_name: row.company_name,
-        phone1: row.phone1,
-        phone2: row.phone2,
-        phone3: row.phone3,
-        file_number: row.file_number,
-        bar_code: row.bar_code,
-        search_terms: row.search_terms,
-        indicator: row.indicator,
-        risk_category: row.risk_category,
-        active: row.active,
-        black_listed: row.black_listed,
-        one_time_account: row.one_time_account,
-        special_account: row.special_account,
-        pos_customer: row.pos_customer,
-        free_delivery_charge: row.free_delivery_charge,
-        print_invoice_language: row.print_invoice_language,
-        send_invoice: row.send_invoice,
-        add_message: row.add_message,
-        invoice_message: row.invoice_message,
-        notes: row.notes,
-        customer_group_id: row.customer_group?.id,
-        salesman_id: row.salesman?.id,
-        collector_id: row.collector?.id,
-        supervisor_id: row.supervisor?.id,
-        manager_id: row.manager?.id,
-        payment_term_id: row.payment_term?.id,
-        payment_method_id: row.payment_method?.id,
-      });
+      try {
+        // Fetch complete customer data
+        const response = await getCustomerById(row.id);
+        if (response.status) {
+          const customerData = response.data;
+          
+          // Debug: Log the customer data structure
+          console.log('Customer data from backend:', customerData);
+          console.log('Address data:', {
+            primary_billing: customerData.primary_billing_address,
+            primary_shipping: customerData.primary_shipping_address,
+            shipping_addresses: customerData.shipping_addresses,
+            billing_addresses: customerData.billing_addresses,
+            addresses: customerData.addresses,
+            first_shipping_address: customerData.shipping_addresses?.[0],
+            first_billing_address: customerData.billing_addresses?.[0],
+          });
+          console.log('Contact data:', {
+            primary_contact: customerData.primary_contact,
+            contacts: customerData.contacts,
+          });
+          console.log('Opening balances data:', {
+            opening_balances: customerData.opening_balances,
+            mapped_opening_balances: customerData.opening_balances?.map(balance => ({
+              currency: balance.currency_code || balance.currency_id,
+              amount: balance.opening_amount || balance.amount,
+              date: balance.opening_date || balance.date,
+              notes: balance.notes,
+              is_active: balance.is_active
+            })) || []
+          });
+          
+          // Map backend data to frontend form structure
+          const mappedData = {
+            // Basic information
+            id: customerData.id,
+            title: customerData.title,
+            first_name: customerData.first_name,
+            middle_name: customerData.middle_name,
+            last_name: customerData.last_name,
+            display_name: customerData.display_name,
+            company_name: customerData.company_name,
+            phone1: customerData.phone1,
+            phone2: customerData.phone2,
+            phone3: customerData.phone3,
+            file_number: customerData.file_number,
+            barcode: customerData.bar_code,
+            search_terms: customerData.search_terms,
+            indicator: customerData.indicator,
+            risk_category: customerData.risk_category,
+            active: customerData.active,
+            black_listed: customerData.black_listed,
+            one_time_account: customerData.one_time_account,
+            special_account: customerData.special_account,
+            pos_customer: customerData.pos_customer,
+            free_delivery_charge: customerData.free_delivery_charge,
+            print_invoice_language: customerData.print_invoice_language,
+            send_invoice: customerData.send_invoice,
+            add_message: customerData.showMessageField,
+            invoice_message: customerData.message,
+            notes: customerData.notes,
+            
+            // Relationships
+            customer_group_id: customerData.customer_group?.id,
+            salesman_id: customerData.salesman?.id,
+            collector_id: customerData.collector?.id,
+            supervisor_id: customerData.supervisor?.id,
+            manager_id: customerData.manager?.id,
+            payment_term_id: customerData.payment_term?.id,
+            payment_method_id: customerData.payment_method?.id,
+            trade_id: customerData.trade?.id,
+            company_code_id: customerData.company_code?.id,
+            business_type_id: customerData.business_type?.id,
+            sales_channel_id: customerData.sales_channel?.id,
+            distribution_channel_id: customerData.distribution_channel?.id,
+            media_channel_id: customerData.media_channel?.id,
+            
+            // Credit and payment settings
+            allow_credit: customerData.allow_credit,
+            accept_cheques: customerData.accept_cheques,
+            payment_day: customerData.payment_day,
+            track_payment: customerData.track_payment,
+            settlement_method: customerData.settlement_method,
+            
+            // Pricing settings
+            price_choice: customerData.price_choice ? customerData.price_choice.toUpperCase() : '',
+            price_list: customerData.price_list,
+            global_discount: customerData.global_discount,
+            discount_class: customerData.discount_class ? customerData.discount_class.toLowerCase() : '',
+            markup_percentage: customerData.markup_percentage,
+            markdown_percentage: customerData.markdown_percentage,
+            
+            // Tax settings
+            taxable: customerData.taxable,
+            taxed_from_date: customerData.taxed_from_date ? customerData.taxed_from_date.split('T')[0] : '',
+            taxed_till_date: customerData.taxed_till_date ? customerData.taxed_till_date.split('T')[0] : '',
+            subjected_to_tax: customerData.subjected_to_tax,
+            added_tax: customerData.added_tax,
+            exempted: customerData.exempted,
+            exempted_from: customerData.exempted_from,
+            exemption_reference: customerData.exemption_reference,
+            exempted_from_date: customerData.exempted_from_date ? customerData.exempted_from_date.split('T')[0] : '',
+            exempted_till_date: customerData.exempted_till_date ? customerData.exempted_till_date.split('T')[0] : '',
+            
+            // Billing address - try primary first, then first billing address
+            billing_address_line1: customerData.primary_billing_address?.address_line1 || customerData.billing_addresses?.[0]?.address_line1,
+            billing_address_line2: customerData.primary_billing_address?.address_line2 || customerData.billing_addresses?.[0]?.address_line2,
+            billing_country_id: customerData.primary_billing_address?.country_id || customerData.billing_addresses?.[0]?.country_id,
+            billing_zone_id: customerData.primary_billing_address?.zone_id || customerData.billing_addresses?.[0]?.zone_id,
+            billing_city_id: customerData.primary_billing_address?.city_id || customerData.billing_addresses?.[0]?.city_id,
+            billing_district_id: customerData.primary_billing_address?.district_id || customerData.billing_addresses?.[0]?.district_id,
+            billing_building: customerData.primary_billing_address?.building || customerData.billing_addresses?.[0]?.building,
+            billing_block: customerData.primary_billing_address?.block || customerData.billing_addresses?.[0]?.block,
+            billing_floor: customerData.primary_billing_address?.floor || customerData.billing_addresses?.[0]?.floor,
+            billing_side: customerData.primary_billing_address?.side || customerData.billing_addresses?.[0]?.side,
+            billing_apartment: customerData.primary_billing_address?.appartment || customerData.billing_addresses?.[0]?.appartment,
+            billing_zip_code: customerData.primary_billing_address?.zip_code || customerData.billing_addresses?.[0]?.zip_code,
+            
+            // Shipping address - get from shipping_addresses array (first address)
+            shipping_address_line1: customerData.shipping_addresses?.[0]?.address_line1,
+            shipping_address_line2: customerData.shipping_addresses?.[0]?.address_line2,
+            shipping_country_id: customerData.shipping_addresses?.[0]?.country_id,
+            shipping_zone_id: customerData.shipping_addresses?.[0]?.zone_id,
+            shipping_city_id: customerData.shipping_addresses?.[0]?.city_id,
+            shipping_district_id: customerData.shipping_addresses?.[0]?.district_id,
+            shipping_building: customerData.shipping_addresses?.[0]?.building,
+            shipping_block: customerData.shipping_addresses?.[0]?.block,
+            shipping_floor: customerData.shipping_addresses?.[0]?.floor,
+            shipping_side: customerData.shipping_addresses?.[0]?.side,
+            shipping_apartment: customerData.shipping_addresses?.[0]?.appartment,
+            shipping_zip_code: customerData.shipping_addresses?.[0]?.zip_code,
+            
+            // Primary contact information
+            work_phone: customerData.primary_contact?.work_phone,
+            mobile: customerData.primary_contact?.mobile,
+            position: customerData.primary_contact?.position,
+            extension: customerData.primary_contact?.extension,
+            
+            // Arrays and complex data
+            contacts: customerData.contacts || [],
+            shipping_addresses: customerData.shipping_addresses || [],
+            billing_addresses: customerData.billing_addresses || [],
+            addresses: customerData.addresses || [],
+            attachments: customerData.attachments || [],
+            credit_limits: customerData.credit_limits || [],
+            cheque_limits: customerData.cheque_limits || [],
+            opening_balances: customerData.opening_balances || [],
+            
+            // Opening balances mapping for the form
+            opening_balances_form: customerData.opening_balances?.map(balance => ({
+              currency: balance.currency_code || balance.currency_id,
+              amount: balance.opening_amount || balance.amount,
+              date: balance.opening_date || balance.date,
+              notes: balance.notes,
+              is_active: balance.is_active
+            })) || [],
+          };
+          
+          setFormData(mappedData);
+        } else {
+          toast.error({
+            title: toastT("error"),
+            description: response.message || "Failed to fetch customer details",
+          });
+          return;
+        }
+      } catch (error) {
+        toast.error({
+          title: toastT("error"),
+          description: error.message || "Failed to fetch customer details",
+        });
+        return;
+      }
     } else {
       // Handle other entity types (customer groups, salesmen)
     setFormData({
@@ -406,6 +544,34 @@ function CustomerPage() {
         is_collector:
           formData.is_collector === "true" || formData.is_collector === true,
       };
+
+      // Ensure search_terms is always an array
+      if (preparedData.search_terms) {
+        if (typeof preparedData.search_terms === 'string') {
+          // Convert string to array if it's a string
+          let searchTermsArray = [];
+          let termsString = preparedData.search_terms;
+          
+          // Remove brackets and quotes if present
+          termsString = termsString.replace(/^\[|\]$/g, ''); // Remove [ and ]
+          termsString = termsString.replace(/"/g, ''); // Remove quotes
+          termsString = termsString.replace(/'/g, ''); // Remove single quotes
+          
+          // Split by comma and clean up
+          searchTermsArray = termsString
+            .split(',')
+            .map(term => term.trim())
+            .filter(term => term && term !== '');
+          
+          preparedData.search_terms = searchTermsArray;
+        } else if (!Array.isArray(preparedData.search_terms)) {
+          // If it's not an array and not a string, convert to empty array
+          preparedData.search_terms = [];
+        }
+      } else {
+        // If search_terms is null/undefined, set to empty array
+        preparedData.search_terms = [];
+      }
 
       // Convert empty strings to null for address fields to prevent constraint violations
       const addressFields = [

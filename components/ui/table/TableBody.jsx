@@ -365,6 +365,17 @@ export const TableBody = ({
                           )
                         ) : column.type === "date" ? (
                           cellValue ? new Date(cellValue).toLocaleDateString() : ""
+                        ) : Array.isArray(cellValue) ? (
+                          <div className="flex flex-wrap gap-1">
+                            {cellValue.map((item, index) => (
+                              <span
+                                key={index}
+                                className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800 border border-blue-200"
+                              >
+                                {item}
+                              </span>
+                            ))}
+                          </div>
                         ) : column.options ? (
                           column.options.find(
                             (option) => option.value === cellValue

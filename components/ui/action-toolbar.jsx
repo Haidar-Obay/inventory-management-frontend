@@ -23,39 +23,6 @@ import {
   UploadIcon,
 } from "lucide-react";
 
-// Helper function to safely access localStorage
-const safeLocalStorage = {
-  getItem: (key) => {
-    if (typeof window !== 'undefined') {
-      try {
-        return window.localStorage.getItem(key);
-      } catch (error) {
-        console.error("Error accessing localStorage:", error);
-        return null;
-      }
-    }
-    return null;
-  },
-  setItem: (key, value) => {
-    if (typeof window !== 'undefined') {
-      try {
-        window.localStorage.setItem(key, value);
-      } catch (error) {
-        console.error("Error setting localStorage:", error);
-      }
-    }
-  },
-  removeItem: (key) => {
-    if (typeof window !== 'undefined') {
-      try {
-        window.localStorage.removeItem(key);
-      } catch (error) {
-        console.error("Error removing from localStorage:", error);
-      }
-    }
-  }
-};
-
 // Memoized action configurations
 const ACTION_CONFIG = {
   add: {
@@ -196,7 +163,7 @@ export function ActionToolbar({
   useEffect(() => {
     const states = {};
     Object.values(ACTION_GROUPS).forEach((group) => {
-      const savedAction = safeLocalStorage.getItem(group.storageKey);
+      const savedAction = localStorage.getItem(group.storageKey);
       if (
         savedAction &&
         group.actions.includes(savedAction) &&
@@ -223,7 +190,7 @@ export function ActionToolbar({
         setLoadingActions((prev) => ({ ...prev, [actionId]: true }));
       }
       setGroupStates((prev) => ({ ...prev, [groupId]: actionId }));
-      safeLocalStorage.setItem(ACTION_GROUPS[groupId].storageKey, actionId);
+      localStorage.setItem(ACTION_GROUPS[groupId].storageKey, actionId);
       await callback();
     } catch (error) {
       console.error(`Error executing action ${actionId}:`, error);

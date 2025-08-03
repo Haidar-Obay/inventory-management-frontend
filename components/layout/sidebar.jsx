@@ -72,39 +72,6 @@ import tenantApiService from "@/API/TenantApiService";
 import { useRouter, useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 
-// Helper function to safely access localStorage
-const safeLocalStorage = {
-  getItem: (key) => {
-    if (typeof window !== 'undefined') {
-      try {
-        return window.localStorage.getItem(key);
-      } catch (error) {
-        console.error("Error accessing localStorage:", error);
-        return null;
-      }
-    }
-    return null;
-  },
-  setItem: (key, value) => {
-    if (typeof window !== 'undefined') {
-      try {
-        window.localStorage.setItem(key, value);
-      } catch (error) {
-        console.error("Error setting localStorage:", error);
-      }
-    }
-  },
-  removeItem: (key) => {
-    if (typeof window !== 'undefined') {
-      try {
-        window.localStorage.removeItem(key);
-      } catch (error) {
-        console.error("Error removing from localStorage:", error);
-      }
-    }
-  }
-};
-
 // ================= ICON MAP =================
 // Maps string keys to Lucide icons for menu rendering
 const iconMap = {
@@ -188,8 +155,7 @@ const PortalTooltip = ({ children, content, isRTL, isVisible }) => {
 
   const tooltip = (
     <div
-              className="fixed z-[999999] px-2 py-1 text-sm text-primary-foreground bg-primary rounded-md border border-white dark:border-black shadow-lg pointer-events-none whitespace-nowrap"
-        data-nextjs-scroll-focus-boundary
+      className="fixed z-[999999] px-2 py-1 text-sm text-primary-foreground bg-primary rounded-md border border-white dark:border-black shadow-lg pointer-events-none whitespace-nowrap"
       style={{
         top: position.top,
         [isRTL ? "right" : "left"]: position[isRTL ? "right" : "left"],
@@ -880,19 +846,19 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   // ====== EFFECTS: LOAD STATE FROM LOCALSTORAGE ======
   useEffect(() => {
     // Load bookmarks from localStorage
-    const storedBookmarks = safeLocalStorage.getItem("sidebarBookmarks");
+    const storedBookmarks = localStorage.getItem("sidebarBookmarks");
     if (storedBookmarks) {
       setBookmarks(JSON.parse(storedBookmarks));
     }
 
     // Load expanded groups state from localStorage
-    const storedExpandedGroups = safeLocalStorage.getItem("sidebarExpandedGroups");
+    const storedExpandedGroups = localStorage.getItem("sidebarExpandedGroups");
     if (storedExpandedGroups) {
       setExpandedGroups(JSON.parse(storedExpandedGroups));
     }
 
     // Load expanded sub-groups state from localStorage
-    const storedExpandedSubGroups = safeLocalStorage.getItem(
+    const storedExpandedSubGroups = localStorage.getItem(
       "sidebarExpandedSubGroups"
     );
     if (storedExpandedSubGroups) {
@@ -900,7 +866,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
     }
 
     // Load bookmarks expanded state from localStorage
-    const storedBookmarksExpanded = safeLocalStorage.getItem(
+    const storedBookmarksExpanded = localStorage.getItem(
       "sidebarBookmarksExpanded"
     );
     if (storedBookmarksExpanded !== null) {
@@ -939,7 +905,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
       });
 
       setExpandedGroups(initialExpandedGroups);
-      safeLocalStorage.setItem(
+      localStorage.setItem(
         "sidebarExpandedGroups",
         JSON.stringify(initialExpandedGroups)
       );
@@ -950,7 +916,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   useEffect(() => {
     // Only save after initialization to prevent overwriting during initial load
     if (isInitialized && Object.keys(expandedGroups).length > 0) {
-      safeLocalStorage.setItem(
+      localStorage.setItem(
         "sidebarExpandedGroups",
         JSON.stringify(expandedGroups)
       );
@@ -959,7 +925,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   useEffect(() => {
     // Only save after initialization to prevent overwriting during initial load
     if (isInitialized && Object.keys(expandedSubGroups).length > 0) {
-      safeLocalStorage.setItem(
+      localStorage.setItem(
         "sidebarExpandedSubGroups",
         JSON.stringify(expandedSubGroups)
       );
@@ -968,7 +934,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   useEffect(() => {
     // Only save after initialization to prevent overwriting during initial load
     if (isInitialized) {
-      safeLocalStorage.setItem(
+      localStorage.setItem(
         "sidebarBookmarksExpanded",
         JSON.stringify(isBookmarksExpanded)
       );
@@ -988,7 +954,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
       toast.info({ title: "info", description: "sidebarInfo", isTranslated: true });
     }
     setBookmarks(newBookmarks);
-    safeLocalStorage.setItem("sidebarBookmarks", JSON.stringify(newBookmarks));
+    localStorage.setItem("sidebarBookmarks", JSON.stringify(newBookmarks));
   }, [allItems, bookmarks]);
 
   const toggleGroup = useCallback((group) => {
@@ -1124,7 +1090,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
     }
 
     setBookmarks([]);
-    safeLocalStorage.removeItem("sidebarBookmarks");
+    localStorage.removeItem("sidebarBookmarks");
     toast.info({
       title: "info",
       description: "sidebarInfo",

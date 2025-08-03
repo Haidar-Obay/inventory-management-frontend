@@ -26,6 +26,13 @@ const nextConfig = {
         enforce: true,
       };
     }
+    
+    // Handle font loading issues
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+    };
+    
     return config;
   },
   async headers() {

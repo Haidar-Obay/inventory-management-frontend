@@ -15,39 +15,6 @@ const isDescendant = (parent, child) => {
   return false;
 };
 
-// Helper function to safely access localStorage
-const safeLocalStorage = {
-  getItem: (key) => {
-    if (typeof window !== 'undefined') {
-      try {
-        return window.localStorage.getItem(key);
-      } catch (error) {
-        console.error("Error accessing localStorage:", error);
-        return null;
-      }
-    }
-    return null;
-  },
-  setItem: (key, value) => {
-    if (typeof window !== 'undefined') {
-      try {
-        window.localStorage.setItem(key, value);
-      } catch (error) {
-        console.error("Error setting localStorage:", error);
-      }
-    }
-  },
-  removeItem: (key) => {
-    if (typeof window !== 'undefined') {
-      try {
-        window.localStorage.removeItem(key);
-      } catch (error) {
-        console.error("Error removing from localStorage:", error);
-      }
-    }
-  }
-};
-
 export function useTableLogic({
   data = [],
   columns = [],
@@ -80,7 +47,7 @@ export function useTableLogic({
     if (!key) return null;
     
     try {
-      const saved = safeLocalStorage.getItem(key);
+      const saved = localStorage.getItem(key);
       return saved ? JSON.parse(saved) : null;
     } catch (error) {
       console.error("Error loading last applied template:", error);
@@ -138,7 +105,7 @@ export function useTableLogic({
   const [showSearchRow, setShowSearchRow] = useState(false);
   const [showSearchColumn, setShowSearchColumn] = useState(() => {
     if (typeof window !== "undefined") {
-      const saved = safeLocalStorage.getItem(`tableShowSearchColumn_${tableId}`);
+      const saved = localStorage.getItem(`tableShowSearchColumn_${tableId}`);
       if (saved !== null) return saved === "true";
     }
     return false;
@@ -231,7 +198,7 @@ export function useTableLogic({
   // Load saved filters from localStorage
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const savedFiltersFromStorage = safeLocalStorage.getItem("tableFilters");
+      const savedFiltersFromStorage = localStorage.getItem("tableFilters");
       if (savedFiltersFromStorage) {
         setSavedFilters(JSON.parse(savedFiltersFromStorage));
       }
@@ -707,7 +674,7 @@ export function useTableLogic({
     const updatedSavedFilters = [...savedFilters, newSavedFilter];
     setSavedFilters(updatedSavedFilters);
 
-    safeLocalStorage.setItem("tableFilters", JSON.stringify(updatedSavedFilters));
+    localStorage.setItem("tableFilters", JSON.stringify(updatedSavedFilters));
     setNewFilterName("");
   };
 
@@ -949,7 +916,7 @@ export function useTableLogic({
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      safeLocalStorage.setItem(
+      localStorage.setItem(
         `tableShowSearchColumn_${tableId}`,
         showSearchColumn
       );
