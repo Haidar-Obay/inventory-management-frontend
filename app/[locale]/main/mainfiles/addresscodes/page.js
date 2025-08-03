@@ -41,6 +41,7 @@ import { toast } from "@/components/ui/simple-toast";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useCustomActions } from "@/components/ui/table/useCustomActions";
 import { getPluralFileName } from "@/lib/utils";
+import { getErrorMessage } from "@/lib/errorHandlers";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -105,6 +106,7 @@ function AddressCodesPage() {
     cities: false,
     districts: false,
   });
+
 
   // Initialize tab value from URL or localStorage
   useEffect(() => {
@@ -258,9 +260,11 @@ function AddressCodesPage() {
         });
       }
     } catch (error) {
+      // Use our custom error handler to get user-friendly message
+      const userFriendlyError = getErrorMessage(error);
       toast.error({
-        title: toastT("error"),
-        description: error.message || toastT(`${type}.deleteError`),
+        title: t(userFriendlyError.title),
+        description: t(userFriendlyError.message),
       });
     }
   };
@@ -743,6 +747,8 @@ function AddressCodesPage() {
           onFormDataChange={handleFormDataChange}
           isEdit={isEditMode}
         />
+
+        
       </Box>
     </div>
   );

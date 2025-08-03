@@ -278,8 +278,8 @@ export const TableBody = ({
                           onBlur={handleCellEditFinish}
                           autoFocus
                         >
-                          <option value="true">True</option>
-                          <option value="false">False</option>
+                          <option value="true">{t("true")}</option>
+                          <option value="false">{t("false")}</option>
                         </Select>
                       ) : column.type === "date" ? (
                         <DatePicker
@@ -341,7 +341,7 @@ export const TableBody = ({
                               >
                                 <polyline points="20 6 9 17 4 12"></polyline>
                               </svg>
-                              True
+                              {t("true")}
                             </span>
                           ) : (
                             <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
@@ -360,7 +360,7 @@ export const TableBody = ({
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
                               </svg>
-                              False
+                              {t("false")}
                             </span>
                           )
                         ) : column.type === "date" ? (

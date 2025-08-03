@@ -702,8 +702,25 @@
       "noChangesDesc": "Please modify at least one field before saving."
     },
     "noChangesTitle": "No changes detected",
-    "noChangesDesc": "Please modify at least one field before saving."
+    "noChangesDesc": "Please modify at least one field before saving.",
+    "errors": {
+    "foreignKey": {
+      "title": "Cannot Delete - Related Data Exists",
+      "message": "This item cannot be deleted because it is being used by other records in the system.",
+      "details": "This item is being used by {tableName}. Please remove or update those records first.",
+      "fallback": "This item is being used by other records in the system."
+    },
+    "duplicate": {
+      "title": "Duplicate Entry",
+      "message": "This record already exists in the system."
+    },
+    "database": {
+      "title": "Database Error",
+      "message": "An error occurred while processing your request."
+    }
+  }
   },
+  
   "sections": {
     "title": "Sections Management",
     "loading": "Loading sections...",
@@ -785,8 +802,25 @@
       "noChangesDesc": "Please modify at least one field before saving."
     },
     "noChangesTitle": "No changes detected",
-    "noChangesDesc": "Please modify at least one field before saving."
+    "noChangesDesc": "Please modify at least one field before saving.",
+    "errors": {
+    "foreignKey": {
+      "title": "Cannot Delete - Related Data Exists",
+      "message": "This item cannot be deleted because it is being used by other records in the system.",
+      "details": "This item is being used by {tableName}. Please remove or update those records first.",
+      "fallback": "This item is being used by other records in the system."
+    },
+    "duplicate": {
+      "title": "Duplicate Entry",
+      "message": "This record already exists in the system."
+    },
+    "database": {
+      "title": "Database Error",
+      "message": "An error occurred while processing your request."
+    }
+  }
   },
+  
   "tableColumns": {
     "id": "ID",
     "name": "Name",
@@ -865,6 +899,7 @@
   },
   "table": {
     "title": "Table",
+    "text": "Text",
     "description": "Table description",
     "editLabel": "Edit",
     "deleteLabel": "Delete",
@@ -878,6 +913,8 @@
     "delete": "Delete",
     "setInactiveLabel": "Set as Inactive",
     "setActiveLabel": "Set as Active",
+    "true": "True",
+    "false": "False",
     "search": {
       "placeholder": "Search all columns...",
       "columnPlaceholder": "Search {column}...",
@@ -901,6 +938,8 @@
         "width": "Width",
         "moveUp": "Move Up",
         "moveDown": "Move Down",
+        "moveUpTitle": "Move up",
+        "moveDownTitle": "Move down",
         "reset": "Reset to Defaults",
         "columnWidth": "Column Width",
         "columnOrder": "Column Order",
@@ -1242,8 +1281,25 @@
     "noChangesTitle": "No changes detected",
     "noChangesDesc": "Please modify at least one field before saving.",
     "closeAll": "Close All",
-    "customer": "Customer"
+    "customer": "Customer",
+    "errors": {
+    "foreignKey": {
+      "title": "Cannot Delete - Related Data Exists",
+      "message": "This item cannot be deleted because it is being used by other records in the system.",
+      "details": "This item is being used by {tableName}. Please remove or update those records first.",
+      "fallback": "This item is being used by other records in the system."
+    },
+    "duplicate": {
+      "title": "Duplicate Entry",
+      "message": "This record already exists in the system."
+    },
+    "database": {
+      "title": "Database Error",
+      "message": "An error occurred while processing your request."
+    }
+  }
   },
+  
   "items": {
     "title": "Items Management",
     "loading": "Loading items...",
@@ -1305,8 +1361,25 @@
       "noChangesDesc": "Please modify at least one field before saving."
     },
     "noChangesTitle": "No changes detected",
-    "noChangesDesc": "Please modify at least one field before saving."
+    "noChangesDesc": "Please modify at least one field before saving.",
+    "errors": {
+    "foreignKey": {
+      "title": "Cannot Delete - Related Data Exists",
+      "message": "This item cannot be deleted because it is being used by other records in the system.",
+      "details": "This item is being used by {tableName}. Please remove or update those records first.",
+      "fallback": "This item is being used by other records in the system."
+    },
+    "duplicate": {
+      "title": "Duplicate Entry",
+      "message": "This record already exists in the system."
+    },
+    "database": {
+      "title": "Database Error",
+      "message": "An error occurred while processing your request."
+    }
+  }
   },
+  
   "payment": {
     "name": "Name",
     "title": "Payment",
@@ -1490,6 +1563,22 @@
       "noChangesDesc": "Please modify at least one field before saving."
     },
     "noChangesTitle": "No changes detected",
-    "noChangesDesc": "Please modify at least one field before saving."
+    "noChangesDesc": "Please modify at least one field before saving.",
+    "errors": {
+    "foreignKey": {
+      "title": "Cannot Delete - Related Data Exists",
+      "message": "This item cannot be deleted because it is being used by other records in the system.",
+      "details": "This item is being used by {tableName}. Please remove or update those records first.",
+      "fallback": "This item is being used by other records in the system."
+    },
+    "duplicate": {
+      "title": "Duplicate Entry",
+      "message": "This record already exists in the system."
+    },
+    "database": {
+      "title": "Database Error",
+      "message": "An error occurred while processing your request."
+    }
+  }
   }
 }
