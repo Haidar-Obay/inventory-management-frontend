@@ -111,7 +111,33 @@ const ItemDrawer = ({
   };
 
   function isDataChanged() {
-    return JSON.stringify(formData) !== JSON.stringify(originalData);
+    // Helper function to clean data for comparison
+    const cleanData = (data) => {
+      if (!data || typeof data !== 'object') return {};
+      
+      const cleaned = {};
+      Object.keys(data).forEach(key => {
+        const value = data[key];
+        
+        // Skip null, undefined, empty strings, empty arrays, and empty objects
+        if (value === null || value === undefined || value === '') return;
+        if (Array.isArray(value) && value.length === 0) return;
+        if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) return;
+        
+        // Skip the 'active' field if it's in its default state (true)
+        // This prevents the confirmation dialog from appearing when only the default active state is present
+        if (key === 'active' && value === true) return;
+        
+        cleaned[key] = value;
+      });
+      
+      return cleaned;
+    };
+    
+    const cleanedFormData = cleanData(formData);
+    const cleanedOriginalData = cleanData(originalData);
+    
+    return JSON.stringify(cleanedFormData) !== JSON.stringify(cleanedOriginalData);
   }
 
   const handleSave = () => {
@@ -597,7 +623,7 @@ const ItemDrawer = ({
       onSaveAndClose={onSaveAndClose}
       anchor={isRTL ? "left" : "right"}
       width={getDrawerWidth(type)}
-      hasFormData={hasFormData()}
+      hasDataChanged={isDataChanged()}
     />
   );
 };

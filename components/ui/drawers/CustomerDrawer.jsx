@@ -308,6 +308,37 @@ const CustomerDrawer = React.memo(({
     }
   }, [isOpen, isEdit, formData]);
 
+  // Function to check if data has changed from original state
+  function isDataChanged() {
+    // Helper function to clean data for comparison
+    const cleanData = (data) => {
+      if (!data || typeof data !== 'object') return {};
+      
+      const cleaned = {};
+      Object.keys(data).forEach(key => {
+        const value = data[key];
+        
+        // Skip null, undefined, empty strings, empty arrays, and empty objects
+        if (value === null || value === undefined || value === '') return;
+        if (Array.isArray(value) && value.length === 0) return;
+        if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) return;
+        
+        // Skip the 'active' field if it's in its default state (true)
+        // This prevents the confirmation dialog from appearing when only the default active state is present
+        if (key === 'active' && value === true) return;
+        
+        cleaned[key] = value;
+      });
+      
+      return cleaned;
+    };
+    
+    const cleanedFormData = cleanData(formData);
+    const cleanedOriginalData = cleanData(originalData);
+    
+    return JSON.stringify(cleanedFormData) !== JSON.stringify(cleanedOriginalData);
+  }
+
   // Always auto-generate display_name from title, first_name, middle_name, last_name
   const autoDisplayName = useMemo(() => {
     if (type === 'customer') {
@@ -1331,7 +1362,7 @@ const CustomerDrawer = React.memo(({
         onSaveAndClose={onSaveAndClose}
         anchor={isRTL ? "left" : "right"}
         width={1200}
-        hasFormData={hasFormData()}
+        hasDataChanged={isDataChanged()}
         saveLoading={saveLoading}
       />
 
