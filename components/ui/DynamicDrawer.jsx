@@ -37,6 +37,7 @@ const DynamicDrawer = ({
   anchor = "right", // Add anchor prop with default value
   showExitConfirmation = true, // New prop to control confirmation dialog
   hasFormData = false, // New prop to check if form has data
+  hasDataChanged = false, // New prop to check if data has been modified
   saveLoading = false, // New prop for save loading state
   autoFocus = true, // New prop to control auto focus behavior
 }) => {
@@ -65,8 +66,8 @@ const DynamicDrawer = ({
   }, [isOpen, autoFocus]);
 
   const handleCancelClick = () => {
-    // Only show confirmation if there's form data and confirmation is enabled
-    if (showExitConfirmation && hasFormData) {
+    // Only show confirmation if data has changed and confirmation is enabled
+    if (showExitConfirmation && hasDataChanged) {
       setShowExitDialog(true);
     } else {
       onCancel ? onCancel() : onClose();
@@ -83,8 +84,8 @@ const DynamicDrawer = ({
   };
 
   const handleDrawerClose = () => {
-    // Only show confirmation if there's form data and confirmation is enabled
-    if (showExitConfirmation && hasFormData) {
+    // Only show confirmation if data has changed and confirmation is enabled
+    if (showExitConfirmation && hasDataChanged) {
       setShowExitDialog(true);
     } else {
       onCancel ? onCancel() : onClose();
