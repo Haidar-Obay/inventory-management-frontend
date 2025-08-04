@@ -397,7 +397,7 @@ function CustomerPage() {
             opening_balances_form: customerData.opening_balances?.map(balance => ({
               currency: balance.currency_code || balance.currency_id,
               amount: balance.opening_amount || balance.amount,
-              date: balance.opening_date || balance.date,
+              date: (balance.opening_date || balance.date) ? (balance.opening_date || balance.date).split('T')[0] : '',
               notes: balance.notes,
               is_active: balance.is_active
             })) || [],
@@ -688,17 +688,30 @@ function CustomerPage() {
         delete preparedData.position;
         delete preparedData.extension;
 
-        // Process attachments for backend
-        if (preparedData.attachments && Array.isArray(preparedData.attachments)) {
-          preparedData.attachments = preparedData.attachments.map(attachment => ({
-            file_name: attachment.file_name || attachment.file?.name || '',
-            file_path: attachment.file_path || '',
-            file_type: attachment.file_type || attachment.file?.type || '',
-            file_size: attachment.file_size || attachment.file?.size || 0,
-            description: attachment.description || '',
-            is_public: attachment.is_public !== undefined ? attachment.is_public : true
-          }));
-        }
+                 // Process opening balances for backend - map to correct field names
+         if (preparedData.opening_balances_form && Array.isArray(preparedData.opening_balances_form)) {
+           preparedData.opening_balances = preparedData.opening_balances_form.map(balance => ({
+             currency_id: parseInt(balance.currency) || 1, // Convert to integer, default to 1 if invalid
+             opening_amount: parseFloat(balance.amount) || 0,
+             opening_date: balance.date,
+             notes: balance.notes || ''
+           }));
+         }
+         
+         // Remove the form version since we've mapped it to the correct format
+         delete preparedData.opening_balances_form;
+
+         // Process attachments for backend
+         if (preparedData.attachments && Array.isArray(preparedData.attachments)) {
+           preparedData.attachments = preparedData.attachments.map(attachment => ({
+             file_name: attachment.file_name || attachment.file?.name || '',
+             file_path: attachment.file_path || '',
+             file_type: attachment.file_type || attachment.file?.type || '',
+             file_size: attachment.file_size || attachment.file?.size || 0,
+             description: attachment.description || '',
+             is_public: attachment.is_public !== undefined ? attachment.is_public : true
+           }));
+         }
       }
 
       let response;
