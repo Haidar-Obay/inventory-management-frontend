@@ -372,13 +372,6 @@ function ItemsPage() {
       }
 
       if (response.status) {
-        toast.success({
-          title: toastT("success"),
-          description: toastT(
-            isEditMode ? `${type}.updateSuccess` : `${type}.createSuccess`
-          ),
-        });
-
         setIsEditMode(false);
       }
     } catch (error) {

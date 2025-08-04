@@ -48,7 +48,44 @@ const PaymentDrawer = ({
   }, [isOpen, isEdit, initialData]);
 
   function isDataChanged() {
-    // Helper function to clean data for comparison
+    // In add mode, if originalData is empty (which it should be), 
+    // we only want to show confirmation if formData has meaningful data
+    if (!isEdit) {
+      // Helper function to clean data for comparison
+      const cleanData = (data) => {
+        if (!data || typeof data !== 'object') return {};
+        
+        const cleaned = {};
+        Object.keys(data).forEach(key => {
+          const value = data[key];
+          
+          // Skip null, undefined, empty strings, empty arrays, and empty objects
+          if (value === null || value === undefined || value === '') return;
+          if (Array.isArray(value) && value.length === 0) return;
+          if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) return;
+          
+          // Skip the 'active' field if it's in its default state (true)
+          // This prevents the confirmation dialog from appearing when only the default active state is present
+          if (key === 'active' && value === true) return;
+          
+          // Skip numeric fields that are 0 (default values)
+          if (typeof value === 'number' && value === 0) return;
+          
+          // Skip boolean false values (default values) - but NOT the active field
+          if (typeof value === 'boolean' && value === false && key !== 'active') return;
+          
+          cleaned[key] = value;
+        });
+        
+        return cleaned;
+      };
+      
+      const cleanedFormData = cleanData(formData);
+      // In add mode, originalData should be empty, so if cleanedFormData is also empty, no changes
+      return Object.keys(cleanedFormData).length > 0;
+    }
+    
+    // In edit mode, compare with original data
     const cleanData = (data) => {
       if (!data || typeof data !== 'object') return {};
       
@@ -61,9 +98,11 @@ const PaymentDrawer = ({
         if (Array.isArray(value) && value.length === 0) return;
         if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) return;
         
-        // Skip the 'active' field if it's in its default state (true)
-        // This prevents the confirmation dialog from appearing when only the default active state is present
-        if (key === 'active' && value === true) return;
+        // Skip numeric fields that are 0 (default values)
+        if (typeof value === 'number' && value === 0) return;
+        
+        // Skip boolean false values (default values)
+        if (typeof value === 'boolean' && value === false) return;
         
         cleaned[key] = value;
       });
@@ -73,6 +112,13 @@ const PaymentDrawer = ({
     
     const cleanedFormData = cleanData(formData);
     const cleanedOriginalData = cleanData(originalData);
+    
+    // Special handling for active field in edit mode
+    // If the active field has changed from its original value, include it in the comparison
+    if (formData.active !== originalData.active) {
+      cleanedFormData.active = formData.active;
+      cleanedOriginalData.active = originalData.active;
+    }
     
     return JSON.stringify(cleanedFormData) !== JSON.stringify(cleanedOriginalData);
   }

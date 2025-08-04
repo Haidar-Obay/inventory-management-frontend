@@ -6,8 +6,17 @@ import DynamicDrawer from "@/components/ui/DynamicDrawer";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { useSimpleToast } from "@/components/ui/simple-toast";
 
-import { getCategoryNames } from "@/API/Items";
-import { getBrandNames } from "@/API/Items";
+import { 
+  getCategoryNames, 
+  getBrandNames, 
+  getProductLines,
+  createProductLine, 
+  editProductLine, 
+  createCategory, 
+  editCategory, 
+  createBrand, 
+  editBrand 
+} from "@/API/Items";
 import { useTranslations, useLocale } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -24,8 +33,10 @@ const ItemDrawer = ({
 }) => {
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [brandOptions, setBrandOptions] = useState([]);
+  const [productLineOptions, setProductLineOptions] = useState([]);
   const [loading, setLoading] = useState(false);
   const t = useTranslations("items");
+  const tToast = useTranslations("toast");
   const locale = useLocale();
   const isRTL = locale === "ar";
   const [originalName, setOriginalName] = useState("");
@@ -75,8 +86,20 @@ const ItemDrawer = ({
     }
   };
 
+  const fetchProductLines = async () => {
+    try {
+      setLoading(true);
+      const response = await getProductLines();
+      setProductLineOptions(response.data || []);
+    } catch (error) {
+      console.error("Error fetching product lines:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchAllOptions = async () => {
-    await Promise.all([fetchCategoryNames(), fetchBrandNames()]);
+    await Promise.all([fetchCategoryNames(), fetchBrandNames(), fetchProductLines()]);
   };
 
   const handleFieldChange = (field) => (event) => {
@@ -111,7 +134,38 @@ const ItemDrawer = ({
   };
 
   function isDataChanged() {
-    // Helper function to clean data for comparison
+    // In add mode, if originalData is empty (which it should be), 
+    // we only want to show confirmation if formData has meaningful data
+    if (!isEdit) {
+      // Helper function to clean data for comparison
+      const cleanData = (data) => {
+        if (!data || typeof data !== 'object') return {};
+        
+        const cleaned = {};
+        Object.keys(data).forEach(key => {
+          const value = data[key];
+          
+          // Skip null, undefined, empty strings, empty arrays, and empty objects
+          if (value === null || value === undefined || value === '') return;
+          if (Array.isArray(value) && value.length === 0) return;
+          if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) return;
+          
+          // Skip the 'active' field if it's in its default state (true)
+          // This prevents the confirmation dialog from appearing when only the default active state is present
+          if (key === 'active' && value === true) return;
+          
+          cleaned[key] = value;
+        });
+        
+        return cleaned;
+      };
+      
+      const cleanedFormData = cleanData(formData);
+      // In add mode, originalData should be empty, so if cleanedFormData is also empty, no changes
+      return Object.keys(cleanedFormData).length > 0;
+    }
+    
+    // In edit mode, compare with original data
     const cleanData = (data) => {
       if (!data || typeof data !== 'object') return {};
       
@@ -124,10 +178,6 @@ const ItemDrawer = ({
         if (Array.isArray(value) && value.length === 0) return;
         if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) return;
         
-        // Skip the 'active' field if it's in its default state (true)
-        // This prevents the confirmation dialog from appearing when only the default active state is present
-        if (key === 'active' && value === true) return;
-        
         cleaned[key] = value;
       });
       
@@ -137,10 +187,17 @@ const ItemDrawer = ({
     const cleanedFormData = cleanData(formData);
     const cleanedOriginalData = cleanData(originalData);
     
+    // Special handling for active field in edit mode
+    // If the active field has changed from its original value, include it in the comparison
+    if (formData.active !== originalData.active) {
+      cleanedFormData.active = formData.active;
+      cleanedOriginalData.active = originalData.active;
+    }
+    
     return JSON.stringify(cleanedFormData) !== JSON.stringify(cleanedOriginalData);
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (isEdit && !isDataChanged()) {
       addToast({
         type: "error",
@@ -151,7 +208,175 @@ const ItemDrawer = ({
       });
       return;
     }
-    onSave && onSave();
+    
+    try {
+      let response;
+      if (type === "productLine") {
+        if (isEdit) {
+          response = await editProductLine(formData.id, formData);
+        } else {
+          response = await createProductLine(formData);
+        }
+      } else if (type === "category") {
+        if (isEdit) {
+          response = await editCategory(formData.id, formData);
+        } else {
+          response = await createCategory(formData);
+        }
+      } else if (type === "brand") {
+        if (isEdit) {
+          response = await editBrand(formData.id, formData);
+        } else {
+          response = await createBrand(formData);
+        }
+      }
+      
+      if (response && response.status) {
+        addToast({
+          type: "success",
+          title: tToast("success"),
+          description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
+          duration: 3000,
+        });
+        onSave && onSave(response.data);
+        onClose && onClose();
+      } else {
+        addToast({
+          type: "error",
+          title: tToast("error"),
+          description: response?.message || tToast(isEdit ? "updateError" : "createError"),
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      addToast({
+        type: "error",
+        title: t("error") || "Error",
+        description: error.message || t(isEdit ? "updateError" : "createError") || (isEdit ? "Failed to update" : "Failed to create"),
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleSaveAndNew = async () => {
+    if (isEdit && !isDataChanged()) {
+      addToast({
+        type: "error",
+        title: t("noChangesTitle") || "No changes detected",
+        description:
+          t("noChangesDesc") ||
+          "Please modify at least one field before saving.",
+      });
+      return;
+    }
+    
+    try {
+      let response;
+      if (type === "productLine") {
+        if (isEdit) {
+          response = await editProductLine(formData.id, formData);
+        } else {
+          response = await createProductLine(formData);
+        }
+      } else if (type === "category") {
+        if (isEdit) {
+          response = await editCategory(formData.id, formData);
+        } else {
+          response = await createCategory(formData);
+        }
+      } else if (type === "brand") {
+        if (isEdit) {
+          response = await editBrand(formData.id, formData);
+        } else {
+          response = await createBrand(formData);
+        }
+      }
+      
+      if (response && response.status) {
+        addToast({
+          type: "success",
+          title: tToast("success"),
+          description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
+          duration: 3000,
+        });
+        onSaveAndNew && onSaveAndNew(response.data);
+      } else {
+        addToast({
+          type: "error",
+          title: tToast("error"),
+          description: response?.message || tToast(isEdit ? "updateError" : "createError"),
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      addToast({
+        type: "error",
+        title: t("error") || "Error",
+        description: error.message || t(isEdit ? "updateError" : "createError") || (isEdit ? "Failed to update" : "Failed to create"),
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleSaveAndClose = async () => {
+    if (isEdit && !isDataChanged()) {
+      addToast({
+        type: "error",
+        title: t("noChangesTitle") || "No changes detected",
+        description:
+          t("noChangesDesc") ||
+          "Please modify at least one field before saving.",
+      });
+      return;
+    }
+    
+    try {
+      let response;
+      if (type === "productLine") {
+        if (isEdit) {
+          response = await editProductLine(formData.id, formData);
+        } else {
+          response = await createProductLine(formData);
+        }
+      } else if (type === "category") {
+        if (isEdit) {
+          response = await editCategory(formData.id, formData);
+        } else {
+          response = await createCategory(formData);
+        }
+      } else if (type === "brand") {
+        if (isEdit) {
+          response = await editBrand(formData.id, formData);
+        } else {
+          response = await createBrand(formData);
+        }
+      }
+      
+      if (response && response.status) {
+        addToast({
+          type: "success",
+          title: tToast("success"),
+          description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
+          duration: 3000,
+        });
+        onSaveAndClose && onSaveAndClose(response.data);
+        onClose && onClose();
+      } else {
+        addToast({
+          type: "error",
+          title: tToast("error"),
+          description: response?.message || tToast(isEdit ? "updateError" : "createError"),
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      addToast({
+        type: "error",
+        title: t("error") || "Error",
+        description: error.message || t(isEdit ? "updateError" : "createError") || (isEdit ? "Failed to update" : "Failed to create"),
+        duration: 3000,
+      });
+    }
   };
 
   const getContent = () => {
@@ -619,8 +844,8 @@ const ItemDrawer = ({
       title={getTitle()}
       content={getContent()}
       onSave={handleSave}
-      onSaveAndNew={onSaveAndNew}
-      onSaveAndClose={onSaveAndClose}
+      onSaveAndNew={handleSaveAndNew}
+      onSaveAndClose={handleSaveAndClose}
       anchor={isRTL ? "left" : "right"}
       width={getDrawerWidth(type)}
       hasDataChanged={isDataChanged()}
