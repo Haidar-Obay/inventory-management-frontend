@@ -419,30 +419,29 @@ function CustomerPage() {
         return;
       }
     } else {
-      // Handle other entity types (customer groups, salesmen)
-    setFormData({
-      id: row.id,
-      name: row.name,
-      code: row.code,
-      active: row.active,
-      address: row.address,
-      phone1: row.phone1,
-      phone2: row.phone2,
-      fax: row.fax,
-      website: row.website,
-      tax_number: row.tax_number,
-      tax_office: row.tax_office,
-      customer_group_id: row.customer_group_id,
-      salesman_id: row.salesman_id,
-      is_manager: row.is_manager,
-      is_supervisor: row.is_supervisor,
-      is_collector: row.is_collector,
-      fix_commission: row.fix_commission,
-      commission_percent: row.commission_percent,
-      commission_by_item: row.commission_by_item,
-      commission_by_turnover: row.commission_by_turnover,
-    });
+      // Use drawer stack for customer groups and salesmen
+      openDrawer({
+        type: type,
+        props: {
+          editData: row,
+          onSave: (updatedData) => {
+            // Update the existing data in the state
+            if (type === "customerGroup") {
+              setCustomerGroupsData(prev => prev.map(item => 
+                item.id === updatedData.id ? updatedData : item
+              ));
+            } else if (type === "salesman") {
+              setSalesmenData(prev => prev.map(item => 
+                item.id === updatedData.id ? updatedData : item
+              ));
+            }
+          },
+        },
+      });
+      return; // Exit early for customer groups and salesmen
     }
+    
+    // Use CustomerDrawer for customers
     setActiveDrawerType(type);
     setIsEditMode(true);
     setIsDrawerOpen(true);
