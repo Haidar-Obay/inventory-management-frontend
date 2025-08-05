@@ -715,6 +715,10 @@ const CustomerDrawer = React.memo(({
           description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
           duration: 3000,
         });
+        // Update originalData with the current formData to ensure proper change detection
+        if (isEdit) {
+          setOriginalData(JSON.parse(JSON.stringify(formData)));
+        }
         onSave && onSave(response.data);
         onClose && onClose();
       } else {
@@ -834,6 +838,10 @@ const CustomerDrawer = React.memo(({
           description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
           duration: 3000,
         });
+        // Update originalData with the current formData to ensure proper change detection
+        if (isEdit) {
+          setOriginalData(JSON.parse(JSON.stringify(formData)));
+        }
         onSaveAndClose && onSaveAndClose(response.data);
         onClose && onClose();
       } else {
@@ -1583,6 +1591,7 @@ const CustomerDrawer = React.memo(({
         width={1200}
         hasDataChanged={isDataChanged()}
         saveLoading={saveLoading}
+        isEdit={isEdit}
       />
 
     </>

@@ -137,6 +137,10 @@ const CustomerGroupDrawer = ({
           description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
           duration: 3000,
         });
+        // Update originalData with the current formData to ensure proper change detection
+        if (isEdit) {
+          setOriginalData(JSON.parse(JSON.stringify(formData)));
+        }
         onSave && onSave(response.data);
         // Don't close the drawer - let user continue editing
         // onClose && onClose(); // Removed this line
@@ -273,6 +277,10 @@ const CustomerGroupDrawer = ({
           description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
           duration: 3000,
         });
+        // Update originalData with the current formData to ensure proper change detection
+        if (isEdit) {
+          setOriginalData(JSON.parse(JSON.stringify(formData)));
+        }
         if (onSaveAndClose) onSaveAndClose(response.data);
         if (onClose) onClose();
       } else {
@@ -387,6 +395,7 @@ const CustomerGroupDrawer = ({
       width={500}
       hasDataChanged={isDataChanged()}
       saveLoading={saveLoading}
+      isEdit={isEdit}
     />
   );
 };

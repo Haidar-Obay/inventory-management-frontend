@@ -325,6 +325,10 @@ const PaymentDrawer = ({
           description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
           duration: 5000,
         });
+        // Update originalData with the current formData to ensure proper change detection
+        if (isEdit) {
+          setOriginalData(JSON.parse(JSON.stringify(formData)));
+        }
         if (onSave) onSave(response.data);
         // Don't close the drawer - let user continue editing
         // if (onClose) onClose(); // Removed this line
@@ -422,6 +426,10 @@ const PaymentDrawer = ({
           description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
           duration: 5000,
         });
+        // Update originalData with the current formData to ensure proper change detection
+        if (isEdit) {
+          setOriginalData(JSON.parse(JSON.stringify(formData)));
+        }
         if (onSaveAndClose) onSaveAndClose(response.data);
         if (onClose) onClose();
       } else {
@@ -460,6 +468,7 @@ const PaymentDrawer = ({
       width={getDrawerWidth(type)}
       hasDataChanged={hasDataChanged}
       saveLoading={saveLoading}
+      isEdit={isEdit}
     />
   );
 };

@@ -262,6 +262,10 @@ const ItemDrawer = ({
           description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
           duration: 3000,
         });
+        // Update originalData with the current formData to ensure proper change detection
+        if (isEdit) {
+          setOriginalData(JSON.parse(JSON.stringify(formData)));
+        }
         onClose && onClose();
       } else {
         addToast({
@@ -419,6 +423,10 @@ const ItemDrawer = ({
           description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
           duration: 3000,
         });
+        // Update originalData with the current formData to ensure proper change detection
+        if (isEdit) {
+          setOriginalData(JSON.parse(JSON.stringify(formData)));
+        }
         onClose && onClose();
       } else {
         addToast({
@@ -911,6 +919,7 @@ const ItemDrawer = ({
       width={getDrawerWidth(type)}
       hasDataChanged={isDataChanged()}
       saveLoading={saveLoading}
+      isEdit={isEdit}
     />
   );
 };
