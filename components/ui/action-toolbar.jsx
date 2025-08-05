@@ -184,10 +184,16 @@ export function ActionToolbar({
 
   // Memoize action handlers
   const handleAction = useCallback(async (actionId, callback, groupId) => {
+    // Prevent multiple rapid clicks for the same action
+    const actionKey = `${groupId}-${actionId}`;
+    if (loadingActions[actionKey]) {
+      return;
+    }
+
     try {
       // Don't set loading for save actions if saveLoading prop is provided
       if (!(saveLoading && (actionId === 'save' || actionId === 'saveAndNew' || actionId === 'saveAndExit'))) {
-        setLoadingActions((prev) => ({ ...prev, [actionId]: true }));
+        setLoadingActions((prev) => ({ ...prev, [actionKey]: true }));
       }
       setGroupStates((prev) => ({ ...prev, [groupId]: actionId }));
       localStorage.setItem(ACTION_GROUPS[groupId].storageKey, actionId);
@@ -196,10 +202,10 @@ export function ActionToolbar({
       console.error(`Error executing action ${actionId}:`, error);
     } finally {
       if (!(saveLoading && (actionId === 'save' || actionId === 'saveAndNew' || actionId === 'saveAndExit'))) {
-        setLoadingActions((prev) => ({ ...prev, [actionId]: false }));
+        setLoadingActions((prev) => ({ ...prev, [actionKey]: false }));
       }
     }
-  }, [saveLoading]);
+  }, [saveLoading, loadingActions]);
 
   const toggleGroup = useCallback((groupId) => {
     setGroupStates((prev) => ({
@@ -213,7 +219,8 @@ export function ActionToolbar({
     (actionId, groupId) => {
       const config = ACTION_CONFIG[actionId];
       const isSaveAction = actionId === 'save' || actionId === 'saveAndNew' || actionId === 'saveAndExit';
-      const isLoading = isSaveAction ? saveLoading : loadingActions[actionId];
+      const actionKey = `${groupId}-${actionId}`;
+      const isLoading = isSaveAction ? saveLoading : loadingActions[actionKey];
 
       const getLabel = () => {
         switch (actionId) {

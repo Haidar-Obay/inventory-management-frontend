@@ -36,6 +36,7 @@ const SectionDrawer = ({
   onSaveAndNew,
   onSaveAndClose,
   editData, // pass this for edit mode, otherwise undefined
+  saveLoading: externalSaveLoading = false,
 }) => {
   const t = useTranslations("sections");
   const tToast = useTranslations("toast");
@@ -52,7 +53,11 @@ const SectionDrawer = ({
   const [departmentOptions, setDepartmentOptions] = useState([]);
   const [projectOptions, setProjectOptions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [internalSaveLoading, setInternalSaveLoading] = useState(false);
   const isEdit = !!editData;
+
+  // Use external saveLoading if provided, otherwise use internal
+  const saveLoading = externalSaveLoading || internalSaveLoading;
 
   // Reset state on open
   useEffect(() => {
@@ -211,7 +216,11 @@ const SectionDrawer = ({
       });
       return;
     }
+    
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
       let response;
       if (isEdit) {
         if (type === "project") response = await editProject(formData.id, formData);
@@ -236,7 +245,8 @@ const SectionDrawer = ({
           duration: 3000,
         });
         onSave && onSave(response.data);
-        onClose && onClose();
+        // Don't close the drawer - let user continue editing
+        // onClose && onClose(); // Removed this line
       } else {
         addToast({
           type: "error",
@@ -252,6 +262,8 @@ const SectionDrawer = ({
         description: error.message || tToast(isEdit ? "updateError" : "createError"),
         duration: 3000,
       });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
@@ -266,7 +278,11 @@ const SectionDrawer = ({
         });
       return;
     }
+    
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
       let response;
       if (isEdit) {
         if (type === "project") response = await editProject(formData.id, formData);
@@ -309,6 +325,8 @@ const SectionDrawer = ({
         description: error.message || tToast(isEdit ? "updateError" : "createError"),
         duration: 3000,
       });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
@@ -323,7 +341,11 @@ const SectionDrawer = ({
       });
       return;
     }
+    
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
       let response;
       if (isEdit) {
         if (type === "project") response = await editProject(formData.id, formData);
@@ -364,6 +386,8 @@ const SectionDrawer = ({
         description: error.message || tToast(isEdit ? "updateError" : "createError"),
         duration: 3000,
       });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
@@ -574,7 +598,7 @@ const SectionDrawer = ({
             {/* Right side - Checkbox */}
             <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
               <Checkbox
-                checked={formData?.active !== false}
+                checked={Boolean(formData?.active)}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -666,7 +690,7 @@ const SectionDrawer = ({
             {/* Right side - Checkbox */}
             <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
               <Checkbox
-                checked={formData?.active !== false}
+                checked={Boolean(formData?.active)}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -731,7 +755,7 @@ const SectionDrawer = ({
             {/* Right side - Checkbox */}
             <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
               <Checkbox
-                checked={formData?.active !== false}
+                checked={Boolean(formData?.active)}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -1028,6 +1052,7 @@ const SectionDrawer = ({
       anchor={isRTL ? "left" : "right"}
       width={getDrawerWidth(type)}
       hasDataChanged={isDataChanged()}
+      saveLoading={saveLoading}
     />
   );
 };

@@ -380,7 +380,8 @@ function SectionsPage() {
         });
       }
     }
-    handleCloseDrawer();
+    // Don't close the drawer - let user continue editing
+    // handleCloseDrawer(); // Removed this line
   };
 
   const handleSaveAndNew = async (newData) => {

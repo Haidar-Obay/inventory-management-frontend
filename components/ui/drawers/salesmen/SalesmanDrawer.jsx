@@ -11,7 +11,10 @@ const SalesmanDrawer = ({
   isOpen,
   onClose,
   onSave,
+  onSaveAndNew,
+  onSaveAndClose,
   editData,
+  saveLoading: externalSaveLoading = false,
 }) => {
   const t = useTranslations("customers");
   const tToast = useTranslations("toast");
@@ -21,7 +24,11 @@ const SalesmanDrawer = ({
   const [formData, setFormData] = useState({ active: true });
   const [originalData, setOriginalData] = useState({});
   const [originalName, setOriginalName] = useState("");
+  const [internalSaveLoading, setInternalSaveLoading] = useState(false);
   const isEdit = !!editData;
+
+  // Use external saveLoading if provided, otherwise use internal
+  const saveLoading = externalSaveLoading || internalSaveLoading;
 
   useEffect(() => {
     if (isOpen) {
@@ -112,7 +119,11 @@ const SalesmanDrawer = ({
       });
       return;
     }
+    
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
       let response;
       if (isEdit) {
         response = await editSalesman(formData.id, formData);
@@ -127,7 +138,8 @@ const SalesmanDrawer = ({
           duration: 3000,
         });
         onSave && onSave(response.data);
-        onClose && onClose();
+        // Don't close the drawer - let user continue editing
+        // onClose && onClose(); // Removed this line
       } else {
         addToast({
           type: "error",
@@ -143,6 +155,113 @@ const SalesmanDrawer = ({
         description: error.message || tToast(isEdit ? "updateError" : "createError"),
         duration: 3000,
       });
+    } finally {
+      setInternalSaveLoading(false);
+    }
+  };
+
+  // Save and New
+  const handleSaveAndNew = async () => {
+    if (isEdit && !isDataChanged()) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: t("noChangesDesc") || "Please modify at least one field before saving.",
+        duration: 3000,
+      });
+      return;
+    }
+    
+    if (saveLoading) return; // Prevent multiple saves
+    
+    try {
+      setInternalSaveLoading(true);
+      let response;
+      if (isEdit) {
+        response = await editSalesman(formData.id, formData);
+      } else {
+        response = await createSalesman(formData);
+      }
+      if (response && response.status) {
+        addToast({
+          type: "success",
+          title: tToast("success"),
+          description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
+          duration: 3000,
+        });
+        if (onSaveAndNew) onSaveAndNew(response.data);
+        // Reset form for new entry
+        setFormData({ active: true });
+        setOriginalData({});
+        setOriginalName("");
+      } else {
+        addToast({
+          type: "error",
+          title: tToast("error"),
+          description: response?.message || tToast(isEdit ? "updateError" : "createError"),
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: error.message || tToast(isEdit ? "updateError" : "createError"),
+        duration: 3000,
+      });
+    } finally {
+      setInternalSaveLoading(false);
+    }
+  };
+
+  // Save and Close
+  const handleSaveAndClose = async () => {
+    if (isEdit && !isDataChanged()) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: t("noChangesDesc") || "Please modify at least one field before saving.",
+        duration: 3000,
+      });
+      return;
+    }
+    
+    if (saveLoading) return; // Prevent multiple saves
+    
+    try {
+      setInternalSaveLoading(true);
+      let response;
+      if (isEdit) {
+        response = await editSalesman(formData.id, formData);
+      } else {
+        response = await createSalesman(formData);
+      }
+      if (response && response.status) {
+        addToast({
+          type: "success",
+          title: tToast("success"),
+          description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
+          duration: 3000,
+        });
+        if (onSaveAndClose) onSaveAndClose(response.data);
+        if (onClose) onClose();
+      } else {
+        addToast({
+          type: "error",
+          title: tToast("error"),
+          description: response?.message || tToast(isEdit ? "updateError" : "createError"),
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: error.message || tToast(isEdit ? "updateError" : "createError"),
+        duration: 3000,
+      });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
@@ -367,7 +486,7 @@ const SalesmanDrawer = ({
         {/* Right side - Checkbox */}
         <Box sx={{ width: 100, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
           <Checkbox
-            checked={formData?.active !== false}
+            checked={Boolean(formData?.active)}
             onChange={e => setFormData({ ...formData, active: e.target.checked })}
             label={t("management.active")}
             isRTL={isRTL}
@@ -384,9 +503,12 @@ const SalesmanDrawer = ({
       title={getTitle()}
       content={content}
       onSave={handleSave}
+      onSaveAndNew={handleSaveAndNew}
+      onSaveAndClose={handleSaveAndClose}
       anchor={isRTL ? "left" : "right"}
       width={550}
       hasDataChanged={isDataChanged()}
+      saveLoading={saveLoading}
     />
   );
 };

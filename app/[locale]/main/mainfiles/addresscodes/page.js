@@ -287,52 +287,48 @@ function AddressCodesPage() {
     setFormData(data);
   };
 
-  const handleSave = async () => {
-    const type = activeDrawerType;
-    const handler = entityHandlers[type];
-
-    try {
-      let response;
-      if (isEditMode) {
-        response = await handler.editFn(formData.id, formData);
-        if (response.status) {
-          entityHandlers[type].setData((prev) =>
-            prev.map((item) =>
-              item.id === formData.id ? { ...item, ...formData } : item
-            )
-          );
-        }
-      } else {
-        response = await handler.createFn(formData);
-        if (response.status) {
-          entityHandlers[type].setData((prev) => [...prev, response.data]);
-        }
+  const handleSave = async (newData) => {
+    // Update local state directly
+    if (newData) {
+      const setDataFunction = entityHandlers[activeDrawerType]?.setData;
+      if (setDataFunction) {
+        setDataFunction(prev => {
+          // If editing, replace the item; if creating, add new item
+          if (isEditMode) {
+            return prev.map(item => item.id === newData.id ? newData : item);
+          } else {
+            return [...prev, newData];
+          }
+        });
       }
-
-      if (response.status) {
-        setIsEditMode(false);
-      }
-    } catch (error) {
-      toast.error({
-        title: toastT("error"),
-        description:
-          error.message ||
-          toastT(isEditMode ? `${type}.updateError` : `${type}.createError`),
-      });
     }
+    // Don't close the drawer - let user continue editing
+    // handleCloseDrawer(); // Removed this line
   };
 
-  const handleSaveAndNew = async () => {
-    await handleSave();
+  const handleSaveAndNew = async (newData) => {
+    // Update local state directly without closing drawer
+    if (newData) {
+      const setDataFunction = entityHandlers[activeDrawerType]?.setData;
+      if (setDataFunction) {
+        setDataFunction(prev => {
+          // If editing, replace the item; if creating, add new item
+          if (isEditMode) {
+            return prev.map(item => item.id === newData.id ? newData : item);
+          } else {
+            return [...prev, newData];
+          }
+        });
+      }
+    }
+    // Reset editData to null for new entry (drawer will clear fields)
+    setIsEditMode(false);
     setFormData({});
-    if (isEditMode) {
-      setIsEditMode(false);
-      setFormData({});
-    }
+    // Don't close the drawer - let the drawer handle clearing fields
   };
 
-  const handleSaveAndClose = async () => {
-    await handleSave();
+  const handleSaveAndClose = async (newData) => {
+    await handleSave(newData);
     handleCloseDrawer();
   };
 

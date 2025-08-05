@@ -19,6 +19,7 @@ const AddressCodeDrawer = ({
   formData: externalFormData,
   onFormDataChange: externalOnFormDataChange,
   isEdit = false,
+  saveLoading: externalSaveLoading = false,
 }) => {
   const t = useTranslations("addressCodes");
   const tToast = useTranslations("toast");
@@ -26,7 +27,11 @@ const AddressCodeDrawer = ({
   const isRTL = locale === "ar";
   const [originalName, setOriginalName] = useState("");
   const [originalData, setOriginalData] = useState({});
+  const [internalSaveLoading, setInternalSaveLoading] = useState(false);
   const { addToast } = useSimpleToast();
+
+  // Use external saveLoading if provided, otherwise use internal
+  const saveLoading = externalSaveLoading || internalSaveLoading;
 
   // Internal state fallback
   const [internalFormData, setInternalFormData] = useState({ name: "" });
@@ -174,18 +179,29 @@ const AddressCodeDrawer = ({
       });
       return;
     }
+    
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
       let response;
+      
+      // Prepare data with type information
+      const dataToSend = {
+        ...formData,
+        type: type // Include the type to help backend distinguish between address code types
+      };
+      
       if (isEdit) {
-        if (type === "country") response = await editCountry(formData.id, formData);
-        if (type === "zone") response = await editZone(formData.id, formData);
-        if (type === "city") response = await editCity(formData.id, formData);
-        if (type === "district") response = await editDistrict(formData.id, formData);
+        if (type === "country") response = await editCountry(formData.id, dataToSend);
+        if (type === "zone") response = await editZone(formData.id, dataToSend);
+        if (type === "city") response = await editCity(formData.id, dataToSend);
+        if (type === "district") response = await editDistrict(formData.id, dataToSend);
       } else {
-        if (type === "country") response = await createCountry(formData);
-        if (type === "zone") response = await createZone(formData);
-        if (type === "city") response = await createCity(formData);
-        if (type === "district") response = await createDistrict(formData);
+        if (type === "country") response = await createCountry(dataToSend);
+        if (type === "zone") response = await createZone(dataToSend);
+        if (type === "city") response = await createCity(dataToSend);
+        if (type === "district") response = await createDistrict(dataToSend);
       }
       if (response && response.status) {
         addToast({
@@ -195,7 +211,8 @@ const AddressCodeDrawer = ({
           duration: 3000,
         });
         onSave && onSave(response.data);
-        onClose && onClose();
+        // Don't close the drawer - let user continue editing
+        // onClose && onClose(); // Removed this line
       } else {
         addToast({
           type: "error",
@@ -211,6 +228,139 @@ const AddressCodeDrawer = ({
         description: error.message || tToast(isEdit ? "updateError" : "createError"),
         duration: 3000,
       });
+    } finally {
+      setInternalSaveLoading(false);
+    }
+  };
+
+  // Save and New
+  const handleSaveAndNew = async () => {
+    if (isEdit && !isDataChanged()) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: t("noChangesDesc") || "Please modify at least one field before saving.",
+        duration: 3000,
+      });
+      return;
+    }
+    
+    if (saveLoading) return; // Prevent multiple saves
+    
+    try {
+      setInternalSaveLoading(true);
+      let response;
+      
+      // Prepare data with type information
+      const dataToSend = {
+        ...formData,
+        type: type // Include the type to help backend distinguish between address code types
+      };
+      
+      if (isEdit) {
+        if (type === "country") response = await editCountry(formData.id, dataToSend);
+        if (type === "zone") response = await editZone(formData.id, dataToSend);
+        if (type === "city") response = await editCity(formData.id, dataToSend);
+        if (type === "district") response = await editDistrict(formData.id, dataToSend);
+      } else {
+        if (type === "country") response = await createCountry(dataToSend);
+        if (type === "zone") response = await createZone(dataToSend);
+        if (type === "city") response = await createCity(dataToSend);
+        if (type === "district") response = await createDistrict(dataToSend);
+      }
+      if (response && response.status) {
+        addToast({
+          type: "success",
+          title: tToast("success"),
+          description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
+          duration: 3000,
+        });
+        if (onSaveAndNew) onSaveAndNew(response.data);
+        // Reset form for new entry
+        setInternalFormData({ name: "" });
+        setOriginalData({});
+        setOriginalName("");
+      } else {
+        addToast({
+          type: "error",
+          title: tToast("error"),
+          description: response?.message || tToast(isEdit ? "updateError" : "createError"),
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: error.message || tToast(isEdit ? "updateError" : "createError"),
+        duration: 3000,
+      });
+    } finally {
+      setInternalSaveLoading(false);
+    }
+  };
+
+  // Save and Close
+  const handleSaveAndClose = async () => {
+    if (isEdit && !isDataChanged()) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: t("noChangesDesc") || "Please modify at least one field before saving.",
+        duration: 3000,
+      });
+      return;
+    }
+    
+    if (saveLoading) return; // Prevent multiple saves
+    
+    try {
+      setInternalSaveLoading(true);
+      let response;
+      
+      // Prepare data with type information
+      const dataToSend = {
+        ...formData,
+        type: type // Include the type to help backend distinguish between address code types
+      };
+      
+      if (isEdit) {
+        if (type === "country") response = await editCountry(formData.id, dataToSend);
+        if (type === "zone") response = await editZone(formData.id, dataToSend);
+        if (type === "city") response = await editCity(formData.id, dataToSend);
+        if (type === "district") response = await editDistrict(formData.id, dataToSend);
+      } else {
+        if (type === "country") response = await createCountry(dataToSend);
+        if (type === "zone") response = await createZone(dataToSend);
+        if (type === "city") response = await createCity(dataToSend);
+        if (type === "district") response = await createDistrict(dataToSend);
+      }
+      if (response && response.status) {
+        addToast({
+          type: "success",
+          title: tToast("success"),
+          description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
+          duration: 3000,
+        });
+        if (onSaveAndClose) onSaveAndClose(response.data);
+        if (onClose) onClose();
+      } else {
+        addToast({
+          type: "error",
+          title: tToast("error"),
+          description: response?.message || tToast(isEdit ? "updateError" : "createError"),
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: error.message || tToast(isEdit ? "updateError" : "createError"),
+        duration: 3000,
+      });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
@@ -224,11 +374,12 @@ const AddressCodeDrawer = ({
       title={getTitle()}
       content={getContent()}
       onSave={handleSave}
-      onSaveAndNew={onSaveAndNew}
-      onSaveAndClose={onSaveAndClose}
+      onSaveAndNew={handleSaveAndNew}
+      onSaveAndClose={handleSaveAndClose}
       anchor={isRTL ? "left" : "right"}
       width={getDrawerWidth(type)}
       hasDataChanged={hasDataChanged}
+      saveLoading={saveLoading}
     />
   );
 };

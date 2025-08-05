@@ -88,6 +88,7 @@ function ItemsPage() {
   const [brandsData, setBrandsData] = useState([]);
   const [itemsData, setItemsData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saveLoading, setSaveLoading] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeDrawerType, setActiveDrawerType] = useState("");
   const [formData, setFormData] = useState({});
@@ -330,7 +331,13 @@ function ItemsPage() {
   const handleCloseDrawer = () => {
     setIsDrawerOpen(false);
     setActiveDrawerType("");
-    setFormData({});
+    // Reset formData with proper default values
+    const defaultData = {
+      active: true, // Default to active for new items
+      subcategory_of: "", // Default empty for categories
+      sub_brand_of: "", // Default empty for brands
+    };
+    setFormData(defaultData);
     setIsEditMode(false);
   };
 
@@ -339,14 +346,17 @@ function ItemsPage() {
   };
 
   const handleSave = async () => {
+    if (saveLoading) return; // Prevent multiple saves
+    
     const type = activeDrawerType;
     const handler = entityHandlers[type];
 
     try {
+      setSaveLoading(true);
       // Prepare the data with proper types
       const preparedData = {
         ...formData,
-        active: formData.active === "true" || formData.active === true,
+        active: Boolean(formData.active),
         // Ensure subcategory_of and sub_brand_of are properly set
         subcategory_of: formData.subcategory_of || null,
         sub_brand_of: formData.sub_brand_of || null,
@@ -362,12 +372,22 @@ function ItemsPage() {
               item.id === formData.id ? { ...item, ...formData } : item
             )
           );
+          // Show success toast for edit
+          toast.success({
+            title: toastT("success"),
+            description: toastT("updateSuccess"),
+          });
         }
       } else {
         response = await handler.createFn(preparedData);
         if (response.status) {
           // Add new item to the state
           entityHandlers[type].setData((prev) => [...prev, response.data]);
+          // Show success toast for create
+          toast.success({
+            title: toastT("success"),
+            description: toastT("createSuccess"),
+          });
         }
       }
 
@@ -379,23 +399,142 @@ function ItemsPage() {
         title: toastT("error"),
         description:
           error.message ||
-          toastT(isEditMode ? `${type}.updateError` : `${type}.createError`),
+          toastT(isEditMode ? "updateError" : "createError"),
       });
+    } finally {
+      setSaveLoading(false);
     }
   };
 
   const handleSaveAndNew = async () => {
-    await handleSave();
-    setFormData({});
-    if (isEditMode) {
-      setIsEditMode(false);
-      setFormData({});
+    if (saveLoading) return; // Prevent multiple saves
+    
+    try {
+      setSaveLoading(true);
+      // Prepare the data with proper types
+      const preparedData = {
+        ...formData,
+        active: Boolean(formData.active),
+        // Ensure subcategory_of and sub_brand_of are properly set
+        subcategory_of: formData.subcategory_of || null,
+        sub_brand_of: formData.sub_brand_of || null,
+      };
+
+      const type = activeDrawerType;
+      const handler = entityHandlers[type];
+
+      let response;
+      if (isEditMode) {
+        response = await handler.editFn(formData.id, preparedData);
+        if (response.status) {
+          // Update existing item in the state
+          entityHandlers[type].setData((prev) =>
+            prev.map((item) =>
+              item.id === formData.id ? { ...item, ...formData } : item
+            )
+          );
+          // Show success toast for edit
+          toast.success({
+            title: toastT("success"),
+            description: toastT("updateSuccess"),
+          });
+        }
+      } else {
+        response = await handler.createFn(preparedData);
+        if (response.status) {
+          // Add new item to the state
+          entityHandlers[type].setData((prev) => [...prev, response.data]);
+          // Show success toast for create
+          toast.success({
+            title: toastT("success"),
+            description: toastT("createSuccess"),
+          });
+        }
+      }
+
+      if (response.status) {
+        setIsEditMode(false);
+        // Only reset form on successful save
+        const defaultData = {
+          active: true, // Default to active for new items
+          subcategory_of: "", // Default empty for categories
+          sub_brand_of: "", // Default empty for brands
+        };
+        setFormData(defaultData);
+      }
+    } catch (error) {
+      toast.error({
+        title: toastT("error"),
+        description:
+          error.message ||
+          toastT(isEditMode ? "updateError" : "createError"),
+      });
+    } finally {
+      setSaveLoading(false);
     }
   };
 
   const handleSaveAndClose = async () => {
-    await handleSave();
-    handleCloseDrawer();
+    if (saveLoading) return; // Prevent multiple saves
+    
+    try {
+      setSaveLoading(true);
+      // Prepare the data with proper types
+      const preparedData = {
+        ...formData,
+        active: Boolean(formData.active),
+        // Ensure subcategory_of and sub_brand_of are properly set
+        subcategory_of: formData.subcategory_of || null,
+        sub_brand_of: formData.sub_brand_of || null,
+      };
+
+      const type = activeDrawerType;
+      const handler = entityHandlers[type];
+
+      let response;
+      if (isEditMode) {
+        response = await handler.editFn(formData.id, preparedData);
+        if (response.status) {
+          // Update existing item in the state
+          entityHandlers[type].setData((prev) =>
+            prev.map((item) =>
+              item.id === formData.id ? { ...item, ...formData } : item
+            )
+          );
+          // Show success toast for edit
+          toast.success({
+            title: toastT("success"),
+            description: toastT("updateSuccess"),
+          });
+        }
+      } else {
+        response = await handler.createFn(preparedData);
+        if (response.status) {
+          // Add new item to the state
+          entityHandlers[type].setData((prev) => [...prev, response.data]);
+          // Show success toast for create
+          toast.success({
+            title: toastT("success"),
+            description: toastT("createSuccess"),
+          });
+        }
+      }
+
+      if (response.status) {
+        setIsEditMode(false);
+        // Only close drawer on successful save
+        handleCloseDrawer();
+      }
+    } catch (error) {
+      toast.error({
+        title: toastT("error"),
+        description:
+          error.message ||
+          toastT(isEditMode ? "updateError" : "createError"),
+      });
+    } finally {
+      setSaveLoading(false);
+    }
   };
 
   const handleExportExcel = async (type) => {
@@ -885,6 +1024,7 @@ function ItemsPage() {
           formData={formData}
           onFormDataChange={handleFormDataChange}
           isEdit={isEditMode}
+          saveLoading={saveLoading}
         />
       </Box>
     </div>

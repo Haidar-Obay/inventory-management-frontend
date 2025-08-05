@@ -21,6 +21,7 @@ const PaymentDrawer = ({
   onSaveAndClose,
   isEdit = false,
   initialData = null,
+  saveLoading: externalSaveLoading = false,
 }) => {
   const t = useTranslations("payment");
   const tToast = useTranslations("toast");
@@ -28,7 +29,11 @@ const PaymentDrawer = ({
   const isRTL = locale === "ar";
   const [originalName, setOriginalName] = useState("");
   const [originalData, setOriginalData] = useState({});
+  const [internalSaveLoading, setInternalSaveLoading] = useState(false);
   const { addToast } = useSimpleToast();
+
+  // Use external saveLoading if provided, otherwise use internal
+  const saveLoading = externalSaveLoading || internalSaveLoading;
 
   // Local form state only
   const [formData, setFormData] = useState({ code: "", name: "", nb_days: 0, active: true, is_credit_card: false, is_online_payment: false });
@@ -229,7 +234,7 @@ const PaymentDrawer = ({
           <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
             {type === "paymentTerm" && (
               <Checkbox 
-                checked={formData?.active !== false}
+                checked={Boolean(formData?.active)}
                 onChange={handleActiveChange}
                 label={t("active")}
                 isRTL={isRTL}
@@ -238,19 +243,19 @@ const PaymentDrawer = ({
             {type === "paymentMethod" && (
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Checkbox
-                  checked={formData?.active !== false}
+                  checked={Boolean(formData?.active)}
                   onChange={handleActiveChange}
                   label={t("active")}
                   isRTL={isRTL}
                 />
                 <Checkbox
-                  checked={formData?.is_credit_card !== false}
+                  checked={Boolean(formData?.is_credit_card)}
                   onChange={handleIsCreditCardChange}
                   label={t("isCreditCard")}
                   isRTL={isRTL}
                 />
                 <Checkbox
-                  checked={formData?.is_online_payment !== false}
+                  checked={Boolean(formData?.is_online_payment)}
                   onChange={handleIsOnlinePaymentChange}
                   label={t("isOnlinePayment")}
                   isRTL={isRTL}
@@ -290,7 +295,11 @@ const PaymentDrawer = ({
       });
       return;
     }
+    
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
       let response;
       if (type === "paymentTerm") {
         if (isEdit) response = await editPaymentTerm(formData.id, { ...formData, nb_days: Number(formData.nb_days) || 0 });
@@ -317,7 +326,8 @@ const PaymentDrawer = ({
           duration: 5000,
         });
         if (onSave) onSave(response.data);
-        if (onClose) onClose();
+        // Don't close the drawer - let user continue editing
+        // if (onClose) onClose(); // Removed this line
       } else {
         addToast({
           type: "error",
@@ -333,12 +343,17 @@ const PaymentDrawer = ({
         description: error.message || tToast(isEdit ? "updateError" : "createError"),
         duration: 5000,
       });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
   // Save and New
   const handleSaveAndNew = async () => {
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
       let response;
       if (type === "paymentTerm") {
         response = await createPaymentTerm({ ...formData, nb_days: Number(formData.nb_days) || 0 });
@@ -357,7 +372,7 @@ const PaymentDrawer = ({
           description: tToast("createSuccess"),
         });
         if (onSaveAndNew) onSaveAndNew(response.data);
-        setFormData({ code: "", name: "", nb_days: 0, active: false, is_credit_card: false, is_online_payment: false });
+        setFormData({ code: "", name: "", nb_days: 0, active: true, is_credit_card: false, is_online_payment: false });
       } else {
         addToast({
           type: "error",
@@ -371,17 +386,29 @@ const PaymentDrawer = ({
         title: tToast("error"),
         description: error.message || tToast("createError"),
       });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
   // Save and Close
   const handleSaveAndClose = async () => {
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
       let response;
       if (type === "paymentTerm") {
-        response = await createPaymentTerm({ ...formData, nb_days: Number(formData.nb_days) || 0 });
+        if (isEdit) response = await editPaymentTerm(formData.id, { ...formData, nb_days: Number(formData.nb_days) || 0 });
+        else response = await createPaymentTerm({ ...formData, nb_days: Number(formData.nb_days) || 0 });
       } else if (type === "paymentMethod") {
-        response = await createPaymentMethod({
+        if (isEdit) response = await editPaymentMethod(formData.id, {
+          ...formData,
+          active: !!formData.active,
+          is_credit_card: !!formData.is_credit_card,
+          is_online_payment: !!formData.is_online_payment,
+        });
+        else response = await createPaymentMethod({
           ...formData,
           active: !!formData.active,
           is_credit_card: !!formData.is_credit_card,
@@ -392,7 +419,8 @@ const PaymentDrawer = ({
         addToast({
           type: "success",
           title: tToast("success"),
-          description: tToast("createSuccess"),
+          description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
+          duration: 5000,
         });
         if (onSaveAndClose) onSaveAndClose(response.data);
         if (onClose) onClose();
@@ -400,15 +428,19 @@ const PaymentDrawer = ({
         addToast({
           type: "error",
           title: tToast("error"),
-          description: response?.message || tToast("createError"),
+          description: response?.message || tToast(isEdit ? "updateError" : "createError"),
+          duration: 5000,
         });
       }
     } catch (error) {
       addToast({
         type: "error",
         title: tToast("error"),
-        description: error.message || tToast("createError"),
+        description: error.message || tToast(isEdit ? "updateError" : "createError"),
+        duration: 5000,
       });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
@@ -427,6 +459,7 @@ const PaymentDrawer = ({
       anchor={isRTL ? "left" : "right"}
       width={getDrawerWidth(type)}
       hasDataChanged={hasDataChanged}
+      saveLoading={saveLoading}
     />
   );
 };

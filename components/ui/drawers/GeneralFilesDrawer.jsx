@@ -20,6 +20,7 @@ const GeneralFilesDrawer = ({
   formData: externalFormData,
   onFormDataChange: externalOnFormDataChange,
   isEdit = false,
+  saveLoading: externalSaveLoading = false,
 }) => {
   const t = useTranslations("generalFiles");
   const tToast = useTranslations("toast");
@@ -29,7 +30,11 @@ const GeneralFilesDrawer = ({
   const [originalData, setOriginalData] = useState({});
   const [subOptions, setSubOptions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [internalSaveLoading, setInternalSaveLoading] = useState(false);
   const { addToast } = useSimpleToast();
+
+  // Use external saveLoading if provided, otherwise use internal
+  const saveLoading = externalSaveLoading || internalSaveLoading;
 
   // Get the correct sub field name based on type
   const getSubFieldName = () => {
@@ -291,7 +296,11 @@ const GeneralFilesDrawer = ({
       });
       return;
     }
+    
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
       let response;
       if (isEdit) {
         if (type === "businessType") response = await editBusinessType(formData.id, formData);
@@ -312,7 +321,8 @@ const GeneralFilesDrawer = ({
           duration: 3000,
         });
         onSave && onSave(response.data);
-        onClose && onClose();
+        // Don't close the drawer - let user continue editing
+        // onClose && onClose(); // Removed this line
       } else {
         addToast({
           type: "error",
@@ -328,6 +338,8 @@ const GeneralFilesDrawer = ({
         description: error.message || tToast(isEdit ? "updateError" : "createError"),
         duration: 3000,
       });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
@@ -342,7 +354,11 @@ const GeneralFilesDrawer = ({
       });
       return;
     }
+    
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
       let response;
       if (isEdit) {
         if (type === "businessType") response = await editBusinessType(formData.id, formData);
@@ -383,6 +399,8 @@ const GeneralFilesDrawer = ({
         description: error.message || tToast(isEdit ? "updateError" : "createError"),
         duration: 3000,
       });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
@@ -397,7 +415,11 @@ const GeneralFilesDrawer = ({
       });
       return;
     }
+    
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
       let response;
       if (isEdit) {
         if (type === "businessType") response = await editBusinessType(formData.id, formData);
@@ -434,6 +456,8 @@ const GeneralFilesDrawer = ({
         description: error.message || tToast(isEdit ? "updateError" : "createError"),
         duration: 3000,
       });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
@@ -464,6 +488,7 @@ const GeneralFilesDrawer = ({
       anchor={isRTL ? "left" : "right"}
       width={getDrawerWidth(type)}
       hasDataChanged={isDataChanged()}
+      saveLoading={saveLoading}
     />
   );
 };

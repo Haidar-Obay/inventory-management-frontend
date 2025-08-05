@@ -15,7 +15,9 @@ import {
   createCategory, 
   editCategory, 
   createBrand, 
-  editBrand 
+  editBrand,
+  createItem,
+  editItem
 } from "@/API/Items";
 import { useTranslations, useLocale } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -30,11 +32,13 @@ const ItemDrawer = ({
   formData,
   onFormDataChange,
   isEdit = false,
+  saveLoading: externalSaveLoading = false,
 }) => {
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [brandOptions, setBrandOptions] = useState([]);
   const [productLineOptions, setProductLineOptions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [internalSaveLoading, setInternalSaveLoading] = useState(false);
   const t = useTranslations("items");
   const tToast = useTranslations("toast");
   const locale = useLocale();
@@ -42,6 +46,9 @@ const ItemDrawer = ({
   const [originalName, setOriginalName] = useState("");
   const [originalData, setOriginalData] = useState({});
   const { addToast } = useSimpleToast();
+
+  // Use external saveLoading if provided, otherwise use internal
+  const saveLoading = externalSaveLoading || internalSaveLoading;
 
   useEffect(() => {
     if (isOpen) {
@@ -209,7 +216,18 @@ const ItemDrawer = ({
       return;
     }
     
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
+      
+      // If onSave is provided, delegate to it
+      if (onSave) {
+        await onSave();
+        return;
+      }
+      
+      // Otherwise, handle internally
       let response;
       if (type === "productLine") {
         if (isEdit) {
@@ -229,6 +247,12 @@ const ItemDrawer = ({
         } else {
           response = await createBrand(formData);
         }
+      } else if (type === "item") {
+        if (isEdit) {
+          response = await editItem(formData.id, formData);
+        } else {
+          response = await createItem(formData);
+        }
       }
       
       if (response && response.status) {
@@ -238,7 +262,6 @@ const ItemDrawer = ({
           description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
           duration: 3000,
         });
-        onSave && onSave(response.data);
         onClose && onClose();
       } else {
         addToast({
@@ -255,6 +278,8 @@ const ItemDrawer = ({
         description: error.message || t(isEdit ? "updateError" : "createError") || (isEdit ? "Failed to update" : "Failed to create"),
         duration: 3000,
       });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
@@ -270,7 +295,18 @@ const ItemDrawer = ({
       return;
     }
     
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
+      
+      // If onSaveAndNew is provided, delegate to it
+      if (onSaveAndNew) {
+        await onSaveAndNew();
+        return;
+      }
+      
+      // Otherwise, handle internally
       let response;
       if (type === "productLine") {
         if (isEdit) {
@@ -290,6 +326,12 @@ const ItemDrawer = ({
         } else {
           response = await createBrand(formData);
         }
+      } else if (type === "item") {
+        if (isEdit) {
+          response = await editItem(formData.id, formData);
+        } else {
+          response = await createItem(formData);
+        }
       }
       
       if (response && response.status) {
@@ -299,7 +341,6 @@ const ItemDrawer = ({
           description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
           duration: 3000,
         });
-        onSaveAndNew && onSaveAndNew(response.data);
       } else {
         addToast({
           type: "error",
@@ -315,6 +356,8 @@ const ItemDrawer = ({
         description: error.message || t(isEdit ? "updateError" : "createError") || (isEdit ? "Failed to update" : "Failed to create"),
         duration: 3000,
       });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
@@ -330,7 +373,18 @@ const ItemDrawer = ({
       return;
     }
     
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
+      
+      // If onSaveAndClose is provided, delegate to it
+      if (onSaveAndClose) {
+        await onSaveAndClose();
+        return;
+      }
+      
+      // Otherwise, handle internally
       let response;
       if (type === "productLine") {
         if (isEdit) {
@@ -350,6 +404,12 @@ const ItemDrawer = ({
         } else {
           response = await createBrand(formData);
         }
+      } else if (type === "item") {
+        if (isEdit) {
+          response = await editItem(formData.id, formData);
+        } else {
+          response = await createItem(formData);
+        }
       }
       
       if (response && response.status) {
@@ -359,7 +419,6 @@ const ItemDrawer = ({
           description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
           duration: 3000,
         });
-        onSaveAndClose && onSaveAndClose(response.data);
         onClose && onClose();
       } else {
         addToast({
@@ -376,6 +435,8 @@ const ItemDrawer = ({
         description: error.message || t(isEdit ? "updateError" : "createError") || (isEdit ? "Failed to update" : "Failed to create"),
         duration: 3000,
       });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
@@ -429,7 +490,7 @@ const ItemDrawer = ({
             {/* Right side - Checkbox */}
             <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
               <Checkbox
-                checked={formData?.active !== false}
+                checked={Boolean(formData?.active)}
                 onChange={(e) =>
                   onFormDataChange({
                     ...formData,
@@ -526,7 +587,7 @@ const ItemDrawer = ({
             {/* Right side - Checkbox */}
             <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
               <Checkbox
-                checked={formData?.active !== false}
+                checked={Boolean(formData?.active)}
                 onChange={(e) =>
                   onFormDataChange({
                     ...formData,
@@ -622,7 +683,7 @@ const ItemDrawer = ({
             {/* Right side - Checkbox */}
             <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
               <Checkbox
-                checked={formData?.active !== false}
+                checked={Boolean(formData?.active)}
                 onChange={(e) =>
                   onFormDataChange({
                     ...formData,
@@ -766,7 +827,7 @@ const ItemDrawer = ({
             {/* Right side - Checkbox */}
             <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 2, justifyContent: 'flex-end' }}>
               <Checkbox
-                checked={formData?.active !== false}
+                checked={Boolean(formData?.active)}
                 onChange={(e) =>
                   onFormDataChange({
                     ...formData,
@@ -849,6 +910,7 @@ const ItemDrawer = ({
       anchor={isRTL ? "left" : "right"}
       width={getDrawerWidth(type)}
       hasDataChanged={isDataChanged()}
+      saveLoading={saveLoading}
     />
   );
 };

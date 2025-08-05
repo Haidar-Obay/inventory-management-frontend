@@ -417,7 +417,8 @@ function PaymentPage() {
               prev.map((r) => r.id === formData.id ? response.data : r)
             );
             addToast({ type: "success", title: tToast("success"), description: tToast("updateSuccess"), duration: 5000 });
-            setDrawerOpen(false);
+            // Don't close the drawer - let user continue editing
+            // setDrawerOpen(false); // Removed this line
           } else {
             addToast({ type: "error", title: tToast("error"), description: response?.message || tToast("updateError"), duration: 5000 });
           }
@@ -426,7 +427,8 @@ function PaymentPage() {
           if (response && response.status && response.data) {
             setPaymentTerms((prev) => [...prev, response.data]);
             addToast({ type: "success", title: tToast("success"), description: tToast("createSuccess"), duration: 5000 });
-            setDrawerOpen(false);
+            // Don't close the drawer - let user continue editing
+            // setDrawerOpen(false); // Removed this line
           } else {
             addToast({ type: "error", title: tToast("error"), description: response?.message || tToast("createError"), duration: 5000 });
           }
@@ -445,7 +447,8 @@ function PaymentPage() {
               prev.map((r) => r.id === formData.id ? response.data : r)
             );
             addToast({ type: "success", title: tToast("success"), description: tToast("updateSuccess"), duration: 5000 });
-            setDrawerOpen(false);
+            // Don't close the drawer - let user continue editing
+            // setDrawerOpen(false); // Removed this line
           } else {
             addToast({ type: "error", title: tToast("error"), description: response?.message || tToast("updateError"), duration: 5000 });
           }
@@ -460,7 +463,8 @@ function PaymentPage() {
           if (response && response.status && response.data) {
             setPaymentMethods((prev) => [...prev, response.data]);
             addToast({ type: "success", title: tToast("success"), description: tToast("createSuccess"), duration: 5000 });
-            setDrawerOpen(false);
+            // Don't close the drawer - let user continue editing
+            // setDrawerOpen(false); // Removed this line
           } else {
             addToast({ type: "error", title: tToast("error"), description: response?.message || tToast("createError"), duration: 5000 });
           }
@@ -648,7 +652,8 @@ function PaymentPage() {
               }
             });
           }
-          setDrawerOpen(false);
+          // Don't close the drawer - let user continue editing
+          // setDrawerOpen(false); // Removed this line
         }}
         onSaveAndNew={(row) => {
           if (drawerType === "paymentTerm") {
