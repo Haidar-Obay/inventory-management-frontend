@@ -978,7 +978,8 @@
     "attachmentsCount": "عدد المرفقات",
     "nbOfDays": "عدد الأيام",
     "isCreditCard": "بطاقة ائتمان",
-    "isOnlinePayment": "دفع إلكتروني"
+    "isOnlinePayment": "دفع إلكتروني",
+    "price": "السعر"
   },
   "table": {
     "title": "الجدول",
@@ -1380,6 +1381,7 @@
       "categories": "الفئات",
       "brands": "العلامات التجارية",
       "items": "العناصر",
+      "item": "عنصر",
       "addProductLines": "إضافة خطوط المنتجات",
       "editProductLines": "تعديل خطوط المنتجات",
       "addCategories": "إضافة الفئات",
@@ -1398,6 +1400,7 @@
       "editItem": "تعديل العنصر",
       "code": "الكود",
       "name": "الاسم",
+      "price": "السعر",
       "description": "الوصف",
       "active": "نشط",
       "productLine": "خط الإنتاج",

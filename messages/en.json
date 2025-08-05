@@ -895,7 +895,8 @@
     "attachmentsCount": "Attachments Count",
     "nbOfDays": "Number of Days",
     "isCreditCard": "Credit Card",
-    "isOnlinePayment": "Online Payment"
+    "isOnlinePayment": "Online Payment",
+    "price": "Price"
   },
   "table": {
     "title": "Table",
@@ -1316,6 +1317,7 @@
       "categories": "Categories",
       "brands": "Brands",
       "items": "Items",
+      "item": "Item",
       "addProductLines": "Add Product Lines",
       "editProductLines": "Edit Product Lines",
       "addCategories": "Add Categories",
@@ -1334,6 +1336,7 @@
       "editItem": "Edit Item",
       "code": "Code",
       "name": "Name",
+      "price": "Price",
       "description": "Description",
       "active": "Active",
       "productLine": "Product Line",

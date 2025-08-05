@@ -246,6 +246,7 @@ function ItemsPage() {
       id: row.id,
       name: row.name,
       code: row.code,
+      price: row.price,
       active: row.active,
       subcategory_of: row.subcategory_of,
       sub_brand_of: row.sub_brand_of,
@@ -345,196 +346,48 @@ function ItemsPage() {
     setFormData(data);
   };
 
-  const handleSave = async () => {
-    if (saveLoading) return; // Prevent multiple saves
-    
-    const type = activeDrawerType;
-    const handler = entityHandlers[type];
-
-    try {
-      setSaveLoading(true);
-      // Prepare the data with proper types
-      const preparedData = {
-        ...formData,
-        active: Boolean(formData.active),
-        // Ensure subcategory_of and sub_brand_of are properly set
-        subcategory_of: formData.subcategory_of || null,
-        sub_brand_of: formData.sub_brand_of || null,
-      };
-
-      let response;
-      if (isEditMode) {
-        response = await handler.editFn(formData.id, preparedData);
-        if (response.status) {
-          // Update existing item in the state
-          entityHandlers[type].setData((prev) =>
-            prev.map((item) =>
-              item.id === formData.id ? { ...item, ...formData } : item
-            )
-          );
-          // Show success toast for edit
-          toast.success({
-            title: toastT("success"),
-            description: toastT("updateSuccess"),
-          });
-        }
-      } else {
-        response = await handler.createFn(preparedData);
-        if (response.status) {
-          // Add new item to the state
-          entityHandlers[type].setData((prev) => [...prev, response.data]);
-          // Show success toast for create
-          toast.success({
-            title: toastT("success"),
-            description: toastT("createSuccess"),
-          });
-        }
+  const handleSave = async (newData) => {
+    // Update local state directly
+    if (newData) {
+      const setDataFunction = entityHandlers[activeDrawerType]?.setData;
+      if (setDataFunction) {
+        setDataFunction(prev => {
+          // If editing, replace the item; if creating, add new item
+          if (isEditMode) {
+            return prev.map(item => item.id === newData.id ? newData : item);
+          } else {
+            return [...prev, newData];
+          }
+        });
       }
-
-      if (response.status) {
-        setIsEditMode(false);
-      }
-    } catch (error) {
-      toast.error({
-        title: toastT("error"),
-        description:
-          error.message ||
-          toastT(isEditMode ? "updateError" : "createError"),
-      });
-    } finally {
-      setSaveLoading(false);
     }
+    // Don't close the drawer - let user continue editing
   };
 
-  const handleSaveAndNew = async () => {
-    if (saveLoading) return; // Prevent multiple saves
-    
-    try {
-      setSaveLoading(true);
-      // Prepare the data with proper types
-      const preparedData = {
-        ...formData,
-        active: Boolean(formData.active),
-        // Ensure subcategory_of and sub_brand_of are properly set
-        subcategory_of: formData.subcategory_of || null,
-        sub_brand_of: formData.sub_brand_of || null,
-      };
-
-      const type = activeDrawerType;
-      const handler = entityHandlers[type];
-
-      let response;
-      if (isEditMode) {
-        response = await handler.editFn(formData.id, preparedData);
-        if (response.status) {
-          // Update existing item in the state
-          entityHandlers[type].setData((prev) =>
-            prev.map((item) =>
-              item.id === formData.id ? { ...item, ...formData } : item
-            )
-          );
-          // Show success toast for edit
-          toast.success({
-            title: toastT("success"),
-            description: toastT("updateSuccess"),
-          });
-        }
-      } else {
-        response = await handler.createFn(preparedData);
-        if (response.status) {
-          // Add new item to the state
-          entityHandlers[type].setData((prev) => [...prev, response.data]);
-          // Show success toast for create
-          toast.success({
-            title: toastT("success"),
-            description: toastT("createSuccess"),
-          });
-        }
+  const handleSaveAndNew = async (newData) => {
+    // Update local state directly without closing drawer
+    if (newData) {
+      const setDataFunction = entityHandlers[activeDrawerType]?.setData;
+      if (setDataFunction) {
+        setDataFunction(prev => {
+          // If editing, replace the item; if creating, add new item
+          if (isEditMode) {
+            return prev.map(item => item.id === newData.id ? newData : item);
+          } else {
+            return [...prev, newData];
+          }
+        });
       }
-
-      if (response.status) {
-        setIsEditMode(false);
-        // Only reset form on successful save
-        const defaultData = {
-          active: true, // Default to active for new items
-          subcategory_of: "", // Default empty for categories
-          sub_brand_of: "", // Default empty for brands
-        };
-        setFormData(defaultData);
-      }
-    } catch (error) {
-      toast.error({
-        title: toastT("error"),
-        description:
-          error.message ||
-          toastT(isEditMode ? "updateError" : "createError"),
-      });
-    } finally {
-      setSaveLoading(false);
     }
+    // Reset editData to null for new entry (drawer will clear fields)
+    setIsEditMode(false);
+    setFormData({});
+    // Don't close the drawer - let the drawer handle clearing fields
   };
 
-  const handleSaveAndClose = async () => {
-    if (saveLoading) return; // Prevent multiple saves
-    
-    try {
-      setSaveLoading(true);
-      // Prepare the data with proper types
-      const preparedData = {
-        ...formData,
-        active: Boolean(formData.active),
-        // Ensure subcategory_of and sub_brand_of are properly set
-        subcategory_of: formData.subcategory_of || null,
-        sub_brand_of: formData.sub_brand_of || null,
-      };
-
-      const type = activeDrawerType;
-      const handler = entityHandlers[type];
-
-      let response;
-      if (isEditMode) {
-        response = await handler.editFn(formData.id, preparedData);
-        if (response.status) {
-          // Update existing item in the state
-          entityHandlers[type].setData((prev) =>
-            prev.map((item) =>
-              item.id === formData.id ? { ...item, ...formData } : item
-            )
-          );
-          // Show success toast for edit
-          toast.success({
-            title: toastT("success"),
-            description: toastT("updateSuccess"),
-          });
-        }
-      } else {
-        response = await handler.createFn(preparedData);
-        if (response.status) {
-          // Add new item to the state
-          entityHandlers[type].setData((prev) => [...prev, response.data]);
-          // Show success toast for create
-          toast.success({
-            title: toastT("success"),
-            description: toastT("createSuccess"),
-          });
-        }
-      }
-
-      if (response.status) {
-        setIsEditMode(false);
-        // Only close drawer on successful save
-        handleCloseDrawer();
-      }
-    } catch (error) {
-      toast.error({
-        title: toastT("error"),
-        description:
-          error.message ||
-          toastT(isEditMode ? "updateError" : "createError"),
-      });
-    } finally {
-      setSaveLoading(false);
-    }
+  const handleSaveAndClose = async (newData) => {
+    await handleSave(newData);
+    handleCloseDrawer();
   };
 
   const handleExportExcel = async (type) => {
@@ -1025,6 +878,8 @@ function ItemsPage() {
           onFormDataChange={handleFormDataChange}
           isEdit={isEditMode}
           saveLoading={saveLoading}
+          categoryOptions={categoriesData}
+          brandOptions={brandsData}
         />
       </Box>
     </div>

@@ -7,9 +7,6 @@ import RTLTextField from "@/components/ui/RTLTextField";
 import { useSimpleToast } from "@/components/ui/simple-toast";
 
 import { 
-  getCategoryNames, 
-  getBrandNames, 
-  getProductLines,
   createProductLine, 
   editProductLine, 
   createCategory, 
@@ -33,10 +30,9 @@ const ItemDrawer = ({
   onFormDataChange,
   isEdit = false,
   saveLoading: externalSaveLoading = false,
+  categoryOptions = [],
+  brandOptions = [],
 }) => {
-  const [categoryOptions, setCategoryOptions] = useState([]);
-  const [brandOptions, setBrandOptions] = useState([]);
-  const [productLineOptions, setProductLineOptions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [internalSaveLoading, setInternalSaveLoading] = useState(false);
   const t = useTranslations("items");
@@ -52,13 +48,7 @@ const ItemDrawer = ({
 
   useEffect(() => {
     if (isOpen) {
-      if (type === "category") {
-        fetchCategoryNames();
-      } else if (type === "brand") {
-        fetchBrandNames();
-      } else if (type === "item") {
-        fetchAllOptions();
-      }
+      // No additional data fetching needed for simplified item form
     }
   }, [type, isOpen]);
 
@@ -69,80 +59,30 @@ const ItemDrawer = ({
     }
   }, [isOpen, isEdit]);
 
-  const fetchCategoryNames = async () => {
-    try {
-      setLoading(true);
-      const response = await getCategoryNames();
-      setCategoryOptions(response.data || []);
-    } catch (error) {
-      console.error("Error fetching category names:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const fetchBrandNames = async () => {
-    try {
-      setLoading(true);
-      const response = await getBrandNames();
-      setBrandOptions(response.data || []);
-    } catch (error) {
-      console.error("Error fetching brand names:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const fetchProductLines = async () => {
-    try {
-      setLoading(true);
-      const response = await getProductLines();
-      setProductLineOptions(response.data || []);
-    } catch (error) {
-      console.error("Error fetching product lines:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const fetchAllOptions = async () => {
-    await Promise.all([fetchCategoryNames(), fetchBrandNames(), fetchProductLines()]);
-  };
+
+
 
   const handleFieldChange = (field) => (event) => {
+    let value = event.target.value;
+    
+    // Handle number fields
+    if (field === "price") {
+      value = value === "" ? "" : parseFloat(value) || 0;
+    }
+    
     onFormDataChange({
       ...formData,
-      [field]: event.target.value,
+      [field]: value,
     });
   };
 
-  const handleProductLineChange = (event, newValue) => {
-    onFormDataChange({
-      ...formData,
-      product_line_id: newValue?.id || "",
-      product_line_name: newValue?.name || "",
-    });
-  };
 
-  const handleCategoryChange = (event, newValue) => {
-    onFormDataChange({
-      ...formData,
-      category_id: newValue?.id || "",
-      category_name: newValue?.name || "",
-    });
-  };
-
-  const handleBrandChange = (event, newValue) => {
-    onFormDataChange({
-      ...formData,
-      brand_id: newValue?.id || "",
-      brand_name: newValue?.name || "",
-    });
-  };
 
   function isDataChanged() {
-    // In add mode, if originalData is empty (which it should be), 
-    // we only want to show confirmation if formData has meaningful data
+    // In add mode, we want to show confirmation if formData has meaningful data beyond defaults
     if (!isEdit) {
       // Helper function to clean data for comparison
       const cleanData = (data) => {
@@ -157,9 +97,10 @@ const ItemDrawer = ({
           if (Array.isArray(value) && value.length === 0) return;
           if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) return;
           
-          // Skip the 'active' field if it's in its default state (true)
-          // This prevents the confirmation dialog from appearing when only the default active state is present
+          // Skip default values that are always present
           if (key === 'active' && value === true) return;
+          if (key === 'subcategory_of' && value === '') return;
+          if (key === 'sub_brand_of' && value === '') return;
           
           cleaned[key] = value;
         });
@@ -168,7 +109,8 @@ const ItemDrawer = ({
       };
       
       const cleanedFormData = cleanData(formData);
-      // In add mode, originalData should be empty, so if cleanedFormData is also empty, no changes
+      console.log('Add mode - formData:', formData, 'cleanedFormData:', cleanedFormData, 'hasChanges:', Object.keys(cleanedFormData).length > 0);
+      // In add mode, if cleanedFormData is empty, no meaningful changes
       return Object.keys(cleanedFormData).length > 0;
     }
     
@@ -194,14 +136,10 @@ const ItemDrawer = ({
     const cleanedFormData = cleanData(formData);
     const cleanedOriginalData = cleanData(originalData);
     
-    // Special handling for active field in edit mode
-    // If the active field has changed from its original value, include it in the comparison
-    if (formData.active !== originalData.active) {
-      cleanedFormData.active = formData.active;
-      cleanedOriginalData.active = originalData.active;
-    }
+    const hasChanges = JSON.stringify(cleanedFormData) !== JSON.stringify(cleanedOriginalData);
+    console.log('Edit mode - formData:', formData, 'originalData:', originalData, 'cleanedFormData:', cleanedFormData, 'cleanedOriginalData:', cleanedOriginalData, 'hasChanges:', hasChanges);
     
-    return JSON.stringify(cleanedFormData) !== JSON.stringify(cleanedOriginalData);
+    return hasChanges;
   }
 
   const handleSave = async () => {
@@ -212,6 +150,7 @@ const ItemDrawer = ({
         description:
           t("noChangesDesc") ||
           "Please modify at least one field before saving.",
+        duration: 3000,
       });
       return;
     }
@@ -221,13 +160,7 @@ const ItemDrawer = ({
     try {
       setInternalSaveLoading(true);
       
-      // If onSave is provided, delegate to it
-      if (onSave) {
-        await onSave();
-        return;
-      }
-      
-      // Otherwise, handle internally
+      // Handle internally (like other drawers)
       let response;
       if (type === "productLine") {
         if (isEdit) {
@@ -266,7 +199,9 @@ const ItemDrawer = ({
         if (isEdit) {
           setOriginalData(JSON.parse(JSON.stringify(formData)));
         }
-        onClose && onClose();
+        onSave && onSave(response.data);
+        // Don't close the drawer - let user continue editing
+        // onClose && onClose(); // Removed this line
       } else {
         addToast({
           type: "error",
@@ -278,8 +213,8 @@ const ItemDrawer = ({
     } catch (error) {
       addToast({
         type: "error",
-        title: t("error") || "Error",
-        description: error.message || t(isEdit ? "updateError" : "createError") || (isEdit ? "Failed to update" : "Failed to create"),
+        title: tToast("error"),
+        description: error.message || tToast(isEdit ? "updateError" : "createError"),
         duration: 3000,
       });
     } finally {
@@ -295,85 +230,8 @@ const ItemDrawer = ({
         description:
           t("noChangesDesc") ||
           "Please modify at least one field before saving.",
-      });
-      return;
-    }
-    
-    if (saveLoading) return; // Prevent multiple saves
-    
-    try {
-      setInternalSaveLoading(true);
-      
-      // If onSaveAndNew is provided, delegate to it
-      if (onSaveAndNew) {
-        await onSaveAndNew();
-        return;
-      }
-      
-      // Otherwise, handle internally
-      let response;
-      if (type === "productLine") {
-        if (isEdit) {
-          response = await editProductLine(formData.id, formData);
-        } else {
-          response = await createProductLine(formData);
-        }
-      } else if (type === "category") {
-        if (isEdit) {
-          response = await editCategory(formData.id, formData);
-        } else {
-          response = await createCategory(formData);
-        }
-      } else if (type === "brand") {
-        if (isEdit) {
-          response = await editBrand(formData.id, formData);
-        } else {
-          response = await createBrand(formData);
-        }
-      } else if (type === "item") {
-        if (isEdit) {
-          response = await editItem(formData.id, formData);
-        } else {
-          response = await createItem(formData);
-        }
-      }
-      
-      if (response && response.status) {
-        addToast({
-          type: "success",
-          title: tToast("success"),
-          description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
-          duration: 3000,
-        });
-      } else {
-        addToast({
-          type: "error",
-          title: tToast("error"),
-          description: response?.message || tToast(isEdit ? "updateError" : "createError"),
-          duration: 3000,
-        });
-      }
-    } catch (error) {
-      addToast({
-        type: "error",
-        title: t("error") || "Error",
-        description: error.message || t(isEdit ? "updateError" : "createError") || (isEdit ? "Failed to update" : "Failed to create"),
         duration: 3000,
       });
-    } finally {
-      setInternalSaveLoading(false);
-    }
-  };
-
-  const handleSaveAndClose = async () => {
-    if (isEdit && !isDataChanged()) {
-      addToast({
-        type: "error",
-        title: t("noChangesTitle") || "No changes detected",
-        description:
-          t("noChangesDesc") ||
-          "Please modify at least one field before saving.",
-      });
       return;
     }
     
@@ -382,13 +240,7 @@ const ItemDrawer = ({
     try {
       setInternalSaveLoading(true);
       
-      // If onSaveAndClose is provided, delegate to it
-      if (onSaveAndClose) {
-        await onSaveAndClose();
-        return;
-      }
-      
-      // Otherwise, handle internally
+      // Handle internally (like other drawers)
       let response;
       if (type === "productLine") {
         if (isEdit) {
@@ -427,7 +279,7 @@ const ItemDrawer = ({
         if (isEdit) {
           setOriginalData(JSON.parse(JSON.stringify(formData)));
         }
-        onClose && onClose();
+        onSaveAndNew && onSaveAndNew(response.data);
       } else {
         addToast({
           type: "error",
@@ -439,8 +291,86 @@ const ItemDrawer = ({
     } catch (error) {
       addToast({
         type: "error",
-        title: t("error") || "Error",
-        description: error.message || t(isEdit ? "updateError" : "createError") || (isEdit ? "Failed to update" : "Failed to create"),
+        title: tToast("error"),
+        description: error.message || tToast(isEdit ? "updateError" : "createError"),
+        duration: 3000,
+      });
+    } finally {
+      setInternalSaveLoading(false);
+    }
+  };
+
+  const handleSaveAndClose = async () => {
+    if (isEdit && !isDataChanged()) {
+      addToast({
+        type: "error",
+        title: t("noChangesTitle") || "No changes detected",
+        description:
+          t("noChangesDesc") ||
+          "Please modify at least one field before saving.",
+        duration: 3000,
+      });
+      return;
+    }
+    
+    if (saveLoading) return; // Prevent multiple saves
+    
+    try {
+      setInternalSaveLoading(true);
+      
+      // Handle internally (like other drawers)
+      let response;
+      if (type === "productLine") {
+        if (isEdit) {
+          response = await editProductLine(formData.id, formData);
+        } else {
+          response = await createProductLine(formData);
+        }
+      } else if (type === "category") {
+        if (isEdit) {
+          response = await editCategory(formData.id, formData);
+        } else {
+          response = await createCategory(formData);
+        }
+      } else if (type === "brand") {
+        if (isEdit) {
+          response = await editBrand(formData.id, formData);
+        } else {
+          response = await createBrand(formData);
+        }
+      } else if (type === "item") {
+        if (isEdit) {
+          response = await editItem(formData.id, formData);
+        } else {
+          response = await createItem(formData);
+        }
+      }
+      
+      if (response && response.status) {
+        addToast({
+          type: "success",
+          title: tToast("success"),
+          description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
+          duration: 3000,
+        });
+        // Update originalData with the current formData to ensure proper change detection
+        if (isEdit) {
+          setOriginalData(JSON.parse(JSON.stringify(formData)));
+        }
+        onSaveAndClose && onSaveAndClose(response.data);
+      } else {
+        addToast({
+          type: "error",
+          title: tToast("error"),
+          description: response?.message || tToast(isEdit ? "updateError" : "createError"),
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: error.message || tToast(isEdit ? "updateError" : "createError"),
         duration: 3000,
       });
     } finally {
@@ -760,92 +690,24 @@ const ItemDrawer = ({
                       textAlign: isRTL ? "right" : "left",
                     }}
                   >
-                    {t("management.productLine")} *
+                    {t("management.price")} *
                   </Typography>
-                  <Autocomplete
+                  <TextField
+                    value={formData?.price !== undefined && formData?.price !== null ? (formData.price === 0 ? "0" : String(formData.price)) : ""}
+                    onChange={handleFieldChange("price")}
+                    required
+                    placeholder=""
+                    type="number"
+                    inputProps={{ min: 0, step: "0.01" }}
                     fullWidth
-                    options={productLineOptions}
-                    getOptionLabel={(option) => option.name || ""}
-                    value={
-                      productLineOptions.find(
-                        (p) => p.id === formData?.product_line_id
-                      ) || null
-                    }
-                    onChange={handleProductLineChange}
-                    loading={loading}
-                    renderInput={(params) => (
-                      <RTLTextField {...params} placeholder="" required />
-                    )}
-                  />
-                </Grid>
-                <Grid xs={12} md={6}>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{
-                      mb: 1,
-                      textAlign: isRTL ? "right" : "left",
-                    }}
-                  >
-                    {t("management.category")} *
-                  </Typography>
-                  <Autocomplete
-                    fullWidth
-                    options={categoryOptions}
-                    getOptionLabel={(option) => option.name || ""}
-                    value={
-                      categoryOptions.find((c) => c.id === formData?.category_id) ||
-                      null
-                    }
-                    onChange={handleCategoryChange}
-                    loading={loading}
-                    renderInput={(params) => (
-                      <RTLTextField {...params} placeholder="" required />
-                    )}
-                  />
-                </Grid>
-                <Grid xs={12} md={6}>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{
-                      mb: 1,
-                      textAlign: isRTL ? "right" : "left",
-                    }}
-                  >
-                    {t("management.brand")} *
-                  </Typography>
-                  <Autocomplete
-                    fullWidth
-                    options={brandOptions}
-                    getOptionLabel={(option) => option.name || ""}
-                    value={
-                      brandOptions.find((b) => b.id === formData?.brand_id) || null
-                    }
-                    onChange={handleBrandChange}
-                    loading={loading}
-                    renderInput={(params) => (
-                      <RTLTextField {...params} placeholder="" required />
-                    )}
+                    size="small"
+                    variant="outlined"
                   />
                 </Grid>
               </Grid>
             </Box>
             
-            {/* Right side - Checkbox */}
-            <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 2, justifyContent: 'flex-end' }}>
-              <Checkbox
-                checked={Boolean(formData?.active)}
-                onChange={(e) =>
-                  onFormDataChange({
-                    ...formData,
-                    active: e.target.checked,
-                  })
-                }
-                label={t("management.active")}
-                isRTL={isRTL}
-              />
-            </Box>
+
           </Box>
         </Box>
       );
@@ -878,33 +740,21 @@ const ItemDrawer = ({
     return formData && (
       formData.name ||
       formData.code ||
-      formData.description ||
       formData.price ||
-      formData.cost ||
-      formData.category_id ||
-      formData.brand_id ||
-      formData.unit_id ||
-      formData.tax_id ||
-      formData.supplier_id ||
-      formData.min_stock ||
-      formData.max_stock ||
-      formData.reorder_point ||
-      formData.sku ||
-      formData.barcode ||
-      formData.weight ||
-      formData.dimensions ||
-      formData.notes ||
-      formData.attachments?.length > 0 ||
       // Check other fields excluding default values
       Object.entries(formData).some(([key, value]) => {
         // Skip default values
-        if (key === 'active' || key === 'is_service') return false;
+        if (key === 'is_service') return false;
         if (Array.isArray(value) && value.length === 0) return false;
         if (typeof value === 'object' && value !== null && Object.keys(value).length === 0) return false;
         return value && value.toString().trim() !== "";
       })
     );
   };
+
+  // Check if data has changed from original state
+  const hasDataChanged = isDataChanged();
+  console.log('ItemDrawer - hasDataChanged:', hasDataChanged, 'isEdit:', isEdit, 'formData:', formData);
 
   return (
     <DynamicDrawer
@@ -917,7 +767,7 @@ const ItemDrawer = ({
       onSaveAndClose={handleSaveAndClose}
       anchor={isRTL ? "left" : "right"}
       width={getDrawerWidth(type)}
-      hasDataChanged={isDataChanged()}
+      hasDataChanged={hasDataChanged}
       saveLoading={saveLoading}
       isEdit={isEdit}
     />
