@@ -88,22 +88,28 @@ function PaymentPage() {
     if (tabParam !== null) {
       const tabValue = parseInt(tabParam);
       setTab(tabValue);
-      localStorage.setItem("paymentLastTab", tabValue.toString());
+      if (typeof window !== 'undefined') {
+        localStorage.setItem("paymentLastTab", tabValue.toString());
+      }
     } else {
-      const savedTab = localStorage.getItem("paymentLastTab");
-      if (savedTab) {
-        const tabValue = parseInt(savedTab);
-        setTab(tabValue);
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("tab", tabValue.toString());
-        router.push(`?${params.toString()}`);
+      if (typeof window !== 'undefined') {
+        const savedTab = localStorage.getItem("paymentLastTab");
+        if (savedTab) {
+          const tabValue = parseInt(savedTab);
+          setTab(tabValue);
+          const params = new URLSearchParams(searchParams.toString());
+          params.set("tab", tabValue.toString());
+          router.push(`?${params.toString()}`);
+        }
       }
     }
   }, [searchParams, router]);
 
   const handleChange = (event, newValue) => {
     setTab(newValue);
-    localStorage.setItem("paymentLastTab", newValue.toString());
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("paymentLastTab", newValue.toString());
+    }
     const params = new URLSearchParams(searchParams.toString());
     params.set("tab", newValue.toString());
     router.push(`?${params.toString()}`);

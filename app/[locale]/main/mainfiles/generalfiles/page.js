@@ -106,24 +106,30 @@ function GeneralFilesPage() {
     if (tab !== null) {
       const tabValue = parseInt(tab);
       setValue(tabValue);
-      localStorage.setItem("generalFilesLastTab", tabValue.toString());
+      if (typeof window !== 'undefined') {
+        localStorage.setItem("generalFilesLastTab", tabValue.toString());
+      }
     } else {
       // If no URL parameter, try to get from localStorage
-      const savedTab = localStorage.getItem("generalFilesLastTab");
-      if (savedTab) {
-        const tabValue = parseInt(savedTab);
-        setValue(tabValue);
-        // Update URL to match localStorage
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("tab", tabValue.toString());
-        router.push(`?${params.toString()}`);
+      if (typeof window !== 'undefined') {
+        const savedTab = localStorage.getItem("generalFilesLastTab");
+        if (savedTab) {
+          const tabValue = parseInt(savedTab);
+          setValue(tabValue);
+          // Update URL to match localStorage
+          const params = new URLSearchParams(searchParams.toString());
+          params.set("tab", tabValue.toString());
+          router.push(`?${params.toString()}`);
+        }
       }
     }
   }, [searchParams, router]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    localStorage.setItem("generalFilesLastTab", newValue.toString());
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("generalFilesLastTab", newValue.toString());
+    }
     // Update URL with new tab value
     const params = new URLSearchParams(searchParams.toString());
     params.set("tab", newValue.toString());

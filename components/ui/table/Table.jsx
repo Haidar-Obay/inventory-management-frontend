@@ -163,6 +163,8 @@ const Table = (props) => {
   const tableId = tableProps.tableId || "default";
   const otherSettingsKey = `table:${tableId}:otherSettings`;
   const getPersistedOtherSettings = () => {
+    if (typeof window === 'undefined') return {};
+    
     try {
       const raw = localStorage.getItem(otherSettingsKey);
       return raw ? JSON.parse(raw) : {};
@@ -175,7 +177,7 @@ const Table = (props) => {
   const getLastAppliedTemplateKey = () => tableId ? `table:${tableId}:lastAppliedTemplate` : null;
   const loadLastAppliedTemplate = () => {
     const key = getLastAppliedTemplateKey();
-    if (!key) return null;
+    if (!key || typeof window === 'undefined') return null;
     
     try {
       const saved = localStorage.getItem(key);

@@ -109,7 +109,6 @@ const ItemDrawer = ({
       };
       
       const cleanedFormData = cleanData(formData);
-      console.log('Add mode - formData:', formData, 'cleanedFormData:', cleanedFormData, 'hasChanges:', Object.keys(cleanedFormData).length > 0);
       // In add mode, if cleanedFormData is empty, no meaningful changes
       return Object.keys(cleanedFormData).length > 0;
     }
@@ -137,7 +136,6 @@ const ItemDrawer = ({
     const cleanedOriginalData = cleanData(originalData);
     
     const hasChanges = JSON.stringify(cleanedFormData) !== JSON.stringify(cleanedOriginalData);
-    console.log('Edit mode - formData:', formData, 'originalData:', originalData, 'cleanedFormData:', cleanedFormData, 'cleanedOriginalData:', cleanedOriginalData, 'hasChanges:', hasChanges);
     
     return hasChanges;
   }
@@ -146,10 +144,8 @@ const ItemDrawer = ({
     if (isEdit && !isDataChanged()) {
       addToast({
         type: "error",
-        title: t("noChangesTitle") || "No changes detected",
-        description:
-          t("noChangesDesc") ||
-          "Please modify at least one field before saving.",
+        title: t("items.noChangesTitle") || "No changes detected",
+        description: t("items.noChangesDesc") || "Please modify at least one field before saving.",
         duration: 3000,
       });
       return;
@@ -226,10 +222,8 @@ const ItemDrawer = ({
     if (isEdit && !isDataChanged()) {
       addToast({
         type: "error",
-        title: t("noChangesTitle") || "No changes detected",
-        description:
-          t("noChangesDesc") ||
-          "Please modify at least one field before saving.",
+        title: t("items.noChangesTitle") || "No changes detected",
+        description: t("items.noChangesDesc") || "Please modify at least one field before saving.",
         duration: 3000,
       });
       return;
@@ -304,10 +298,8 @@ const ItemDrawer = ({
     if (isEdit && !isDataChanged()) {
       addToast({
         type: "error",
-        title: t("noChangesTitle") || "No changes detected",
-        description:
-          t("noChangesDesc") ||
-          "Please modify at least one field before saving.",
+        title: t("items.noChangesTitle") || "No changes detected",
+        description: t("items.noChangesDesc") || "Please modify at least one field before saving.",
         duration: 3000,
       });
       return;
@@ -754,7 +746,6 @@ const ItemDrawer = ({
 
   // Check if data has changed from original state
   const hasDataChanged = isDataChanged();
-  console.log('ItemDrawer - hasDataChanged:', hasDataChanged, 'isEdit:', isEdit, 'formData:', formData);
 
   return (
     <DynamicDrawer

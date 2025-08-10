@@ -247,5 +247,15 @@ export function useTableColumns(t) {
       { header: t("createdAt"), key: "created_at", type: "date" },
       { header: t("updatedAt"), key: "updated_at", type: "date" },
     ],
+
+    customerMasterListColumns: [
+      { header: t("id"), key: "id" },
+      { header: t("date"), key: "date", type: "date" },
+      { header: t("name"), key: "name" },
+      { header: t("validFrom"), key: "valid_from", type: "date" },
+      { header: t("validTill"), key: "valid_till", type: "date" },
+      { header: t("createdAt"), key: "created_at", type: "date" },
+      { header: t("updatedAt"), key: "updated_at", type: "date" },
+    ],
   };
 }

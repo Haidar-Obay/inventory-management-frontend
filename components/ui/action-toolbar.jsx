@@ -161,6 +161,8 @@ export function ActionToolbar({
 
   // Load the last used actions from localStorage on component mount
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const states = {};
     Object.values(ACTION_GROUPS).forEach((group) => {
       const savedAction = localStorage.getItem(group.storageKey);
@@ -196,7 +198,9 @@ export function ActionToolbar({
         setLoadingActions((prev) => ({ ...prev, [actionKey]: true }));
       }
       setGroupStates((prev) => ({ ...prev, [groupId]: actionId }));
-      localStorage.setItem(ACTION_GROUPS[groupId].storageKey, actionId);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(ACTION_GROUPS[groupId].storageKey, actionId);
+      }
       await callback();
     } catch (error) {
       console.error(`Error executing action ${actionId}:`, error);

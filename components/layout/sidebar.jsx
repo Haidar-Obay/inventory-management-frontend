@@ -845,6 +845,8 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
 
   // ====== EFFECTS: LOAD STATE FROM LOCALSTORAGE ======
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     // Load bookmarks from localStorage
     const storedBookmarks = localStorage.getItem("sidebarBookmarks");
     if (storedBookmarks) {
@@ -905,17 +907,19 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
       });
 
       setExpandedGroups(initialExpandedGroups);
-      localStorage.setItem(
-        "sidebarExpandedGroups",
-        JSON.stringify(initialExpandedGroups)
-      );
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(
+          "sidebarExpandedGroups",
+          JSON.stringify(initialExpandedGroups)
+        );
+      }
     }
   }, []);
 
   // ====== EFFECTS: SAVE STATE TO LOCALSTORAGE ======
   useEffect(() => {
     // Only save after initialization to prevent overwriting during initial load
-    if (isInitialized && Object.keys(expandedGroups).length > 0) {
+    if (isInitialized && Object.keys(expandedGroups).length > 0 && typeof window !== 'undefined') {
       localStorage.setItem(
         "sidebarExpandedGroups",
         JSON.stringify(expandedGroups)
@@ -924,7 +928,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   }, [expandedGroups, isInitialized, isRTL]);
   useEffect(() => {
     // Only save after initialization to prevent overwriting during initial load
-    if (isInitialized && Object.keys(expandedSubGroups).length > 0) {
+    if (isInitialized && Object.keys(expandedSubGroups).length > 0 && typeof window !== 'undefined') {
       localStorage.setItem(
         "sidebarExpandedSubGroups",
         JSON.stringify(expandedSubGroups)
@@ -933,7 +937,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
   }, [expandedSubGroups, isInitialized, isRTL]);
   useEffect(() => {
     // Only save after initialization to prevent overwriting during initial load
-    if (isInitialized) {
+    if (isInitialized && typeof window !== 'undefined') {
       localStorage.setItem(
         "sidebarBookmarksExpanded",
         JSON.stringify(isBookmarksExpanded)

@@ -290,6 +290,7 @@
     "customerGroups": "مجموعات العملاء",
     "customerList": "قائمة العملاء",
     "salesmen": "مندوبو المبيعات",
+    "customerMasterLists": "قوائم العملاء الرئيسية",
     "supplier": "الموردون",
     "supplierGroups": "مجموعات الموردين",
     "suppliers": "الموردين",
@@ -629,6 +630,20 @@
       "importError": "فشل في استيراد قنوات الإعلام",
       "printSuccess": "تم تجهيز قائمة قنوات الإعلام للطباعة",
       "printError": "فشل في طباعة قائمة قنوات الإعلام"
+    },
+    "customerMasterList": {
+      "deleteSuccess": "تم حذف قائمة العملاء الرئيسية بنجاح",
+      "deleteError": "فشل في حذف قائمة العملاء الرئيسية",
+      "updateSuccess": "تم تحديث قائمة العملاء الرئيسية بنجاح",
+      "updateError": "فشل في تحديث قائمة العملاء الرئيسية",
+      "createSuccess": "تم إنشاء قائمة العملاء الرئيسية بنجاح",
+      "createError": "فشل في إنشاء قائمة العملاء الرئيسية",
+      "exportSuccess": "تم تصدير قوائم العملاء الرئيسية بنجاح",
+      "exportError": "فشل في تصدير قوائم العملاء الرئيسية",
+      "importSuccess": "تم استيراد قوائم العملاء الرئيسية بنجاح",
+      "importError": "فشل في استيراد قوائم العملاء الرئيسية",
+      "printSuccess": "تم تجهيز قائمة قوائم العملاء الرئيسية للطباعة",
+      "printError": "فشل في طباعة قائمة قوائم العملاء الرئيسية"
     },
     "noDataToExport": "لا توجد بيانات متاحة للتصدير",
     "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
@@ -979,7 +994,10 @@
     "nbOfDays": "عدد الأيام",
     "isCreditCard": "بطاقة ائتمان",
     "isOnlinePayment": "دفع إلكتروني",
-    "price": "السعر"
+    "price": "السعر",
+    "date": "التاريخ",
+    "validFrom": "صالح من",
+    "validTill": "صالح حتى"
   },
   "table": {
     "title": "الجدول",
@@ -1182,7 +1200,8 @@
     "tabs": {
       "customerGroups": "مجموعات العملاء",
       "salesmen": "مندوبو المبيعات",
-      "customers": "العملاء"
+      "customers": "العملاء",
+      "customerMasterLists": "قوائم العملاء الرئيسية"
     },
     "management": {
       "edit": "تعديل",
@@ -1242,6 +1261,8 @@
       "searchTerms": "مصطلحات البحث",
       "addSearchTerm": "إضافة مصطلح بحث...",
       "add": "إضافة",
+      "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
+      "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ.",
       "country": "البلد",
       "zone": "المنطقة",
       "city": "المدينة",
@@ -1360,7 +1381,28 @@
       "discount": "خصم",
       "addMessage": "أضف رسالة",
       "fifo": "الوارد أولاً يصرف أولاً",
-      "manual": "يدوي"
+      "manual": "يدوي",
+      "addCustomerMasterList": "إضافة قائمة العملاء الرئيسية",
+      "editCustomerMasterList": "تعديل قائمة العملاء الرئيسية",
+      "customerMasterList": "قائمة العملاء الرئيسية",
+      "customerMasterListName": "قائمة العملاء الرئيسية",
+      "customerMasterLists": "قوائم العملاء الرئيسية",
+      "basicInformation": "المعلومات الأساسية",
+      "itemDetails": "تفاصيل العناصر",
+      "addRow": "إضافة صف",
+      "actions": "الإجراءات",
+      "help": "مساعدة",
+      "itemName": "اسم العنصر",
+      "id": "الرقم",
+      "date": "التاريخ",
+      "validFrom": "صالح من",
+      "validTill": "صالح حتى",
+      "line": "الخط",
+      "itemCode": "رمز العنصر",
+      "price": "السعر",
+      "discount": "الخصم",
+      "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
+      "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."
     },
     "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
     "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."

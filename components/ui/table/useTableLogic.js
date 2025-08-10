@@ -44,7 +44,7 @@ export function useTableLogic({
   
   const loadLastAppliedTemplate = useCallback(() => {
     const key = getLastAppliedTemplateKey();
-    if (!key) return null;
+    if (!key || typeof window === 'undefined') return null;
     
     try {
       const saved = localStorage.getItem(key);
@@ -674,7 +674,9 @@ export function useTableLogic({
     const updatedSavedFilters = [...savedFilters, newSavedFilter];
     setSavedFilters(updatedSavedFilters);
 
-    localStorage.setItem("tableFilters", JSON.stringify(updatedSavedFilters));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("tableFilters", JSON.stringify(updatedSavedFilters));
+    }
     setNewFilterName("");
   };
 

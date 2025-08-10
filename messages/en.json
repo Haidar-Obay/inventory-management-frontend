@@ -466,6 +466,20 @@
       "printSuccess": "Media channels list prepared for printing",
       "printError": "Failed to print media channels list"
     },
+    "customerMasterList": {
+      "deleteSuccess": "Customer master list deleted successfully",
+      "deleteError": "Failed to delete customer master list",
+      "updateSuccess": "Customer master list updated successfully",
+      "updateError": "Failed to update customer master list",
+      "createSuccess": "Customer master list created successfully",
+      "createError": "Failed to create customer master list",
+      "exportSuccess": "Customer master lists exported successfully",
+      "exportError": "Failed to export customer master lists",
+      "importSuccess": "Customer master lists imported successfully",
+      "importError": "Failed to import customer master lists",
+      "printSuccess": "Customer master lists list prepared for printing",
+      "printError": "Failed to print customer master lists list"
+    },
     "noDataToExport": "No data available to export",
     "noChangesTitle": "No changes detected",
     "noChangesDesc": "Please modify at least one field before saving."
@@ -626,6 +640,7 @@
     "customerGroups": "Customer Groups",
     "customerList": "Customer List",
     "salesmen": "Salesmen",
+    "customerMasterLists": "Customer Master Lists",
     "supplierGroups": "Supplier Groups",
     "suppliers": "Suppliers",
     "supplier_inner": "Suppliers",
@@ -896,7 +911,10 @@
     "nbOfDays": "Number of Days",
     "isCreditCard": "Credit Card",
     "isOnlinePayment": "Online Payment",
-    "price": "Price"
+    "price": "Price",
+    "date": "Date",
+    "validFrom": "Valid From",
+    "validTill": "Valid Till"
   },
   "table": {
     "title": "Table",
@@ -1096,7 +1114,8 @@
     "tabs": {
       "customerGroups": "Customer Groups",
       "salesmen": "Salesmen",
-      "customers": "Customers"
+      "customers": "Customers",
+      "customerMasterLists": "Customer Master Lists"
     },
     "management": {
       "add": "Add",
@@ -1185,7 +1204,25 @@
       "addCurrency": "Add Currency",
       "salesmenAccordion": "Salesmen",
       "salesman": "Salesmen",
+      "customerMasterListName": "Customer Master List",
       "collector": "Collector",
+      "addCustomerMasterList": "Add Customer Master List",
+      "editCustomerMasterList": "Edit Customer Master List",
+      "customerMasterList": "Customer Master List",
+      "customerMasterLists": "Customer Master Lists",
+      "date": "Date",
+      "validFrom": "Valid From",
+      "validTill": "Valid Till",
+      "line": "Line",
+      "itemCode": "Item Code",
+      "itemName": "Item Name",
+      "price": "Price",
+      "discount": "Discount",
+      "basicInformation": "Basic Information",
+      "itemDetails": "Item Details",
+      "addRow": "Add Row",
+      "actions": "Actions",
+      "help": "Help",
       "supervisor": "Supervisor",
       "manager": "Manager",
       "paymentTermsAccordion": "Payment Terms",
@@ -1277,7 +1314,23 @@
       "quickOptions": "Quick Options",
       "selectPaymentDay": "Select Payment Day",
       "fifo": "FIFO",
-      "manual": "Manual"
+      "manual": "Manual",
+      "addCustomerMasterList": "Add Customer Master List",
+      "editCustomerMasterList": "Edit Customer Master List",
+      "customerMasterList": "Customer Master List",
+      "customerMasterLists": "Customer Master Lists",
+      "basicInformation": "Basic Information",
+      "itemDetails": "Item Details",
+      "addRow": "Add Row",
+      "actions": "Actions",
+      "help": "Help",
+      "itemName": "Item Name",
+      "id": "ID",
+      "date": "Date",
+      "validFrom": "Valid From",
+      "validTill": "Valid Till",
+      "line": "Line",
+      "itemCode": "Item Code"
     },
     "noChangesTitle": "No changes detected",
     "noChangesDesc": "Please modify at least one field before saving.",
@@ -1366,21 +1419,21 @@
     "noChangesTitle": "No changes detected",
     "noChangesDesc": "Please modify at least one field before saving.",
     "errors": {
-    "foreignKey": {
-      "title": "Cannot Delete - Related Data Exists",
-      "message": "This item cannot be deleted because it is being used by other records in the system.",
-      "details": "This item is being used by {tableName}. Please remove or update those records first.",
-      "fallback": "This item is being used by other records in the system."
-    },
-    "duplicate": {
-      "title": "Duplicate Entry",
-      "message": "This record already exists in the system."
-    },
-    "database": {
-      "title": "Database Error",
-      "message": "An error occurred while processing your request."
+      "foreignKey": {
+        "title": "Cannot Delete - Related Data Exists",
+        "message": "This item cannot be deleted because it is being used by other records in the system.",
+        "details": "This item is being used by {tableName}. Please remove or update those records first.",
+        "fallback": "This item is being used by other records in the system."
+      },
+      "duplicate": {
+        "title": "Duplicate Entry",
+        "message": "This record already exists in the system."
+      },
+      "database": {
+        "title": "Database Error",
+        "message": "An error occurred while processing your request."
+      }
     }
-  }
   },
   
   "payment": {

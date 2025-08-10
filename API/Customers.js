@@ -269,3 +269,88 @@ export const getSalesmanNames = async () => {
     throw error;
   }
 }; 
+
+// Customer Master Lists API Functions
+export const getCustomerMasterLists = async () => {
+  try {
+    const response = await tenantApiService('GET', 'customer-master-lists');
+    return response;
+  } catch (error) {
+    console.error('Error fetching customer master lists:', error);
+    throw error;
+  }
+};
+
+export const getCustomerMasterListById = async (id) => {
+  try {
+    const response = await tenantApiService('GET', `customer-master-lists/${id}`);
+    return response;
+  } catch (error) {
+    console.error('Error fetching customer master list by ID:', error);
+    throw error;
+  }
+};
+
+export const createCustomerMasterList = async (data) => {
+  try {
+    const response = await tenantApiService('POST', 'customer-master-lists', data);
+    return response;
+  } catch (error) {
+    console.error('Error creating customer master list:', error);
+    throw error;
+  }
+};
+
+export const editCustomerMasterList = async (id, data) => {
+  try {
+    const response = await tenantApiService('PUT', `customer-master-lists/${id}`, data);
+    return response;
+  } catch (error) {
+    console.error('Error updating customer master list:', error);
+    throw error;
+  }
+};
+
+export const deleteCustomerMasterList = async (id) => {
+  try {
+    const response = await tenantApiService('DELETE', `customer-master-lists/${id}`);
+    return response;
+  } catch (error) {
+    console.error('Error deleting customer master list:', error);
+    throw error;
+  }
+};
+
+export const exportCustomerMasterListsToExcel = async () => {
+  try {
+    const response = await tenantApiService('GET', 'exportExcell/customer-master-lists', null, { responseType: 'blob' });
+    return response;
+  } catch (error) {
+    console.error('Error exporting customer master lists to Excel:', error);
+    throw error;
+  }
+};
+
+export const exportCustomerMasterListsToPdf = async () => {
+  try {
+    const response = await tenantApiService('GET', 'exportPdf/customer-master-lists', null, { responseType: 'blob' });
+    return response;
+  } catch (error) {
+    console.error('Error exporting customer master lists to PDF:', error);
+    throw error;
+  }
+};
+
+export const importCustomerMasterListsFromExcel = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await tenantApiService('POST', 'importFromExcel/customer-master-lists', formData, { 
+      headers: { 'Content-Type': 'multipart/form-data' } 
+    });
+    return response;
+  } catch (error) {
+    console.error('Error importing customer master lists from Excel:', error);
+    throw error;
+  }
+}; 

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { Tabs, Tab, Box, Typography, CircularProgress } from "@mui/material";
+import { Tabs, Tab, Box, Typography, CircularProgress, Button } from "@mui/material";
 import { useTranslations, useLocale } from "next-intl";
 import Table from "@/components/ui/table/Table";
 import CustomerDrawer from "@/components/ui/drawers/CustomerDrawer";
+import CustomerMasterListDrawer from "@/components/ui/drawers/CustomerMasterListDrawer";
 import CustomTabs from "@/components/ui/CustomTabs";
 import {
   getCustomerGroups,
@@ -29,6 +30,14 @@ import {
   exportCustomersToExcel,
   exportCustomersToPdf,
   importCustomersFromExcel,
+  getCustomerMasterLists,
+  getCustomerMasterListById,
+  createCustomerMasterList,
+  editCustomerMasterList,
+  deleteCustomerMasterList,
+  exportCustomerMasterListsToExcel,
+  exportCustomerMasterListsToPdf,
+  importCustomerMasterListsFromExcel,
 } from "@/API/Customers";
 import { useTableColumns } from "@/constants/tableColumns";
 import { toast } from "@/components/ui/simple-toast";
@@ -87,10 +96,12 @@ function CustomerPage() {
   const [activeDrawerType, setActiveDrawerType] = useState("");
   const [formData, setFormData] = useState({});
   const [isEditMode, setIsEditMode] = useState(false);
+  const [customerMasterListsData, setCustomerMasterListsData] = useState([]);
   const [dataFetched, setDataFetched] = useState({
     customerGroups: false,
     salesmen: false,
     customers: false,
+    customerMasterLists: false,
   });
 
   const locale = useLocale();
@@ -101,7 +112,7 @@ function CustomerPage() {
   const tableT = useTranslations("tableColumns");
   const toastT = useTranslations("toast");
 
-  const { customerGroupColumns, salesmenColumns, customerColumns } =
+  const { customerGroupColumns, salesmenColumns, customerColumns, customerMasterListColumns } =
     useTableColumns(tableT);
 
   const { openDrawer } = useDrawerStack();
@@ -112,24 +123,30 @@ function CustomerPage() {
     if (tab !== null) {
       const tabValue = parseInt(tab);
       setValue(tabValue);
-      localStorage.setItem("customersLastTab", tabValue.toString());
+      if (typeof window !== 'undefined') {
+        localStorage.setItem("customersLastTab", tabValue.toString());
+      }
     } else {
       // If no URL parameter, try to get from localStorage
-      const savedTab = localStorage.getItem("customersLastTab");
-      if (savedTab) {
-        const tabValue = parseInt(savedTab);
-        setValue(tabValue);
-        // Update URL to match localStorage
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("tab", tabValue.toString());
-        router.push(`?${params.toString()}`);
+      if (typeof window !== 'undefined') {
+        const savedTab = localStorage.getItem("customersLastTab");
+        if (savedTab) {
+          const tabValue = parseInt(savedTab);
+          setValue(tabValue);
+          // Update URL to match localStorage
+          const params = new URLSearchParams(searchParams.toString());
+          params.set("tab", tabValue.toString());
+          router.push(`?${params.toString()}`);
+        }
       }
     }
   }, [searchParams, router]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    localStorage.setItem("customersLastTab", newValue.toString());
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("customersLastTab", newValue.toString());
+    }
     // Update URL with new tab value
     const params = new URLSearchParams(searchParams.toString());
     params.set("tab", newValue.toString());
@@ -194,6 +211,15 @@ function CustomerPage() {
           setCustomersData(transformedCustomersData);
           dataType = "customers";
           break;
+        case 3: // Customer Master Lists
+          if (!force && dataFetched.customerMasterLists) {
+            setLoading(false);
+            return;
+          }
+          response = await getCustomerMasterLists();
+          setCustomerMasterListsData(response?.data || []);
+          dataType = "customerMasterLists";
+          break;
       }
 
       if (dataType) {
@@ -240,6 +266,12 @@ function CustomerPage() {
       deleteFn: deleteCustomer,
       editFn: editCustomer,
       createFn: createCustomer,
+    },
+    customerMasterList: {
+      setData: setCustomerMasterListsData,
+      deleteFn: deleteCustomerMasterList,
+      editFn: editCustomerMasterList,
+      createFn: createCustomerMasterList,
     },
   };
 
@@ -418,6 +450,54 @@ function CustomerPage() {
         });
         return;
       }
+    } else if (type === "customerMasterList") {
+      try {
+        const response = await getCustomerMasterListById(row.id);
+        if (response.status) {
+          const customerMasterListData = response.data;
+
+          // Map backend data to frontend form structure
+          const mappedData = {
+            id: customerMasterListData.id,
+            name: customerMasterListData.name || customerMasterListData.title || "",
+            date: customerMasterListData.date ? customerMasterListData.date.split('T')[0] : "",
+            valid_from: customerMasterListData.valid_from ? customerMasterListData.valid_from.split('T')[0] : "",
+            valid_till: customerMasterListData.valid_till ? customerMasterListData.valid_till.split('T')[0] : "",
+            active: customerMasterListData.active !== undefined ? customerMasterListData.active : true,
+            items: customerMasterListData.items ? customerMasterListData.items.map(item => ({
+              id: item.pivot?.id || `row_${item.id}`, // Use pivot.id if available, otherwise create a unique row id
+              item_id: item.id, // This is the actual item ID from the items table
+              itemcode: item.code || item.itemcode || "",
+              price: parseFloat(item.pivot?.price || item.price || 0),
+              discount: parseFloat(item.pivot?.discount || item.discount || 0),
+              line: item.pivot?.line || item.line || "",
+              isEnabled: true
+            })) : [],
+          };
+          
+          setFormData(mappedData);
+          
+          // Open the CustomerMasterListDrawer for editing
+          setActiveDrawerType(type);
+          setIsEditMode(true);
+          setIsDrawerOpen(true);
+          
+          return; // Exit early for customer master lists
+        } else {
+          toast.error({
+            title: toastT("error"),
+            description: response.message || "Failed to fetch customer master list details",
+          });
+          return;
+        }
+      } catch (error) {
+        console.error('Error in customerMasterList edit:', error);
+        toast.error({
+          title: toastT("error"),
+          description: error.message || "Failed to fetch customer master list details",
+        });
+        return;
+      }
     } else {
       // Use drawer stack for customer groups and salesmen
       openDrawer({
@@ -515,6 +595,16 @@ function CustomerPage() {
       };
       setFormData(defaultData);
       setIsDrawerOpen(true);
+    } else if (type === "customerMasterList") {
+      // Use CustomerMasterListDrawer for customer master lists
+      setActiveDrawerType(type);
+      setIsEditMode(false);
+      // Set default values for new items
+      const defaultData = {
+        active: true, // Default to active for new items
+      };
+      setFormData(defaultData);
+      setIsDrawerOpen(true);
     } else {
       // Use drawer stack for customer groups and salesmen
       openDrawer({
@@ -544,14 +634,35 @@ function CustomerPage() {
     setFormData(data);
   };
 
-  const handleSave = async () => {
+  const handleSave = async (newData) => {
     const type = activeDrawerType;
+    
+    // Handle customer master lists differently (drawer handles API calls)
+    if (type === "customerMasterList") {
+      // Update local state directly
+      if (newData) {
+        const setDataFunction = entityHandlers[type]?.setData;
+        if (setDataFunction) {
+          setDataFunction(prev => {
+            // If editing, replace the item; if creating, add new item
+            if (isEditMode) {
+              return prev.map(item => item.id === newData.id ? newData : item);
+            } else {
+              return [...prev, newData];
+            }
+          });
+        }
+      }
+      return; // Exit early for customer master lists
+    }
+    
+    // Handle other types (customers, etc.)
     const handler = entityHandlers[type];
 
     try {
       setSaveLoading(true);
       // Prepare the data with proper types
-      const preparedData = {
+      let preparedData = {
         ...formData,
         active: formData.active === "true" || formData.active === true,
         is_manager:
@@ -739,8 +850,33 @@ function CustomerPage() {
     }
   };
 
-  const handleSaveAndNew = async () => {
-    await handleSave();
+  const handleSaveAndNew = async (newData) => {
+    const type = activeDrawerType;
+    
+    // Handle customer master lists differently (drawer handles API calls)
+    if (type === "customerMasterList") {
+      // Update local state directly without closing drawer
+      if (newData) {
+        const setDataFunction = entityHandlers[type]?.setData;
+        if (setDataFunction) {
+          setDataFunction(prev => {
+            // If editing, replace the item; if creating, add new item
+            if (isEditMode) {
+              return prev.map(item => item.id === newData.id ? newData : item);
+            } else {
+              return [...prev, newData];
+            }
+          });
+        }
+      }
+      // Reset editData to null for new entry (drawer will clear fields)
+      setIsEditMode(false);
+      setFormData({});
+      return; // Exit early for customer master lists
+    }
+    
+    // Handle other types
+    await handleSave(newData);
     setFormData({});
     if (isEditMode) {
       setIsEditMode(false);
@@ -748,8 +884,18 @@ function CustomerPage() {
     }
   };
 
-  const handleSaveAndClose = async () => {
-    await handleSave();
+  const handleSaveAndClose = async (newData) => {
+    const type = activeDrawerType;
+    
+    // Handle customer master lists differently (drawer handles API calls)
+    if (type === "customerMasterList") {
+      await handleSave(newData);
+      handleCloseDrawer();
+      return; // Exit early for customer master lists
+    }
+    
+    // Handle other types
+    await handleSave(newData);
     handleCloseDrawer();
   };
 
@@ -790,6 +936,9 @@ function CustomerPage() {
           break;
         case "customer":
           response = await exportCustomersToExcel();
+          break;
+        case "customerMasterList":
+          response = await exportCustomerMasterListsToExcel();
           break;
         default:
           return;
@@ -849,6 +998,9 @@ function CustomerPage() {
         case "customer":
           response = await exportCustomersToPdf();
           break;
+        case "customerMasterList":
+          response = await exportCustomerMasterListsToPdf();
+          break;
         default:
           return;
       }
@@ -881,6 +1033,9 @@ function CustomerPage() {
           break;
         case "customer":
           response = await importCustomersFromExcel(file);
+          break;
+        case "customerMasterList":
+          response = await importCustomerMasterListsFromExcel(file);
           break;
         default:
           return;
@@ -1068,6 +1223,37 @@ function CustomerPage() {
     ],
   });
 
+  const customerMasterListActions = useCustomActions({
+    onEdit: (row) => handleEdit("customerMasterList", row),
+    onDelete: (row) => handleDelete("customerMasterList", row),
+    onPreview: (row) => {
+      // Preview functionality can be added here
+    },
+    additionalActions: (row) => [
+      ActiveStatusAction({
+        row,
+        editFunction: entityHandlers.customerMasterList.editFn,
+        onSuccess: (row, updatedData) => {
+          entityHandlers.customerMasterList.setData((prev) =>
+            prev.map((item) =>
+              item.id === row.id ? { ...item, active: updatedData.active } : item
+            )
+          );
+          toast.success({
+            title: toastT("success"),
+            description: toastT("customerMasterList.updateSuccess"),
+          });
+        },
+        onError: (row, errorMessage) => {
+          toast.error({
+            title: toastT("error"),
+            description: errorMessage || toastT("customerMasterList.updateError"),
+          });
+        },
+      }),
+    ],
+  });
+
   return (
     <div className="p-4">
       <Box sx={{ width: "100%" }}>
@@ -1083,6 +1269,7 @@ function CustomerPage() {
             <Tab label={t("tabs.customerGroups")} />
             <Tab label={t("tabs.salesmen")} />
             <Tab label={t("tabs.customers")} />
+            <Tab label={t("tabs.customerMasterLists")} />
           </CustomTabs>
         </Box>
 
@@ -1160,9 +1347,51 @@ function CustomerPage() {
           </Box>
         </TabPanel>
 
+        {/* Customer Master Lists Management Tab*/}
+        <TabPanel value={value} index={3}>
+          <Box className="p-0">
+            <Table
+              data={customerMasterListsData || []}
+              columns={customerMasterListColumns}
+              onAdd={() => handleAddNew("customerMasterList")}
+              loading={loading}
+              enableCellEditing={false}
+              onExportExcel={() => handleExportExcel("customerMasterList")}
+              onExportPdf={() => handleExportPdf("customerMasterList")}
+              onPrint={() =>
+                handlePrint(
+                  "customerMasterList",
+                  customerMasterListsData,
+                  customerMasterListColumns
+                )
+              }
+              onRefresh={() => fetchData(3, true)}
+              onImportExcel={(file) => handleImportExcel("customerMasterList", file)}
+              tableId="customerMasterLists"
+              customActions={customerMasterListActions.customActions}
+              onCustomAction={customerMasterListActions.onCustomAction}
+              onDelete={(row) => handleDelete("customerMasterList", row)}
+            />
+          </Box>
+        </TabPanel>
+
         {/* Customer Drawer */}
         <CustomerDrawer
-          isOpen={isDrawerOpen}
+          isOpen={isDrawerOpen && activeDrawerType === "customer"}
+          onClose={handleCloseDrawer}
+          type={activeDrawerType}
+          onSave={handleSave}
+          onSaveAndNew={handleSaveAndNew}
+          onSaveAndClose={handleSaveAndClose}
+          formData={formData}
+          onFormDataChange={handleFormDataChange}
+          isEdit={isEditMode}
+          saveLoading={saveLoading}
+        />
+
+        {/* Customer Master List Drawer */}
+        <CustomerMasterListDrawer
+          isOpen={isDrawerOpen && activeDrawerType === "customerMasterList"}
           onClose={handleCloseDrawer}
           type={activeDrawerType}
           onSave={handleSave}

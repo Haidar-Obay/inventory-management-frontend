@@ -289,7 +289,7 @@ export const ColumnModal = React.memo(({
   // Persisted Other Settings
   const otherSettingsKey = tableName ? `table:${tableName}:otherSettings` : null;
   const getPersistedOtherSettings = () => {
-    if (!otherSettingsKey) return {};
+    if (!otherSettingsKey || typeof window === 'undefined') return {};
     try {
       const raw = localStorage.getItem(otherSettingsKey);
       return raw ? JSON.parse(raw) : {};
@@ -335,7 +335,7 @@ export const ColumnModal = React.memo(({
   
   const saveLastAppliedTemplate = useCallback((templateId, templateData) => {
     const key = getLastAppliedTemplateKey();
-    if (!key) return;
+    if (!key || typeof window === 'undefined') return;
     
     try {
       const templateToSave = {
@@ -353,7 +353,7 @@ export const ColumnModal = React.memo(({
 
   const loadLastAppliedTemplate = useCallback(() => {
     const key = getLastAppliedTemplateKey();
-    if (!key) return null;
+    if (!key || typeof window === 'undefined') return null;
     
     try {
       const saved = localStorage.getItem(key);
@@ -366,7 +366,7 @@ export const ColumnModal = React.memo(({
 
   const clearLastAppliedTemplate = useCallback(() => {
     const key = getLastAppliedTemplateKey();
-    if (!key) return;
+    if (!key || typeof window === 'undefined') return;
     
     try {
       localStorage.removeItem(key);
@@ -755,7 +755,9 @@ export const ColumnModal = React.memo(({
       showBodyColSeparator: otherShowBodyColSeparator,
     };
     try {
-      localStorage.setItem(otherSettingsKey, JSON.stringify(settings));
+      if (typeof window !== "undefined") {
+        localStorage.setItem(otherSettingsKey, JSON.stringify(settings));
+      }
     } catch {}
   }, [otherHeaderColor, otherHeaderFontSize, otherHeaderFontStyle, otherHeaderFontColor, otherShowHeaderSeparator, otherShowHeaderColSeparator, otherShowBodyColSeparator, otherSettingsKey]);
 
@@ -769,7 +771,7 @@ export const ColumnModal = React.memo(({
     setOtherShowHeaderColSeparator(showHeaderColSeparator !== undefined ? showHeaderColSeparator : true);
     setOtherShowBodyColSeparator(showBodyColSeparator !== undefined ? showBodyColSeparator : true);
     // Optionally, clear persisted settings in localStorage
-    if (otherSettingsKey) {
+    if (otherSettingsKey && typeof window !== "undefined") {
       localStorage.removeItem(otherSettingsKey);
     }
   }, [showHeaderSeparator, showHeaderColSeparator, showBodyColSeparator, otherSettingsKey]);
@@ -1014,7 +1016,7 @@ export const ColumnModal = React.memo(({
     setOtherShowHeaderSeparator(true);
     setOtherShowHeaderColSeparator(true);
     setOtherShowBodyColSeparator(true);
-    if (otherSettingsKey) {
+    if (otherSettingsKey && typeof window !== "undefined") {
       localStorage.removeItem(otherSettingsKey);
     }
   }, [columns, onToggleColumn, onColumnOrderChange, onColumnWidthChange, otherSettingsKey]);
