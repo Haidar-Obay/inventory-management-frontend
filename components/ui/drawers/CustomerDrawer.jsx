@@ -10,7 +10,16 @@ import {
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { useTranslations, useLocale } from "next-intl";
-import { getCustomerGroupNames, getSalesmen } from "@/API/Customers";
+import { 
+  getCustomerGroupNames, 
+  getSalesmen, 
+  createCustomer, 
+  editCustomer, 
+  createSalesman, 
+  editSalesman, 
+  createCustomerGroup, 
+  editCustomerGroup 
+} from "@/API/Customers";
 import { getCountries, getZones, getCities, getDistricts } from "@/API/AddressCodes";
 import { getTradeNames, getCompanyCodeNames, getBusinessTypes, getSalesChannelNames, getDistributionChannelNames, getMediaChannelNames, getPaymentTerms, getPaymentMethods } from "@/API/Sections";
 import { useSimpleToast } from "@/components/ui/simple-toast";
@@ -102,6 +111,7 @@ const CustomerDrawer = React.memo(({
   const [mediaChannels, setMediaChannels] = useState([]);
   const [loading, setLoading] = useState(false);
   const t = useTranslations("customers");
+  const tToast = useTranslations("toast");
   const locale = useLocale();
   const isRTL = locale === "ar";
   const [originalName, setOriginalName] = useState("");
@@ -440,7 +450,38 @@ const CustomerDrawer = React.memo(({
 
   // Function to check if data has changed from original state
   function isDataChanged() {
-    // Helper function to clean data for comparison
+    // In add mode, if originalData is empty (which it should be), 
+    // we only want to show confirmation if formData has meaningful data
+    if (!isEdit) {
+      // Helper function to clean data for comparison
+      const cleanData = (data) => {
+        if (!data || typeof data !== 'object') return {};
+        
+        const cleaned = {};
+        Object.keys(data).forEach(key => {
+          const value = data[key];
+          
+          // Skip null, undefined, empty strings, empty arrays, and empty objects
+          if (value === null || value === undefined || value === '') return;
+          if (Array.isArray(value) && value.length === 0) return;
+          if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) return;
+          
+          // Skip the 'active' field if it's in its default state (true)
+          // This prevents the confirmation dialog from appearing when only the default active state is present
+          if (key === 'active' && value === true) return;
+          
+          cleaned[key] = value;
+        });
+        
+        return cleaned;
+      };
+      
+      const cleanedFormData = cleanData(formData);
+      // In add mode, originalData should be empty, so if cleanedFormData is also empty, no changes
+      return Object.keys(cleanedFormData).length > 0;
+    }
+    
+    // In edit mode, compare with original data
     const cleanData = (data) => {
       if (!data || typeof data !== 'object') return {};
       
@@ -453,10 +494,6 @@ const CustomerDrawer = React.memo(({
         if (Array.isArray(value) && value.length === 0) return;
         if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) return;
         
-        // Skip the 'active' field if it's in its default state (true)
-        // This prevents the confirmation dialog from appearing when only the default active state is present
-        if (key === 'active' && value === true) return;
-        
         cleaned[key] = value;
       });
       
@@ -465,6 +502,13 @@ const CustomerDrawer = React.memo(({
     
     const cleanedFormData = cleanData(formData);
     const cleanedOriginalData = cleanData(originalData);
+    
+    // Special handling for active field in edit mode
+    // If the active field has changed from its original value, include it in the comparison
+    if (formData.active !== originalData.active) {
+      cleanedFormData.active = formData.active;
+      cleanedOriginalData.active = originalData.active;
+    }
     
     return JSON.stringify(cleanedFormData) !== JSON.stringify(cleanedOriginalData);
   }
@@ -761,9 +805,192 @@ const CustomerDrawer = React.memo(({
     }
   }, [handleAddSearchTerm]);
 
-  const handleSave = useCallback(() => {
-    onSave && onSave();
-  }, [onSave]);
+  const handleSave = useCallback(async () => {
+    if (isEdit && !isDataChanged()) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: t("noChangesDesc") || "Please modify at least one field before saving.",
+        duration: 3000,
+      });
+      return;
+    }
+    
+    try {
+      let response;
+      if (type === "customer") {
+        if (isEdit) {
+          response = await editCustomer(formData.id, formData);
+        } else {
+          response = await createCustomer(formData);
+        }
+      } else if (type === "salesman") {
+        if (isEdit) {
+          response = await editSalesman(formData.id, formData);
+        } else {
+          response = await createSalesman(formData);
+        }
+      } else if (type === "customerGroup") {
+        if (isEdit) {
+          response = await editCustomerGroup(formData.id, formData);
+        } else {
+          response = await createCustomerGroup(formData);
+        }
+      }
+      
+      if (response && response.status) {
+        addToast({
+          type: "success",
+          title: tToast("success"),
+          description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
+          duration: 3000,
+        });
+        // Update originalData with the current formData to ensure proper change detection
+        if (isEdit) {
+          setOriginalData(JSON.parse(JSON.stringify(formData)));
+        }
+        onSave && onSave(response.data);
+        onClose && onClose();
+      } else {
+        addToast({
+          type: "error",
+          title: tToast("error"),
+          description: response?.message || tToast(isEdit ? "updateError" : "createError"),
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: error.message || tToast(isEdit ? "updateError" : "createError"),
+        duration: 3000,
+      });
+    }
+  }, [isEdit, isDataChanged, type, formData, onSave, onClose, addToast, tToast, t]);
+
+  const handleSaveAndNew = useCallback(async () => {
+    if (isEdit && !isDataChanged()) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: t("noChangesDesc") || "Please modify at least one field before saving.",
+        duration: 3000,
+      });
+      return;
+    }
+    
+    try {
+      let response;
+      if (type === "customer") {
+        if (isEdit) {
+          response = await editCustomer(formData.id, formData);
+        } else {
+          response = await createCustomer(formData);
+        }
+      } else if (type === "salesman") {
+        if (isEdit) {
+          response = await editSalesman(formData.id, formData);
+        } else {
+          response = await createSalesman(formData);
+        }
+      } else if (type === "customerGroup") {
+        if (isEdit) {
+          response = await editCustomerGroup(formData.id, formData);
+        } else {
+          response = await createCustomerGroup(formData);
+        }
+      }
+      
+      if (response && response.status) {
+        addToast({
+          type: "success",
+          title: tToast("success"),
+          description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
+          duration: 3000,
+        });
+        onSaveAndNew && onSaveAndNew(response.data);
+      } else {
+        addToast({
+          type: "error",
+          title: tToast("error"),
+          description: response?.message || tToast(isEdit ? "updateError" : "createError"),
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: error.message || tToast(isEdit ? "updateError" : "createError"),
+        duration: 3000,
+      });
+    }
+  }, [isEdit, isDataChanged, type, formData, onSaveAndNew, addToast, tToast, t]);
+
+  const handleSaveAndClose = useCallback(async () => {
+    if (isEdit && !isDataChanged()) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: t("noChangesDesc") || "Please modify at least one field before saving.",
+        duration: 3000,
+      });
+      return;
+    }
+    
+    try {
+      let response;
+      if (type === "customer") {
+        if (isEdit) {
+          response = await editCustomer(formData.id, formData);
+        } else {
+          response = await createCustomer(formData);
+        }
+      } else if (type === "salesman") {
+        if (isEdit) {
+          response = await editSalesman(formData.id, formData);
+        } else {
+          response = await createSalesman(formData);
+        }
+      } else if (type === "customerGroup") {
+        if (isEdit) {
+          response = await editCustomerGroup(formData.id, formData);
+        } else {
+          response = await createCustomerGroup(formData);
+        }
+      }
+      
+      if (response && response.status) {
+        addToast({
+          type: "success",
+          title: tToast("success"),
+          description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
+          duration: 3000,
+        });
+        // Update originalData with the current formData to ensure proper change detection
+        if (isEdit) {
+          setOriginalData(JSON.parse(JSON.stringify(formData)));
+        }
+        onSaveAndClose && onSaveAndClose(response.data);
+        onClose && onClose();
+      } else {
+        addToast({
+          type: "error",
+          title: tToast("error"),
+          description: response?.message || tToast(isEdit ? "updateError" : "createError"),
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      addToast({
+        type: "error",
+        title: tToast("error"),
+        description: error.message || tToast(isEdit ? "updateError" : "createError"),
+        duration: 3000,
+      });
+    }
+  }, [isEdit, isDataChanged, type, formData, onSaveAndClose, onClose, addToast, tToast, t]);
 
   const handleOpeningBalanceChange = useCallback((index, field, value) => {
     setOpeningBalances((prev) => {
@@ -1516,12 +1743,13 @@ const CustomerDrawer = React.memo(({
         title={getTitle()}
         content={content}
         onSave={handleSave}
-        onSaveAndNew={onSaveAndNew}
-        onSaveAndClose={onSaveAndClose}
+        onSaveAndNew={handleSaveAndNew}
+        onSaveAndClose={handleSaveAndClose}
         anchor={isRTL ? "left" : "right"}
         width={1200}
         hasDataChanged={isDataChanged()}
         saveLoading={saveLoading}
+        isEdit={isEdit}
       />
 
     </>

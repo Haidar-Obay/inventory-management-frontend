@@ -88,22 +88,28 @@ function PaymentPage() {
     if (tabParam !== null) {
       const tabValue = parseInt(tabParam);
       setTab(tabValue);
-      localStorage.setItem("paymentLastTab", tabValue.toString());
+      if (typeof window !== 'undefined') {
+        localStorage.setItem("paymentLastTab", tabValue.toString());
+      }
     } else {
-      const savedTab = localStorage.getItem("paymentLastTab");
-      if (savedTab) {
-        const tabValue = parseInt(savedTab);
-        setTab(tabValue);
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("tab", tabValue.toString());
-        router.push(`?${params.toString()}`);
+      if (typeof window !== 'undefined') {
+        const savedTab = localStorage.getItem("paymentLastTab");
+        if (savedTab) {
+          const tabValue = parseInt(savedTab);
+          setTab(tabValue);
+          const params = new URLSearchParams(searchParams.toString());
+          params.set("tab", tabValue.toString());
+          router.push(`?${params.toString()}`);
+        }
       }
     }
   }, [searchParams, router]);
 
   const handleChange = (event, newValue) => {
     setTab(newValue);
-    localStorage.setItem("paymentLastTab", newValue.toString());
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("paymentLastTab", newValue.toString());
+    }
     const params = new URLSearchParams(searchParams.toString());
     params.set("tab", newValue.toString());
     router.push(`?${params.toString()}`);
@@ -417,7 +423,8 @@ function PaymentPage() {
               prev.map((r) => r.id === formData.id ? response.data : r)
             );
             addToast({ type: "success", title: tToast("success"), description: tToast("updateSuccess"), duration: 5000 });
-            setDrawerOpen(false);
+            // Don't close the drawer - let user continue editing
+            // setDrawerOpen(false); // Removed this line
           } else {
             addToast({ type: "error", title: tToast("error"), description: response?.message || tToast("updateError"), duration: 5000 });
           }
@@ -426,7 +433,8 @@ function PaymentPage() {
           if (response && response.status && response.data) {
             setPaymentTerms((prev) => [...prev, response.data]);
             addToast({ type: "success", title: tToast("success"), description: tToast("createSuccess"), duration: 5000 });
-            setDrawerOpen(false);
+            // Don't close the drawer - let user continue editing
+            // setDrawerOpen(false); // Removed this line
           } else {
             addToast({ type: "error", title: tToast("error"), description: response?.message || tToast("createError"), duration: 5000 });
           }
@@ -445,7 +453,8 @@ function PaymentPage() {
               prev.map((r) => r.id === formData.id ? response.data : r)
             );
             addToast({ type: "success", title: tToast("success"), description: tToast("updateSuccess"), duration: 5000 });
-            setDrawerOpen(false);
+            // Don't close the drawer - let user continue editing
+            // setDrawerOpen(false); // Removed this line
           } else {
             addToast({ type: "error", title: tToast("error"), description: response?.message || tToast("updateError"), duration: 5000 });
           }
@@ -460,7 +469,8 @@ function PaymentPage() {
           if (response && response.status && response.data) {
             setPaymentMethods((prev) => [...prev, response.data]);
             addToast({ type: "success", title: tToast("success"), description: tToast("createSuccess"), duration: 5000 });
-            setDrawerOpen(false);
+            // Don't close the drawer - let user continue editing
+            // setDrawerOpen(false); // Removed this line
           } else {
             addToast({ type: "error", title: tToast("error"), description: response?.message || tToast("createError"), duration: 5000 });
           }
@@ -648,7 +658,8 @@ function PaymentPage() {
               }
             });
           }
-          setDrawerOpen(false);
+          // Don't close the drawer - let user continue editing
+          // setDrawerOpen(false); // Removed this line
         }}
         onSaveAndNew={(row) => {
           if (drawerType === "paymentTerm") {

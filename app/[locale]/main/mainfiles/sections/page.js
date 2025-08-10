@@ -150,22 +150,28 @@ function SectionsPage() {
     if (tab !== null) {
       const tabValue = parseInt(tab);
       setValue(tabValue);
-      localStorage.setItem("sectionsLastTab", tabValue.toString());
+      if (typeof window !== 'undefined') {
+        localStorage.setItem("sectionsLastTab", tabValue.toString());
+      }
     } else {
-      const savedTab = localStorage.getItem("sectionsLastTab");
-      if (savedTab) {
-        const tabValue = parseInt(savedTab);
-        setValue(tabValue);
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("tab", tabValue.toString());
-        router.push(`?${params.toString()}`);
+      if (typeof window !== 'undefined') {
+        const savedTab = localStorage.getItem("sectionsLastTab");
+        if (savedTab) {
+          const tabValue = parseInt(savedTab);
+          setValue(tabValue);
+          const params = new URLSearchParams(searchParams.toString());
+          params.set("tab", tabValue.toString());
+          router.push(`?${params.toString()}`);
+        }
       }
     }
   }, [searchParams, router]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    localStorage.setItem("sectionsLastTab", newValue.toString());
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("sectionsLastTab", newValue.toString());
+    }
     const params = new URLSearchParams(searchParams.toString());
     params.set("tab", newValue.toString());
     router.push(`?${params.toString()}`);
@@ -380,7 +386,8 @@ function SectionsPage() {
         });
       }
     }
-    handleCloseDrawer();
+    // Don't close the drawer - let user continue editing
+    // handleCloseDrawer(); // Removed this line
   };
 
   const handleSaveAndNew = async (newData) => {

@@ -155,6 +155,7 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
           tCustomers("tabs.customerGroups"),
           tCustomers("tabs.salesmen"),
           tCustomers("tabs.customers"),
+          tCustomers("tabs.customerMasterLists"),
         ];
         tabLabel = customerTabs[tabIndex] || "";
       } else if (pathSegments.includes("addresscodes")) {

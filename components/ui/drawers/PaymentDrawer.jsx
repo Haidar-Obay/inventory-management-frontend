@@ -21,6 +21,7 @@ const PaymentDrawer = ({
   onSaveAndClose,
   isEdit = false,
   initialData = null,
+  saveLoading: externalSaveLoading = false,
 }) => {
   const t = useTranslations("payment");
   const tToast = useTranslations("toast");
@@ -28,7 +29,11 @@ const PaymentDrawer = ({
   const isRTL = locale === "ar";
   const [originalName, setOriginalName] = useState("");
   const [originalData, setOriginalData] = useState({});
+  const [internalSaveLoading, setInternalSaveLoading] = useState(false);
   const { addToast } = useSimpleToast();
+
+  // Use external saveLoading if provided, otherwise use internal
+  const saveLoading = externalSaveLoading || internalSaveLoading;
 
   // Local form state only
   const [formData, setFormData] = useState({ code: "", name: "", nb_days: 0, active: true, is_credit_card: false, is_online_payment: false });
@@ -48,7 +53,44 @@ const PaymentDrawer = ({
   }, [isOpen, isEdit, initialData]);
 
   function isDataChanged() {
-    // Helper function to clean data for comparison
+    // In add mode, if originalData is empty (which it should be), 
+    // we only want to show confirmation if formData has meaningful data
+    if (!isEdit) {
+      // Helper function to clean data for comparison
+      const cleanData = (data) => {
+        if (!data || typeof data !== 'object') return {};
+        
+        const cleaned = {};
+        Object.keys(data).forEach(key => {
+          const value = data[key];
+          
+          // Skip null, undefined, empty strings, empty arrays, and empty objects
+          if (value === null || value === undefined || value === '') return;
+          if (Array.isArray(value) && value.length === 0) return;
+          if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) return;
+          
+          // Skip the 'active' field if it's in its default state (true)
+          // This prevents the confirmation dialog from appearing when only the default active state is present
+          if (key === 'active' && value === true) return;
+          
+          // Skip numeric fields that are 0 (default values)
+          if (typeof value === 'number' && value === 0) return;
+          
+          // Skip boolean false values (default values) - but NOT the active field
+          if (typeof value === 'boolean' && value === false && key !== 'active') return;
+          
+          cleaned[key] = value;
+        });
+        
+        return cleaned;
+      };
+      
+      const cleanedFormData = cleanData(formData);
+      // In add mode, originalData should be empty, so if cleanedFormData is also empty, no changes
+      return Object.keys(cleanedFormData).length > 0;
+    }
+    
+    // In edit mode, compare with original data
     const cleanData = (data) => {
       if (!data || typeof data !== 'object') return {};
       
@@ -61,9 +103,11 @@ const PaymentDrawer = ({
         if (Array.isArray(value) && value.length === 0) return;
         if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) return;
         
-        // Skip the 'active' field if it's in its default state (true)
-        // This prevents the confirmation dialog from appearing when only the default active state is present
-        if (key === 'active' && value === true) return;
+        // Skip numeric fields that are 0 (default values)
+        if (typeof value === 'number' && value === 0) return;
+        
+        // Skip boolean false values (default values)
+        if (typeof value === 'boolean' && value === false) return;
         
         cleaned[key] = value;
       });
@@ -73,6 +117,13 @@ const PaymentDrawer = ({
     
     const cleanedFormData = cleanData(formData);
     const cleanedOriginalData = cleanData(originalData);
+    
+    // Special handling for active field in edit mode
+    // If the active field has changed from its original value, include it in the comparison
+    if (formData.active !== originalData.active) {
+      cleanedFormData.active = formData.active;
+      cleanedOriginalData.active = originalData.active;
+    }
     
     return JSON.stringify(cleanedFormData) !== JSON.stringify(cleanedOriginalData);
   }
@@ -183,7 +234,7 @@ const PaymentDrawer = ({
           <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
             {type === "paymentTerm" && (
               <Checkbox 
-                checked={formData?.active !== false}
+                checked={Boolean(formData?.active)}
                 onChange={handleActiveChange}
                 label={t("active")}
                 isRTL={isRTL}
@@ -192,19 +243,19 @@ const PaymentDrawer = ({
             {type === "paymentMethod" && (
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Checkbox
-                  checked={formData?.active !== false}
+                  checked={Boolean(formData?.active)}
                   onChange={handleActiveChange}
                   label={t("active")}
                   isRTL={isRTL}
                 />
                 <Checkbox
-                  checked={formData?.is_credit_card !== false}
+                  checked={Boolean(formData?.is_credit_card)}
                   onChange={handleIsCreditCardChange}
                   label={t("isCreditCard")}
                   isRTL={isRTL}
                 />
                 <Checkbox
-                  checked={formData?.is_online_payment !== false}
+                  checked={Boolean(formData?.is_online_payment)}
                   onChange={handleIsOnlinePaymentChange}
                   label={t("isOnlinePayment")}
                   isRTL={isRTL}
@@ -244,7 +295,11 @@ const PaymentDrawer = ({
       });
       return;
     }
+    
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
       let response;
       if (type === "paymentTerm") {
         if (isEdit) response = await editPaymentTerm(formData.id, { ...formData, nb_days: Number(formData.nb_days) || 0 });
@@ -270,8 +325,13 @@ const PaymentDrawer = ({
           description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
           duration: 5000,
         });
+        // Update originalData with the current formData to ensure proper change detection
+        if (isEdit) {
+          setOriginalData(JSON.parse(JSON.stringify(formData)));
+        }
         if (onSave) onSave(response.data);
-        if (onClose) onClose();
+        // Don't close the drawer - let user continue editing
+        // if (onClose) onClose(); // Removed this line
       } else {
         addToast({
           type: "error",
@@ -287,12 +347,17 @@ const PaymentDrawer = ({
         description: error.message || tToast(isEdit ? "updateError" : "createError"),
         duration: 5000,
       });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
   // Save and New
   const handleSaveAndNew = async () => {
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
       let response;
       if (type === "paymentTerm") {
         response = await createPaymentTerm({ ...formData, nb_days: Number(formData.nb_days) || 0 });
@@ -311,7 +376,7 @@ const PaymentDrawer = ({
           description: tToast("createSuccess"),
         });
         if (onSaveAndNew) onSaveAndNew(response.data);
-        setFormData({ code: "", name: "", nb_days: 0, active: false, is_credit_card: false, is_online_payment: false });
+        setFormData({ code: "", name: "", nb_days: 0, active: true, is_credit_card: false, is_online_payment: false });
       } else {
         addToast({
           type: "error",
@@ -325,17 +390,29 @@ const PaymentDrawer = ({
         title: tToast("error"),
         description: error.message || tToast("createError"),
       });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
   // Save and Close
   const handleSaveAndClose = async () => {
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
       let response;
       if (type === "paymentTerm") {
-        response = await createPaymentTerm({ ...formData, nb_days: Number(formData.nb_days) || 0 });
+        if (isEdit) response = await editPaymentTerm(formData.id, { ...formData, nb_days: Number(formData.nb_days) || 0 });
+        else response = await createPaymentTerm({ ...formData, nb_days: Number(formData.nb_days) || 0 });
       } else if (type === "paymentMethod") {
-        response = await createPaymentMethod({
+        if (isEdit) response = await editPaymentMethod(formData.id, {
+          ...formData,
+          active: !!formData.active,
+          is_credit_card: !!formData.is_credit_card,
+          is_online_payment: !!formData.is_online_payment,
+        });
+        else response = await createPaymentMethod({
           ...formData,
           active: !!formData.active,
           is_credit_card: !!formData.is_credit_card,
@@ -346,23 +423,32 @@ const PaymentDrawer = ({
         addToast({
           type: "success",
           title: tToast("success"),
-          description: tToast("createSuccess"),
+          description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
+          duration: 5000,
         });
+        // Update originalData with the current formData to ensure proper change detection
+        if (isEdit) {
+          setOriginalData(JSON.parse(JSON.stringify(formData)));
+        }
         if (onSaveAndClose) onSaveAndClose(response.data);
         if (onClose) onClose();
       } else {
         addToast({
           type: "error",
           title: tToast("error"),
-          description: response?.message || tToast("createError"),
+          description: response?.message || tToast(isEdit ? "updateError" : "createError"),
+          duration: 5000,
         });
       }
     } catch (error) {
       addToast({
         type: "error",
         title: tToast("error"),
-        description: error.message || tToast("createError"),
+        description: error.message || tToast(isEdit ? "updateError" : "createError"),
+        duration: 5000,
       });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
@@ -381,6 +467,8 @@ const PaymentDrawer = ({
       anchor={isRTL ? "left" : "right"}
       width={getDrawerWidth(type)}
       hasDataChanged={hasDataChanged}
+      saveLoading={saveLoading}
+      isEdit={isEdit}
     />
   );
 };

@@ -9,6 +9,7 @@ import CustomerGroupDrawer from "./drawers/customerGroup/CustomerGroupDrawer";
 import PaymentDrawer from "./drawers/PaymentDrawer";
 import SalesmanDrawer from "./drawers/salesmen/SalesmanDrawer";
 import GeneralFilesDrawer from "./drawers/GeneralFilesDrawer";
+import ItemDrawer from "./drawers/ItemDrawer";
 
 export default function DrawerStackManager() {
   const { drawerStack, closeTopDrawer } = useDrawerStack();
@@ -26,6 +27,22 @@ export default function DrawerStackManager() {
     paymentTerm: (props) => <PaymentDrawer {...props} type="paymentTerm" />, // Add payment method drawer
     paymentMethod: (props) => <PaymentDrawer {...props} type="paymentMethod" />, // Add payment method drawer
     salesman: (props) => <SalesmanDrawer {...props} />, // Use the new SalesmanDrawer
+    item: (props) => {
+      const [formData, setFormData] = React.useState({});
+      
+      const handleFormDataChange = React.useCallback((data) => {
+        setFormData(data);
+      }, []);
+      
+      return (
+        <ItemDrawer 
+          {...props} 
+          type="item" 
+          formData={formData}
+          onFormDataChange={handleFormDataChange}
+        />
+      );
+    }, // Add item drawer
     // General Files Drawers
     businessType: (props) => <GeneralFilesDrawer {...props} type="businessType" />,
     salesChannel: (props) => <GeneralFilesDrawer {...props} type="salesChannel" />,

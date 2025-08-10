@@ -254,6 +254,13 @@ export function useMenuItems(t) {
               path: "/main/mainfiles/customer?tab=2",
               roles: ["admin", "user", "owner"],
             },
+            {
+              key: "customerMasterList",
+              name: t("customerMasterLists"),
+              icon: "FileText",
+              path: "/main/mainfiles/customer?tab=3",
+              roles: ["admin", "user", "owner"],
+            },
           ],
         },
         {

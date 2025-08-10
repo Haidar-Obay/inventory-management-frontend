@@ -36,6 +36,7 @@ const SectionDrawer = ({
   onSaveAndNew,
   onSaveAndClose,
   editData, // pass this for edit mode, otherwise undefined
+  saveLoading: externalSaveLoading = false,
 }) => {
   const t = useTranslations("sections");
   const tToast = useTranslations("toast");
@@ -52,7 +53,11 @@ const SectionDrawer = ({
   const [departmentOptions, setDepartmentOptions] = useState([]);
   const [projectOptions, setProjectOptions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [internalSaveLoading, setInternalSaveLoading] = useState(false);
   const isEdit = !!editData;
+
+  // Use external saveLoading if provided, otherwise use internal
+  const saveLoading = externalSaveLoading || internalSaveLoading;
 
   // Reset state on open
   useEffect(() => {
@@ -113,7 +118,38 @@ const SectionDrawer = ({
   };
 
   function isDataChanged() {
-    // Helper function to clean data for comparison
+    // In add mode, if originalData is empty (which it should be), 
+    // we only want to show confirmation if formData has meaningful data
+    if (!isEdit) {
+      // Helper function to clean data for comparison
+      const cleanData = (data) => {
+        if (!data || typeof data !== 'object') return {};
+        
+        const cleaned = {};
+        Object.keys(data).forEach(key => {
+          const value = data[key];
+          
+          // Skip null, undefined, empty strings, empty arrays, and empty objects
+          if (value === null || value === undefined || value === '') return;
+          if (Array.isArray(value) && value.length === 0) return;
+          if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) return;
+          
+          // Skip the 'active' field if it's in its default state (true)
+          // This prevents the confirmation dialog from appearing when only the default active state is present
+          if (key === 'active' && value === true) return;
+          
+          cleaned[key] = value;
+        });
+        
+        return cleaned;
+      };
+      
+      const cleanedFormData = cleanData(formData);
+      // In add mode, originalData should be empty, so if cleanedFormData is also empty, no changes
+      return Object.keys(cleanedFormData).length > 0;
+    }
+    
+    // In edit mode, compare with original data
     const cleanData = (data) => {
       if (!data || typeof data !== 'object') return {};
       
@@ -126,10 +162,6 @@ const SectionDrawer = ({
         if (Array.isArray(value) && value.length === 0) return;
         if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) return;
         
-        // Skip the 'active' field if it's in its default state (true)
-        // This prevents the confirmation dialog from appearing when only the default active state is present
-        if (key === 'active' && value === true) return;
-        
         cleaned[key] = value;
       });
       
@@ -138,6 +170,13 @@ const SectionDrawer = ({
     
     const cleanedFormData = cleanData(formData);
     const cleanedOriginalData = cleanData(originalData);
+    
+    // Special handling for active field in edit mode
+    // If the active field has changed from its original value, include it in the comparison
+    if (formData.active !== originalData.active) {
+      cleanedFormData.active = formData.active;
+      cleanedOriginalData.active = originalData.active;
+    }
     
     return JSON.stringify(cleanedFormData) !== JSON.stringify(cleanedOriginalData);
   }
@@ -177,7 +216,11 @@ const SectionDrawer = ({
       });
       return;
     }
+    
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
       let response;
       if (isEdit) {
         if (type === "project") response = await editProject(formData.id, formData);
@@ -201,8 +244,13 @@ const SectionDrawer = ({
           description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
           duration: 3000,
         });
+        // Update originalData with the current formData to ensure proper change detection
+        if (isEdit) {
+          setOriginalData(JSON.parse(JSON.stringify(formData)));
+        }
         onSave && onSave(response.data);
-        onClose && onClose();
+        // Don't close the drawer - let user continue editing
+        // onClose && onClose(); // Removed this line
       } else {
         addToast({
           type: "error",
@@ -218,6 +266,8 @@ const SectionDrawer = ({
         description: error.message || tToast(isEdit ? "updateError" : "createError"),
         duration: 3000,
       });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
@@ -232,7 +282,11 @@ const SectionDrawer = ({
         });
       return;
     }
+    
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
       let response;
       if (isEdit) {
         if (type === "project") response = await editProject(formData.id, formData);
@@ -275,6 +329,8 @@ const SectionDrawer = ({
         description: error.message || tToast(isEdit ? "updateError" : "createError"),
         duration: 3000,
       });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
@@ -289,7 +345,11 @@ const SectionDrawer = ({
       });
       return;
     }
+    
+    if (saveLoading) return; // Prevent multiple saves
+    
     try {
+      setInternalSaveLoading(true);
       let response;
       if (isEdit) {
         if (type === "project") response = await editProject(formData.id, formData);
@@ -313,6 +373,10 @@ const SectionDrawer = ({
           description: tToast(isEdit ? "updateSuccess" : "createSuccess"),
           duration: 3000,
         });
+        // Update originalData with the current formData to ensure proper change detection
+        if (isEdit) {
+          setOriginalData(JSON.parse(JSON.stringify(formData)));
+        }
         if (onSaveAndClose) onSaveAndClose(response.data);
         if (onClose) onClose();
       } else {
@@ -330,6 +394,8 @@ const SectionDrawer = ({
         description: error.message || tToast(isEdit ? "updateError" : "createError"),
         duration: 3000,
       });
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
@@ -540,7 +606,7 @@ const SectionDrawer = ({
             {/* Right side - Checkbox */}
             <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
               <Checkbox
-                checked={formData?.active !== false}
+                checked={Boolean(formData?.active)}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -632,7 +698,7 @@ const SectionDrawer = ({
             {/* Right side - Checkbox */}
             <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
               <Checkbox
-                checked={formData?.active !== false}
+                checked={Boolean(formData?.active)}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -697,7 +763,7 @@ const SectionDrawer = ({
             {/* Right side - Checkbox */}
             <Box sx={{ width: 200, display: 'flex', alignItems: 'flex-start', pt: 4.5, justifyContent: 'flex-end' }}>
               <Checkbox
-                checked={formData?.active !== false}
+                checked={Boolean(formData?.active)}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -994,6 +1060,8 @@ const SectionDrawer = ({
       anchor={isRTL ? "left" : "right"}
       width={getDrawerWidth(type)}
       hasDataChanged={isDataChanged()}
+      saveLoading={saveLoading}
+      isEdit={isEdit}
     />
   );
 };

@@ -40,6 +40,7 @@ const DynamicDrawer = ({
   hasDataChanged = false, // New prop to check if data has been modified
   saveLoading = false, // New prop for save loading state
   autoFocus = true, // New prop to control auto focus behavior
+  isEdit = false, // New prop to determine if in edit mode
 }) => {
   const locale = useLocale();
   const isRTL = locale === "ar";
@@ -182,8 +183,8 @@ const DynamicDrawer = ({
                 <div className={isRTL ? "order-1" : "order-2"}>
                   <ActionToolbar
                     onSave={onSave}
-                    onSaveAndNew={onSaveAndNew}
-                    onSaveAndExit={onSaveAndClose}
+                    onSaveAndNew={isEdit ? undefined : onSaveAndNew}
+                    onSaveAndExit={isEdit ? onSaveAndClose : onSaveAndClose}
                     expandDirection="left"
                     className="[&_button]:h-10"
                     storageKey={`drawer-${title}-save-action`}
