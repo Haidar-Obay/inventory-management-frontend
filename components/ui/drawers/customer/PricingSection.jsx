@@ -66,6 +66,7 @@ const PricingSection = React.memo(({ formData, onFormDataChange, isRTL, t, price
               value={globalDiscount}
               onChange={e => setGlobalDiscount(e.target.value)}
               type="number"
+              inputProps={{ step: '0.01' }}
               placeholder=""
             />
           </Grid>
@@ -80,9 +81,9 @@ const PricingSection = React.memo(({ formData, onFormDataChange, isRTL, t, price
               SelectProps={{ native: true }}
             >
               <option value="">{t('management.selectDiscountClass') || 'Select'}</option>
-              <option value="silver">{t('management.silver') || 'Silver'}</option>
-              <option value="gold">{t('management.gold') || 'Gold'}</option>
-              <option value="platinum">{t('management.platinum') || 'Platinum'}</option>
+              <option value="Silver">{t('management.silver') || 'Silver'}</option>
+              <option value="Gold">{t('management.gold') || 'Gold'}</option>
+              <option value="Platinum">{t('management.platinum') || 'Platinum'}</option>
             </RTLTextField>
           </Grid>
           <Grid item xs={12} md={6} sx={{ minWidth: 400 }}>
@@ -93,6 +94,7 @@ const PricingSection = React.memo(({ formData, onFormDataChange, isRTL, t, price
               value={markup}
               onChange={e => setMarkup(e.target.value)}
               type="number"
+              inputProps={{ step: '0.01' }}
               placeholder=""
             />
           </Grid>
@@ -104,6 +106,7 @@ const PricingSection = React.memo(({ formData, onFormDataChange, isRTL, t, price
               value={markdown}
               onChange={e => setMarkdown(e.target.value)}
               type="number"
+              inputProps={{ step: '0.01' }}
               placeholder=""
             />
           </Grid>

@@ -83,9 +83,6 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
                 onFormDataChange({
                   ...formData,
                   billing_country_id: newValue?.id || "",
-                  billing_zone_id: "",
-                  billing_city_id: "",
-                  billing_district_id: "",
                 });
               }}
               loading={loading}
@@ -128,7 +125,6 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
                 onFormDataChange({
                   ...formData,
                   billing_city_id: newValue?.id || "",
-                  billing_district_id: "",
                 });
               }}
               loading={loading}
@@ -213,8 +209,6 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
                 onFormDataChange({
                   ...formData,
                   billing_zone_id: newValue?.id || "",
-                  billing_city_id: "",
-                  billing_district_id: "",
                 });
               }}
               loading={loading}

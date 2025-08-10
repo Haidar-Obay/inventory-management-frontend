@@ -41,7 +41,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
     return fields.some(val => val && val.toString().trim() !== '');
   };
 
-  // Remove handleMarkAsPrimary and all Mark as Primary button logic
+
 
   return (
     <Accordion expanded={expanded} onChange={onAccordionChange}>
@@ -64,7 +64,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                 </Typography>
                 <RTLTextField
                   value={formData?.shipping_address_line1 || ""}
-                  onChange={e => onFormDataChange({ ...formData, shipping_address_line1: e.target.value })}
+                  onChange={e => onFormDataChange(prev => ({ ...prev, shipping_address_line1: e.target.value }))}
                   placeholder=""
                   onClick={e => e.stopPropagation()}
                   onFocus={e => e.stopPropagation()}
@@ -98,7 +98,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
             {t("management.copyFromBillingAddress") || "Copy from Billing Address"}
           </Button>
         </Box>
-        {/* Primary Shipping Address */}
+        {/*  Shipping Address */}
         <Box sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
           <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 500, color: 'primary.main' }}>
             {t("management.primaryShippingAddress") || "Primary Shipping Address"}
@@ -131,13 +131,10 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                     });
                     return;
                   }
-                  onFormDataChange({
-                    ...formData,
+                  onFormDataChange(prev => ({
+                    ...prev,
                     shipping_country_id: newValue?.id || "",
-                    shipping_zone_id: "",
-                    shipping_city_id: "",
-                    shipping_district_id: "",
-                  });
+                  }));
                 }}
                 loading={loading}
                 renderInput={(params) => <RTLTextField {...params} placeholder="" />}
@@ -178,11 +175,10 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                     });
                     return;
                   }
-                  onFormDataChange({
-                    ...formData,
+                  onFormDataChange(prev => ({
+                    ...prev,
                     shipping_city_id: newValue?.id || "",
-                    shipping_district_id: "",
-                  });
+                  }));
                 }}
                 loading={loading}
                 renderInput={(params) => <RTLTextField {...params} placeholder="" />}
@@ -222,10 +218,10 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                     });
                     return;
                   }
-                  onFormDataChange({
-                    ...formData,
+                  onFormDataChange(prev => ({
+                    ...prev,
                     shipping_district_id: newValue?.id || "",
-                  });
+                  }));
                 }}
                 loading={loading}
                 renderInput={(params) => <RTLTextField {...params} placeholder="" />}
@@ -265,12 +261,10 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
                     });
                     return;
                   }
-                  onFormDataChange({
-                    ...formData,
+                  onFormDataChange(prev => ({
+                    ...prev,
                     shipping_zone_id: newValue?.id || "",
-                    shipping_city_id: "",
-                    shipping_district_id: "",
-                  });
+                  }));
                 }}
                 loading={loading}
                 renderInput={(params) => <RTLTextField {...params} placeholder="" />}
@@ -295,7 +289,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
               </Typography>
               <RTLTextField
                 value={formData?.shipping_address_line1 || ""}
-                onChange={e => onFormDataChange({ ...formData, shipping_address_line1: e.target.value })}
+                onChange={e => onFormDataChange(prev => ({ ...prev, shipping_address_line1: e.target.value }))}
                 placeholder=""
               />
             </Grid>
@@ -305,7 +299,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
               </Typography>
               <RTLTextField
                 value={formData?.shipping_address_line2 || ""}
-                onChange={e => onFormDataChange({ ...formData, shipping_address_line2: e.target.value })}
+                onChange={e => onFormDataChange(prev => ({ ...prev, shipping_address_line2: e.target.value }))}
                 placeholder=""
               />
             </Grid>
@@ -315,7 +309,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
               </Typography>
               <RTLTextField
                 value={formData?.shipping_building || ""}
-                onChange={e => onFormDataChange({ ...formData, shipping_building: e.target.value })}
+                onChange={e => onFormDataChange(prev => ({ ...prev, shipping_building: e.target.value }))}
                 placeholder=""
               />
             </Grid>
@@ -325,7 +319,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
               </Typography>
               <RTLTextField
                 value={formData?.shipping_block || ""}
-                onChange={e => onFormDataChange({ ...formData, shipping_block: e.target.value })}
+                onChange={e => onFormDataChange(prev => ({ ...prev, shipping_block: e.target.value }))}
                 placeholder=""
               />
             </Grid>
@@ -335,7 +329,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
               </Typography>
               <RTLTextField
                 value={formData?.shipping_floor || ""}
-                onChange={e => onFormDataChange({ ...formData, shipping_floor: e.target.value })}
+                onChange={e => onFormDataChange(prev => ({ ...prev, shipping_floor: e.target.value }))}
                 placeholder=""
               />
             </Grid>
@@ -345,7 +339,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
               </Typography>
               <RTLTextField
                 value={formData?.shipping_side || ""}
-                onChange={e => onFormDataChange({ ...formData, shipping_side: e.target.value })}
+                onChange={e => onFormDataChange(prev => ({ ...prev, shipping_side: e.target.value }))}
                 placeholder=""
               />
             </Grid>
@@ -355,7 +349,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
               </Typography>
               <RTLTextField
                 value={formData?.shipping_apartment || ""}
-                onChange={e => onFormDataChange({ ...formData, shipping_apartment: e.target.value })}
+                onChange={e => onFormDataChange(prev => ({ ...prev, shipping_apartment: e.target.value }))}
                 placeholder=""
               />
             </Grid>
@@ -365,7 +359,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
               </Typography>
               <RTLTextField
                 value={formData?.shipping_zip_code || ""}
-                onChange={e => onFormDataChange({ ...formData, shipping_zip_code: e.target.value })}
+                onChange={e => onFormDataChange(prev => ({ ...prev, shipping_zip_code: e.target.value }))}
                 placeholder=""
               />
             </Grid>
@@ -377,9 +371,7 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
           <Box key={address.id} sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Typography variant="subtitle2" sx={{ fontWeight: 500 }}>
-                {index === 0
-                  ? t("management.primaryShippingAddress") || "Primary Shipping Address"
-                  : `${t("management.additionalShippingAddress") || "Additional Shipping Address"} ${index}`}
+                {`${t("management.additionalShippingAddress") || "Additional Shipping Address"} ${index + 1}`}
               </Typography>
               <Box sx={{ display: 'flex', gap: 1 }}>
                 <Button

@@ -115,14 +115,18 @@ const SalesmenSection = React.memo(({ formData, onFormDataChange, isRTL, t, sale
                           if (typeof setSalesmen === 'function') {
                             setSalesmen(prev => [...(Array.isArray(prev) ? prev : []), newSalesman]);
                           }
-                          handleCollectorSelect(event, newSalesman);
+                          handleSalesmanSelect(event, newSalesman);
                         },
                         type: "salesman"
                       },
                     });
                     return;
                   }
-                  handleCollectorSelect(event, newValue);
+                  handleSalesmanSelect(event, newValue);
+                }}
+                onBlur={(event) => {
+                  // Prevent clearing on blur
+                  event.preventDefault();
                 }}
                 renderInput={params => <RTLTextField {...params} placeholder="" />}
                 renderOption={(props, option) => (

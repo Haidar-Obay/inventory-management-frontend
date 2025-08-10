@@ -447,9 +447,9 @@ const CategorizeSection = React.memo(({ formData, onFormDataChange, isRTL, t, tr
               SelectProps={{ native: true }}
             >
               <option value="">{t("management.selectRiskCategory") || "Select Risk Category"}</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
             </RTLTextField>
           </Grid>
         </Grid>

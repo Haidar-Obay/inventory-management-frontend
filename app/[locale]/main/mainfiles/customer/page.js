@@ -166,7 +166,7 @@ function CustomerPage() {
             setLoading(false);
             return;
           }
-          response = await getCustomers();
+          response = await getCustomers(1, 100); // Request 100 records to get more data
           // Handle paginated response structure and transform nested objects
           const rawCustomersData = response.data?.data || response.data || [];
           const transformedCustomersData = rawCustomersData.map(customer => {
@@ -277,6 +277,22 @@ function CustomerPage() {
             })) || []
           });
           
+          // Debug each opening balance individually
+          if (customerData.opening_balances) {
+            customerData.opening_balances.forEach((balance, index) => {
+              console.log(`Opening balance ${index}:`, {
+                original: balance,
+                currency_code: balance.currency_code,
+                currency_id: balance.currency_id,
+                currency: balance.currency,
+                opening_amount: balance.opening_amount,
+                amount: balance.amount,
+                opening_date: balance.opening_date,
+                date: balance.date
+              });
+            });
+          }
+          
           // Map backend data to frontend form structure
           const mappedData = {
             // Basic information
@@ -303,8 +319,8 @@ function CustomerPage() {
             free_delivery_charge: customerData.free_delivery_charge,
             print_invoice_language: customerData.print_invoice_language,
             send_invoice: customerData.send_invoice,
-            add_message: customerData.showMessageField,
-            invoice_message: customerData.message,
+            showMessageField: customerData.showMessageField,
+            message: customerData.message,
             notes: customerData.notes,
             
             // Relationships
@@ -334,8 +350,9 @@ function CustomerPage() {
             price_list: customerData.price_list,
             global_discount: customerData.global_discount,
             discount_class: customerData.discount_class || '',
-            markup_percentage: customerData.markup_percentage,
-            markdown_percentage: customerData.markdown_percentage,
+            // Pricing percentages (prefer plain keys if backend provides them)
+            markup: customerData.markup ?? customerData.markup_percentage,
+            markdown: customerData.markdown ?? customerData.markdown_percentage,
             
             // Tax settings
             taxable: customerData.taxable,
@@ -360,7 +377,7 @@ function CustomerPage() {
             billing_block: customerData.primary_billing_address?.block || customerData.billing_addresses?.[0]?.block,
             billing_floor: customerData.primary_billing_address?.floor || customerData.billing_addresses?.[0]?.floor,
             billing_side: customerData.primary_billing_address?.side || customerData.billing_addresses?.[0]?.side,
-            billing_apartment: customerData.primary_billing_address?.appartment || customerData.billing_addresses?.[0]?.appartment,
+            billing_apartment: customerData.primary_billing_address?.apartment || customerData.primary_billing_address?.appartment || customerData.billing_addresses?.[0]?.apartment || customerData.billing_addresses?.[0]?.appartment,
             billing_zip_code: customerData.primary_billing_address?.zip_code || customerData.billing_addresses?.[0]?.zip_code,
             
             // Shipping address - get from shipping_addresses array (first address)
@@ -374,8 +391,9 @@ function CustomerPage() {
             shipping_block: customerData.shipping_addresses?.[0]?.block,
             shipping_floor: customerData.shipping_addresses?.[0]?.floor,
             shipping_side: customerData.shipping_addresses?.[0]?.side,
-            shipping_apartment: customerData.shipping_addresses?.[0]?.appartment,
+            shipping_apartment: customerData.shipping_addresses?.[0]?.apartment || customerData.shipping_addresses?.[0]?.appartment,
             shipping_zip_code: customerData.shipping_addresses?.[0]?.zip_code,
+            shipping_notes: customerData.shipping_addresses?.[0]?.notes,
             
             // Primary contact information
             work_phone: customerData.primary_contact?.work_phone,
@@ -393,15 +411,28 @@ function CustomerPage() {
             cheque_limits: customerData.cheque_limits || [],
             opening_balances: customerData.opening_balances || [],
             
+            // Debug: Log credit limits data
+            ...(customerData.credit_limits && {
+              _debug_credit_limits: {
+                original: customerData.credit_limits,
+                count: customerData.credit_limits.length,
+                sample: customerData.credit_limits[0]
+              }
+            }),
+            
             // Opening balances mapping for the form
             opening_balances_form: customerData.opening_balances?.map(balance => ({
-              currency: balance.currency_code || balance.currency_id,
-              amount: balance.opening_amount || balance.amount,
+              currency: balance.currency_code || balance.currency_id || balance.currency || '',
+              amount: balance.opening_amount || balance.amount || '',
               date: (balance.opening_date || balance.date) ? (balance.opening_date || balance.date).split('T')[0] : '',
-              notes: balance.notes,
+              notes: balance.notes || '',
               is_active: balance.is_active
             })) || [],
           };
+          
+          // Debug: Log the mapped data
+          console.log('handleEdit: Mapped customer data:', mappedData);
+          console.log('handleEdit: Credit limits data:', mappedData.credit_limits);
           
           setFormData(mappedData);
         } else {
@@ -508,14 +539,14 @@ function CustomerPage() {
   const handleAddNew = (type) => {
     if (type === "customer") {
       // Use single CustomerDrawer for customers
-      setActiveDrawerType(type);
-      setIsEditMode(false);
-      // Set default values for new items
-      const defaultData = {
-        active: true, // Default to active for new items
-      };
-      setFormData(defaultData);
-      setIsDrawerOpen(true);
+    setActiveDrawerType(type);
+    setIsEditMode(false);
+    // Set default values for new items
+    const defaultData = {
+      active: true, // Default to active for new items
+    };
+    setFormData(defaultData);
+    setIsDrawerOpen(true);
     } else {
       // Use drawer stack for customer groups and salesmen
       openDrawer({
@@ -596,6 +627,91 @@ function CustomerPage() {
         preparedData.price_choice = preparedData.price_choice.toLowerCase();
       }
 
+      // Map barcode field from frontend to backend format
+      if (preparedData.barcode !== undefined) {
+        preparedData.bar_code = preparedData.barcode;
+        delete preparedData.barcode;
+      }
+
+      // Map field names from frontend to backend format
+       const fieldMappings = {
+        // Basic information
+        'print_invoice_language': 'print_invoice_language',
+        'send_invoice': 'send_invoice',
+        'showMessageField': 'showMessageField',
+        'message': 'message',
+        'notes': 'notes',
+        
+        // Relationships
+        'customer_group_id': 'customer_group_id',
+        'salesman_id': 'salesman_id',
+        'collector_id': 'collector_id',
+        'supervisor_id': 'supervisor_id',
+        'manager_id': 'manager_id',
+        'trade_id': 'trade_id',
+        'company_code_id': 'company_code_id',
+        'business_type_id': 'business_type_id',
+        'sales_channel_id': 'sales_channel_id',
+        'distribution_channel_id': 'distribution_channel_id',
+        'media_channel_id': 'media_channel_id',
+        
+        // Credit and payment settings
+        'allow_credit': 'allow_credit',
+        'accept_cheques': 'accept_cheques',
+        'payment_day': 'payment_day',
+        'track_payment': 'track_payment',
+        'settlement_method': 'settlement_method',
+        
+         // Pricing settings
+         'price_list': 'price_list',
+         'global_discount': 'global_discount',
+         'discount_class': 'discount_class',
+         'markup': 'markup',
+         'markdown': 'markdown',
+        
+        // Tax settings
+        'taxable': 'taxable',
+        'taxed_from_date': 'taxed_from_date',
+        'taxed_till_date': 'taxed_till_date',
+        'subjected_to_tax': 'subjected_to_tax',
+        'added_tax': 'added_tax',
+        'exempted_from': 'exempted_from',
+        'exemption_reference': 'exemption_reference',
+        'exempted_from_date': 'exempted_from_date',
+        'exempted_till_date': 'exempted_till_date',
+        
+        // Categorize section fields
+        'indicator': 'indicator',
+        'risk_category': 'risk_category',
+      };
+
+               // Ensure categorize section fields are properly formatted for backend
+         // These fields should be sent as-is since they already have the correct backend field names
+         const categorizeFields = [
+           'trade_id', 'company_code_id', 'customer_group_id', 'business_type_id',
+           'sales_channel_id', 'distribution_channel_id', 'media_channel_id',
+           'indicator', 'risk_category'
+         ];
+         
+         // Ensure opening balances are preserved and not affected by field mappings
+         if (preparedData.opening_balances) {
+           console.log('Opening balances preserved:', preparedData.opening_balances);
+         }
+      
+      // Ensure all categorize fields are present and properly formatted
+      categorizeFields.forEach(field => {
+        if (preparedData[field] !== undefined) {
+          // Convert empty strings to null for ID fields
+          if (field.endsWith('_id') && (preparedData[field] === "" || preparedData[field] === null)) {
+            preparedData[field] = null;
+          }
+          // Ensure string fields are properly formatted
+          else if (field === 'indicator' || field === 'risk_category') {
+            preparedData[field] = preparedData[field] || null;
+          }
+        }
+      });
+
       // Convert empty strings to null for address fields to prevent constraint violations
       const addressFields = [
         'billing_country_id', 'billing_zone_id', 'billing_city_id', 'billing_district_id',
@@ -641,9 +757,35 @@ function CustomerPage() {
           }));
         }
 
-        // Handle shipping addresses - convert empty strings to null and add address_type
-        if (preparedData.shipping_addresses && Array.isArray(preparedData.shipping_addresses)) {
-          preparedData.shipping_addresses = preparedData.shipping_addresses.map(address => {
+        // Handle billing address - keep as individual fields (backend expects this format)
+        // The billing address fields are already in the correct format in preparedData
+        // No need to convert them to arrays
+
+        // Handle shipping addresses - primary address from individual fields + additional addresses
+        const hasPrimaryShippingAddressData = preparedData.shipping_address_line1 || preparedData.shipping_country_id || preparedData.shipping_city_id;
+        
+        // Create primary shipping address from individual fields
+        const primaryShippingAddress = hasPrimaryShippingAddressData ? {
+          address_line1: preparedData.shipping_address_line1 || '',
+          address_line2: preparedData.shipping_address_line2 || '',
+          country_id: preparedData.shipping_country_id || null,
+          zone_id: preparedData.shipping_zone_id || null,
+          city_id: preparedData.shipping_city_id || null,
+          district_id: preparedData.shipping_district_id || null,
+          building: preparedData.shipping_building || '',
+          block: preparedData.shipping_block || '',
+          floor: preparedData.shipping_floor || '',
+          side: preparedData.shipping_side || '',
+          apartment: preparedData.shipping_apartment || null,
+          zip_code: preparedData.shipping_zip_code || '',
+          notes: preparedData.shipping_notes || '',
+          is_primary: true,
+          address_type: 'shipping'
+        } : null;
+
+        // Get additional shipping addresses (if any)
+        const additionalShippingAddresses = preparedData.shipping_addresses && Array.isArray(preparedData.shipping_addresses) 
+          ? preparedData.shipping_addresses.map(address => {
             const addressFields = ['country_id', 'zone_id', 'city_id', 'district_id'];
             const cleanedAddress = { ...address };
             
@@ -652,34 +794,46 @@ function CustomerPage() {
                 cleanedAddress[field] = null;
               }
             });
-            
-            // Add address_type for shipping addresses
-            cleanedAddress.address_type = 'shipping';
-            
-            return cleanedAddress;
-          });
-        }
-
-        // Handle billing addresses - add address_type
-        if (preparedData.billing_addresses && Array.isArray(preparedData.billing_addresses)) {
-          preparedData.billing_addresses = preparedData.billing_addresses.map(address => {
-            const addressFields = ['country_id', 'zone_id', 'city_id', 'district_id'];
-            const cleanedAddress = { ...address };
-            
-            addressFields.forEach(field => {
-              if (cleanedAddress[field] === "" || cleanedAddress[field] === null) {
-                cleanedAddress[field] = null;
-              }
-            });
-            
-            // Add address_type for billing addresses
-            cleanedAddress.address_type = 'billing';
+              
+              // Ensure additional addresses have correct flags
+              cleanedAddress.address_type = 'shipping';
+              // Remove is_primary field to let backend handle it
+              delete cleanedAddress.is_primary;
             
             return cleanedAddress;
-          });
+            })
+          : [];
+
+        // Combine primary and additional addresses
+        if (primaryShippingAddress) {
+          // Ensure only the first address is primary, rest are not
+          const allAddresses = [primaryShippingAddress, ...additionalShippingAddresses];
+          preparedData.shipping_addresses = allAddresses.map((address, index) => ({
+            ...address,
+            is_primary: index === 0, // Only first address is primary
+            address_type: 'shipping'
+          }));
+        } else {
+          // If no primary address, make first additional address primary
+          preparedData.shipping_addresses = additionalShippingAddresses.map((address, index) => ({
+            ...address,
+            is_primary: index === 0, // Only first address is primary
+            address_type: 'shipping'
+          }));
         }
 
-                 // Remove general addresses array to avoid conflicts with billing/shipping addresses
+        // Remove individual shipping address fields to avoid conflicts with shipping_addresses array
+        const individualShippingAddressFields = [
+          'shipping_address_line1', 'shipping_address_line2', 'shipping_country_id', 'shipping_zone_id',
+          'shipping_city_id', 'shipping_district_id', 'shipping_building', 'shipping_block',
+          'shipping_floor', 'shipping_side', 'shipping_apartment', 'shipping_zip_code', 'shipping_notes'
+        ];
+        
+        individualShippingAddressFields.forEach(field => {
+          delete preparedData[field];
+        });
+
+         // Remove general addresses array to avoid conflicts with billing/shipping addresses
          delete preparedData.addresses;
 
         // Remove contact fields from top level
@@ -688,31 +842,294 @@ function CustomerPage() {
         delete preparedData.position;
         delete preparedData.extension;
 
-                 // Process opening balances for backend - map to correct field names
-         if (preparedData.opening_balances_form && Array.isArray(preparedData.opening_balances_form)) {
-           preparedData.opening_balances = preparedData.opening_balances_form.map(balance => ({
-             currency_id: parseInt(balance.currency) || 1, // Convert to integer, default to 1 if invalid
-             opening_amount: parseFloat(balance.amount) || 0,
-             opening_date: balance.date,
-             notes: balance.notes || ''
-           }));
+                 // Debug: Log the opening balances form data
+         console.log('Opening balances form data:', preparedData.opening_balances_form);
+         
+         // Process opening balances for backend - map to correct field names
+         if (preparedData.opening_balances_form && Array.isArray(preparedData.opening_balances_form) && preparedData.opening_balances_form.length > 0) {
+           console.log('Opening balances form data is valid, processing...');
+           console.log('Raw opening balances form data:', preparedData.opening_balances_form);
+           
+           // Only process balances that have both currency and amount
+           const validBalances = preparedData.opening_balances_form.filter(balance => {
+             const hasCurrency = balance.currency && balance.currency.toString().trim() !== '';
+             const hasAmount = balance.amount && balance.amount.toString().trim() !== '';
+             console.log('Balance check:', { balance, hasCurrency, hasAmount });
+             return hasCurrency && hasAmount;
+           });
+           
+           console.log('Valid balances:', validBalances);
+           
+           if (validBalances.length > 0) {
+             try {
+               // Import currencies to get the mapping
+               const { getCurrencies } = await import('@/API/Currency');
+               const currenciesResponse = await getCurrencies();
+               console.log('Currencies API response:', currenciesResponse);
+               
+               const currencies = currenciesResponse.data || currenciesResponse || [];
+               console.log('Currencies data:', currencies);
+               
+               // Create a mapping from currency code to ID
+               const currencyCodeToId = {};
+               currencies.forEach(currency => {
+                 currencyCodeToId[currency.code] = currency.id;
+               });
+               
+               console.log('Currency mapping:', currencyCodeToId);
+               
+               // If no currencies found, try a fallback approach
+               if (Object.keys(currencyCodeToId).length === 0) {
+                 console.warn('No currencies found from API, using fallback mapping');
+                 // Common currency mappings as fallback
+                 const fallbackMapping = {
+                   'USD': 1,
+                   'EUR': 2,
+                   'GBP': 3,
+                   'SAR': 4,
+                   'AED': 5
+                 };
+                 
+                 preparedData.opening_balances = validBalances.map(balance => {
+                   const currencyId = fallbackMapping[balance.currency] || 1; // Default to USD (ID: 1)
+                   console.log(`Using fallback: Converting currency ${balance.currency} to ID:`, currencyId);
+                   
+                   return {
+                     currency_id: currencyId,
+                     currency: balance.currency, // Add currency code as well
+                     amount: parseFloat(balance.amount) || 0, // Add amount field
+                     opening_amount: parseFloat(balance.amount) || 0,
+                     opening_date: balance.date || null,
+                     notes: balance.notes || ''
+                   };
+                 });
+               } else {
+                 preparedData.opening_balances = validBalances.map(balance => {
+                   const currencyId = currencyCodeToId[balance.currency];
+                   console.log(`Converting currency ${balance.currency} to ID:`, currencyId);
+                   console.log('Available currencies:', currencies.map(c => ({ code: c.code, id: c.id })));
+                  
+                   if (!currencyId) {
+                     console.error(`Currency code "${balance.currency}" not found in currencies list`);
+                     // Use fallback ID for unknown currencies
+                     return {
+                       currency_id: 1, // Default to USD
+                       currency: balance.currency, // Add currency code as well
+                       amount: parseFloat(balance.amount) || 0, // Add amount field
+                       opening_amount: parseFloat(balance.amount) || 0,
+                       opening_date: balance.date || null,
+                       notes: balance.notes || ''
+                     };
+                   }
+                   
+                   return {
+                     currency_id: currencyId,
+                     currency: balance.currency, // Add currency code as well
+                     amount: parseFloat(balance.amount) || 0, // Add amount field
+                     opening_amount: parseFloat(balance.amount) || 0,
+                     opening_date: balance.date || null,
+                     notes: balance.notes || ''
+                   };
+                 });
+               }
+               
+               console.log('Mapped opening balances for backend:', preparedData.opening_balances);
+             } catch (error) {
+               console.error('Error fetching currencies, using fallback:', error);
+               // Fallback: use currency code as ID (assuming backend can handle it)
+               preparedData.opening_balances = validBalances.map(balance => ({
+                 currency_id: balance.currency, // Send currency code as fallback
+                 currency: balance.currency, // Add currency code as well
+                 amount: parseFloat(balance.amount) || 0, // Add amount field
+                 opening_amount: parseFloat(balance.amount) || 0,
+                 opening_date: balance.date || null,
+                 notes: balance.notes || ''
+               }));
+             }
+           } else {
+             console.log('No valid opening balances found');
+             preparedData.opening_balances = [];
+           }
+         } else {
+           console.log('No opening balances form data or empty array');
+           preparedData.opening_balances = [];
          }
+         
+         // Debug: Log the opening balances data being sent
+         console.log('Opening balances being sent to backend:', preparedData.opening_balances);
          
          // Remove the form version since we've mapped it to the correct format
          delete preparedData.opening_balances_form;
 
-         // Process attachments for backend
-         if (preparedData.attachments && Array.isArray(preparedData.attachments)) {
-           preparedData.attachments = preparedData.attachments.map(attachment => ({
-             file_name: attachment.file_name || attachment.file?.name || '',
-             file_path: attachment.file_path || '',
-             file_type: attachment.file_type || attachment.file?.type || '',
-             file_size: attachment.file_size || attachment.file?.size || 0,
-             description: attachment.description || '',
-             is_public: attachment.is_public !== undefined ? attachment.is_public : true
-           }));
-         }
+        // Process credit limits for backend - map to correct field names
+        if (formData.creditLimits && typeof formData.creditLimits === 'object') {
+          const validCreditLimits = [];
+          
+          // Get currencies for mapping
+          try {
+            const { getCurrencies } = await import('@/API/Currency');
+            const currenciesResponse = await getCurrencies();
+            const currencies = currenciesResponse.data || currenciesResponse || [];
+            
+            // Create a mapping from currency code to ID
+            const currencyCodeToId = {};
+            currencies.forEach(currency => {
+              currencyCodeToId[currency.code] = currency.id;
+            });
+            
+            // Process each credit limit
+            Object.entries(formData.creditLimits).forEach(([currencyCode, limitAmount]) => {
+              if (limitAmount && limitAmount.toString().trim() !== '') {
+                const currencyId = currencyCodeToId[currencyCode] || 1; // Default to USD (ID: 1)
+                
+                validCreditLimits.push({
+                  currency_id: currencyId,
+                  credit_limit: parseFloat(limitAmount) || 0,
+                  notes: `Credit limit for ${currencyCode}`
+                });
+              }
+            });
+            
+            preparedData.credit_limits = validCreditLimits;
+          } catch (error) {
+            console.error('Error processing credit limits:', error);
+            // Fallback: use currency code as ID
+            preparedData.credit_limits = Object.entries(formData.creditLimits)
+              .filter(([_, limitAmount]) => limitAmount && limitAmount.toString().trim() !== '')
+              .map(([currencyCode, limitAmount]) => ({
+                currency_id: currencyCode, // Send currency code as fallback
+                credit_limit: parseFloat(limitAmount) || 0,
+                notes: `Credit limit for ${currencyCode}`
+              }));
+          }
+        } else {
+          preparedData.credit_limits = [];
+        }
+        
+        // Remove the frontend creditLimits field to avoid conflicts
+        delete preparedData.creditLimits;
+        
+        // Process max cheques for backend - map to correct field names
+        if (formData.maxCheques && typeof formData.maxCheques === 'object') {
+          // Filter out empty values and convert to proper format
+          const validMaxCheques = {};
+          Object.entries(formData.maxCheques).forEach(([currencyCode, maxCheques]) => {
+            if (maxCheques && maxCheques.toString().trim() !== '') {
+              validMaxCheques[currencyCode] = parseInt(maxCheques) || 0;
+            }
+          });
+          
+          preparedData.max_cheques = validMaxCheques;
+        } else {
+          preparedData.max_cheques = {};
+        }
+        
+        // Remove the frontend maxCheques field to avoid conflicts
+        delete preparedData.maxCheques;
+
+        // Handle tax-related fields - only send if customer is taxable
+        if (preparedData.exempted === true || preparedData.exempted === "true") {
+          // If customer is exempted (not taxable), remove tax-related fields
+          delete preparedData.added_tax;
+          delete preparedData.taxed_from_date;
+          delete preparedData.taxed_till_date;
+          delete preparedData.exempted_from_date;
+          delete preparedData.exempted_till_date;
+          delete preparedData.exemption_reference;
+        } else {
+          // If customer is taxable, ensure tax fields are properly formatted
+          if (preparedData.added_tax === 0 || preparedData.added_tax === "0" || preparedData.added_tax === "0.00") {
+            preparedData.added_tax = null;
+          }
+          if (preparedData.taxed_from_date === "" || preparedData.taxed_from_date === null) {
+            delete preparedData.taxed_from_date;
+          }
+          if (preparedData.taxed_till_date === "" || preparedData.taxed_till_date === null) {
+            delete preparedData.taxed_till_date;
+          }
+          if (preparedData.exempted_from_date === "" || preparedData.exempted_from_date === null) {
+            delete preparedData.exempted_from_date;
+          }
+          if (preparedData.exempted_till_date === "" || preparedData.exempted_till_date === null) {
+            delete preparedData.exempted_till_date;
+          }
+          if (preparedData.exemption_reference === "" || preparedData.exemption_reference === null) {
+            delete preparedData.exemption_reference;
+          }
+        }
+
+        // Process attachments for backend
+        if (preparedData.attachments && Array.isArray(preparedData.attachments)) {
+          preparedData.attachments = preparedData.attachments.map(attachment => ({
+            file_name: attachment.file_name || attachment.file?.name || '',
+            file_path: attachment.file_path || '',
+            file_type: attachment.file_type || attachment.file?.type || '',
+            file_size: attachment.file_size || attachment.file?.size || 0,
+            description: attachment.description || '',
+            is_public: attachment.is_public !== undefined ? attachment.is_public : true
+          }));
+        }
+        
+        // Handle payment terms field mapping - backend expects different field names
+        if (preparedData.payment_term_id) {
+          preparedData.selected_payment_term = preparedData.payment_term_id;
+          delete preparedData.payment_term_id;
+        }
+        
+        if (preparedData.payment_method_id) {
+          preparedData.selected_payment_method = preparedData.payment_method_id;
+          delete preparedData.payment_method_id;
+        }
+        
+        // Debug: log pricing values before normalization
+        console.log('Pricing (incoming from formData):', {
+          form_markup: formData.markup,
+          form_markdown: formData.markdown,
+          form_markup_percentage: formData.markup_percentage,
+          form_markdown_percentage: formData.markdown_percentage,
+        });
+
+        console.log('Pricing (prepared before normalize):', {
+          prepared_markup: preparedData.markup,
+          prepared_markdown: preparedData.markdown,
+          prepared_markup_percentage: preparedData.markup_percentage,
+          prepared_markdown_percentage: preparedData.markdown_percentage,
+        });
+
+        // Normalize pricing keys to backend contract (send markup/markdown)
+        if (preparedData.global_discount !== undefined && preparedData.global_discount !== null && preparedData.global_discount !== '') {
+          preparedData.global_discount = Number(preparedData.global_discount);
+        }
+        // Prefer plain keys. If only percentage keys exist, map them over.
+        if ((preparedData.markup === undefined || preparedData.markup === '') && preparedData.markup_percentage !== undefined) {
+          preparedData.markup = preparedData.markup_percentage;
+        }
+        if ((preparedData.markdown === undefined || preparedData.markdown === '') && preparedData.markdown_percentage !== undefined) {
+          preparedData.markdown = preparedData.markdown_percentage;
+        }
+        if (preparedData.markup !== undefined && preparedData.markup !== null && preparedData.markup !== '') {
+          preparedData.markup = Number(preparedData.markup);
+        }
+        if (preparedData.markdown !== undefined && preparedData.markdown !== null && preparedData.markdown !== '') {
+          preparedData.markdown = Number(preparedData.markdown);
+        }
+        // Ensure only plain keys are sent
+        if ('markup_percentage' in preparedData) delete preparedData.markup_percentage;
+        if ('markdown_percentage' in preparedData) delete preparedData.markdown_percentage;
+
+        console.log('Pricing (after normalize):', {
+          markup: preparedData.markup,
+          markdown: preparedData.markdown,
+          has_markup_percentage: 'markup_percentage' in preparedData,
+          has_markdown_percentage: 'markdown_percentage' in preparedData,
+        });
       }
+
+      // Debug: Log the final prepared data being sent
+      console.log('Final prepared data being sent to backend:', preparedData);
+      console.log('Opening balances in final data:', preparedData.opening_balances);
+      console.log('Opening balances type:', typeof preparedData.opening_balances);
+      console.log('Opening balances length:', preparedData.opening_balances?.length);
 
       let response;
       if (isEditMode) {
@@ -740,8 +1157,6 @@ function CustomerPage() {
             isEditMode ? `${type}.updateSuccess` : `${type}.createSuccess`
           ),
         });
-
-        setIsEditMode(false);
       } else {
         toast.error({
           title: toastT("error"),

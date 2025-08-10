@@ -151,9 +151,24 @@ export const importSalesmenFromExcel = async (file) => {
 };
 
 // Customers API Functions
-export const getCustomers = async () => {
+export const getCustomers = async (page = 1, perPage = 25, search = '', filters = {}) => {
   try {
-    const response = await tenantApiService('GET', 'customers');
+    const params = new URLSearchParams();
+    if (page) params.append('page', page);
+    if (perPage) params.append('per_page', perPage);
+    if (search) params.append('search', search);
+    
+    // Add filters if provided
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== null && filters[key] !== undefined && filters[key] !== '') {
+        params.append(key, filters[key]);
+      }
+    });
+    
+    const queryString = params.toString();
+    const url = queryString ? `customers?${queryString}` : 'customers';
+    
+    const response = await tenantApiService('GET', url);
     return response;
   } catch (error) {
     console.error('Error fetching customers:', error);

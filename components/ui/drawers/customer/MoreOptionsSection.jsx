@@ -72,8 +72,8 @@ const MoreOptionsSection = React.memo(({ formData, onFormDataChange, isRTL, t, a
               inputRef={firstFieldRef}
               onFocus={(e) => handleFieldFocus(e, 'printInvoiceLanguage')}
             >
-              <option value="ar">{t('management.arabic') || 'Arabic'}</option>
-              <option value="en">{t('management.english') || 'English'}</option>
+              <option value="Arabic">{t('management.arabic') || 'Arabic'}</option>
+              <option value="English">{t('management.english') || 'English'}</option>
             </RTLTextField>
           </Grid>
           <Grid item xs={12} md={6} sx={{ minWidth: 250 }}>

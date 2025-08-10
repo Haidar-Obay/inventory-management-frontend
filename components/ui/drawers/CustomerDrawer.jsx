@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, Suspense, useMemo } from "react";
+import React, { useState, useEffect, useCallback, Suspense, useMemo, useRef } from "react";
 import {
   Grid,
   Typography,
@@ -133,9 +133,8 @@ const CustomerDrawer = React.memo(({
   const [specialAccount, setSpecialAccount] = useState(false);
   const [posCustomer, setPosCustomer] = useState(false);
   const [freeDeliveryCharge, setFreeDeliveryCharge] = useState(false);
-  const [printInvoiceLanguage, setPrintInvoiceLanguage] = useState('en');
-  const [sendInvoice, setSendInvoice] = useState('email');
-  const [notes, setNotes] = useState('');
+
+
   const [priceChoice, setPriceChoice] = useState('');
   const [priceList, setPriceList] = useState('');
   const [globalDiscount, setGlobalDiscount] = useState('');
@@ -149,6 +148,16 @@ const CustomerDrawer = React.memo(({
 
   // Initialize tab navigation for accordion expansion only
   const tabNavigation = useTabNavigation(expandedSections, setExpandedSections);
+
+  // Track if user has manually changed track payment
+  const userChangedTrackPayment = useRef(false);
+
+  // Reset userChangedTrackPayment flag when loading a new customer
+  useEffect(() => {
+    if (formData?.id) {
+      userChangedTrackPayment.current = false;
+    }
+  }, [formData?.id]);
 
   // Sync local state with formData for checkboxes, opening balances, and payment settings
   useEffect(() => {
@@ -171,7 +180,7 @@ const CustomerDrawer = React.memo(({
       setAllowCredit(formData.allow_credit !== undefined ? formData.allow_credit : false);
       setAcceptCheques(formData.accept_cheques !== undefined ? formData.accept_cheques : false);
       setPaymentDay(formData.payment_day || '');
-      setTrackPayment(formData.track_payment || '');
+      
       setSettlementMethod(formData.settlement_method || '');
       
       // Sync payment terms and methods - set the selected values
@@ -185,18 +194,34 @@ const CustomerDrawer = React.memo(({
       // Sync pricing settings
       setPriceChoice(formData.price_choice || '');
       setPriceList(formData.price_list || '');
-      setGlobalDiscount(formData.global_discount || '');
-      setDiscountClass(formData.discount_class || '');
-      setMarkup(formData.markup_percentage || '');
-      setMarkdown(formData.markdown_percentage || '');
+      setGlobalDiscount(formData.global_discount ?? '');
+      setDiscountClass(formData.discount_class ?? '');
+      // Prefer new keys; fallback to legacy percentage keys
+      setMarkup(
+        formData.markup !== undefined && formData.markup !== null && formData.markup !== ''
+          ? formData.markup
+          : (formData.markup_percentage ?? '')
+      );
+      setMarkdown(
+        formData.markdown !== undefined && formData.markdown !== null && formData.markdown !== ''
+          ? formData.markdown
+          : (formData.markdown_percentage ?? '')
+      );
       
       // Sync credit limits
       if (formData.credit_limits && formData.credit_limits.length > 0) {
+        console.log('CustomerDrawer: Processing credit_limits from formData:', formData.credit_limits);
         const creditLimitsMap = {};
         formData.credit_limits.forEach(limit => {
-          creditLimitsMap[limit.currency_code || limit.currency_id] = limit.limit_amount || limit.amount;
+          const currencyKey = limit.currency_code || limit.currency_id;
+          const limitValue = limit.credit_limit || limit.limit_amount || limit.amount;
+          creditLimitsMap[currencyKey] = limitValue;
+          console.log(`CustomerDrawer: Mapping ${currencyKey} -> ${limitValue}`, limit);
         });
+        console.log('CustomerDrawer: Final creditLimitsMap:', creditLimitsMap);
         setCreditLimits(creditLimitsMap);
+      } else {
+        console.log('CustomerDrawer: No credit_limits found in formData or empty array');
       }
       
       // Sync cheque limits
@@ -207,8 +232,113 @@ const CustomerDrawer = React.memo(({
         });
         setMaxCheques(chequeLimitsMap);
       }
+      
+      // Sync shipping addresses - first address becomes primary, rest become additional
+      if (formData.shipping_addresses && Array.isArray(formData.shipping_addresses) && formData.shipping_addresses.length > 0) {
+        // First address becomes primary (individual fields are already set)
+        // Remaining addresses become additional
+        const additionalAddresses = formData.shipping_addresses.slice(1);
+        setShippingAddresses(additionalAddresses);
+      } else {
+        setShippingAddresses([]);
+      }
+      
+      // Sync contacts
+      if (formData.contacts && Array.isArray(formData.contacts)) {
+        setContacts(formData.contacts);
+      } else {
+        setContacts([]);
+      }
+      
+      // Sync search terms
+      if (formData.search_terms) {
+        let searchTermsArray = [];
+        
+        if (Array.isArray(formData.search_terms)) {
+          searchTermsArray = formData.search_terms;
+        } else if (typeof formData.search_terms === 'string') {
+          // Handle different string formats
+          let termsString = formData.search_terms;
+          
+          // Remove brackets and quotes if present
+          termsString = termsString.replace(/^\[|\]$/g, ''); // Remove [ and ]
+          termsString = termsString.replace(/"/g, ''); // Remove quotes
+          termsString = termsString.replace(/'/g, ''); // Remove single quotes
+          
+          // Split by comma and clean up
+          searchTermsArray = termsString
+            .split(',')
+            .map(term => term.trim())
+            .filter(term => term && term !== '');
+        }
+        
+        setSearchTerms(searchTermsArray);
+      }
+      
+      // Sync message and showMessageField
+      setMessage(formData.message || '');
+      setShowMessageField(formData.showMessageField || false);
+    } else {
+      setSearchTerms([]);
     }
   }, [formData]);
+
+  // Separate useEffect for trackPayment - only sync when track_payment specifically changes
+  useEffect(() => {
+    if (formData && formData.track_payment !== undefined && !userChangedTrackPayment.current) {
+      setTrackPayment(formData.track_payment || '');
+    }
+  }, [formData?.track_payment, userChangedTrackPayment.current]);
+
+  // Sync shippingAddresses back to formData when it changes
+  const shippingAddressesRef = useRef();
+  useEffect(() => {
+    // Only sync if shippingAddresses actually changed and is different from formData
+    const currentFormAddresses = formData?.shipping_addresses || [];
+    const currentShippingAddresses = shippingAddresses || [];
+    
+    // Check if shippingAddresses actually changed
+    const hasChanged = shippingAddressesRef.current !== JSON.stringify(currentShippingAddresses);
+    
+    if (hasChanged) {
+      shippingAddressesRef.current = JSON.stringify(currentShippingAddresses);
+      
+      // Only update if different from formData
+      if (JSON.stringify(currentFormAddresses) !== JSON.stringify(currentShippingAddresses)) {
+        onFormDataChange(prevFormData => ({
+          ...prevFormData,
+          shipping_addresses: currentShippingAddresses
+        }));
+      }
+    }
+  }, [shippingAddresses, onFormDataChange]);
+
+  // Sync openingBalances back to formData when it changes
+  const openingBalancesRef = useRef();
+  useEffect(() => {
+    // Only sync if openingBalances actually changed and is different from formData
+    const currentFormOpeningBalances = formData?.opening_balances_form || [];
+    const currentOpeningBalances = openingBalances || [];
+    
+    // Check if openingBalances actually changed
+    const hasChanged = openingBalancesRef.current !== JSON.stringify(currentOpeningBalances);
+    
+    if (hasChanged) {
+      openingBalancesRef.current = JSON.stringify(currentOpeningBalances);
+      
+      // Only update if different from formData
+      if (JSON.stringify(currentFormOpeningBalances) !== JSON.stringify(currentOpeningBalances)) {
+        onFormDataChange(prevFormData => ({
+          ...prevFormData,
+          opening_balances_form: currentOpeningBalances
+        }));
+      }
+    }
+  }, [openingBalances, onFormDataChange]);
+
+
+
+
 
   // Open Personal Information and Opening sections by default when opening customer drawer
   useEffect(() => {
@@ -653,11 +783,21 @@ const CustomerDrawer = React.memo(({
 
   const handleCreditLimitChange = useCallback((currencyCode, value) => {
     setCreditLimits((prev) => ({ ...prev, [currencyCode]: value }));
-  }, []);
+    // Also update the form data to ensure credit limits are saved
+    onFormDataChange((prevFormData) => ({ 
+      ...prevFormData, 
+      creditLimits: { ...prevFormData.creditLimits, [currencyCode]: value }
+    }));
+  }, [onFormDataChange]);
   
   const handleMaxChequesChange = useCallback((currencyCode, value) => {
     setMaxCheques((prev) => ({ ...prev, [currencyCode]: value }));
-  }, []);
+    // Also update the form data to ensure max cheques are saved
+    onFormDataChange((prevFormData) => ({ 
+      ...prevFormData, 
+      maxCheques: { ...prevFormData.maxCheques, [currencyCode]: value }
+    }));
+  }, [onFormDataChange]);
 
   // Handler functions for salesmen roles
   const handleSalesmanSelect = useCallback((event, newValue) => {
@@ -895,6 +1035,7 @@ const CustomerDrawer = React.memo(({
                 onAccordionChange={handleAccordionChange('paymentTerms')}
                 allCollapsed={allCollapsed}
                 setAllCollapsed={setAllCollapsed}
+                userChangedTrackPayment={userChangedTrackPayment}
               />
               <MoreOptionsSection
                 formData={formData}
@@ -913,12 +1054,12 @@ const CustomerDrawer = React.memo(({
                 setPosCustomer={setPosCustomer}
                 freeDeliveryCharge={freeDeliveryCharge}
                 setFreeDeliveryCharge={setFreeDeliveryCharge}
-                printInvoiceLanguage={printInvoiceLanguage}
-                setPrintInvoiceLanguage={setPrintInvoiceLanguage}
-                sendInvoice={sendInvoice}
-                setSendInvoice={setSendInvoice}
-                notes={notes}
-                setNotes={setNotes}
+                printInvoiceLanguage={formData.print_invoice_language || 'English'}
+                setPrintInvoiceLanguage={(value) => onFormDataChange(prev => ({ ...prev, print_invoice_language: value }))}
+                sendInvoice={formData.send_invoice || 'email'}
+                setSendInvoice={(value) => onFormDataChange(prev => ({ ...prev, send_invoice: value }))}
+                notes={formData.notes || ''}
+                setNotes={(value) => onFormDataChange(prev => ({ ...prev, notes: value }))}
                 expanded={!!expandedSections.moreOptions}
                 onAccordionChange={handleAccordionChange('moreOptions')}
                 allCollapsed={allCollapsed}
@@ -930,17 +1071,38 @@ const CustomerDrawer = React.memo(({
                 isRTL={isRTL}
                 t={t}
                 priceChoice={priceChoice}
-                setPriceChoice={setPriceChoice}
+                setPriceChoice={(value) => {
+                  setPriceChoice(value);
+                  onFormDataChange(prev => ({ ...prev, price_choice: value }));
+                }}
                 priceList={priceList}
-                setPriceList={setPriceList}
+                setPriceList={(value) => {
+                  setPriceList(value);
+                  onFormDataChange(prev => ({ ...prev, price_list: value }));
+                }}
                 globalDiscount={globalDiscount}
-                setGlobalDiscount={setGlobalDiscount}
+                setGlobalDiscount={(value) => {
+                  setGlobalDiscount(value);
+                  const num = value === '' || value === null || value === undefined ? '' : Number(value);
+                  onFormDataChange(prev => ({ ...prev, global_discount: num }));
+                }}
                 discountClass={discountClass}
-                setDiscountClass={setDiscountClass}
+                setDiscountClass={(value) => {
+                  setDiscountClass(value);
+                  onFormDataChange(prev => ({ ...prev, discount_class: value }));
+                }}
                 markup={markup}
-                setMarkup={setMarkup}
+                setMarkup={(value) => {
+                  setMarkup(value);
+                  const num = value === '' || value === null || value === undefined ? '' : Number(value);
+                  onFormDataChange(prev => ({ ...prev, markup: num }));
+                }}
                 markdown={markdown}
-                setMarkdown={setMarkdown}
+                setMarkdown={(value) => {
+                  setMarkdown(value);
+                  const num = value === '' || value === null || value === undefined ? '' : Number(value);
+                  onFormDataChange(prev => ({ ...prev, markdown: num }));
+                }}
                 expanded={!!expandedSections.pricing}
                 onAccordionChange={handleAccordionChange('pricing')}
                 allCollapsed={allCollapsed}
@@ -991,10 +1153,10 @@ const CustomerDrawer = React.memo(({
                 t={t}
               />
               <MessageSection
-                showMessageField={showMessageField}
-                setShowMessageField={setShowMessageField}
-                message={message}
-                setMessage={setMessage}
+                showMessageField={formData.showMessageField || false}
+                setShowMessageField={(value) => onFormDataChange(prev => ({ ...prev, showMessageField: value }))}
+                message={formData.message || ''}
+                setMessage={(value) => onFormDataChange(prev => ({ ...prev, message: value }))}
                 isRTL={isRTL}
                 t={t}
               />
@@ -1203,12 +1365,8 @@ const CustomerDrawer = React.memo(({
     setPosCustomer,
     freeDeliveryCharge,
     setFreeDeliveryCharge,
-    printInvoiceLanguage,
-    setPrintInvoiceLanguage,
-    sendInvoice,
-    setSendInvoice,
-    notes,
-    setNotes,
+
+
     priceChoice,
     setPriceChoice,
     priceList,

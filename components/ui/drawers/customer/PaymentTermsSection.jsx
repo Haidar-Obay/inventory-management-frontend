@@ -7,10 +7,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useDrawerStack } from "@/components/ui/DrawerStackContext";
 
 const PaymentTermsSection = React.memo((props) => {
-  const { paymentTerms, setPaymentTerms, paymentMethods, setPaymentMethods, ...rest } = props;
+  const { paymentTerms, setPaymentTerms, paymentMethods, setPaymentMethods, userChangedTrackPayment, ...rest } = props;
   const { openDrawer } = useDrawerStack();
   const { formData, onFormDataChange, isRTL, t, paymentTerms: propPaymentTerms, paymentMethods: propPaymentMethods, selectedPaymentTerm, setSelectedPaymentTerm, selectedPaymentMethod, setSelectedPaymentMethod, allowCredit, setAllowCredit, openingBalances, creditLimits, handleCreditLimitChange, acceptCheques, setAcceptCheques, maxCheques, handleMaxChequesChange, paymentDay, setPaymentDay, trackPayment, setTrackPayment, settlementMethod, setSettlementMethod, expanded, onAccordionChange, allCollapsed, setAllCollapsed } = rest;
-
+  
   React.useEffect(() => {
     if (allCollapsed && expanded) {
       onAccordionChange(null, false);
@@ -23,9 +23,15 @@ const PaymentTermsSection = React.memo((props) => {
     if (formData) {
       setAllowCredit(formData.allow_credit !== undefined ? formData.allow_credit : false);
       setAcceptCheques(formData.accept_cheques !== undefined ? formData.accept_cheques : false);
+    }
+  }, [formData.allow_credit, formData.accept_cheques]);
+  
+  // Separate useEffect for track payment - only sync on initial load or when user hasn't manually changed it
+  React.useEffect(() => {
+    if (formData && formData.track_payment !== undefined && !userChangedTrackPayment.current) {
       setTrackPayment(formData.track_payment === 'yes');
     }
-  }, [formData]);
+  }, [formData?.track_payment, userChangedTrackPayment.current]); // Only sync when track_payment specifically changes
 
   // Create options with Add button as first option
   const createOptionsWithAdd = (options, type) => {
@@ -39,13 +45,23 @@ const PaymentTermsSection = React.memo((props) => {
   // Determine if selected payment term has nb_days > 0
   const selectedTerm = paymentTerms.find(pt => pt.id === selectedPaymentTerm);
   const showAllowCreditFields = hasOpeningCurrency && selectedTerm && selectedTerm.nb_days > 0;
+  
+  // Debug: Log the conditions for showing credit fields
+  console.log('PaymentTermsSection: Debug credit fields visibility:', {
+    hasOpeningCurrency,
+    openingBalances,
+    selectedPaymentTerm,
+    selectedTerm,
+    selectedTermNbDays: selectedTerm?.nb_days,
+    showAllowCreditFields
+  });
 
   // Effect: If allowCredit is checked but no opening currency, uncheck it
   React.useEffect(() => {
     if (!hasOpeningCurrency && allowCredit) {
       setAllowCredit(false);
     }
-  }, [hasOpeningCurrency]);
+  }, [hasOpeningCurrency, allowCredit]); // Add allowCredit to dependencies to prevent infinite loop
 
   // Handler for payment term selection
   const handlePaymentTermChange = (_, newValue) => {
@@ -58,6 +74,11 @@ const PaymentTermsSection = React.memo((props) => {
               setPaymentTerms(prev => [...(Array.isArray(prev) ? prev : []), newTerm]);
             }
             setSelectedPaymentTerm(newTerm.id);
+            // Update form data with the new payment term ID
+            onFormDataChange(prevFormData => ({ 
+              ...prevFormData, 
+              payment_term_id: newTerm.id 
+            }));
           },
           type: "paymentTerm"
         },
@@ -65,11 +86,28 @@ const PaymentTermsSection = React.memo((props) => {
       return;
     }
     setSelectedPaymentTerm(newValue?.id || null);
-    // Only check allowCredit if nb_days > 0 AND hasOpeningCurrency
+    
+    // Update form data with the payment term ID
+    onFormDataChange(prevFormData => ({ 
+      ...prevFormData, 
+      payment_term_id: newValue?.id || null 
+    }));
+    
+    // Automatically set allowCredit based on payment term nb_days and opening currency
     if (newValue && newValue.nb_days > 0 && hasOpeningCurrency) {
       setAllowCredit(true);
+      // Update form data to reflect the automatic allow_credit setting
+      onFormDataChange(prevFormData => ({ 
+        ...prevFormData, 
+        allow_credit: true 
+      }));
     } else {
       setAllowCredit(false);
+      // Update form data to reflect the automatic allow_credit setting
+      onFormDataChange(prevFormData => ({ 
+        ...prevFormData, 
+        allow_credit: false 
+      }));
     }
   };
 
@@ -199,6 +237,11 @@ const PaymentTermsSection = React.memo((props) => {
                             setPaymentMethods(prev => [...(Array.isArray(prev) ? prev : []), newMethod]);
                           }
                           setSelectedPaymentMethod(newMethod.id); // <-- ensure selection
+                          // Update form data with the new payment method ID
+                          onFormDataChange(prevFormData => ({ 
+                            ...prevFormData, 
+                            payment_method_id: newMethod.id 
+                          }));
                         },
                         type: "paymentMethod"
                       },
@@ -206,6 +249,11 @@ const PaymentTermsSection = React.memo((props) => {
                     return;
                   }
                   setSelectedPaymentMethod(newValue?.id || null);
+                  // Update form data with the payment method ID
+                  onFormDataChange(prevFormData => ({ 
+                    ...prevFormData, 
+                    payment_method_id: newValue?.id || null 
+                  }));
                 }}
                 renderInput={params => <RTLTextField {...params} placeholder="" />}
                 renderOption={(props, option) => (
@@ -242,58 +290,98 @@ const PaymentTermsSection = React.memo((props) => {
                 </Box>
               ))}
             </Grid>
-            {allowCredit && (
-              <>
-                <Grid item xs={12} md={4} sx={{ minWidth: 200 }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
-                    {t('management.paymentDay') || 'Payment Day'}
-                  </Typography>
-                  <RTLTextField
-                    select
-                    fullWidth
-                    value={paymentDay}
-                    onChange={e => setPaymentDay(e.target.value)}
-                    SelectProps={{ native: true }}
-                  >
-                    <option value="">{t('management.selectPaymentDay') || 'Select'}</option>e
-                    
-                    {[...Array(30)].map((_, i) => (
-                      <option key={i + 1} value={i + 1}>{i + 1}</option>
-                    ))}
-                  </RTLTextField>
-                </Grid>
+            {/* Payment Day - visible when opening currency exists and payment term has nb_days > 0 */}
+            {showAllowCreditFields && (
+              <Grid item xs={12} md={4} sx={{ minWidth: 200 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
+                  {t('management.paymentDay') || 'Payment Day'}
+                </Typography>
+                <RTLTextField
+                  select
+                  fullWidth
+                  value={paymentDay}
+                  onChange={e => {
+                    const newPaymentDay = e.target.value;
+                    setPaymentDay(newPaymentDay);
+                    // Update form data with the payment day
+                    onFormDataChange(prevFormData => ({ 
+                      ...prevFormData, 
+                      payment_day: newPaymentDay 
+                    }));
+                  }}
+                  SelectProps={{ native: true }}
+                >
+                  <option value="">{t('management.selectPaymentDay') || 'Select'}</option>
+                  
+                  {[...Array(30)].map((_, i) => (
+                    <option key={i + 1} value={i + 1}>{i + 1}</option>
+                  ))}
+                </RTLTextField>
+              </Grid>
+            )}
 
-                <Grid item xs={12} md={4} sx={{ minWidth: 150 , display: 'flex', alignItems: 'center', gap: 0 }}>
-                  <Checkbox
-                    checked={!!trackPayment}
-                    onChange={e => {
-                      setTrackPayment(e.target.checked);
-                      onFormDataChange({ ...formData, track_payment: e.target.checked ? 'yes' : 'no' });
-                    }}
-                    label={t('management.trackPayment') || 'Track Payment'}
-                    isRTL={isRTL}
-                  />
-                </Grid>
-                
-                {trackPayment && (
-                  <Grid item xs={12} md={4} sx={{ minWidth: 200 }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
-                      {t('management.settlementMethod') || 'Settlement Method'}
-                    </Typography>
-                    <RTLTextField
-                      select
-                      fullWidth
-                      value={settlementMethod || 'fifo'}
-                      onChange={e => setSettlementMethod(e.target.value)}
-                      SelectProps={{ native: true }}
-                    >
-                      <option value="fifo">{t('management.fifo') || 'FIFO'}</option>
-                      <option value="manual">{t('management.manual') || 'Manual'}</option>
-                    </RTLTextField>
-                  </Grid>
-                )}
-               
-              </>
+            {/* Track Payment - visible when opening currency exists and payment term has nb_days > 0 */}
+            {showAllowCreditFields && (
+              <Grid item xs={12} md={4} sx={{ minWidth: 150, display: 'flex', alignItems: 'center', gap: 0 }}>
+                <Checkbox
+                  checked={!!trackPayment}
+                  onChange={e => {
+                    console.log('Track payment checkbox clicked:', e.target.checked);
+                    console.log('Current allowCredit:', allowCredit);
+                    console.log('Current showAllowCreditFields:', showAllowCreditFields);
+                    
+                    // Mark that user has manually changed this
+                    userChangedTrackPayment.current = true;
+                    
+                    const newTrackPayment = e.target.checked;
+                    setTrackPayment(newTrackPayment);
+                    
+                    // Update form data with the new value
+                    onFormDataChange(prevFormData => ({ 
+                      ...prevFormData, 
+                      track_payment: newTrackPayment ? 'yes' : 'no' 
+                    }));
+                    
+                    // If unchecking track payment, also clear settlement method
+                    if (!newTrackPayment) {
+                      setSettlementMethod('');
+                      onFormDataChange(prevFormData => ({ 
+                        ...prevFormData, 
+                        settlement_method: '' 
+                      }));
+                    }
+                  }}
+                  label={t('management.trackPayment') || 'Track Payment'}
+                  isRTL={isRTL}
+                />
+              </Grid>
+            )}
+            
+            {/* Settlement Method - visible when opening currency exists, payment term has nb_days > 0, AND track payment is checked */}
+            {showAllowCreditFields && trackPayment && (
+              <Grid item xs={12} md={4} sx={{ minWidth: 200 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
+                  {t('management.settlementMethod') || 'Settlement Method'}
+                </Typography>
+                <RTLTextField
+                  select
+                  fullWidth
+                  value={settlementMethod || 'FIFO'}
+                  onChange={e => {
+                    const newSettlementMethod = e.target.value;
+                    setSettlementMethod(newSettlementMethod);
+                    // Update form data with the settlement method
+                    onFormDataChange(prevFormData => ({ 
+                      ...prevFormData, 
+                      settlement_method: newSettlementMethod 
+                    }));
+                  }}
+                  SelectProps={{ native: true }}
+                >
+                  <option value="FIFO">{t('management.fifo') || 'FIFO'}</option>
+                  <option value="Manual">{t('management.manual') || 'Manual'}</option>
+                </RTLTextField>
+              </Grid>
             )}
             
             {/* Accept Cheques section - always visible */}
@@ -301,8 +389,13 @@ const PaymentTermsSection = React.memo((props) => {
               <Checkbox
                 checked={acceptCheques}
                 onChange={e => {
-                  setAcceptCheques(e.target.checked);
-                  onFormDataChange({ ...formData, accept_cheques: e.target.checked });
+                  const newAcceptCheques = e.target.checked;
+                  setAcceptCheques(newAcceptCheques);
+                  // Update form data with the accept cheques value
+                  onFormDataChange(prevFormData => ({ 
+                    ...prevFormData, 
+                    accept_cheques: newAcceptCheques 
+                  }));
                 }}
                 label={t('management.acceptCheques') || 'Accept Cheques'}
                 isRTL={isRTL}
