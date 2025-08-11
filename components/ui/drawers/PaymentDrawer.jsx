@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Typography, Box } from "@mui/material";
+import { Grid, Typography, Box, useTheme } from "@mui/material";
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -26,11 +26,20 @@ const PaymentDrawer = ({
   const t = useTranslations("payment");
   const tToast = useTranslations("toast");
   const locale = useLocale();
+  const theme = useTheme();
   const isRTL = locale === "ar";
   const [originalName, setOriginalName] = useState("");
   const [originalData, setOriginalData] = useState({});
   const [internalSaveLoading, setInternalSaveLoading] = useState(false);
   const { addToast } = useSimpleToast();
+
+  // Check if we're in dark mode
+  const isDarkMode = theme.palette.mode === 'dark';
+  
+  // Get background color based on theme
+  const getBackgroundColor = () => {
+    return isDarkMode ? 'rgb(16 20 29)' : 'rgb(249 250 251)';
+  };
 
   // Use external saveLoading if provided, otherwise use internal
   const saveLoading = externalSaveLoading || internalSaveLoading;
@@ -172,7 +181,16 @@ const PaymentDrawer = ({
   const getContent = () => {
     if (!type) return null;
     return (
-      <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
+      <Box 
+        sx={{
+          p: 4,
+          backgroundColor: getBackgroundColor(),
+          borderRadius: 1,
+          border: '1px solid',
+          borderColor: 'divider',
+          boxShadow: 1
+        }}
+      >
         <Box sx={{ display: 'flex', gap: 2 }}>
           {/* Left side - Form fields */}
           <Box sx={{ flex: 1 }}>

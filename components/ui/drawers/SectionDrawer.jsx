@@ -10,6 +10,7 @@ import {
   Stack,
   Grid,
   Autocomplete,
+  useTheme,
 } from "@mui/material";
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
 import RTLTextField from "@/components/ui/RTLTextField";
@@ -41,8 +42,17 @@ const SectionDrawer = ({
   const t = useTranslations("sections");
   const tToast = useTranslations("toast");
   const locale = useLocale();
+  const theme = useTheme();
   const isRTL = locale === "ar";
   const { addToast } = useSimpleToast();
+
+  // Check if we're in dark mode
+  const isDarkMode = theme.palette.mode === 'dark';
+  
+  // Get background color based on theme
+  const getBackgroundColor = () => {
+    return isDarkMode ? 'rgb(16 20 29)' : 'rgb(249 250 251)';
+  };
 
   // Internal state
   const [formData, setFormData] = useState({});
@@ -423,7 +433,16 @@ const SectionDrawer = ({
 
     if (type === "project") {
       return (
-        <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
+        <Box 
+          sx={{
+            p: 4,
+            backgroundColor: getBackgroundColor(),
+            borderRadius: 1,
+            border: '1px solid',
+            borderColor: 'divider',
+            boxShadow: 1
+          }}
+        >
           <Grid container spacing={2}>
             <Grid sx={{ minWidth: 250, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <Typography
@@ -532,7 +551,16 @@ const SectionDrawer = ({
 
     if (type === "costCenter") {
       return (
-        <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
+        <Box 
+          sx={{
+            p: 4,
+            backgroundColor: getBackgroundColor(),
+            borderRadius: 1,
+            border: '1px solid',
+            borderColor: 'divider',
+            boxShadow: 1
+          }}
+        >
           <Box sx={{ display: 'flex', gap: 2 }}>
             {/* Left side - Form fields */}
             <Box sx={{ flex: 1 }}>
@@ -624,7 +652,16 @@ const SectionDrawer = ({
 
     if (type === "department") {
       return (
-        <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
+        <Box 
+          sx={{
+            p: 4,
+            backgroundColor: getBackgroundColor(),
+            borderRadius: 1,
+            border: '1px solid',
+            borderColor: 'divider',
+            boxShadow: 1
+          }}
+        >
           <Box sx={{ display: 'flex', gap: 2 }}>
             {/* Left side - Form fields */}
             <Box sx={{ flex: 1 }}>
@@ -716,7 +753,16 @@ const SectionDrawer = ({
 
     if (type === "trade") {
       return (
-        <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
+        <Box 
+          sx={{
+            p: 4,
+            backgroundColor: getBackgroundColor(),
+            borderRadius: 1,
+            border: '1px solid',
+            borderColor: 'divider',
+            boxShadow: 1
+          }}
+        >
           <Box sx={{ display: 'flex', gap: 2 }}>
             {/* Left side - Form fields */}
             <Box sx={{ flex: 1 }}>
@@ -781,7 +827,16 @@ const SectionDrawer = ({
 
     if (type === "companyCode") {
       return (
-        <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
+        <Box 
+          sx={{
+            p: 4,
+            backgroundColor: getBackgroundColor(),
+            borderRadius: 1,
+            border: '1px solid',
+            borderColor: 'divider',
+            boxShadow: 1
+          }}
+        >
           <Grid container spacing={2}>
             <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <Typography
@@ -826,7 +881,16 @@ const SectionDrawer = ({
 
     if (type === "job") {
       return (
-        <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
+        <Box 
+          sx={{
+            p: 4,
+            backgroundColor: getBackgroundColor(),
+            borderRadius: 1,
+            border: '1px solid',
+            borderColor: 'divider',
+            boxShadow: 1
+          }}
+        >
           <Grid container spacing={2}>
             <Grid sx={{ minWidth: 350, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <Typography
@@ -953,7 +1017,16 @@ const SectionDrawer = ({
 
     // Default fields for other types
     return (
-      <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
+      <Box 
+        sx={{
+          p: 4,
+          backgroundColor: getBackgroundColor(),
+          borderRadius: 1,
+          border: '1px solid',
+          borderColor: 'divider',
+          boxShadow: 1
+        }}
+      >
         <Grid container spacing={2}>
           <Grid sx={{ gridColumn: 'span 12' }}>
             <Typography

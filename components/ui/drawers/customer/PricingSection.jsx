@@ -1,9 +1,17 @@
 import React from "react";
-import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Box } from "@mui/material";
+import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Box, useTheme } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import RTLTextField from "@/components/ui/RTLTextField";
 
 const PricingSection = React.memo(({ formData, onFormDataChange, isRTL, t, priceChoice, setPriceChoice, priceList, setPriceList, globalDiscount, setGlobalDiscount, discountClass, setDiscountClass, markup, setMarkup, markdown, setMarkdown, expanded, onAccordionChange, allCollapsed, setAllCollapsed }) => {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
+  
+  // Get background color based on theme
+  const getBackgroundColor = () => {
+    return isDarkMode ? 'var(--muted)' : 'rgb(249 250 251)';
+  };
+
   React.useEffect(() => {
     if (allCollapsed && expanded) {
       onAccordionChange(null, false);
@@ -11,11 +19,26 @@ const PricingSection = React.memo(({ formData, onFormDataChange, isRTL, t, price
     }
   }, [allCollapsed]);
   return (
-    <Accordion expanded={expanded} onChange={onAccordionChange}>
+    <Accordion 
+      expanded={expanded} 
+      onChange={onAccordionChange}
+      sx={{
+        backgroundColor: getBackgroundColor(),
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 0,
+        boxShadow: 'none'
+      }}
+    >
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="pricing-content"
         id="pricing-header"
+        sx={{
+          backgroundColor: getBackgroundColor(),
+          borderBottom: '1px solid',
+          borderColor: 'divider'
+        }}
         // tabIndex={-1}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
@@ -26,7 +49,11 @@ const PricingSection = React.memo(({ formData, onFormDataChange, isRTL, t, price
          
         </Box>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails
+        sx={{
+          backgroundColor: getBackgroundColor()
+        }}
+      >
         <Grid container spacing={2}>
           <Grid item xs={12} md={6} sx={{ minWidth: 400 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>

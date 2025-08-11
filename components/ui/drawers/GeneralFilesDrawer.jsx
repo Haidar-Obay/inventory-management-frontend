@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Typography, Autocomplete, Box } from "@mui/material";
+import { Grid, Typography, Autocomplete, Box, useTheme } from "@mui/material";
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { useTranslations, useLocale } from "next-intl";
@@ -25,6 +25,7 @@ const GeneralFilesDrawer = ({
   const t = useTranslations("generalFiles");
   const tToast = useTranslations("toast");
   const locale = useLocale();
+  const theme = useTheme();
   const isRTL = locale === "ar";
   const [originalName, setOriginalName] = useState("");
   const [originalData, setOriginalData] = useState({});
@@ -32,6 +33,14 @@ const GeneralFilesDrawer = ({
   const [loading, setLoading] = useState(false);
   const [internalSaveLoading, setInternalSaveLoading] = useState(false);
   const { addToast } = useSimpleToast();
+
+  // Check if we're in dark mode
+  const isDarkMode = theme.palette.mode === 'dark';
+  
+  // Get background color based on theme
+  const getBackgroundColor = () => {
+    return isDarkMode ? 'rgb(16 20 29)' : 'rgb(249 250 251)';
+  };
 
   // Use external saveLoading if provided, otherwise use internal
   const saveLoading = externalSaveLoading || internalSaveLoading;
@@ -193,7 +202,16 @@ const GeneralFilesDrawer = ({
     if (!type) return null;
 
     return (
-      <Box className="p-4 bg-gray-50 dark:bg-muted/50 rounded border border-border shadow-sm">
+      <Box 
+        sx={{
+          p: 4,
+          backgroundColor: getBackgroundColor(),
+          borderRadius: 1,
+          border: '1px solid',
+          borderColor: 'divider',
+          boxShadow: 1
+        }}
+      >
         <Grid container spacing={2}>
           <Grid sx={{ minWidth: 300, gridColumn: { xs: 'span 12', md: 'span 6' } }}>
             <Typography

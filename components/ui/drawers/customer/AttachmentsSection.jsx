@@ -12,7 +12,8 @@ import {
   Chip,
   LinearProgress,
   Alert,
-  Paper
+  Paper,
+  useTheme
 } from "@mui/material";
 import RTLTextField from "@/components/ui/RTLTextField";
 import PreviewIcon from "@mui/icons-material/Preview";
@@ -25,6 +26,14 @@ import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import CloseIcon from "@mui/icons-material/Close";
 
 const AttachmentsSection = React.memo(({ formData, onFormDataChange, t }) => {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
+  
+  // Get background color based on theme
+  const getBackgroundColor = () => {
+    return isDarkMode ? 'var(--muted)' : 'rgb(249 250 251)';
+  };
+
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewFile, setPreviewFile] = useState(null);
   const [dragActive, setDragActive] = useState(false);
@@ -233,7 +242,7 @@ const AttachmentsSection = React.memo(({ formData, onFormDataChange, t }) => {
           borderRadius: 2,
           p: 3,
           textAlign: 'center',
-          bgcolor: dragActive ? 'primary.light' : 'background.paper',
+          bgcolor: dragActive ? 'primary.light' : getBackgroundColor(),
           transition: 'all 0.2s ease',
           '&:hover': {
             borderColor: 'primary.main',

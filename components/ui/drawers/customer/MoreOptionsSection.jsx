@@ -1,16 +1,24 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Box } from "@mui/material";
+import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Box, useTheme } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import RTLTextField from "@/components/ui/RTLTextField";
 
 const MoreOptionsSection = React.memo(({ formData, onFormDataChange, isRTL, t, active, setActive, blackListed, setBlackListed, oneTimeAccount, setOneTimeAccount, specialAccount, setSpecialAccount, posCustomer, setPosCustomer, freeDeliveryCharge, setFreeDeliveryCharge, printInvoiceLanguage, setPrintInvoiceLanguage, sendInvoice, setSendInvoice, notes, setNotes, expanded, onAccordionChange, allCollapsed, setAllCollapsed }) => {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
+  
+  // Get background color based on theme
+  const getBackgroundColor = () => {
+    return isDarkMode ? 'var(--muted)' : 'rgb(249 250 251)';
+  };
+
   const firstFieldRef = useRef(null);
   const [shouldRefocus, setShouldRefocus] = useState(false);
   const [focusedFieldId, setFocusedFieldId] = useState(null);
 
   useEffect(() => {
     if (expanded && shouldRefocus && focusedFieldId) {
-      // Use requestAnimationFrame to ensure DOM is ready
+      // Use requestAnimationFrame to ensure the DOM is ready
       requestAnimationFrame(() => {
         setTimeout(() => {
           if (firstFieldRef.current) {
@@ -43,11 +51,26 @@ const MoreOptionsSection = React.memo(({ formData, onFormDataChange, isRTL, t, a
   };
 
   return (
-    <Accordion expanded={expanded} onChange={onAccordionChange}>
+    <Accordion 
+      expanded={expanded} 
+      onChange={onAccordionChange}
+      sx={{
+        backgroundColor: getBackgroundColor(),
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 0,
+        boxShadow: 'none'
+      }}
+    >
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="more-options-content"
         id="more-options-header"
+        sx={{
+          backgroundColor: getBackgroundColor(),
+          borderBottom: '1px solid',
+          borderColor: 'divider'
+        }}
         // tabIndex={-1}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
@@ -58,7 +81,11 @@ const MoreOptionsSection = React.memo(({ formData, onFormDataChange, isRTL, t, a
         
         </Box>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails
+        sx={{
+          backgroundColor: getBackgroundColor()
+        }}
+      >
         <Grid container spacing={2}>
           <Grid item xs={12} md={6} sx={{ minWidth: 250 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>

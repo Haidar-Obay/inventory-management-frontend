@@ -1,11 +1,26 @@
 import React from "react";
-import { Typography, Button, Box } from "@mui/material";
+import { Typography, Button, Box, useTheme } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RTLTextField from "@/components/ui/RTLTextField";
 
 const MessageSection = React.memo(({ showMessageField, setShowMessageField, message, setMessage, isRTL, t }) => {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
+  
+  // Get background color based on theme
+  const getBackgroundColor = () => {
+    return isDarkMode ? 'var(--muted)' : 'rgb(249 250 251)';
+  };
+
   return (
-    <Box sx={{ mt: 4 }}>
+    <Box sx={{ 
+      mt: 4,
+      backgroundColor: getBackgroundColor(),
+      border: '1px solid',
+      borderColor: 'divider',
+      borderRadius: 0,
+      p: 2
+    }}>
       {!showMessageField && (
         <Button
           variant="outlined"

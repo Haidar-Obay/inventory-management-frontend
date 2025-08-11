@@ -1,10 +1,18 @@
 import React from "react";
-import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Button, Box, IconButton } from "@mui/material";
+import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Button, Box, IconButton, useTheme } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
 import RTLTextField from "@/components/ui/RTLTextField";
 
 const ContactsSection = React.memo(({ formData, onFormDataChange, isRTL, t, handleFieldChange, contacts, setContacts, handleAddContact, handleRemoveContact, handleContactChange, expanded, onAccordionChange, allCollapsed, setAllCollapsed }) => {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
+  
+  // Get background color based on theme
+  const getBackgroundColor = () => {
+    return isDarkMode ? 'var(--muted)' : 'rgb(249 250 251)';
+  };
+
   React.useEffect(() => {
     if (allCollapsed && expanded) {
       onAccordionChange(null, false);
@@ -13,17 +21,36 @@ const ContactsSection = React.memo(({ formData, onFormDataChange, isRTL, t, hand
   }, [allCollapsed]);
 
   return (
-    <Accordion expanded={expanded} onChange={onAccordionChange}>
+    <Accordion 
+      expanded={expanded} 
+      onChange={onAccordionChange}
+      sx={{
+        backgroundColor: getBackgroundColor(),
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 0,
+        boxShadow: 'none'
+      }}
+    >
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="contacts-content"
         id="contacts-header"
+        sx={{
+          backgroundColor: getBackgroundColor(),
+          borderBottom: '1px solid',
+          borderColor: 'divider'
+        }}
       >
         <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
           {t('management.contactsAccordion') || 'Contacts'}
         </Typography>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails
+        sx={{
+          backgroundColor: getBackgroundColor()
+        }}
+      >
         {/* Primary Contact */}
         <Box sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
           <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 500, color: 'primary.main' }}>

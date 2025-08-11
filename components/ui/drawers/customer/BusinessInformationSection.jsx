@@ -1,9 +1,17 @@
 import React from "react";
-import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Box, Button } from "@mui/material";
+import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Box, Button, useTheme } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import RTLTextField from "@/components/ui/RTLTextField";
 
 const BusinessInformationSection = React.memo(({ formData, onFormDataChange, isRTL, t, searchTerms, newSearchTerm, setNewSearchTerm, handleAddSearchTerm, handleRemoveSearchTerm, handleSearchTermKeyPress, expanded, onAccordionChange, allCollapsed, setAllCollapsed }) => {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
+  
+  // Get background color based on theme
+  const getBackgroundColor = () => {
+    return isDarkMode ? 'var(--muted)' : 'rgb(249 250 251)';
+  };
+
   React.useEffect(() => {
     if (allCollapsed && expanded) {
       onAccordionChange(null, false);
@@ -21,12 +29,27 @@ const BusinessInformationSection = React.memo(({ formData, onFormDataChange, isR
   }, [newSearchTerm]);
 
   return (
-    <Accordion expanded={expanded} onChange={onAccordionChange}>
+    <Accordion 
+      expanded={expanded} 
+      onChange={onAccordionChange}
+      sx={{
+        backgroundColor: getBackgroundColor(),
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 0,
+        boxShadow: 'none'
+      }}
+    >
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="business-info-content"
         id="business-info-header"
         tabIndex={-1}
+        sx={{
+          backgroundColor: getBackgroundColor(),
+          borderBottom: '1px solid',
+          borderColor: 'divider'
+        }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
@@ -53,7 +76,11 @@ const BusinessInformationSection = React.memo(({ formData, onFormDataChange, isR
           )}
         </Box>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails
+        sx={{
+          backgroundColor: getBackgroundColor()
+        }}
+      >
         <Grid container spacing={2}>
           <Grid item xs={12} md={6} sx={{ minWidth: 400  }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>

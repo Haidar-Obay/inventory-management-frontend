@@ -8,6 +8,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  useTheme,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
@@ -75,10 +76,19 @@ const CustomerMasterListDrawer = React.memo(({
   const t = useTranslations("customers.management");
   const tToast = useTranslations("toast");
   const locale = useLocale();
+  const theme = useTheme();
   const isRTL = locale === "ar";
   const { addToast } = useSimpleToast();
   const { getTabIndex } = useTabNavigation();
   
+  // Check if we're in dark mode
+  const isDarkMode = theme.palette.mode === 'dark';
+  
+  // Get background color based on theme
+  const getBackgroundColor = () => {
+    // Use the same approach as the drawer header/footer
+    return isDarkMode ? 'rgb(16 20 29)' : 'rgb(249 250 251)';
+  };
 
   
   // Internal loading state
@@ -619,17 +629,35 @@ const CustomerMasterListDrawer = React.memo(({
         <Suspense fallback={<LoadingSkeleton />}>
         <Box sx={{ p: 3 }}>
           {/* Basic Information Section */}
-          <Accordion expanded={true}>
+          <Accordion 
+            expanded={true}
+            sx={{
+              backgroundColor: getBackgroundColor(),
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 0,
+              boxShadow: 'none'
+            }}
+          >
             <AccordionSummary
               aria-controls="basic-info-content"
               id="basic-info-header"
               tabIndex={-1}
+              sx={{
+                backgroundColor: getBackgroundColor(),
+                borderBottom: '1px solid',
+                borderColor: 'divider'
+              }}
             >
               <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
                 {t("basicInformation")}
               </Typography>
             </AccordionSummary>
-            <AccordionDetails>
+            <AccordionDetails
+              sx={{
+                backgroundColor: getBackgroundColor()
+              }}
+            >
                              <Grid container spacing={1.5}>
                 <Grid item xs={12} sm={6} md={3}>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>
@@ -684,17 +712,36 @@ const CustomerMasterListDrawer = React.memo(({
           
 
           {/* Item Details Section */}
-          <Accordion expanded={true} sx={{ mt: 2 }}>
+          <Accordion 
+            expanded={true} 
+            sx={{ 
+              mt: 2,
+              backgroundColor: getBackgroundColor(),
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 0,
+              boxShadow: 'none'
+            }}
+          >
             <AccordionSummary
               aria-controls="item-details-content"
               id="item-details-header"
               tabIndex={-1}
+              sx={{
+                backgroundColor: getBackgroundColor(),
+                borderBottom: '1px solid',
+                borderColor: 'divider'
+              }}
             >
               <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
                 {t("itemDetails")}
               </Typography>
             </AccordionSummary>
-            <AccordionDetails>
+            <AccordionDetails
+              sx={{
+                backgroundColor: getBackgroundColor()
+              }}
+            >
               <DrawerGrid
                 gridData={gridData}
                 onGridDataChange={handleGridDataChange}
@@ -707,7 +754,7 @@ const CustomerMasterListDrawer = React.memo(({
                   { field: "price", label: t("price"), type: "number" },
                   { field: "discount", label: t("discount"), type: "number" },
                 ]}
-                title={t("itemDetails")}
+                // title={t("itemDetails")}
                 translationNamespace="customers.management"
                 columnActions={{
                   line: { showAddButton: false, showHelpButton: false },

@@ -14,6 +14,7 @@ import {
   Paper,
   IconButton,
   Autocomplete,
+  useTheme,
 } from "@mui/material";
 import { Plus, Trash2, HelpCircle } from "lucide-react";
 import RTLTextField from "@/components/ui/RTLTextField";
@@ -34,8 +35,12 @@ const DrawerGrid = ({
 }) => {
   const t = useTranslations(translationNamespace);
   const locale = useLocale();
+  const theme = useTheme();
   const isRTL = locale === "ar";
   const { openDrawer } = useDrawerStack();
+  
+  // Check if we're in dark mode
+  const isDarkMode = theme.palette.mode === 'dark';
   
   // State for items data
   const [items, setItems] = useState([]);
@@ -98,6 +103,11 @@ const DrawerGrid = ({
       });
       onGridDataChange(updatedGridData);
     }
+  };
+
+  // Get background color based on theme
+  const getBackgroundColor = () => {
+    return isDarkMode ? 'rgb(16 20 29)' : 'rgb(249 250 251)';
   };
 
   const renderCell = (row, column) => {
@@ -304,14 +314,14 @@ const DrawerGrid = ({
                 paddingRight: isRTL ? '14px' : ((showAddButton || showHelpButton) ? '100px' : '14px'),
                 paddingLeft: isRTL ? ((showAddButton || showHelpButton) ? '100px' : '14px') : '14px',
                 border: 'none',
-                backgroundColor: 'transparent',
-                '&:hover': {
-                  backgroundColor: 'transparent'
-                },
-                '&.Mui-focused': {
-                  backgroundColor: 'transparent'
-                }
-              },
+                    backgroundColor: 'transparent',
+                    '&:hover': {
+                      backgroundColor: 'transparent'
+                    },
+                    '&.Mui-focused': {
+                      backgroundColor: 'transparent'
+                    }
+                  },
             '& .MuiOutlinedInput-notchedOutline': {
               border: 'none'
             },
@@ -396,12 +406,15 @@ const DrawerGrid = ({
           border: '1px solid', 
           borderColor: 'divider',
           borderRadius: 0,
-          boxShadow: 'none'
+          boxShadow: 'none',
+          backgroundColor: getBackgroundColor()
         }}
       >
         <Table size="small" sx={{ borderCollapse: 'collapse' }}>
           <TableHead>
-            <TableRow sx={{ backgroundColor: 'background.default' }}>
+            <TableRow sx={{ 
+              backgroundColor: getBackgroundColor()
+            }}>
               {columns.map((column, index) => {
                 // Determine column width based on field type
                 let columnWidth = '25%';
@@ -424,7 +437,7 @@ const DrawerGrid = ({
                       borderRight: '1px solid',
                       borderColor: 'divider',
                       padding: '12px 16px',
-                      backgroundColor: 'background.default',
+                      backgroundColor: getBackgroundColor(),
                       textAlign: isRTL ? 'right' : 'left'
                     }}
                   >
@@ -443,7 +456,7 @@ const DrawerGrid = ({
                     borderRight: '1px solid',
                     borderColor: 'divider',
                     padding: '12px 8px',
-                    backgroundColor: 'background.default',
+                    backgroundColor: getBackgroundColor(),
                     textAlign: 'center'
                   }}
                 >
@@ -459,7 +472,7 @@ const DrawerGrid = ({
                   borderBottom: '2px solid',
                   borderColor: 'divider',
                   padding: '12px 8px',
-                  backgroundColor: 'background.default',
+                  backgroundColor: getBackgroundColor(),
                   textAlign: 'center'
                 }}
               >

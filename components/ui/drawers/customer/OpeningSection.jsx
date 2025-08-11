@@ -1,10 +1,18 @@
 import React from "react";
-import { Grid, Typography, Autocomplete, Accordion, AccordionSummary, AccordionDetails, Button, Box } from "@mui/material";
+import { Grid, Typography, Autocomplete, Accordion, AccordionSummary, AccordionDetails, Button, Box, useTheme } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
 import RTLTextField from "@/components/ui/RTLTextField";
 
 const OpeningSection = React.memo(({ formData, onFormDataChange, isRTL, t, subscriptionChecked, canAddMultiCurrency, upgradeMessage, openingBalances, handleOpeningBalanceChange, handleAddOpeningBalance, handleRemoveOpeningBalance, currencies, expanded, onAccordionChange, allCollapsed, setAllCollapsed }) => {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
+  
+  // Get background color based on theme
+  const getBackgroundColor = () => {
+    return isDarkMode ? 'var(--muted)' : 'rgb(249 250 251)';
+  };
+
   React.useEffect(() => {
     if (allCollapsed && expanded) {
       onAccordionChange(null, false);
@@ -22,18 +30,37 @@ const OpeningSection = React.memo(({ formData, onFormDataChange, isRTL, t, subsc
   const isExpanded = expanded === undefined ? true : expanded;
 
   return (
-    <Accordion expanded={isExpanded} onChange={onAccordionChange}>
+    <Accordion 
+      expanded={isExpanded} 
+      onChange={onAccordionChange}
+      sx={{
+        backgroundColor: getBackgroundColor(),
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 0,
+        boxShadow: 'none'
+      }}
+    >
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="opening-content"
         id="opening-header"
         tabIndex={-1}
+        sx={{
+          backgroundColor: getBackgroundColor(),
+          borderBottom: '1px solid',
+          borderColor: 'divider'
+        }}
       >
         <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
           {t('management.opening') || 'Opening'}
         </Typography>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails
+        sx={{
+          backgroundColor: getBackgroundColor()
+        }}
+      >
         {openingBalances.map((entry, idx) => {
           // Filter out currencies already selected in other entries
           const selectedCurrencies = openingBalances.filter((e, i) => i !== idx).map(e => e.currency);
