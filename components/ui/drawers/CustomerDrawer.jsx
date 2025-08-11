@@ -244,8 +244,6 @@ const CustomerDrawer = React.memo(({
         });
         console.log('CustomerDrawer: Final creditLimitsMap:', creditLimitsMap);
         setCreditLimits(creditLimitsMap);
-      } else {
-        console.log('CustomerDrawer: No credit_limits found in formData or empty array');
       }
       
       // Sync cheque limits
