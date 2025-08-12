@@ -645,6 +645,34 @@
       "printSuccess": "تم تجهيز قائمة قوائم العملاء الرئيسية للطباعة",
       "printError": "فشل في طباعة قائمة قوائم العملاء الرئيسية"
     },
+    "supplierGroup": {
+      "deleteSuccess": "تم حذف مجموعة الموردين بنجاح",
+      "deleteError": "فشل في حذف مجموعة الموردين",
+      "updateSuccess": "تم تحديث مجموعة الموردين بنجاح",
+      "updateError": "فشل في تحديث مجموعة الموردين",
+      "createSuccess": "تم إنشاء مجموعة الموردين بنجاح",
+      "createError": "فشل في إنشاء مجموعة الموردين",
+      "exportSuccess": "تم تصدير مجموعات الموردين بنجاح",
+      "exportError": "فشل في تصدير مجموعات الموردين",
+      "importSuccess": "تم استيراد مجموعات الموردين بنجاح",
+      "importError": "فشل في استيراد مجموعات الموردين",
+      "printSuccess": "تم تجهيز قائمة مجموعات الموردين للطباعة",
+                "printError": "فشل في طباعة قائمة مجموعات الموردين"
+        },
+        "supplier": {
+          "deleteSuccess": "تم حذف المورد بنجاح",
+          "deleteError": "فشل في حذف المورد",
+          "updateSuccess": "تم تحديث المورد بنجاح",
+          "updateError": "فشل في تحديث المورد",
+          "createSuccess": "تم إنشاء المورد بنجاح",
+          "createError": "فشل في إنشاء المورد",
+          "exportSuccess": "تم تصدير الموردين بنجاح",
+          "exportError": "فشل في تصدير الموردين",
+          "importSuccess": "تم استيراد الموردين بنجاح",
+          "importError": "فشل في استيراد الموردين",
+          "printSuccess": "تم إعداد قائمة الموردين للطباعة",
+          "printError": "فشل في طباعة قائمة الموردين"
+    },
     "noDataToExport": "لا توجد بيانات متاحة للتصدير",
     "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
     "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ."
@@ -729,6 +757,99 @@
     }
   }
   },
+  "suppliers": {
+    "title": "إدارة الموردين",
+    "loading": "جاري تحميل الموردين...",
+    "tabs": {
+      "supplierGroups": "مجموعات الموردين",
+      "suppliers": "الموردين"
+    },
+    "management": {
+      "add": "إضافة",
+      "edit": "تعديل",
+      "supplierGroups": "مجموعات الموردين",
+      "supplierGroup": "مجموعة الموردين",
+      "addSupplierGroup": "إضافة مجموعة موردين",
+      "editSupplierGroup": "تعديل مجموعة الموردين",
+      "supplierGroupName": "اسم مجموعة الموردين",
+      "code": "الكود",
+      "name": "الاسم",
+      "active": "نشط",
+      "yes": "نعم",
+      "no": "لا",
+      "createdAt": "تاريخ الإنشاء",
+      "updatedAt": "تاريخ التحديث",
+      "personalInformation": "المعلومات الشخصية",
+      "title": "اللقب",
+      "selectTitle": "اختر اللقب",
+      "firstName": "الاسم الأول",
+      "middleName": "الاسم الأوسط",
+      "lastName": "اسم العائلة",
+      "displayName": "اسم العرض",
+      "companyName": "اسم الشركة",
+      "phone1": "الهاتف 1",
+      "phone2": "الهاتف 2",
+      "phone3": "الهاتف 3",
+      "billingAddress": "عنوان الفواتير",
+      "country": "البلد",
+      "city": "المدينة",
+      "district": "الحي",
+      "zone": "المنطقة",
+      "addressLine1": "سطر العنوان 1",
+      "addressLine2": "سطر العنوان 2",
+      "building": "المبنى",
+      "block": "الكتلة",
+      "floor": "الطابق",
+      "side": "الجانب",
+      "apartment": "الشقة",
+      "zipCode": "الرمز البريدي",
+      "shippingAddress": "عنوان الشحن",
+      "primaryShippingAddress": "عنوان الشحن الأساسي",
+      "additionalShippingAddress": "عنوان الشحن الإضافي",
+      "copyFromBillingAddress": "نسخ من عنوان الفواتير",
+      "businessInformation": "معلومات العمل",
+      "fileNumber": "رقم الملف",
+      "barcode": "الباركود",
+      "searchTerms": "مصطلحات البحث",
+      "addSearchTerm": "إضافة مصطلح بحث..."
+    },
+    "messages": {
+      "exportSuccess": "تم التصدير بنجاح",
+      "importSuccess": "تم الاستيراد بنجاح",
+      "printSuccess": "تم تجهيز القائمة للطباعة",
+      "deleteSuccess": "تم الحذف بنجاح",
+      "updateSuccess": "تم التحديث بنجاح",
+      "createSuccess": "تم الإنشاء بنجاح",
+      "exportError": "فشل في التصدير",
+      "importError": "فشل في الاستيراد",
+      "printError": "فشل في طباعة القائمة",
+      "deleteError": "فشل في الحذف",
+      "updateError": "فشل في التحديث",
+      "createError": "فشل في الإنشاء",
+      "noChangesTitle": "لم يتم اكتشاف أي تغييرات",
+      "noChangesDesc": "يرجى تعديل حقل واحد على الأقل قبل الحفظ.",
+      "validation": {
+        "requiredFields": "يرجى ملء جميع الحقول المطلوبة"
+      }
+    },
+    "errors": {
+      "foreignKey": {
+        "title": "لا يمكن الحذف - بيانات مرتبطة موجودة",
+        "message": "لا يمكن حذف هذا العنصر لأنه مستخدم في سجلات أخرى في النظام.",
+        "details": "هذا العنصر مستخدم في {tableName}. يرجى حذف أو تحديث تلك السجلات أولاً.",
+        "fallback": "هذا العنصر مستخدم في سجلات أخرى في النظام."
+      },
+      "duplicate": {
+        "title": "إدخال مكرر",
+        "message": "هذا السجل موجود بالفعل في النظام."
+      },
+      "database": {
+        "title": "خطأ في قاعدة البيانات",
+        "message": "حدث خطأ أثناء معالجة طلبك."
+      }
+    }
+  },
+
   "sections": {
     "title": "إدارة الأقسام",
     "loading": "جاري تحميل الأقسام...",
@@ -968,8 +1089,10 @@
     "phone3": "الهاتف 3",
     "fileNumber": "رقم الملف",
     "barCode": "الباركود",
+    "barcode": "الباركود",
     "searchTerms": "مصطلحات البحث",
     "indicator": "المؤشر",
+    "isForeign": "أجنبي",
     "riskCategory": "فئة المخاطر",
     "blackListed": "القائمة السوداء",
     "oneTimeAccount": "حساب لمرة واحدة",
@@ -978,6 +1101,7 @@
     "freeDeliveryCharge": "شحن مجاني",
     "printInvoiceLanguage": "لغة طباعة الفاتورة",
     "sendInvoice": "إرسال الفاتورة",
+    "supplierGroup": "مجموعة الموردين",
     "addMessage": "إضافة رسالة",
     "invoiceMessage": "رسالة الفاتورة",
     "notes": "ملاحظات",

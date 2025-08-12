@@ -32,15 +32,16 @@ export const ActiveStatusAction = ({
       // Call the edit function (same as drawer uses)
       const response = await editFunction(row.id, updatedData);
 
-      if (response.status) {
+      // Check if the response is successful (either response.status or response.data exists)
+      if (response && (response.status || response.data)) {
         // Call success callback if provided
         if (onSuccess) {
-          onSuccess(row, updatedData);
+          onSuccess(row, response.data || updatedData);
         }
       } else {
         // Call error callback if provided
         if (onError) {
-          onError(row, response.message || "Failed to update active status");
+          onError(row, response?.message || "Failed to update active status");
         }
       }
     } catch (error) {
@@ -62,7 +63,7 @@ export const ActiveStatusAction = ({
     icon: isActive 
       ? `<path d="M18 6L6 18"/><path d="M6 6l12 12"/>`
       : `<path d="M9 12l2 2 4-4"></path>
-         <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"></path>`,
+         <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 9 4.03 9 9z"></path>`,
     iconClassName: isActive ? "text-orange-600" : "text-green-600",
     primary: true,
     action: handleToggleActive,
