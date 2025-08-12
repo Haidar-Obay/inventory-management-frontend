@@ -67,7 +67,7 @@ const HelpGridPagination = ({
   const pageNumbers = getPageNumbers();
 
   return (
-    <div className="flex items-center justify-between min-h-[32px] py-1">
+    <div className="flex items-center justify-between py-1">
       {/* Left side - Rows per page and info */}
       <div className="flex items-center gap-3">
         {/* Rows per page selector */}

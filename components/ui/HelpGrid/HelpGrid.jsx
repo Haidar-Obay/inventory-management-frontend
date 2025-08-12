@@ -1019,7 +1019,7 @@ const HelpGrid = ({
               </div>
               
               {/* Footer with Pagination and Add Button - Always visible */}
-              <div className="flex-shrink-0 border-t border-border pt-2 flex items-center justify-between bg-background">
+              <div className="flex-shrink-0 border-t border-border pt-2 pb-2 flex items-center justify-between bg-background">
                 {/* Pagination Component */}
                 <div className="flex-1">
                   <HelpGridPagination
