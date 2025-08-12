@@ -156,6 +156,11 @@ const SupplierGroupDrawer = ({
       if (onSave) {
         onSave(response.data);
       }
+      
+      // For add mode, close the drawer after successful save
+      if (!isEdit) {
+        onClose();
+      }
     } catch (error) {
       let errorMessage = tToast("error");
       
@@ -163,7 +168,7 @@ const SupplierGroupDrawer = ({
         if (error.message.includes("code_unique") || error.message.includes("supplier_groups_code_unique")) {
           errorMessage = "The code has already been taken.";
         } else if (error.message.includes("name_unique") || error.message.includes("supplier_groups_name_unique")) {
-          errorMessage = "The name has already been taken.";
+          errorMessage = "This record already exists.";
         } else if (error.message.includes("duplicate key")) {
           errorMessage = "This record already exists.";
         } else {
@@ -205,14 +210,16 @@ const SupplierGroupDrawer = ({
         });
       }
 
-      if (onSaveAndNew) {
-        onSaveAndNew(response.data);
+      if (onSave) {
+        onSave(response.data);
       }
 
-      // Reset form for new entry
-      setFormData({ active: true });
-      setOriginalData({});
-      setOriginalName("");
+      // Reset form for new entry (only in add mode)
+      if (!isEdit) {
+        setFormData({ active: true });
+        setOriginalData({});
+        setOriginalName("");
+      }
     } catch (error) {
       let errorMessage = tToast("error");
       
@@ -262,9 +269,12 @@ const SupplierGroupDrawer = ({
         });
       }
 
-      if (onSaveAndClose) {
-        onSaveAndClose(response.data);
+      if (onSave) {
+        onSave(response.data);
       }
+      
+      // Close the drawer after successful save
+      onClose();
     } catch (error) {
       let errorMessage = tToast("error");
       
@@ -272,7 +282,7 @@ const SupplierGroupDrawer = ({
         if (error.message.includes("code_unique") || error.message.includes("supplier_groups_code_unique")) {
           errorMessage = "The code has already been taken.";
         } else if (error.message.includes("name_unique") || error.message.includes("supplier_groups_name_unique")) {
-          errorMessage = "The name has already been taken.";
+          errorMessage = "This record already exists.";
         } else if (error.message.includes("duplicate key")) {
           errorMessage = "This record already exists.";
         } else {

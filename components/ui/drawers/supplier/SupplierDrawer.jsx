@@ -1,16 +1,29 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { Box } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
 import { useTranslations, useLocale } from "next-intl";
 import { useSimpleToast } from "@/components/ui/simple-toast";
 import { createSupplier, editSupplier } from "@/API/Suppliers";
 import { getCountries, getZones, getCities, getDistricts } from "@/API/AddressCodes";
+import { getTrades, getBusinessTypes, getPaymentTerms, getPaymentMethods } from "@/API/Sections";
+import { getSupplierGroups } from "@/API/Suppliers";
+import { getCurrencies, getSubscriptionStatus } from "@/API/Currency";
+import { Checkbox } from "@/components/ui/checkbox";
 import PersonalInformationSection from "./PersonalInformationSection";
 import BillingAddressSection from "./BillingAddressSection";
 import ShippingAddressSection from "./ShippingAddressSection";
 import BusinessInformationSection from "./BusinessInformationSection";
+import CategorizeSection from "./CategorizeSection";
+import OpeningSection from "./OpeningSection";
+import PaymentTermsSection from "./PaymentTermsSection";
+import TaxesSection from "./TaxesSection";
+import ContactsSection from "./ContactsSection";
+import AttachmentsSection from "./AttachmentsSection";
+import MessageSection from "./MessageSection";
+import NotesSection from "./NotesSection";
+import CatalogSection from "./CatalogSection";
 import { useShippingAddresses } from "./shared/useAddressManagement";
 
 // Constants
@@ -26,6 +39,7 @@ const INITIAL_FORM_DATA = {
   phone2: "",
   phone3: "",
   active: true,
+  foreign: false,
   // Billing address fields
   billing_country_id: "",
   billing_city_id: "",
@@ -57,7 +71,43 @@ const INITIAL_FORM_DATA = {
   // Business information fields
   file_number: "",
   barcode: "",
-  search_terms: []
+  search_terms: [],
+  // Categorize fields
+  trade_id: "",
+  supplier_group_id: "",
+  business_type_id: "",
+  indicator: "",
+  // Opening balance fields
+  opening_balances_form: [],
+  // Payment terms fields
+  payment_term_id: "",
+  payment_method_id: "",
+  allow_credit: false,
+  credit_limits: {},
+  accept_cheques: false,
+  max_cheques: {},
+  payment_day: "",
+  track_payment: "no",
+  settlement_method: "FIFO",
+  // Taxes fields
+  taxable: false,
+  taxed_from_date: "",
+  taxed_till_date: "",
+  subjected_to_tax: false,
+  added_tax: "",
+  // Contacts fields
+  work_phone: "",
+  mobile: "",
+  position: "",
+  extension: "",
+  contacts: [],
+  // Attachments field
+  attachments: [],
+  // Message fields
+  showMessageField: false,
+  message: "",
+  // Notes field
+  notes: ""
 };
 
 const SupplierDrawer = React.memo(({
@@ -86,6 +136,32 @@ const SupplierDrawer = React.memo(({
   const [districts, setDistricts] = useState([]);
   const [locationLoading, setLocationLoading] = useState(false);
   
+  // Categorize data state
+  const [trades, setTrades] = useState([]);
+  const [supplierGroups, setSupplierGroups] = useState([]);
+  const [businessTypes, setBusinessTypes] = useState([]);
+  const [categorizeLoading, setCategorizeLoading] = useState(false);
+  
+  // Opening balance state
+  const [currencies, setCurrencies] = useState([]);
+  const [subscriptionChecked, setSubscriptionChecked] = useState(false);
+  const [canAddMultiCurrency, setCanAddMultiCurrency] = useState(false);
+  const [openingBalances, setOpeningBalances] = useState([{ currency: '', amount: '', date: '' }]);
+  
+  // Payment terms state
+  const [paymentTerms, setPaymentTerms] = useState([]);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [selectedPaymentTerm, setSelectedPaymentTerm] = useState(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const [allowCredit, setAllowCredit] = useState(false);
+  const [creditLimits, setCreditLimits] = useState({});
+  const [acceptCheques, setAcceptCheques] = useState(false);
+  const [maxCheques, setMaxCheques] = useState({});
+  const [paymentDay, setPaymentDay] = useState("");
+  const [trackPayment, setTrackPayment] = useState(false);
+  const [settlementMethod, setSettlementMethod] = useState("FIFO");
+  const [userChangedTrackPayment] = useState({ current: false });
+  
   // Accordion state management
   const [expandedSections, setExpandedSections] = useState({});
   const [allCollapsed, setAllCollapsed] = useState(false);
@@ -104,6 +180,13 @@ const SupplierDrawer = React.memo(({
   // Business information state
   const [searchTerms, setSearchTerms] = useState([]);
   const [newSearchTerm, setNewSearchTerm] = useState("");
+  
+  // Contacts state
+  const [contacts, setContacts] = useState([]);
+
+  // Quick options state
+  const [active, setActive] = useState(true);
+  const [foreign, setForeign] = useState(false);
 
   // Initialize form data when drawer opens
   useEffect(() => {
@@ -120,11 +203,47 @@ const SupplierDrawer = React.memo(({
         } else {
           setSearchTerms([]);
         }
+        
+        // Initialize contacts
+        if (data.contacts && Array.isArray(data.contacts)) {
+          setContacts(data.contacts);
+        } else {
+          setContacts([]);
+        }
+        
+        // Initialize opening balances
+        if (data.opening_balances_form && Array.isArray(data.opening_balances_form)) {
+          setOpeningBalances(data.opening_balances_form);
+        } else {
+          setOpeningBalances([{ currency: '', amount: '', date: '' }]);
+        }
+        
+        // Initialize payment terms state
+        setSelectedPaymentTerm(data.payment_term_id || null);
+        setSelectedPaymentMethod(data.payment_method_id || null);
+        setAllowCredit(data.allow_credit || false);
+        setCreditLimits(data.credit_limits || {});
+        setAcceptCheques(data.accept_cheques || false);
+        setMaxCheques(data.max_cheques || {});
+        setPaymentDay(data.payment_day || "");
+        setTrackPayment(data.track_payment === 'yes');
+        setSettlementMethod(data.settlement_method || "FIFO");
       } else {
         setFormData(INITIAL_FORM_DATA);
         setOriginalData(INITIAL_FORM_DATA);
         setAutoGenerateDisplayName(true);
         setSearchTerms([]);
+        setContacts([]);
+        setOpeningBalances([{ currency: '', amount: '', date: '' }]);
+        setSelectedPaymentTerm(null);
+        setSelectedPaymentMethod(null);
+        setAllowCredit(false);
+        setCreditLimits({});
+        setAcceptCheques(false);
+        setMaxCheques({});
+        setPaymentDay("");
+        setTrackPayment(false);
+        setSettlementMethod("FIFO");
       }
       
       // Initialize accordion sections as collapsed
@@ -132,7 +251,13 @@ const SupplierDrawer = React.memo(({
         personalInfo: true,  // Personal info stays expanded
         billingAddress: false, // Billing address starts collapsed
         shippingAddress: false, // Shipping address starts collapsed
-        businessInfo: false // Business info starts collapsed
+        businessInfo: false, // Business info starts collapsed
+        categorize: false, // Categorize starts collapsed
+        opening: false, // Opening starts collapsed
+        paymentTerms: false, // Payment terms starts collapsed
+        taxes: false, // Taxes starts collapsed
+        contacts: false, // Contacts starts collapsed
+        message: false // Message starts collapsed
       });
       setAllCollapsed(false);
     }
@@ -152,9 +277,92 @@ const SupplierDrawer = React.memo(({
       personalInfo: false,
       billingAddress: false,
       shippingAddress: false,
-      businessInfo: false
+      businessInfo: false,
+      categorize: false,
+      opening: false,
+      paymentTerms: false,
+      taxes: false,
+      contacts: false,
+      message: false
     });
     setAllCollapsed(true);
+  }, []);
+
+  // Fetch location data
+  const fetchLocationData = useCallback(async () => {
+    try {
+      setLocationLoading(true);
+      const [countriesRes, zonesRes, citiesRes, districtsRes] = await Promise.all([
+        getCountries(),
+        getZones(),
+        getCities(),
+        getDistricts()
+      ]);
+      
+      setCountries(countriesRes.data || []);
+      setZones(zonesRes.data || []);
+      setCities(citiesRes.data || []);
+      setDistricts(districtsRes.data || []);
+    } catch (error) {
+      // Handle error silently or show toast if needed
+    } finally {
+      setLocationLoading(false);
+    }
+  }, []);
+
+  // Fetch categorize data
+  const fetchCategorizeData = useCallback(async () => {
+    try {
+      setCategorizeLoading(true);
+      const [tradesData, supplierGroupsData, businessTypesData] = await Promise.all([
+        getTrades(),
+        getSupplierGroups(),
+        getBusinessTypes()
+      ]);
+
+      if (tradesData?.status) setTrades(tradesData.data || []);
+      if (supplierGroupsData?.status) setSupplierGroups(supplierGroupsData.data || []);
+      if (businessTypesData?.status) setBusinessTypes(businessTypesData.data || []);
+    } catch (error) {
+      // Handle error silently or show toast if needed
+    } finally {
+      setCategorizeLoading(false);
+    }
+  }, []);
+
+  // Fetch currencies and subscription status
+  const fetchCurrencies = useCallback(async () => {
+    try {
+      const [currenciesData, subscriptionData] = await Promise.all([
+        getCurrencies(),
+        getSubscriptionStatus()
+      ]);
+      
+      setCurrencies(Array.isArray(currenciesData) ? currenciesData : (currenciesData.data || []));
+      
+      if (subscriptionData?.data) {
+        const canMulti = subscriptionData.data.can_add_multiple_currencies;
+        setCanAddMultiCurrency(canMulti);
+        setSubscriptionChecked(true);
+      }
+    } catch (error) {
+      // Handle error silently or show toast if needed
+    }
+  }, []);
+
+  // Fetch payment terms and methods
+  const fetchPaymentData = useCallback(async () => {
+    try {
+      const [paymentTermsData, paymentMethodsData] = await Promise.all([
+        getPaymentTerms(),
+        getPaymentMethods()
+      ]);
+      
+      setPaymentTerms(paymentTermsData.data || []);
+      setPaymentMethods(paymentMethodsData.data || []);
+    } catch (error) {
+      // Handle error silently or show toast if needed
+    }
   }, []);
 
   // Fetch location data when drawer opens
@@ -162,87 +370,70 @@ const SupplierDrawer = React.memo(({
     if (isOpen) {
       fetchLocationData();
     }
-  }, [isOpen]);
+  }, [isOpen, fetchLocationData]);
 
-  // Fetch location data
-  const fetchLocationData = useCallback(async () => {
-    setLocationLoading(true);
-    try {
-      const [countriesData, zonesData, citiesData, districtsData] = await Promise.all([
-        getCountries(),
-        getZones(),
-        getCities(),
-        getDistricts()
-      ]);
+  // Fetch categorize data when drawer opens
+  useEffect(() => {
+    if (isOpen) {
+      fetchCategorizeData();
+    }
+  }, [isOpen, fetchCategorizeData]);
 
-      if (countriesData?.status) setCountries(countriesData.data || []);
-      if (zonesData?.status) setZones(zonesData.data || []);
-      if (citiesData?.status) setCities(citiesData.data || []);
-      if (districtsData?.status) setDistricts(districtsData.data || []);
-    } catch (error) {
-      console.error('Error fetching location data:', error);
-    } finally {
-      setLocationLoading(false);
+  // Fetch currencies when drawer opens
+  useEffect(() => {
+    if (isOpen) {
+      fetchCurrencies();
+    }
+  }, [isOpen, fetchCurrencies]);
+
+  // Fetch payment data when drawer opens
+  useEffect(() => {
+    if (isOpen) {
+      fetchPaymentData();
+    }
+  }, [isOpen, fetchPaymentData]);
+
+  // Form handlers
+  const handleFormDataChange = useCallback((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    
+    // If user manually changes display name, disable auto-generation
+    if (field === 'display_name') {
+      setAutoGenerateDisplayName(false);
     }
   }, []);
 
-  // Sync shipping addresses when they change
-  useEffect(() => {
-    if (shippingAddresses.length > 0) {
-      // First address becomes primary shipping address
-      const primaryAddress = shippingAddresses[0];
-      const updatedFormData = {
-        ...formData,
-        shipping_country_id: primaryAddress.country_id || "",
-        shipping_zone_id: primaryAddress.zone_id || "",
-        shipping_city_id: primaryAddress.city_id || "",
-        shipping_district_id: primaryAddress.district_id || "",
-        shipping_address_line1: primaryAddress.address_line1 || "",
-        shipping_address_line2: primaryAddress.address_line2 || "",
-        shipping_building: primaryAddress.building || "",
-        shipping_block: primaryAddress.block || "",
-        shipping_floor: primaryAddress.floor || "",
-        shipping_side: primaryAddress.side || "",
-        shipping_apartment: primaryAddress.apartment || "",
-        shipping_zip_code: primaryAddress.zip_code || "",
-        shipping_addresses: shippingAddresses
-      };
-      setFormData(updatedFormData);
-    }
-  }, [shippingAddresses]);
+  // Categorize handlers
+  const handleTradeChange = useCallback((event, newValue) => {
+    handleFormDataChange('trade_id', newValue?.id || "");
+  }, [handleFormDataChange]);
 
-  // Sync search terms when they change
-  useEffect(() => {
-    if (searchTerms.length > 0) {
-      setFormData(prev => ({
-        ...prev,
-        search_terms: searchTerms
-      }));
-    }
-  }, [searchTerms]);
+  const handleSupplierGroupChange = useCallback((event, newValue) => {
+    handleFormDataChange('supplier_group_id', newValue?.id || "");
+  }, [handleFormDataChange]);
 
-  // Business information handlers
-  const handleAddSearchTerm = useCallback(() => {
-    if (newSearchTerm.trim() && !searchTerms.includes(newSearchTerm.trim())) {
-      const newSearchTerms = [...searchTerms, newSearchTerm.trim()];
-      setSearchTerms(newSearchTerms);
-      setFormData(prev => ({ ...prev, search_terms: newSearchTerms }));
-      setNewSearchTerm("");
-    }
-  }, [newSearchTerm, searchTerms]);
+  const handleBusinessTypeChange = useCallback((event, newValue) => {
+    handleFormDataChange('business_type_id', newValue?.id || "");
+  }, [handleFormDataChange]);
 
-  const handleRemoveSearchTerm = useCallback((termToRemove) => {
-    const newSearchTerms = searchTerms.filter(term => term !== termToRemove);
-    setSearchTerms(newSearchTerms);
-    setFormData(prev => ({ ...prev, search_terms: newSearchTerms }));
-  }, [searchTerms]);
-
-  const handleSearchTermKeyPress = useCallback((event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      handleAddSearchTerm();
+  // Additional form handlers
+  const handleFieldChange = useCallback((field) => (event) => {
+    const value = event.target.value;
+    handleFormDataChange(field, value);
+    
+    // Re-enable auto-generation when name fields are changed
+    if (['title', 'first_name', 'middle_name', 'last_name'].includes(field)) {
+      setAutoGenerateDisplayName(true);
     }
-  }, [handleAddSearchTerm]);
+  }, [handleFormDataChange]);
+
+  const handleDisplayNameChange = useCallback((event, newValue) => {
+    handleFormDataChange("display_name", newValue || "");
+    setAutoGenerateDisplayName(false); // Disable auto-generation when user manually changes
+  }, [handleFormDataChange]);
 
   // Auto-generate display name when name fields change
   useEffect(() => {
@@ -282,33 +473,170 @@ const SupplierDrawer = React.memo(({
     }
   }, [formData.title, formData.first_name, formData.middle_name, formData.last_name, autoGenerateDisplayName, formData.display_name]);
 
-  // Form handlers
-  const handleFormDataChange = useCallback((field, value) => {
+  // Sync shipping addresses when they change
+  useEffect(() => {
+    if (shippingAddresses.length > 0) {
+      // First address becomes primary shipping address
+      const primaryAddress = shippingAddresses[0];
+      const updatedFormData = {
+        ...formData,
+        shipping_country_id: primaryAddress.country_id || "",
+        shipping_zone_id: primaryAddress.zone_id || "",
+        shipping_city_id: primaryAddress.city_id || "",
+        shipping_district_id: primaryAddress.district_id || "",
+        shipping_address_line1: primaryAddress.address_line1 || "",
+        shipping_address_line2: primaryAddress.address_line2 || "",
+        shipping_building: primaryAddress.building || "",
+        shipping_block: primaryAddress.block || "",
+        shipping_floor: primaryAddress.floor || "",
+        shipping_side: primaryAddress.side || "",
+        shipping_apartment: primaryAddress.apartment || "",
+        shipping_zip_code: primaryAddress.zip_code || "",
+        shipping_addresses: shippingAddresses
+      };
+      setFormData(updatedFormData);
+    }
+  }, [shippingAddresses, formData]);
+
+  // Sync search terms when they change
+  useEffect(() => {
+    if (searchTerms.length > 0) {
+      setFormData(prev => ({
+        ...prev,
+        search_terms: searchTerms
+      }));
+    }
+  }, [searchTerms]);
+
+  // Sync contacts when they change
+  useEffect(() => {
+    if (contacts.length > 0) {
+      setFormData(prev => ({
+        ...prev,
+        contacts: contacts
+      }));
+    }
+  }, [contacts]);
+
+  // Sync opening balances when they change
+  useEffect(() => {
+    if (openingBalances.length > 0) {
+      setFormData(prev => ({
+        ...prev,
+        opening_balances_form: openingBalances
+      }));
+    }
+  }, [openingBalances]);
+
+  // Sync payment terms state when they change
+  useEffect(() => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      payment_term_id: selectedPaymentTerm,
+      payment_method_id: selectedPaymentMethod,
+      allow_credit: allowCredit,
+      credit_limits: creditLimits,
+      accept_cheques: acceptCheques,
+      max_cheques: maxCheques,
+      payment_day: paymentDay,
+      track_payment: trackPayment ? 'yes' : 'no',
+      settlement_method: settlementMethod
     }));
-    
-    // If user manually changes display name, disable auto-generation
-    if (field === 'display_name') {
-      setAutoGenerateDisplayName(false);
+  }, [selectedPaymentTerm, selectedPaymentMethod, allowCredit, creditLimits, acceptCheques, maxCheques, paymentDay, trackPayment, settlementMethod]);
+
+  // Sync checkbox states with formData
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      active: active,
+      foreign: foreign
+    }));
+  }, [active, foreign]);
+
+  // Business information handlers
+  const handleAddSearchTerm = useCallback(() => {
+    if (newSearchTerm.trim() && !searchTerms.includes(newSearchTerm.trim())) {
+      const newSearchTerms = [...searchTerms, newSearchTerm.trim()];
+      setSearchTerms(newSearchTerms);
+      setFormData(prev => ({ ...prev, search_terms: newSearchTerms }));
+      setNewSearchTerm("");
     }
+  }, [newSearchTerm, searchTerms]);
+
+  const handleRemoveSearchTerm = useCallback((termToRemove) => {
+    const newSearchTerms = searchTerms.filter(term => term !== termToRemove);
+    setSearchTerms(newSearchTerms);
+    setFormData(prev => ({ ...prev, search_terms: newSearchTerms }));
+  }, [searchTerms]);
+
+  const handleSearchTermKeyPress = useCallback((event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleAddSearchTerm();
+    }
+  }, [handleAddSearchTerm]);
+   
+   // Contact handlers
+   const handleAddContact = useCallback(() => {
+     const newContact = {
+       id: Date.now(), // Temporary ID for new contacts
+       title: "",
+       name: "",
+       work_phone: "",
+       mobile: "",
+       position: "",
+       extension: "",
+       is_primary: false  // Add is_primary field for additional contacts
+     };
+     setContacts((prev) => [...prev, newContact]);
+   }, []);
+ 
+   const handleRemoveContact = useCallback((index) => {
+     setContacts((prev) => prev.filter((_, i) => i !== index));
+   }, []);
+ 
+   const handleContactChange = useCallback((index, field, value) => {
+     setContacts((prev) => {
+       const updatedContacts = [...prev];
+       updatedContacts[index] = {
+         ...updatedContacts[index],
+         [field]: value
+       };
+       return updatedContacts;
+     });
+   }, []);
+
+  // Opening balance handlers
+  const handleOpeningBalanceChange = useCallback((index, field, value) => {
+    setOpeningBalances(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
   }, []);
 
-  const handleFieldChange = useCallback((field) => (event) => {
-    const value = event.target.value;
-    handleFormDataChange(field, value);
-    
-    // Re-enable auto-generation when name fields are changed
-    if (['title', 'first_name', 'middle_name', 'last_name'].includes(field)) {
-      setAutoGenerateDisplayName(true);
-    }
-  }, [handleFormDataChange]);
+  const handleAddOpeningBalance = useCallback(() => {
+    setOpeningBalances(prev => [...prev, { currency: '', amount: '', date: '' }]);
+  }, []);
 
-  const handleDisplayNameChange = useCallback((event, newValue) => {
-    handleFormDataChange("display_name", newValue || "");
-    setAutoGenerateDisplayName(false); // Disable auto-generation when user manually changes
-  }, [handleFormDataChange]);
+  const handleRemoveOpeningBalance = useCallback((index) => {
+    setOpeningBalances(prev => prev.filter((_, i) => i !== index));
+  }, []);
+
+  // Payment terms handlers
+  const handleCreditLimitChange = useCallback((currency, value) => {
+    setCreditLimits(prev => ({
+      ...prev,
+      [currency]: value
+    }));
+  }, []);
+
+  const handleMaxChequesChange = useCallback((currency, value) => {
+    setMaxCheques(prev => ({
+      ...prev,
+      [currency]: value
+    }));
+  }, []);
 
   // Display name suggestions
   const displayNameSuggestions = useMemo(() => {
@@ -356,10 +684,29 @@ const SupplierDrawer = React.memo(({
   // Title generation
   const getTitle = useCallback(() => {
     if (isEdit) {
-      return type === "edit" ? "Edit Supplier" : "View Supplier";
+      return (
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <span>{`${t("management.edit")} ${t("management.supplier")}${formData.display_name ? ` / ${formData.display_name}` : ""}`}</span>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Button size="small" variant="outlined" onClick={handleCollapseAll} sx={{ ml: 2 }} tabIndex={-1}>
+              {t('management.closeAll') || 'Close All'}
+            </Button>
+          </Box>
+        </Box>
+      );
+    } else {
+      return (
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <span>{t("management.addSupplier")}</span>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Button size="small" variant="outlined" onClick={handleCollapseAll} sx={{ ml: 2 }} tabIndex={-1}>
+              {t('management.closeAll') || 'Close All'}
+            </Button>
+          </Box>
+        </Box>
+      );
     }
-    return "New Supplier";
-  }, [isEdit, type]);
+  }, [isEdit, formData.display_name, t, handleCollapseAll]);
 
   // Toast helpers
   const showErrorToast = useCallback((message) => {
@@ -439,81 +786,264 @@ const SupplierDrawer = React.memo(({
   // Content
   const content = (
     <Box sx={{ p: 2 }}>
-      <PersonalInformationSection
-        formData={formData}
-        onFormDataChange={handleFormDataChange}
-        isRTL={isRTL}
-        t={t}
-        expanded={expandedSections.personalInfo}
-        onAccordionChange={handleAccordionChange('personalInfo')}
-        generateDisplayNameSuggestions={() => displayNameSuggestions}
-        handleDisplayNameChange={handleDisplayNameChange}
-        handleFieldChange={handleFieldChange}
-      />
-      
-      <BillingAddressSection
-        formData={formData}
-        onFormDataChange={handleFormDataChange}
-        isRTL={isRTL}
-        t={t}
-        countries={countries}
-        setCountries={setCountries}
-        zones={zones}
-        setZones={setZones}
-        cities={cities}
-        setCities={setCities}
-        districts={districts}
-        setDistricts={setDistricts}
-        loading={locationLoading}
-        expanded={expandedSections.billingAddress}
-        onAccordionChange={handleAccordionChange('billingAddress')}
-        allCollapsed={allCollapsed}
-        setAllCollapsed={setAllCollapsed}
-      />
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        {/* Left Column - Main Sections */}
+        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <PersonalInformationSection
+            formData={formData}
+            onFormDataChange={handleFormDataChange}
+            isRTL={isRTL}
+            t={t}
+            expanded={expandedSections.personalInfo}
+            onAccordionChange={handleAccordionChange('personalInfo')}
+            generateDisplayNameSuggestions={() => displayNameSuggestions}
+            handleDisplayNameChange={handleDisplayNameChange}
+            handleFieldChange={handleFieldChange}
+          />
+          
+          <BillingAddressSection
+            formData={formData}
+            onFormDataChange={handleFormDataChange}
+            isRTL={isRTL}
+            t={t}
+            countries={countries}
+            setCountries={setCountries}
+            zones={zones}
+            setZones={setZones}
+            cities={cities}
+            setCities={setCities}
+            districts={districts}
+            setDistricts={setDistricts}
+            loading={locationLoading}
+            expanded={expandedSections.billingAddress}
+            onAccordionChange={handleAccordionChange('billingAddress')}
+            allCollapsed={allCollapsed}
+            setAllCollapsed={setAllCollapsed}
+          />
 
-      <ShippingAddressSection
-        formData={formData}
-        onFormDataChange={handleFormDataChange}
-        isRTL={isRTL}
-        t={t}
-        countries={countries}
-        setCountries={setCountries}
-        zones={zones}
-        setZones={setZones}
-        cities={cities}
-        setCities={setCities}
-        districts={districts}
-        setDistricts={setDistricts}
-        loading={locationLoading}
-        shippingAddresses={shippingAddresses}
-        setShippingAddresses={setShippingAddresses}
-        handleCopyFromBillingAddress={handleCopyFromBillingAddress}
-        handleAddShippingAddress={handleAddShippingAddress}
-        handleRemoveShippingAddress={handleRemoveShippingAddress}
-        handleShippingAddressChange={handleShippingAddressChange}
-        handleCopyToShippingAddress={handleCopyToShippingAddress}
-        expanded={expandedSections.shippingAddress}
-        onAccordionChange={handleAccordionChange('shippingAddress')}
-        allCollapsed={allCollapsed}
-        setAllCollapsed={setAllCollapsed}
-      />
+          <ShippingAddressSection
+            formData={formData}
+            onFormDataChange={handleFormDataChange}
+            isRTL={isRTL}
+            t={t}
+            countries={countries}
+            setCountries={setCountries}
+            zones={zones}
+            setZones={setZones}
+            cities={cities}
+            setCities={setCities}
+            districts={districts}
+            setDistricts={setDistricts}
+            loading={locationLoading}
+            shippingAddresses={shippingAddresses}
+            setShippingAddresses={setShippingAddresses}
+            handleCopyFromBillingAddress={handleCopyFromBillingAddress}
+            handleAddShippingAddress={handleAddShippingAddress}
+            handleRemoveShippingAddress={handleRemoveShippingAddress}
+            handleShippingAddressChange={handleShippingAddressChange}
+            handleCopyToShippingAddress={handleCopyToShippingAddress}
+            expanded={expandedSections.shippingAddress}
+            onAccordionChange={handleAccordionChange('shippingAddress')}
+            allCollapsed={allCollapsed}
+            setAllCollapsed={setAllCollapsed}
+          />
 
-      <BusinessInformationSection
-        formData={formData}
-        onFormDataChange={handleFormDataChange}
-        isRTL={isRTL}
-        t={t}
-        searchTerms={searchTerms}
-        newSearchTerm={newSearchTerm}
-        setNewSearchTerm={setNewSearchTerm}
-        handleAddSearchTerm={handleAddSearchTerm}
-        handleRemoveSearchTerm={handleRemoveSearchTerm}
-        handleSearchTermKeyPress={handleSearchTermKeyPress}
-        expanded={expandedSections.businessInfo}
-        onAccordionChange={handleAccordionChange('businessInfo')}
-        allCollapsed={allCollapsed}
-        setAllCollapsed={setAllCollapsed}
-      />
+          <BusinessInformationSection
+            formData={formData}
+            onFormDataChange={handleFormDataChange}
+            isRTL={isRTL}
+            t={t}
+            searchTerms={searchTerms}
+            newSearchTerm={newSearchTerm}
+            setNewSearchTerm={setNewSearchTerm}
+            handleAddSearchTerm={handleAddSearchTerm}
+            handleRemoveSearchTerm={handleRemoveSearchTerm}
+            handleSearchTermKeyPress={handleSearchTermKeyPress}
+            expanded={expandedSections.businessInfo}
+            onAccordionChange={handleAccordionChange('businessInfo')}
+            allCollapsed={allCollapsed}
+            setAllCollapsed={setAllCollapsed}
+          />
+
+          <CategorizeSection
+            formData={formData}
+            onFormDataChange={handleFormDataChange}
+            isRTL={isRTL}
+            t={t}
+            trades={trades}
+            supplierGroups={supplierGroups}
+            businessTypes={businessTypes}
+            loading={categorizeLoading}
+            handleTradeChange={handleTradeChange}
+            handleSupplierGroupChange={handleSupplierGroupChange}
+            handleBusinessTypeChange={handleBusinessTypeChange}
+            expanded={expandedSections.categorize}
+            onAccordionChange={handleAccordionChange('categorize')}
+            allCollapsed={allCollapsed}
+            setAllCollapsed={setAllCollapsed}
+            setTrades={setTrades}
+            setSupplierGroups={setSupplierGroups}
+            setBusinessTypes={setBusinessTypes}
+          />
+          
+          <OpeningSection
+            formData={formData}
+            onFormDataChange={handleFormDataChange}
+            isRTL={isRTL}
+            t={t}
+            subscriptionChecked={subscriptionChecked}
+            canAddMultiCurrency={canAddMultiCurrency}
+            upgradeMessage="Upgrade your subscription to add multiple currencies"
+            openingBalances={openingBalances}
+            handleOpeningBalanceChange={handleOpeningBalanceChange}
+            handleAddOpeningBalance={handleAddOpeningBalance}
+            handleRemoveOpeningBalance={handleRemoveOpeningBalance}
+            currencies={currencies}
+            expanded={expandedSections.opening}
+            onAccordionChange={handleAccordionChange('opening')}
+            allCollapsed={allCollapsed}
+            setAllCollapsed={setAllCollapsed}
+          />
+          
+          <PaymentTermsSection
+            formData={formData}
+            onFormDataChange={handleFormDataChange}
+            isRTL={isRTL}
+            t={t}
+            paymentTerms={paymentTerms}
+            setPaymentTerms={setPaymentTerms}
+            paymentMethods={paymentMethods}
+            setPaymentMethods={setPaymentMethods}
+            selectedPaymentTerm={selectedPaymentTerm}
+            setSelectedPaymentTerm={setSelectedPaymentTerm}
+            selectedPaymentMethod={selectedPaymentMethod}
+            setSelectedPaymentMethod={setSelectedPaymentMethod}
+            allowCredit={allowCredit}
+            setAllowCredit={setAllowCredit}
+            openingBalances={openingBalances}
+            creditLimits={creditLimits}
+            handleCreditLimitChange={handleCreditLimitChange}
+            acceptCheques={acceptCheques}
+            setAcceptCheques={setAcceptCheques}
+            maxCheques={maxCheques}
+            handleMaxChequesChange={handleMaxChequesChange}
+            paymentDay={paymentDay}
+            setPaymentDay={setPaymentDay}
+            trackPayment={trackPayment}
+            setTrackPayment={setTrackPayment}
+            settlementMethod={settlementMethod}
+            setSettlementMethod={setSettlementMethod}
+            expanded={expandedSections.paymentTerms}
+            onAccordionChange={handleAccordionChange('paymentTerms')}
+            allCollapsed={allCollapsed}
+            setAllCollapsed={setAllCollapsed}
+            userChangedTrackPayment={userChangedTrackPayment}
+          />
+          
+          <TaxesSection
+            formData={formData}
+            onFormDataChange={handleFormDataChange}
+            isRTL={isRTL}
+            t={t}
+            expanded={expandedSections.taxes}
+            onAccordionChange={handleAccordionChange('taxes')}
+            allCollapsed={allCollapsed}
+            setAllCollapsed={setAllCollapsed}
+          />
+
+          <ContactsSection
+            formData={formData}
+            onFormDataChange={handleFormDataChange}
+            isRTL={isRTL}
+            t={t}
+            contacts={contacts}
+            handleAddContact={handleAddContact}
+            handleRemoveContact={handleRemoveContact}
+            handleContactChange={handleContactChange}
+            expanded={expandedSections.contacts}
+            onAccordionChange={handleAccordionChange('contacts')}
+            allCollapsed={allCollapsed}
+            setAllCollapsed={setAllCollapsed}
+          />
+
+          <CatalogSection
+            isRTL={isRTL}
+            t={t}
+          />
+
+          <NotesSection
+            notes={formData.notes || ''}
+            onNotesChange={(value) => handleFormDataChange('notes', value)}
+            isRTL={isRTL}
+            t={t}
+          />
+
+          <AttachmentsSection
+            formData={formData}
+            onFormDataChange={handleFormDataChange}
+            isRTL={isRTL}
+            t={t}
+          />
+
+          <MessageSection
+            showMessageField={formData.showMessageField || false}
+            setShowMessageField={(value) => handleFormDataChange('showMessageField', value)}
+            message={formData.message || ''}
+            setMessage={(value) => handleFormDataChange('message', value)}
+            isRTL={isRTL}
+            t={t}
+            expanded={expandedSections.message}
+            onAccordionChange={handleAccordionChange('message')}
+            allCollapsed={allCollapsed}
+            setAllCollapsed={setAllCollapsed}
+          />
+        </Box>
+
+        {/* Right Column - Quick Options */}
+        <Box
+          sx={{
+            position: 'sticky',
+            top: 24,
+            height: 'fit-content',
+            width: 200,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            p: 2,
+            backgroundColor: 'rgb(249 250 251)',
+            borderRadius: 0,
+            border: '1px solid',
+            borderColor: 'divider',
+            zIndex: 2,
+          }}
+        >
+          <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, textAlign: isRTL ? 'right' : 'left' }}>
+            {t('management.quickOptions') || 'Quick Options'}
+          </Typography>
+          
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Checkbox
+              checked={active}
+              onChange={e => {
+                setActive(e.target.checked);
+                handleFormDataChange('active', e.target.checked);
+              }}
+              label={t('management.active') || 'Active'}
+              isRTL={isRTL}
+            />
+            
+            <Checkbox
+              checked={foreign}
+              onChange={e => {
+                setForeign(e.target.checked);
+                handleFormDataChange('foreign', e.target.checked);
+              }}
+              label={t('management.foreign') || 'Foreign'}
+              isRTL={isRTL}
+            />
+          </Box>
+        </Box>
+      </Box>
     </Box>
   );
 

@@ -10,6 +10,7 @@ import PaymentDrawer from "./drawers/PaymentDrawer";
 import SalesmanDrawer from "./drawers/salesmen/SalesmanDrawer";
 import GeneralFilesDrawer from "./drawers/GeneralFilesDrawer";
 import ItemDrawer from "./drawers/ItemDrawer";
+import SupplierGroupDrawer from "./drawers/supplierGroup/SupplierGroupDrawer";
 
 export default function DrawerStackManager() {
   const { drawerStack, closeTopDrawer } = useDrawerStack();
@@ -48,6 +49,7 @@ export default function DrawerStackManager() {
     salesChannel: (props) => <GeneralFilesDrawer {...props} type="salesChannel" />,
     distributionChannel: (props) => <GeneralFilesDrawer {...props} type="distributionChannel" />,
     mediaChannel: (props) => <GeneralFilesDrawer {...props} type="mediaChannel" />,
+    supplierGroup: (props) => <SupplierGroupDrawer {...props} />, // Add supplier group drawer
     // Add other drawer types here
   };
 
