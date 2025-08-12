@@ -20,7 +20,7 @@ import { Plus, Trash2, HelpCircle } from "lucide-react";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { useTranslations, useLocale } from "next-intl";
 import { useDrawerStack } from "@/components/ui/DrawerStackContext";
-import { getItems } from "@/API/Items";
+import HelpGrid from "@/components/ui/HelpGrid";
 
 const DrawerGrid = ({
   gridData,
@@ -32,6 +32,10 @@ const DrawerGrid = ({
   title = "",
   translationNamespace = "common",
   columnActions = {},
+  // New props for help functionality
+  helpData = null,
+  helpColumns = [],
+  helpLoading = false,
 }) => {
   const t = useTranslations(translationNamespace);
   const locale = useLocale();
@@ -42,18 +46,114 @@ const DrawerGrid = ({
   // Check if we're in dark mode
   const isDarkMode = theme.palette.mode === 'dark';
   
-  // State for items data
-  const [items, setItems] = useState([]);
-  const [itemsLoading, setItemsLoading] = useState(false);
+  // State for help modal
+  const [helpModalOpen, setHelpModalOpen] = useState(false);
+  const [helpModalTitle, setHelpModalTitle] = useState("Help");
+  const [tableAttributes, setTableAttributes] = useState(null);
+  const [currentEditingRowId, setCurrentEditingRowId] = useState(null);
 
-  // Fast lookup from itemcode -> id
+  // Fast lookup from itemcode -> id (only if helpData is provided)
   const itemCodeToId = useMemo(() => {
+    if (!helpData || !Array.isArray(helpData)) return new Map();
+    
     const map = new Map();
-    (items || []).forEach((it) => {
+    helpData.forEach((it) => {
       if (it && it.itemcode != null) map.set(String(it.itemcode), it.id);
     });
     return map;
-  }, [items]);
+  }, [helpData]);
+
+  // Handler for when items are added from help modal
+  const handleHelpAdd = (addedItems) => {
+    console.log('DrawerGrid: Received items from help modal:', addedItems);
+    console.log('DrawerGrid: Current editing row ID:', currentEditingRowId);
+    
+    if (addedItems && addedItems.length > 0) {
+      // Start with a copy of current grid data
+      let updatedGridData = [...gridData];
+      
+      // Process each added item
+      addedItems.forEach((item, index) => {
+        console.log(`DrawerGrid: Processing item ${index}:`, item);
+        
+        if (index === 0) {
+          // First item: update the row that opened the help modal
+          if (currentEditingRowId) {
+            console.log(`DrawerGrid: Updating row ${currentEditingRowId} with item:`, item);
+            updatedGridData = updatedGridData.map(row => {
+              if (row.id === currentEditingRowId) {
+                return {
+                  ...row,
+                  item_id: item.id || null,
+                  itemcode: item.code || item.itemcode || "",
+                  price: item.price || 0,
+                };
+              }
+              return row;
+            });
+          } else {
+            // Fallback: try to find an empty row or use the first row
+            const emptyRow = updatedGridData.find(row => !row.item_id && !row.itemcode);
+            if (emptyRow) {
+              console.log(`DrawerGrid: Found empty row ${emptyRow.id}, updating with item:`, item);
+              updatedGridData = updatedGridData.map(row => {
+                if (row.id === emptyRow.id) {
+                  return {
+                    ...row,
+                    item_id: item.id || null,
+                    itemcode: item.code || item.itemcode || "",
+                    price: item.price || 0,
+                  };
+                }
+                return row;
+              });
+            } else {
+              // No empty row found, update the first row
+              console.log(`DrawerGrid: No empty row found, updating first row with item:`, item);
+              updatedGridData = updatedGridData.map((row, idx) => {
+                if (idx === 0) {
+                  return {
+                    ...row,
+                    item_id: item.id || null,
+                    itemcode: item.code || item.itemcode || "",
+                    price: item.price || 0,
+                  };
+                }
+                return row;
+              });
+            }
+          }
+        } else {
+          // Additional items: add new rows
+          console.log(`DrawerGrid: Adding new row for item ${index}:`, item);
+          const newRow = {
+            id: `row_${Date.now()}_${index}`,
+            line: "",
+            item_id: item.id || null,
+            itemcode: item.code || item.itemcode || "",
+            price: item.price || 0,
+            discount: 0,
+            isEnabled: true,
+          };
+          
+          // Add new row to the updated grid data
+          updatedGridData.push(newRow);
+        }
+      });
+      
+      // Apply all changes at once
+      console.log('DrawerGrid: Applying all changes at once:', updatedGridData);
+      onGridDataChange(updatedGridData);
+      
+      console.log('DrawerGrid: Finished processing all items');
+    }
+    
+    // Reset the current editing row ID
+    setCurrentEditingRowId(null);
+    
+    // Close the help modal
+    setHelpModalOpen(false);
+  };
 
   const getRowItemId = (row) => {
     if (row.item_id !== undefined && row.item_id !== null) return row.item_id;
@@ -65,23 +165,6 @@ const DrawerGrid = ({
     }
     return null;
   };
-
-  // Fetch items data
-  useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        setItemsLoading(true);
-        const response = await getItems();
-        setItems(response.data || []);
-      } catch (error) {
-        console.error("Error fetching items:", error);
-      } finally {
-        setItemsLoading(false);
-      }
-    };
-
-    fetchItems();
-  }, []);
 
   // Create options without Add button
   const createOptions = (options) => {
@@ -144,9 +227,12 @@ const DrawerGrid = ({
           .map((r) => getRowItemId(r))
           .filter((id) => id !== null && id !== undefined)
       );
-      const filteredOptions = items.filter(
+      
+      // Use helpData if provided, otherwise show empty options
+      const availableOptions = helpData ? helpData.filter(
         (item) => item.id === currentRowItemId || !selectedIds.has(item.id)
-      );
+      ) : [];
+      
       return (
         <Box sx={{ 
           position: 'relative',
@@ -161,7 +247,7 @@ const DrawerGrid = ({
             key={`${row.id}-${row.item_id ?? row.itemcode ?? 'empty'}`}
             fullWidth
             size="small"
-            options={createOptions(filteredOptions)}
+            options={createOptions(availableOptions)}
             getOptionLabel={(option) => {
               if (!option) return "";
               return `${option.code || ""} - ${option.name || ""}`;
@@ -174,10 +260,10 @@ const DrawerGrid = ({
             value={
               (() => {
                 if (row.item_id !== undefined && row.item_id !== null) {
-                  return items.find((item) => item.id === row.item_id) || null;
+                  return helpData ? helpData.find((item) => item.id === row.item_id) || null : null;
                 }
                 if (row.itemcode !== undefined && row.itemcode !== null && row.itemcode !== "") {
-                  return items.find((item) => item.id === row.itemcode || item.itemcode === row.itemcode) || null;
+                  return helpData ? helpData.find((item) => item.id === row.itemcode || item.itemcode === row.itemcode) || null : null;
                 }
                 return null;
               })()
@@ -187,7 +273,7 @@ const DrawerGrid = ({
               // Also auto-fill price with the selected item's price
               handleItemSelection(row.id, newValue);
             }}
-            loading={itemsLoading}
+            loading={helpLoading}
             disabled={disabled || !row.isEnabled}
             renderInput={(params) => (
               <RTLTextField 
@@ -272,7 +358,8 @@ const DrawerGrid = ({
                       type: "item",
                       props: {
                         onSave: (newItem) => {
-                          setItems(prev => [...prev, newItem]);
+                          // This should be handled by the parent component
+                          // The parent can update helpData if needed
                         },
                       },
                     });
@@ -289,6 +376,31 @@ const DrawerGrid = ({
               {showHelpButton && (
                 <IconButton
                   size="small"
+                  onClick={() => {
+                    // Store the current row ID for later use
+                    setCurrentEditingRowId(row.id);
+                    
+                    // Set table attributes for the help modal using props
+                    const attributes = {
+                      data: helpData || [],
+                      columns: helpColumns || [],
+                      onAdd: () => {},
+                      loading: helpLoading || false,
+                      enableCellEditing: false,
+                      onExportExcel: () => {},
+                      onExportPdf: () => {},
+                      onPrint: () => {},
+                      onRefresh: () => {},
+                      onImportExcel: () => {},
+                      tableId: "help-table",
+                      customActions: [],
+                      onCustomAction: () => {},
+                      onDelete: () => {},
+                    };
+                    setTableAttributes(attributes);
+                    setHelpModalTitle("Help - Item");
+                    setHelpModalOpen(true);
+                  }}
                   sx={{ 
                     color: 'info.main',
                     '&:hover': { backgroundColor: 'transparent' },
@@ -377,7 +489,8 @@ const DrawerGrid = ({
                     type: "item",
                     props: {
                       onSave: (newItem) => {
-                        setItems(prev => [...prev, newItem]);
+                        // This should be handled by the parent component
+                        // The parent can update helpData if needed
                       },
                     },
                   });
@@ -394,6 +507,28 @@ const DrawerGrid = ({
             {showHelpButton && (
               <IconButton
                 size="small"
+                onClick={() => {
+                  // Set table attributes for the help modal using props
+                  const attributes = {
+                    data: helpData || [],
+                    columns: helpColumns || [],
+                    onAdd: () => {},
+                    loading: helpLoading || false,
+                    enableCellEditing: false,
+                    onExportExcel: () => {},
+                    onExportPdf: () => {},
+                    onPrint: () => {},
+                    onRefresh: () => {},
+                    onImportExcel: () => {},
+                    tableId: "help-table",
+                    customActions: [],
+                    onCustomAction: () => {},
+                    onDelete: () => {},
+                  };
+                  setTableAttributes(attributes);
+                  setHelpModalTitle("Help - Item");
+                  setHelpModalOpen(true);
+                }}
                 sx={{ 
                   color: 'info.main',
                   '&:hover': { backgroundColor: 'transparent' },
@@ -586,6 +721,16 @@ const DrawerGrid = ({
           {t("addRow")}
         </Button>
       </Box>
+      
+      {/* Help Modal */}
+      <HelpGrid 
+        isOpen={helpModalOpen}
+        onClose={() => setHelpModalOpen(false)}
+        title={helpModalTitle}
+        tableAttributes={tableAttributes}
+        onSelect={handleHelpAdd}
+        existingItems={gridData} // Pass current grid data to identify existing items
+      />
     </Box>
   );
 };

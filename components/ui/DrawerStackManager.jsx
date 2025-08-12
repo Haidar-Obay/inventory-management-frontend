@@ -13,6 +13,13 @@ import ItemDrawer from "./drawers/ItemDrawer";
 
 export default function DrawerStackManager() {
   const { drawerStack, closeTopDrawer } = useDrawerStack();
+  
+  // Move hooks to top level
+  const [itemFormData, setItemFormData] = React.useState({});
+  
+  const handleItemFormDataChange = React.useCallback((data) => {
+    setItemFormData(data);
+  }, []);
 
   // Map drawer types to components
   const drawerComponents = {
@@ -27,22 +34,14 @@ export default function DrawerStackManager() {
     paymentTerm: (props) => <PaymentDrawer {...props} type="paymentTerm" />, // Add payment method drawer
     paymentMethod: (props) => <PaymentDrawer {...props} type="paymentMethod" />, // Add payment method drawer
     salesman: (props) => <SalesmanDrawer {...props} />, // Use the new SalesmanDrawer
-    item: (props) => {
-      const [formData, setFormData] = React.useState({});
-      
-      const handleFormDataChange = React.useCallback((data) => {
-        setFormData(data);
-      }, []);
-      
-      return (
-        <ItemDrawer 
-          {...props} 
-          type="item" 
-          formData={formData}
-          onFormDataChange={handleFormDataChange}
-        />
-      );
-    }, // Add item drawer
+    item: (props) => (
+      <ItemDrawer 
+        {...props} 
+        type="item" 
+        formData={itemFormData}
+        onFormDataChange={handleItemFormDataChange}
+      />
+    ), // Add item drawer
     // General Files Drawers
     businessType: (props) => <GeneralFilesDrawer {...props} type="businessType" />,
     salesChannel: (props) => <GeneralFilesDrawer {...props} type="salesChannel" />,
