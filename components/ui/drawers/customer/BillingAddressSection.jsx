@@ -1,11 +1,19 @@
 import React from "react";
-import { Grid, Typography, Autocomplete, Accordion, AccordionSummary, AccordionDetails, Box } from "@mui/material";
+import { Grid, Typography, Autocomplete, Accordion, AccordionSummary, AccordionDetails, Box, useTheme } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { useDrawerStack } from "@/components/ui/DrawerStackContext";
 
 const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t, countries, setCountries, zones, setZones, cities, setCities, districts, setDistricts, loading, expanded, onAccordionChange, allCollapsed, setAllCollapsed }) => {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
+  
+  // Get background color based on theme
+  const getBackgroundColor = () => {
+    return isDarkMode ? 'var(--muted)' : 'rgb(249 250 251)';
+  };
+
   React.useEffect(() => {
     if (allCollapsed && expanded) {
       onAccordionChange(null, false);
@@ -22,12 +30,27 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
   };
 
   return (
-    <Accordion expanded={expanded} onChange={onAccordionChange}>
+    <Accordion 
+      expanded={expanded} 
+      onChange={onAccordionChange}
+      sx={{
+        backgroundColor: getBackgroundColor(),
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 0,
+        boxShadow: 'none'
+      }}
+    >
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="billing-address-content"
         id="billing-address-header"
         tabIndex={-1}
+        sx={{
+          backgroundColor: getBackgroundColor(),
+          borderBottom: '1px solid',
+          borderColor: 'divider'
+        }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
@@ -53,7 +76,11 @@ const BillingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t
           )}
         </Box>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails
+        sx={{
+          backgroundColor: getBackgroundColor()
+        }}
+      >
         <Grid container spacing={2}>
           <Grid item xs={12} md={6} sx={{ minWidth: 350 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}>

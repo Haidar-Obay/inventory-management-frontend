@@ -6,7 +6,12 @@ import {
   Typography,
   Button,
   Box,  
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  useTheme,
 } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DynamicDrawer from "@/components/ui/DynamicDrawer";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { useTranslations, useLocale } from "next-intl";
@@ -113,7 +118,16 @@ const CustomerDrawer = React.memo(({
   const t = useTranslations("customers");
   const tToast = useTranslations("toast");
   const locale = useLocale();
+  const theme = useTheme();
   const isRTL = locale === "ar";
+  const isDarkMode = theme.palette.mode === 'dark';
+  
+  // Get background color based on theme
+  const getBackgroundColor = () => {
+    return isDarkMode ? 'rgb(16 20 29)' : 'rgb(249 250 251)';
+  };
+  
+  const { getTabIndex } = useTabNavigation();
   const [originalName, setOriginalName] = useState("");
   const [originalData, setOriginalData] = useState({});
   const [shippingAddresses, setShippingAddresses] = useState([]);
@@ -230,8 +244,6 @@ const CustomerDrawer = React.memo(({
         });
         console.log('CustomerDrawer: Final creditLimitsMap:', creditLimitsMap);
         setCreditLimits(creditLimitsMap);
-      } else {
-        console.log('CustomerDrawer: No credit_limits found in formData or empty array');
       }
       
       // Sync cheque limits
@@ -1400,8 +1412,8 @@ const CustomerDrawer = React.memo(({
                 flexDirection: 'column',
                 gap: 2,
                 p: 2,
-                bgcolor: 'background.paper',
-                borderRadius: 1,
+                backgroundColor: getBackgroundColor(),
+                borderRadius: 0,
                 border: '1px solid',
                 borderColor: 'divider',
                 zIndex: 2,
@@ -1617,7 +1629,8 @@ const CustomerDrawer = React.memo(({
     showMessageField,
     setShowMessageField,
     message,
-    setMessage
+    setMessage,
+    getBackgroundColor
   ]);
 
   if (!type) return null;

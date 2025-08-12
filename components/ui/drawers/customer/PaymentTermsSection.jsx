@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Typography, Autocomplete, Accordion, AccordionSummary, AccordionDetails, Box } from "@mui/material";
+import { Grid, Typography, Autocomplete, Accordion, AccordionSummary, AccordionDetails, Box, useTheme } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
 import RTLTextField from "@/components/ui/RTLTextField";
@@ -10,6 +10,14 @@ const PaymentTermsSection = React.memo((props) => {
   const { paymentTerms, setPaymentTerms, paymentMethods, setPaymentMethods, userChangedTrackPayment, ...rest } = props;
   const { openDrawer } = useDrawerStack();
   const { formData, onFormDataChange, isRTL, t, paymentTerms: propPaymentTerms, paymentMethods: propPaymentMethods, selectedPaymentTerm, setSelectedPaymentTerm, selectedPaymentMethod, setSelectedPaymentMethod, allowCredit, setAllowCredit, openingBalances, creditLimits, handleCreditLimitChange, acceptCheques, setAcceptCheques, maxCheques, handleMaxChequesChange, paymentDay, setPaymentDay, trackPayment, setTrackPayment, settlementMethod, setSettlementMethod, expanded, onAccordionChange, allCollapsed, setAllCollapsed } = rest;
+  
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
+  
+  // Get background color based on theme
+  const getBackgroundColor = () => {
+    return isDarkMode ? 'var(--muted)' : 'rgb(249 250 251)';
+  };
   
   React.useEffect(() => {
     if (allCollapsed && expanded) {
@@ -112,12 +120,28 @@ const PaymentTermsSection = React.memo((props) => {
   };
 
   return (
-    <Accordion expanded={expanded} onChange={onAccordionChange} TransitionProps={{ timeout: 0 }}>
+    <Accordion 
+      expanded={expanded} 
+      onChange={onAccordionChange} 
+      TransitionProps={{ timeout: 0 }}
+      sx={{
+        backgroundColor: getBackgroundColor(),
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 0,
+        boxShadow: 'none'
+      }}
+    >
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="payment-terms-content"
         id="payment-terms-header"
         tabIndex={-1}
+        sx={{
+          backgroundColor: getBackgroundColor(),
+          borderBottom: '1px solid',
+          borderColor: 'divider'
+        }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
@@ -182,7 +206,11 @@ const PaymentTermsSection = React.memo((props) => {
           )}
         </Box>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails
+        sx={{
+          backgroundColor: getBackgroundColor()
+        }}
+      >
         <Grid container spacing={3}>
           {expanded && <>
             {/* First line: Payment Term and Payment Method */}

@@ -1,9 +1,17 @@
 import React from "react";
-import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, useTheme } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import RTLTextField from "@/components/ui/RTLTextField";
 
 const RoutingSection = React.memo(({ formData, onFormDataChange, isRTL, t, salesmen, handleFieldChange, expanded, onAccordionChange, allCollapsed, setAllCollapsed }) => {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
+  
+  // Get background color based on theme
+  const getBackgroundColor = () => {
+    return isDarkMode ? 'var(--muted)' : 'rgb(249 250 251)';
+  };
+
   React.useEffect(() => {
     if (allCollapsed && expanded) {
       onAccordionChange(null, false);
@@ -11,17 +19,36 @@ const RoutingSection = React.memo(({ formData, onFormDataChange, isRTL, t, sales
     }
   }, [allCollapsed]);
   return (
-    <Accordion expanded={expanded} onChange={onAccordionChange}>
+    <Accordion 
+      expanded={expanded} 
+      onChange={onAccordionChange}
+      sx={{
+        backgroundColor: getBackgroundColor(),
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 0,
+        boxShadow: 'none'
+      }}
+    >
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="routing-content"
         id="routing-header"
+        sx={{
+          backgroundColor: getBackgroundColor(),
+          borderBottom: '1px solid',
+          borderColor: 'divider'
+        }}
       >
         <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
           {t('management.routingAccordion') || 'Routing'}
         </Typography>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails
+        sx={{
+          backgroundColor: getBackgroundColor()
+        }}
+      >
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>

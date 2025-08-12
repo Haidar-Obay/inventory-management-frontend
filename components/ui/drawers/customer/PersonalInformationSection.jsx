@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { Grid, Typography, Autocomplete, Accordion, AccordionSummary, AccordionDetails } from "@mui/material"
+import { Grid, Typography, Autocomplete, Accordion, AccordionSummary, AccordionDetails, useTheme } from "@mui/material"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import RTLTextField from "@/components/ui/RTLTextField"
 
@@ -21,6 +21,14 @@ const PersonalInformationSection = React.memo(
     tabNavigation,
     sectionId,
   }) => {
+    const theme = useTheme();
+    const isDarkMode = theme.palette.mode === 'dark';
+    
+    // Get background color based on theme
+    const getBackgroundColor = () => {
+      return isDarkMode ? 'var(--muted)' : 'rgb(249 250 251)';
+    };
+
     React.useEffect(() => {
       if (allCollapsed && expanded) {
         onAccordionChange(null, false)
@@ -38,18 +46,36 @@ const PersonalInformationSection = React.memo(
     };
 
     return (
-      <Accordion expanded={true}>
+      <Accordion 
+        expanded={true}
+        sx={{
+          backgroundColor: getBackgroundColor(),
+          border: '1px solid',
+          borderColor: 'divider',
+          borderRadius: 0,
+          boxShadow: 'none'
+        }}
+      >
         <AccordionSummary
           // Remove expandIcon to prevent toggling
           aria-controls="personal-info-content"
           id="personal-info-header"
           tabIndex={-1}
+          sx={{
+            backgroundColor: getBackgroundColor(),
+            borderBottom: '1px solid',
+            borderColor: 'divider'
+          }}
         >
           <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
             {t("management.personalInformation") || "Personal Information"}
           </Typography>
         </AccordionSummary>
-        <AccordionDetails>
+        <AccordionDetails
+          sx={{
+            backgroundColor: getBackgroundColor()
+          }}
+        >
   {/* Row 1: Title / First Name / Middle Name / Last Name */}
   <Grid container spacing={1.5}>
     <Grid item xs={12} sm={6} md={3} sx={{ maxWidth: 100 }}>

@@ -14,6 +14,7 @@ import {
   Paper,
   IconButton,
   Autocomplete,
+  useTheme,
 } from "@mui/material";
 import { Plus, Trash2, HelpCircle } from "lucide-react";
 import RTLTextField from "@/components/ui/RTLTextField";
@@ -34,8 +35,12 @@ const DrawerGrid = ({
 }) => {
   const t = useTranslations(translationNamespace);
   const locale = useLocale();
+  const theme = useTheme();
   const isRTL = locale === "ar";
   const { openDrawer } = useDrawerStack();
+  
+  // Check if we're in dark mode
+  const isDarkMode = theme.palette.mode === 'dark';
   
   // State for items data
   const [items, setItems] = useState([]);
@@ -100,6 +105,30 @@ const DrawerGrid = ({
     }
   };
 
+  // Function to handle item selection and auto-fill price
+  const handleItemSelection = (rowId, selectedItem) => {
+    if (onGridDataChange) {
+      const updatedGridData = gridData.map((gRow) => {
+        if (gRow.id === rowId) {
+          return {
+            ...gRow,
+            item_id: selectedItem?.id ?? null,
+            itemcode: selectedItem?.itemcode ?? "",
+            // Auto-fill price with item's price if available
+            price: selectedItem?.price ?? 0,
+          };
+        }
+        return gRow;
+      });
+      onGridDataChange(updatedGridData);
+    }
+  };
+
+  // Get background color based on theme
+  const getBackgroundColor = () => {
+    return isDarkMode ? 'rgb(16 20 29)' : 'rgb(249 250 251)';
+  };
+
   const renderCell = (row, column) => {
     const { field, type = "text", ...fieldProps } = column;
     const columnConfig = columnActions[field] || {};
@@ -133,7 +162,10 @@ const DrawerGrid = ({
             fullWidth
             size="small"
             options={createOptions(filteredOptions)}
-            getOptionLabel={(option) => option.name || option.itemcode || ""}
+            getOptionLabel={(option) => {
+              if (!option) return "";
+              return `${option.code || ""} - ${option.name || ""}`;
+            }}
             isOptionEqualToValue={(option, value) => {
               if (!option || !value) return false;
               if (option.id !== undefined && value.id !== undefined) return option.id === value.id;
@@ -152,17 +184,8 @@ const DrawerGrid = ({
             }
             onChange={(event, newValue) => {
               // Update both item_id (authoritative) and itemcode (for backward compatibility/display)
-              const updatedGridData = gridData.map((gRow) => {
-                if (gRow.id === row.id) {
-                  return {
-                    ...gRow,
-                    item_id: newValue?.id ?? null,
-                    itemcode: newValue?.itemcode ?? "",
-                  };
-                }
-                return gRow;
-              });
-              onGridDataChange(updatedGridData);
+              // Also auto-fill price with the selected item's price
+              handleItemSelection(row.id, newValue);
             }}
             loading={itemsLoading}
             disabled={disabled || !row.isEnabled}
@@ -215,9 +238,14 @@ const DrawerGrid = ({
             )}
             renderOption={(props, option) => (
               <Box component="li" {...props}>
-                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                  <Typography variant="body2">{option.itemcode}</Typography>
-                  <Typography variant="caption" color="text.secondary">{option.name}</Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    {option.code || option.itemcode || option.id || 'N/A'}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">-</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {option.name || option.title || 'No Name'}
+                  </Typography>
                 </Box>
               </Box>
             )}
@@ -294,39 +322,39 @@ const DrawerGrid = ({
           fullWidth
           size="small"
           type={type}
-          disabled={disabled || !row.isEnabled}
+          disabled={disabled || !row.isEnabled || field === "price"}
           placeholder=""
           label={null}
           InputLabelProps={{ shrink: false }}
-                      sx={{ 
-              '& .MuiInputBase-root': { 
-                fontSize: '0.875rem',
-                paddingRight: isRTL ? '14px' : ((showAddButton || showHelpButton) ? '100px' : '14px'),
-                paddingLeft: isRTL ? ((showAddButton || showHelpButton) ? '100px' : '14px') : '14px',
-                border: 'none',
-                backgroundColor: 'transparent',
-                '&:hover': {
-                  backgroundColor: 'transparent'
-                },
-                '&.Mui-focused': {
-                  backgroundColor: 'transparent'
-                }
+          sx={{ 
+            '& .MuiInputBase-root': { 
+              fontSize: '0.875rem',
+              paddingRight: isRTL ? '14px' : ((showAddButton || showHelpButton) ? '100px' : '14px'),
+              paddingLeft: isRTL ? ((showAddButton || showHelpButton) ? '100px' : '14px') : '14px',
+              border: 'none',
+              backgroundColor: 'transparent',
+              '&:hover': {
+                backgroundColor: 'transparent'
               },
+              '&.Mui-focused': {
+                backgroundColor: 'transparent'
+              }
+            },
             '& .MuiOutlinedInput-notchedOutline': {
               border: 'none'
             },
             '&:hover .MuiOutlinedInput-notchedOutline': {
               border: 'none'
             },
-                              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                    border: 'none'
-                  },
-                  '& .MuiInputLabel-root': {
-                    display: 'none'
-                  }
-                }}
-                {...fieldProps}
-              />
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              border: 'none'
+            },
+            '& .MuiInputLabel-root': {
+              display: 'none'
+            }
+          }}
+          {...fieldProps}
+        />
         {(showAddButton || showHelpButton) && (
           <Box
             className="action-buttons"
@@ -396,12 +424,15 @@ const DrawerGrid = ({
           border: '1px solid', 
           borderColor: 'divider',
           borderRadius: 0,
-          boxShadow: 'none'
+          boxShadow: 'none',
+          backgroundColor: getBackgroundColor()
         }}
       >
         <Table size="small" sx={{ borderCollapse: 'collapse' }}>
           <TableHead>
-            <TableRow sx={{ backgroundColor: 'background.default' }}>
+            <TableRow sx={{ 
+              backgroundColor: getBackgroundColor()
+            }}>
               {columns.map((column, index) => {
                 // Determine column width based on field type
                 let columnWidth = '25%';
@@ -424,7 +455,7 @@ const DrawerGrid = ({
                       borderRight: '1px solid',
                       borderColor: 'divider',
                       padding: '12px 16px',
-                      backgroundColor: 'background.default',
+                      backgroundColor: getBackgroundColor(),
                       textAlign: isRTL ? 'right' : 'left'
                     }}
                   >
@@ -443,7 +474,7 @@ const DrawerGrid = ({
                     borderRight: '1px solid',
                     borderColor: 'divider',
                     padding: '12px 8px',
-                    backgroundColor: 'background.default',
+                    backgroundColor: getBackgroundColor(),
                     textAlign: 'center'
                   }}
                 >
@@ -459,7 +490,7 @@ const DrawerGrid = ({
                   borderBottom: '2px solid',
                   borderColor: 'divider',
                   padding: '12px 8px',
-                  backgroundColor: 'background.default',
+                  backgroundColor: getBackgroundColor(),
                   textAlign: 'center'
                 }}
               >

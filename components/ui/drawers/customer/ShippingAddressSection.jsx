@@ -1,11 +1,19 @@
 import React from "react";
-import { Grid, Typography, Autocomplete, Accordion, AccordionSummary, AccordionDetails, Button, Box, IconButton } from "@mui/material";
+import { Grid, Typography, Autocomplete, Accordion, AccordionSummary, AccordionDetails, Button, Box, IconButton, useTheme } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
 import RTLTextField from "@/components/ui/RTLTextField";
 import { useDrawerStack } from "@/components/ui/DrawerStackContext";
 
 const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, t, countries, setCountries, zones, setZones, cities, setCities, districts, setDistricts, loading, shippingAddresses, setShippingAddresses, handleCopyFromBillingAddress, handleAddShippingAddress, handleRemoveShippingAddress, handleShippingAddressChange, handleCopyToShippingAddress, expanded, onAccordionChange, allCollapsed, setAllCollapsed }) => {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
+  
+  // Get background color based on theme
+  const getBackgroundColor = () => {
+    return isDarkMode ? 'var(--muted)' : 'rgb(249 250 251)';
+  };
+
   React.useEffect(() => {
     if (allCollapsed && expanded) {
       onAccordionChange(null, false);
@@ -44,12 +52,27 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
 
 
   return (
-    <Accordion expanded={expanded} onChange={onAccordionChange}>
+    <Accordion 
+      expanded={expanded} 
+      onChange={onAccordionChange}
+      sx={{
+        backgroundColor: getBackgroundColor(),
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 0,
+        boxShadow: 'none'
+      }}
+    >
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="shipping-address-content"
         id="shipping-address-header"
         tabIndex={-1}
+        sx={{
+          backgroundColor: getBackgroundColor(),
+          borderBottom: '1px solid',
+          borderColor: 'divider'
+        }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
@@ -85,7 +108,11 @@ const ShippingAddressSection = React.memo(({ formData, onFormDataChange, isRTL, 
           )}
         </Box>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails
+        sx={{
+          backgroundColor: getBackgroundColor()
+        }}
+      >
         {/* Header Actions */}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 1 }}>
           <Button
