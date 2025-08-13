@@ -91,6 +91,7 @@ export function useTableLogic({
   
   const [draggedColumn, setDraggedColumn] = useState(null);
   const [draggedRow, setDraggedRow] = useState(null);
+  const [dragOverRow, setDragOverRow] = useState(null);
   const [editingCell, setEditingCell] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const [savedFilters, setSavedFilters] = useState([]);
@@ -514,6 +515,11 @@ export function useTableLogic({
 
   const handleRowDragOver = (e, index) => {
     e.preventDefault();
+    setDragOverRow(index);
+  };
+
+  const handleRowDrop = (e, index) => {
+    e.preventDefault();
     if (draggedRow !== null && draggedRow !== index) {
       // Ensure tableData is an array before processing
       const safeTableData = Array.isArray(tableData) ? tableData : [];
@@ -524,8 +530,18 @@ export function useTableLogic({
       newData.splice(index, 0, draggedRowData);
 
       setTableData(newData);
-      setDraggedRow(index);
     }
+    setDraggedRow(null);
+    setDragOverRow(null);
+  };
+
+  const handleRowDragLeave = () => {
+    setDragOverRow(null);
+  };
+
+  const handleRowDragEnd = () => {
+    setDraggedRow(null);
+    setDragOverRow(null);
   };
 
   const handleCellDoubleClick = (rowIndex, columnKey) => {
@@ -938,6 +954,7 @@ export function useTableLogic({
     columnOrder,
     draggedColumn,
     draggedRow,
+    dragOverRow,
     editingCell,
     showSettings,
     savedFilters,
@@ -980,6 +997,9 @@ export function useTableLogic({
     handleColumnDragOver,
     handleRowDragStart,
     handleRowDragOver,
+    handleRowDrop,
+    handleRowDragLeave,
+    handleRowDragEnd,
     handleCellDoubleClick,
     handleCellEdit,
     handleCellEditFinish,

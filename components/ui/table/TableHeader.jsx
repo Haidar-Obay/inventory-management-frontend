@@ -370,8 +370,18 @@ export const TableHeader = ({
             opacity: showSearchRow ? 1 : 0,
           }}
         >
-          <td className={`${showHeaderColSeparator !== false ? 'border-r border-slate-300 dark:border-slate-600' : ''}`}></td>
-          {showSearchColumn && <td className={`${showHeaderColSeparator !== false ? 'border-r border-slate-300 dark:border-slate-600' : ''}`}></td>}
+          <td className={`${showHeaderColSeparator !== false ? 'border-r border-slate-300 dark:border-slate-600' : ''}`}>
+            <div className="flex items-center justify-center">
+              <span className="text-xs text-slate-500 dark:text-slate-400">Search</span>
+            </div>
+          </td>
+          {showSearchColumn && (
+            <td className={`${showHeaderColSeparator !== false ? 'border-r border-slate-300 dark:border-slate-600' : ''}`}>
+              <div className="flex items-center justify-center">
+                <span className="text-xs text-slate-500 dark:text-slate-400">-</span>
+              </div>
+            </td>
+          )}
           {columnOrder.map((key, idx) => {
             const column = columns.find((col) => col.key === key);
             if (!column || !visibleColumns[key]) return null;
@@ -437,7 +447,11 @@ export const TableHeader = ({
                 : ""}
             `}
             style={{ width: "75px" }}
-          ></td>
+          >
+            <div className="flex items-center justify-center">
+              <span className="text-xs text-slate-500 dark:text-slate-400">-</span>
+            </div>
+          </td>
         </tr>
       )}
     </thead>

@@ -80,9 +80,7 @@ const HelpGridBody = ({
           >
             {/* Row selection checkbox */}
             <td 
-              className={`px-4 py-3 text-sm text-foreground border-r border-border ${
-                rowIndex < data.length - 1 ? 'border-b border-border' : ''
-              }`}
+              className={`px-4 py-3 text-sm text-foreground border-r border-border border-b border-border`}
               style={{ width: "36px" }}
             >
               <div className="flex flex-row items-center justify-center w-full gap-1">
@@ -107,9 +105,7 @@ const HelpGridBody = ({
             {/* Row handle (search column) */}
             {showSearchColumn && (
               <td 
-                className={`px-0 py-3 text-sm text-foreground border-r border-border ${
-                  rowIndex < data.length - 1 ? 'border-b border-border' : ''
-                }`}
+                className={`px-0 py-3 text-sm text-foreground border-r border-border border-b border-border`}
                 style={{ width: "18px" }}
               >
                               <div
@@ -138,9 +134,7 @@ const HelpGridBody = ({
                 key={column.key} 
                 className={`px-4 py-3 text-sm text-foreground ${
                   colIndex < columns.length - 1 ? 'border-r border-border' : ''
-                } ${
-                  rowIndex < data.length - 1 ? 'border-b border-border' : ''
-                }`}
+                } border-b border-border`}
               >
                 {formatValue(row[column.key], column)}
               </td>

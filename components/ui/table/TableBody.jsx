@@ -27,6 +27,9 @@ export const TableBody = ({
   loading,
   handleRowDragStart,
   handleRowDragOver,
+  handleRowDrop,
+  handleRowDragLeave,
+  handleRowDragEnd,
   handleCellDoubleClick,
   handleCellEdit,
   handleCellEditFinish,
@@ -43,6 +46,8 @@ export const TableBody = ({
   onDeleteConfirm,
   onPreviewConfirm,
   showBodyColSeparator,
+  draggedRow,
+  dragOverRow,
 }) => {
   const t = useTranslations("table");
   const locale = useLocale();
@@ -165,7 +170,21 @@ export const TableBody = ({
                   : rowIndex % 2 === 0
                     ? "bg-white dark:bg-background"
                     : "bg-gray-50 dark:bg-muted/50 hover:bg-gray-100 dark:hover:bg-muted"
-              } border-b border-border`}
+              } border-b border-border transition-all duration-200 ${
+                draggedRow === actualRowIndex ? 'opacity-50 scale-95 shadow-lg' : ''
+              } ${
+                dragOverRow === actualRowIndex ? 'bg-blue-100 dark:bg-blue-900/20 border-t-2 border-blue-500' : ''
+              }`}
+              onDragOver={(e) => {
+                e.preventDefault();
+                if (handleRowDragOver) handleRowDragOver(e, actualRowIndex);
+              }}
+              onDragLeave={() => {
+                if (handleRowDragLeave) handleRowDragLeave();
+              }}
+              onDrop={(e) => {
+                if (handleRowDrop) handleRowDrop(e, actualRowIndex);
+              }}
             >
               {/* Row selection checkbox */}
               <td
@@ -192,11 +211,12 @@ export const TableBody = ({
                   style={{ width: "18px" }}
                 >
                   <div
-                    className="flex items-center justify-center w-full h-full"
+                    className="flex items-center justify-center w-full h-full hover:scale-110 transition-transform duration-200"
                     style={{ cursor: "grab" }}
+                    title="Drag to reorder"
                     draggable
                     onDragStart={() => handleRowDragStart(actualRowIndex)}
-                    onDragOver={(e) => handleRowDragOver(e, actualRowIndex)}
+                    onDragEnd={() => handleRowDragEnd && handleRowDragEnd()}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

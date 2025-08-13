@@ -884,7 +884,7 @@ const HelpGrid = ({
         </div>
         
         {/* Content */}
-        <div className="p-6 overflow-hidden h-[calc(600px-120px)]">
+        <div className="pt-6 pl-6 pr-6 pb-0 overflow-hidden h-[calc(620px-120px)]">
           {tableAttributes ? (
             <div className="space-y-4 h-full flex flex-col">
               {/* General Search Bar */}
@@ -1019,7 +1019,7 @@ const HelpGrid = ({
               </div>
               
               {/* Footer with Pagination and Add Button - Always visible */}
-              <div className="flex-shrink-0 border-t border-border pt-2 pb-2 flex items-center justify-between bg-background">
+              <div className="flex-shrink-0 border-t border-border pt-2 pb-2 flex items-center justify-between bg-background -mt-8">
                 {/* Pagination Component */}
                 <div className="flex-1">
                   <HelpGridPagination
@@ -1045,19 +1045,10 @@ const HelpGrid = ({
                         const rowId = row.id || row.itemcode || index;
                         const isSelected = selectedRows.has(rowId);
                         const isAlreadyAdded = isItemAlreadyAdded(row);
-                        
-                        console.log(`Row ${index}:`, {
-                          row,
-                          rowId,
-                          isSelected,
-                          isAlreadyAdded,
-                          selectedRows: Array.from(selectedRows)
-                        });
+
                         
                         return isSelected && !isAlreadyAdded;
                       });
-                      
-                      console.log('Final selected items to add:', selectedSelectableItems);
                       
                       if (selectedSelectableItems.length > 0) {
                         // Add the selected selectable items

@@ -30,7 +30,7 @@ const HelpGridHeader = ({
   };
 
   return (
-    <thead className="bg-muted">
+    <thead className="bg-muted sticky top-0 z-10">
       <tr className="border-b-2 border-border">
         {/* Select column header */}
         <th
