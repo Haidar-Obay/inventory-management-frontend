@@ -34,6 +34,7 @@ const Table = (props) => {
     columnOrder,
     draggedColumn,
     draggedRow,
+    dragOverRow,
     editingCell,
     showSettings,
     savedFilters,
@@ -78,6 +79,9 @@ const Table = (props) => {
     handleColumnDragOver,
     handleRowDragStart,
     handleRowDragOver,
+    handleRowDrop,
+    handleRowDragLeave,
+    handleRowDragEnd,
     handleCellDoubleClick,
     handleCellEdit,
     handleCellEditFinish,
@@ -494,6 +498,11 @@ const Table = (props) => {
                 loading={tableProps.loading}
                 handleRowDragStart={handleRowDragStart}
                 handleRowDragOver={handleRowDragOver}
+                handleRowDrop={handleRowDrop}
+                handleRowDragLeave={handleRowDragLeave}
+                handleRowDragEnd={handleRowDragEnd}
+                draggedRow={draggedRow}
+                dragOverRow={dragOverRow}
                 handleCellDoubleClick={handleCellDoubleClick}
                 handleCellEdit={handleCellEdit}
                 handleCellEditFinish={handleCellEditFinish}

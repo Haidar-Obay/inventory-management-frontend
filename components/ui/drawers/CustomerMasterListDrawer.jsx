@@ -18,6 +18,7 @@ import {
   createCustomerMasterList, 
   editCustomerMasterList 
 } from "@/API/Customers";
+import { getItems } from "@/API/Items";
 import { useSimpleToast } from "@/components/ui/simple-toast";
 import { useTabNavigation } from "@/hooks/useTabNavigation";
 import DrawerGrid from "@/components/ui/DrawerGrid";
@@ -111,10 +112,33 @@ const CustomerMasterListDrawer = React.memo(({
     },
   ]);
 
+  // State for items data (for help modal and autocomplete)
+  const [items, setItems] = useState([]);
+  const [itemsLoading, setItemsLoading] = useState(false);
+
   // Ref to track if grid has been initialized
   const gridInitializedRef = useRef(false);
 
-    // Initialize original data for change detection and grid data
+  // Fetch items data when drawer opens
+  useEffect(() => {
+    if (isOpen) {
+      const fetchItems = async () => {
+        try {
+          setItemsLoading(true);
+          const response = await getItems();
+          setItems(response.data || []);
+        } catch (error) {
+          console.error("Error fetching items:", error);
+        } finally {
+          setItemsLoading(false);
+        }
+      };
+
+      fetchItems();
+    }
+  }, [isOpen]);
+
+  // Initialize original data for change detection and grid data
   useEffect(() => {
     if (isOpen && isEdit) {
       // Initialize grid data from formData if it exists
@@ -573,6 +597,50 @@ const CustomerMasterListDrawer = React.memo(({
     }
   }, [gridData]);
 
+  // Generate help columns from items data
+  const generateHelpColumns = useCallback((data) => {
+    if (!data || data.length === 0) return [];
+    
+    // Get the first item to determine the structure
+    const firstItem = data[0];
+    const columns = [];
+    
+    // Add columns for each property that actually exists in the data
+    Object.keys(firstItem).forEach(key => {
+      let type = 'text';
+      let header = key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ');
+      
+      // Determine column type based on actual data value
+      const value = firstItem[key];
+      if (typeof value === 'number') {
+        type = 'number';
+      } else if (typeof value === 'boolean') {
+        type = 'boolean';
+      } else if (value instanceof Date || (typeof value === 'string' && (value.includes('-') || value.includes('/')))) {
+        type = 'date';
+      }
+      
+      // Special header formatting for common fields
+      if (key === 'id') {
+        header = 'ID';
+      } else if (key === 'code' || key === 'itemcode') {
+        header = 'Code';
+      } else if (key === 'name') {
+        header = 'Name';
+      } else if (key === 'price') {
+        header = 'Price';
+      }
+      
+      columns.push({
+        key: key,
+        header: header,
+        type: type
+      });
+    });
+    
+    return columns;
+  }, []);
+
   // Get drawer title
   const getTitle = useCallback(() => {
     if (isEdit) {
@@ -762,6 +830,9 @@ const CustomerMasterListDrawer = React.memo(({
                   price: { showAddButton: false, showHelpButton: false },
                   discount: { showAddButton: false, showHelpButton: false },
                 }}
+                helpData={items}
+                helpColumns={generateHelpColumns(items)}
+                helpLoading={itemsLoading}
               />
             </AccordionDetails>
           </Accordion>
