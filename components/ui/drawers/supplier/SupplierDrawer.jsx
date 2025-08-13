@@ -26,6 +26,69 @@ import NotesSection from "./NotesSection";
 import CatalogSection from "./CatalogSection";
 import { useShippingAddresses } from "./shared/useAddressManagement";
 
+// Helper function to map backend address structure to frontend form fields
+const mapAddressesFromBackend = (backendData) => {
+  const mapped = {};
+  
+  // Map primary billing address
+  if (backendData.primary_billing_address) {
+    const addr = backendData.primary_billing_address;
+    mapped.billing_country_id = addr.country_id || "";
+    mapped.billing_city_id = addr.city_id || "";
+    mapped.billing_district_id = addr.district_id || "";
+    mapped.billing_zone_id = addr.zone_id || "";
+    mapped.billing_address_line1 = addr.address_line1 || "";
+    mapped.billing_address_line2 = addr.address_line2 || "";
+    mapped.billing_building = addr.building || "";
+    mapped.billing_block = addr.block || "";
+    mapped.billing_floor = addr.floor || "";
+    mapped.billing_side = addr.side || "";
+    mapped.billing_apartment = addr.apartment || "";
+    mapped.billing_zip_code = addr.zip_code || "";
+  }
+  
+  // Map primary shipping address
+  if (backendData.primary_shipping_address) {
+    const addr = backendData.primary_shipping_address;
+    mapped.shipping_country_id = addr.country_id || "";
+    mapped.shipping_city_id = addr.city_id || "";
+    mapped.shipping_district_id = addr.district_id || "";
+    mapped.shipping_zone_id = addr.zone_id || "";
+    mapped.shipping_address_line1 = addr.address_line1 || "";
+    mapped.shipping_address_line2 = addr.address_line2 || "";
+    mapped.shipping_building = addr.building || "";
+    mapped.shipping_block = addr.block || "";
+    mapped.shipping_floor = addr.floor || "";
+    mapped.shipping_side = addr.side || "";
+    mapped.shipping_apartment = addr.apartment || "";
+    mapped.shipping_zip_code = addr.zip_code || "";
+  }
+  
+  // Map shipping addresses array
+  if (backendData.shipping_addresses && Array.isArray(backendData.shipping_addresses)) {
+    mapped.shipping_addresses = backendData.shipping_addresses.map(addr => ({
+      id: addr.id,
+      country_id: addr.country_id || "",
+      city_id: addr.city_id || "",
+      district_id: addr.district_id || "",
+      zone_id: addr.zone_id || "",
+      address_line1: addr.address_line1 || "",
+      address_line2: addr.address_line2 || "",
+      building: addr.building || "",
+      block: addr.block || "",
+      floor: addr.floor || "",
+      side: addr.side || "",
+      apartment: addr.apartment || "",
+      zip_code: addr.zip_code || "",
+      address_name: addr.pivot?.address_name || "",
+      notes: addr.pivot?.notes || "",
+      is_primary: addr.pivot?.is_primary || false
+    }));
+  }
+  
+  return mapped;
+};
+
 // Constants
 const INITIAL_FORM_DATA = {
   // Personal info fields
@@ -78,17 +141,17 @@ const INITIAL_FORM_DATA = {
   business_type_id: "",
   indicator: "",
   // Opening balance fields
-  opening_balances_form: [],
-  // Payment terms fields
-  payment_term_id: "",
-  payment_method_id: "",
-  allow_credit: false,
-  credit_limits: {},
-  accept_cheques: false,
-  max_cheques: {},
-  payment_day: "",
-  track_payment: "no",
-  settlement_method: "FIFO",
+  opening_balances: [],
+     // Payment terms fields
+   payment_term_id: "",
+   payment_method_id: "",
+   allow_credit: false,
+   credit_limits: [],
+   accept_cheques: false,
+   max_cheques: [],
+   payment_day: "",
+   track_payment: "no",
+   settlement_method: "FIFO",
   // Taxes fields
   taxable: false,
   taxed_from_date: "",
@@ -105,6 +168,7 @@ const INITIAL_FORM_DATA = {
   attachments: [],
   // Message fields
   showMessageField: false,
+  add_message: false,
   message: "",
   // Notes field
   notes: ""
@@ -116,6 +180,7 @@ const SupplierDrawer = React.memo(({
   type,
   formData: externalFormData,
   isEdit = false,
+  onSave,
 }) => {
   const t = useTranslations("suppliers");
   const tToast = useTranslations("toast");
@@ -146,21 +211,21 @@ const SupplierDrawer = React.memo(({
   const [currencies, setCurrencies] = useState([]);
   const [subscriptionChecked, setSubscriptionChecked] = useState(false);
   const [canAddMultiCurrency, setCanAddMultiCurrency] = useState(false);
-  const [openingBalances, setOpeningBalances] = useState([{ currency: '', amount: '', date: '' }]);
+  const [openingBalances, setOpeningBalances] = useState([]);
   
-  // Payment terms state
-  const [paymentTerms, setPaymentTerms] = useState([]);
-  const [paymentMethods, setPaymentMethods] = useState([]);
-  const [selectedPaymentTerm, setSelectedPaymentTerm] = useState(null);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
-  const [allowCredit, setAllowCredit] = useState(false);
-  const [creditLimits, setCreditLimits] = useState({});
-  const [acceptCheques, setAcceptCheques] = useState(false);
-  const [maxCheques, setMaxCheques] = useState({});
-  const [paymentDay, setPaymentDay] = useState("");
-  const [trackPayment, setTrackPayment] = useState(false);
-  const [settlementMethod, setSettlementMethod] = useState("FIFO");
-  const [userChangedTrackPayment] = useState({ current: false });
+     // Payment terms state
+   const [paymentTerms, setPaymentTerms] = useState([]);
+   const [paymentMethods, setPaymentMethods] = useState([]);
+   const [selectedPaymentTerm, setSelectedPaymentTerm] = useState(null);
+   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+   const [allowCredit, setAllowCredit] = useState(false);
+   const [creditLimits, setCreditLimits] = useState([]);
+   const [acceptCheques, setAcceptCheques] = useState(false);
+   const [maxCheques, setMaxCheques] = useState([]);
+   const [paymentDay, setPaymentDay] = useState("");
+   const [trackPayment, setTrackPayment] = useState(false);
+   const [settlementMethod, setSettlementMethod] = useState("FIFO");
+   const [userChangedTrackPayment] = useState({ current: false });
   
   // Accordion state management
   const [expandedSections, setExpandedSections] = useState({});
@@ -188,59 +253,113 @@ const SupplierDrawer = React.memo(({
   const [active, setActive] = useState(true);
   const [foreign, setForeign] = useState(false);
 
-  // Initialize form data when drawer opens
+    // Initialize form data when drawer opens
   useEffect(() => {
     if (isOpen) {
       if (isEdit && externalFormData) {
-        const data = { ...INITIAL_FORM_DATA, ...externalFormData };
-        setFormData(data);
-        setOriginalData(JSON.parse(JSON.stringify(data)));
+        // Map backend response data to frontend form structure
+        const mappedData = {
+          ...INITIAL_FORM_DATA,
+          // Personal info fields
+          title: externalFormData.title || "",
+          first_name: externalFormData.first_name || "",
+          middle_name: externalFormData.middle_name || "",
+          last_name: externalFormData.last_name || "",
+          display_name: externalFormData.display_name || "",
+          company_name: externalFormData.company_name || "",
+          phone1: externalFormData.phone1 || "",
+          phone2: externalFormData.phone2 || "",
+          phone3: externalFormData.phone3 || "",
+          
+          // Business info fields
+          file_number: externalFormData.file_number || "",
+          barcode: externalFormData.barcode || "",
+          search_terms: externalFormData.search_terms || [],
+          
+          // Categorize fields - extract IDs from nested objects
+          trade_id: externalFormData.trade?.id || "",
+          supplier_group_id: externalFormData.supplier_group?.id || "",
+          business_type_id: externalFormData.business_type?.id || "",
+          indicator: externalFormData.indicator || "",
+          
+          // Payment terms fields - extract IDs from nested objects
+          payment_term_id: externalFormData.payment_term?.id || "",
+          payment_method_id: externalFormData.payment_method?.id || "",
+          payment_day: externalFormData.payment_day || "",
+          track_payment: externalFormData.track_payment || "no",
+          settlement_method: externalFormData.settlement_method || "FIFO",
+          accept_cheques: externalFormData.accept_cheques || false,
+          
+          // Tax fields
+          taxable: externalFormData.taxable || false,
+          taxed_from_date: externalFormData.taxed_from_date || "",
+          taxed_till_date: externalFormData.taxed_till_date || "",
+          subjected_to_tax: externalFormData.subjected_to_tax || false,
+          added_tax: externalFormData.added_tax || "",
+          
+          // Message fields
+          add_message: externalFormData.add_message || false,
+          message: externalFormData.message || "",
+          
+          // Notes
+          notes: externalFormData.notes || "",
+          
+          // Quick options
+          active: externalFormData.active || true,
+          foreign: externalFormData.is_foreign || false,
+          
+          // Map addresses from backend structure
+          ...mapAddressesFromBackend(externalFormData),
+        };
+        
+        setFormData(mappedData);
+        setOriginalData(JSON.parse(JSON.stringify(mappedData)));
         setAutoGenerateDisplayName(false); // Don't auto-generate for edit mode initially
         
         // Initialize search terms
-        if (data.search_terms && Array.isArray(data.search_terms)) {
-          setSearchTerms(data.search_terms);
+        if (mappedData.search_terms && Array.isArray(mappedData.search_terms)) {
+          setSearchTerms(mappedData.search_terms);
         } else {
           setSearchTerms([]);
         }
         
         // Initialize contacts
-        if (data.contacts && Array.isArray(data.contacts)) {
-          setContacts(data.contacts);
+        if (externalFormData.contacts && Array.isArray(externalFormData.contacts)) {
+          setContacts(externalFormData.contacts);
         } else {
           setContacts([]);
         }
         
         // Initialize opening balances
-        if (data.opening_balances_form && Array.isArray(data.opening_balances_form)) {
-          setOpeningBalances(data.opening_balances_form);
+        if (externalFormData.opening_balances && Array.isArray(externalFormData.opening_balances)) {
+          setOpeningBalances(externalFormData.opening_balances);
         } else {
-          setOpeningBalances([{ currency: '', amount: '', date: '' }]);
+          setOpeningBalances([]);
         }
         
         // Initialize payment terms state
-        setSelectedPaymentTerm(data.payment_term_id || null);
-        setSelectedPaymentMethod(data.payment_method_id || null);
-        setAllowCredit(data.allow_credit || false);
-        setCreditLimits(data.credit_limits || {});
-        setAcceptCheques(data.accept_cheques || false);
-        setMaxCheques(data.max_cheques || {});
-        setPaymentDay(data.payment_day || "");
-        setTrackPayment(data.track_payment === 'yes');
-        setSettlementMethod(data.settlement_method || "FIFO");
+        setSelectedPaymentTerm(mappedData.payment_term_id || null);
+        setSelectedPaymentMethod(mappedData.payment_method_id || null);
+        setAllowCredit(externalFormData.allow_credit || false);
+        setCreditLimits(externalFormData.credit_limits || []);
+        setAcceptCheques(mappedData.accept_cheques || false);
+        setMaxCheques(externalFormData.cheque_limits || []); // Map from cheque_limits
+        setPaymentDay(mappedData.payment_day || "");
+        setTrackPayment(mappedData.track_payment === 'yes');
+        setSettlementMethod(mappedData.settlement_method || "FIFO");
       } else {
         setFormData(INITIAL_FORM_DATA);
         setOriginalData(INITIAL_FORM_DATA);
         setAutoGenerateDisplayName(true);
         setSearchTerms([]);
         setContacts([]);
-        setOpeningBalances([{ currency: '', amount: '', date: '' }]);
+        setOpeningBalances([]);
         setSelectedPaymentTerm(null);
         setSelectedPaymentMethod(null);
         setAllowCredit(false);
-        setCreditLimits({});
+        setCreditLimits([]);
         setAcceptCheques(false);
-        setMaxCheques({});
+        setMaxCheques([]);
         setPaymentDay("");
         setTrackPayment(false);
         setSettlementMethod("FIFO");
@@ -520,12 +639,18 @@ const SupplierDrawer = React.memo(({
 
   // Sync opening balances when they change
   useEffect(() => {
-    if (openingBalances.length > 0) {
-      setFormData(prev => ({
-        ...prev,
-        opening_balances_form: openingBalances
+    // Filter out entries without currency and ensure notes field is always null
+    const validOpeningBalances = openingBalances
+      .filter(balance => balance.currency_id && balance.currency_id !== '')
+      .map(balance => ({
+        ...balance,
+        notes: null
       }));
-    }
+    
+    setFormData(prev => ({
+      ...prev,
+      opening_balances: validOpeningBalances
+    }));
   }, [openingBalances]);
 
   // Sync payment terms state when they change
@@ -549,9 +674,11 @@ const SupplierDrawer = React.memo(({
     setFormData(prev => ({
       ...prev,
       active: active,
-      foreign: foreign
+      foreign: foreign,
+      is_foreign: foreign, // Add backend field mapping
+      add_message: formData.showMessageField // Add backend field mapping
     }));
-  }, [active, foreign]);
+  }, [active, foreign, formData.showMessageField]);
 
   // Business information handlers
   const handleAddSearchTerm = useCallback(() => {
@@ -616,27 +743,43 @@ const SupplierDrawer = React.memo(({
   }, []);
 
   const handleAddOpeningBalance = useCallback(() => {
-    setOpeningBalances(prev => [...prev, { currency: '', amount: '', date: '' }]);
+    setOpeningBalances(prev => [...prev, { currency_id: '', opening_amount: '', opening_date: '' }]);
   }, []);
 
   const handleRemoveOpeningBalance = useCallback((index) => {
     setOpeningBalances(prev => prev.filter((_, i) => i !== index));
   }, []);
 
-  // Payment terms handlers
-  const handleCreditLimitChange = useCallback((currency, value) => {
-    setCreditLimits(prev => ({
-      ...prev,
-      [currency]: value
-    }));
-  }, []);
-
-  const handleMaxChequesChange = useCallback((currency, value) => {
-    setMaxCheques(prev => ({
-      ...prev,
-      [currency]: value
-    }));
-  }, []);
+     // Payment terms handlers
+   const handleCreditLimitChange = useCallback((currencyId, value) => {
+     setCreditLimits(prev => {
+       const existing = prev.find(cl => cl.currency_id === currencyId);
+       if (existing) {
+         return prev.map(cl => 
+           cl.currency_id === currencyId 
+             ? { ...cl, credit_limit: value }
+             : cl
+         );
+       } else {
+         return [...prev, { currency_id: currencyId, credit_limit: value, notes: null }];
+       }
+     });
+   }, []);
+ 
+   const handleMaxChequesChange = useCallback((currencyId, value) => {
+     setMaxCheques(prev => {
+       const existing = prev.find(cl => cl.currency_id === currencyId);
+       if (existing) {
+         return prev.map(cl => 
+           cl.currency_id === currencyId 
+             ? { ...cl, max_cheques: value }
+             : cl
+         );
+       } else {
+         return [...prev, { currency_id: currencyId, max_cheques: value, notes: null }];
+       }
+     });
+   }, []);
 
   // Display name suggestions
   const displayNameSuggestions = useMemo(() => {
@@ -738,13 +881,102 @@ const SupplierDrawer = React.memo(({
 
     try {
       setSaveLoading(true);
-      let response;
+      
+             // Process form data before sending to backend
+       const processedFormData = {
+         ...formData,
+         // Ensure display_name is properly set
+         display_name: formData.display_name || `${formData.first_name || ''} ${formData.last_name || ''}`.trim() || 'Supplier',
+                  // Handle opening balances - send empty array if no valid entries
+          opening_balances: (() => {
+            const validBalances = formData.opening_balances?.filter(balance => 
+              balance.currency_id && balance.currency_id !== '' && 
+              balance.opening_amount && balance.opening_amount !== ''
+            ) || [];
+            
+            return validBalances.map(balance => ({
+              ...balance,
+              currency_id: parseInt(balance.currency_id),
+              opening_amount: parseFloat(balance.opening_amount),
+              notes: null
+            }));
+          })(),
+                 // Handle credit limits - send empty array if no valid entries
+         credit_limits: (() => {
+           const validLimits = formData.credit_limits?.filter(limit => 
+             limit.currency_id && limit.currency_id !== '' && 
+             limit.credit_limit && limit.credit_limit !== ''
+           ) || [];
+           
+           return validLimits.map(limit => ({
+             ...limit,
+             currency_id: parseInt(limit.currency_id),
+             credit_limit: parseFloat(limit.credit_limit),
+             notes: limit.notes || null
+           }));
+         })(),
+                 // Handle max cheques - send empty array if no valid entries
+         // Backend expects cheque_limits instead of max_cheques
+         cheque_limits: (() => {
+           const validCheques = formData.max_cheques?.filter(cheque => 
+             cheque.currency_id && cheque.currency_id !== '' && 
+             cheque.max_cheques && cheque.max_cheques !== ''
+           ) || [];
+           
+           return validCheques.map(cheque => ({
+             ...cheque,
+             currency_id: parseInt(cheque.currency_id),
+             max_cheques: parseInt(cheque.max_cheques),
+             notes: cheque.notes || null
+           }));
+         })(),
+        // Convert other numeric fields
+        trade_id: formData.trade_id ? parseInt(formData.trade_id) : null,
+        supplier_group_id: formData.supplier_group_id ? parseInt(formData.supplier_group_id) : null,
+        business_type_id: formData.business_type_id ? parseInt(formData.business_type_id) : null,
+        payment_term_id: formData.payment_term_id ? parseInt(formData.payment_term_id) : null,
+        payment_method_id: formData.payment_method_id ? parseInt(formData.payment_method_id) : null,
+        payment_day: formData.payment_day ? parseInt(formData.payment_day) : null,
+        added_tax: formData.added_tax ? parseFloat(formData.added_tax) : null,
+        // Convert location IDs
+        billing_country_id: formData.billing_country_id ? parseInt(formData.billing_country_id) : null,
+        billing_city_id: formData.billing_city_id ? parseInt(formData.billing_city_id) : null,
+        billing_district_id: formData.billing_district_id ? parseInt(formData.billing_district_id) : null,
+        billing_zone_id: formData.billing_zone_id ? parseInt(formData.billing_zone_id) : null,
+        shipping_country_id: formData.shipping_country_id ? parseInt(formData.shipping_country_id) : null,
+        shipping_city_id: formData.shipping_city_id ? parseInt(formData.shipping_city_id) : null,
+        shipping_district_id: formData.shipping_district_id ? parseInt(formData.shipping_district_id) : null,
+        shipping_zone_id: formData.shipping_zone_id ? parseInt(formData.shipping_zone_id) : null,
+                 // Process shipping addresses
+         shipping_addresses: formData.shipping_addresses?.map(address => ({
+           ...address,
+           country_id: address.country_id ? parseInt(address.country_id) : null,
+           city_id: address.city_id ? parseInt(address.city_id) : null,
+           district_id: address.district_id ? parseInt(address.district_id) : null,
+           zone_id: address.zone_id ? parseInt(address.zone_id) : null
+         })) || [],
+         // Map frontend field names to backend field names
+         is_foreign: formData.foreign,
+         
+         // Remove frontend-specific fields that backend doesn't expect
+         foreign: undefined,
+         showMessageField: undefined,
+         
+         // Ensure required fields are present
+         name: formData.display_name || `${formData.first_name || ''} ${formData.last_name || ''}`.trim() || 'Supplier',
+         phone: formData.phone1 || '',
+         address: formData.billing_address_line1 || ''
+       };
 
-      if (isEdit) {
-        response = await editSupplier(formData.id, formData);
-      } else {
-        response = await createSupplier(formData);
-      }
+             
+
+       let response;
+
+       if (isEdit) {
+         response = await editSupplier(processedFormData.id, processedFormData);
+       } else {
+         response = await createSupplier(processedFormData);
+       }
 
       if (response && response.status) {
         showSuccessToast(tToast(isEdit ? "updateSuccess" : "createSuccess"));
@@ -766,22 +998,38 @@ const SupplierDrawer = React.memo(({
 
   // Save handlers
   const handleSave = useCallback(async () => {
-    await performSave(() => {});
-  }, [performSave]);
+    await performSave((responseData) => {
+      // Call onSave prop to update parent component
+      if (onSave) {
+        onSave(responseData);
+      }
+    });
+  }, [performSave, onSave]);
 
   const handleSaveAndNew = useCallback(async () => {
     await performSave((responseData) => {
+      // Call onSave prop to update parent component
+      if (onSave) {
+        onSave(responseData);
+      }
+      
       if (!isEdit) {
         setFormData(INITIAL_FORM_DATA);
         setOriginalData(INITIAL_FORM_DATA);
         setAutoGenerateDisplayName(true);
       }
     });
-  }, [performSave, isEdit]);
+  }, [performSave, onSave, isEdit]);
 
   const handleSaveAndClose = useCallback(async () => {
-    await performSave(() => onClose());
-  }, [performSave, onClose]);
+    await performSave((responseData) => {
+      // Call onSave prop to update parent component
+      if (onSave) {
+        onSave(responseData);
+      }
+      onClose();
+    });
+  }, [performSave, onSave, onClose]);
 
   // Content
   const content = (
@@ -905,40 +1153,41 @@ const SupplierDrawer = React.memo(({
             setAllCollapsed={setAllCollapsed}
           />
           
-          <PaymentTermsSection
-            formData={formData}
-            onFormDataChange={handleFormDataChange}
-            isRTL={isRTL}
-            t={t}
-            paymentTerms={paymentTerms}
-            setPaymentTerms={setPaymentTerms}
-            paymentMethods={paymentMethods}
-            setPaymentMethods={setPaymentMethods}
-            selectedPaymentTerm={selectedPaymentTerm}
-            setSelectedPaymentTerm={setSelectedPaymentTerm}
-            selectedPaymentMethod={selectedPaymentMethod}
-            setSelectedPaymentMethod={setSelectedPaymentMethod}
-            allowCredit={allowCredit}
-            setAllowCredit={setAllowCredit}
-            openingBalances={openingBalances}
-            creditLimits={creditLimits}
-            handleCreditLimitChange={handleCreditLimitChange}
-            acceptCheques={acceptCheques}
-            setAcceptCheques={setAcceptCheques}
-            maxCheques={maxCheques}
-            handleMaxChequesChange={handleMaxChequesChange}
-            paymentDay={paymentDay}
-            setPaymentDay={setPaymentDay}
-            trackPayment={trackPayment}
-            setTrackPayment={setTrackPayment}
-            settlementMethod={settlementMethod}
-            setSettlementMethod={setSettlementMethod}
-            expanded={expandedSections.paymentTerms}
-            onAccordionChange={handleAccordionChange('paymentTerms')}
-            allCollapsed={allCollapsed}
-            setAllCollapsed={setAllCollapsed}
-            userChangedTrackPayment={userChangedTrackPayment}
-          />
+                     <PaymentTermsSection
+             formData={formData}
+             onFormDataChange={handleFormDataChange}
+             isRTL={isRTL}
+             t={t}
+             paymentTerms={paymentTerms}
+             setPaymentTerms={setPaymentTerms}
+             paymentMethods={paymentMethods}
+             setPaymentMethods={setPaymentMethods}
+             selectedPaymentTerm={selectedPaymentTerm}
+             setSelectedPaymentTerm={setSelectedPaymentTerm}
+             selectedPaymentMethod={selectedPaymentMethod}
+             setSelectedPaymentMethod={setSelectedPaymentMethod}
+             allowCredit={allowCredit}
+             setAllowCredit={setAllowCredit}
+             openingBalances={openingBalances}
+             creditLimits={creditLimits}
+             handleCreditLimitChange={handleCreditLimitChange}
+             acceptCheques={acceptCheques}
+             setAcceptCheques={setAcceptCheques}
+             maxCheques={maxCheques}
+             handleMaxChequesChange={handleMaxChequesChange}
+             paymentDay={paymentDay}
+             setPaymentDay={setPaymentDay}
+             trackPayment={trackPayment}
+             setTrackPayment={setTrackPayment}
+             settlementMethod={settlementMethod}
+             setSettlementMethod={setSettlementMethod}
+             expanded={expandedSections.paymentTerms}
+             onAccordionChange={handleAccordionChange('paymentTerms')}
+             allCollapsed={allCollapsed}
+             setAllCollapsed={setAllCollapsed}
+             userChangedTrackPayment={userChangedTrackPayment}
+             currencies={currencies}
+           />
           
           <TaxesSection
             formData={formData}
@@ -987,7 +1236,10 @@ const SupplierDrawer = React.memo(({
 
           <MessageSection
             showMessageField={formData.showMessageField || false}
-            setShowMessageField={(value) => handleFormDataChange('showMessageField', value)}
+            setShowMessageField={(value) => {
+              handleFormDataChange('showMessageField', value);
+              handleFormDataChange('add_message', value); // Sync with backend field
+            }}
             message={formData.message || ''}
             setMessage={(value) => handleFormDataChange('message', value)}
             isRTL={isRTL}

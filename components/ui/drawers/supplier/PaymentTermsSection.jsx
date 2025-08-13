@@ -151,7 +151,8 @@ const PaymentTermsSection = React.memo(({
   onAccordionChange,
   allCollapsed,
   setAllCollapsed,
-  userChangedTrackPayment
+  userChangedTrackPayment,
+  currencies
 }) => {
   const { openDrawer } = useDrawerStack();
 
@@ -178,11 +179,11 @@ const PaymentTermsSection = React.memo(({
   }, [formData?.track_payment, userChangedTrackPayment.current, setTrackPayment]);
 
   // Determine if any opening currency is selected
-  const hasOpeningCurrency = Array.isArray(openingBalances) && openingBalances.some(entry => entry.currency);
+  const hasOpeningCurrency = Array.isArray(openingBalances) && openingBalances.some(entry => entry.currency_id);
 
   // Determine if selected payment term has nb_days > 0
   const selectedTerm = paymentTerms.find(pt => pt.id === selectedPaymentTerm);
-  const showAllowCreditFields = hasOpeningCurrency && selectedTerm && selectedTerm.nb_days > 0;
+  const showAllowCreditFields = hasOpeningCurrency && selectedTerm && selectedTerm.nb_days > 0 && allowCredit;
   
   // Effect: If allowCredit is checked but no opening currency, uncheck it
   React.useEffect(() => {
@@ -279,44 +280,32 @@ const PaymentTermsSection = React.memo(({
     onFormDataChange('accept_cheques', checked);
   };
 
-  // Render credit limit fields
-  const renderCreditLimitFields = () => {
-    if (!showAllowCreditFields) return null;
-    
-    return openingBalances.map((entry, idx) => (
-      <Box key={entry.currency + '-credit'} sx={{ width: '100%' }}>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
-          {t('management.creditLimitPerCurrency') || 'Credit Limit for'} {entry.currency}
-        </Typography>
-        <RTLTextField
-          value={creditLimits[entry.currency] || ''}
-          onChange={e => handleCreditLimitChange(entry.currency, e.target.value)}
-          type="number"
-          placeholder=""
-          sx={{ mb: 1 }}
-        />
-      </Box>
-    ));
-  };
+
 
   // Render max cheques fields
   const renderMaxChequesFields = () => {
     if (!acceptCheques) return null;
     
-    return openingBalances.map((entry, idx) => (
-      <Box key={entry.currency + '-cheques'} sx={{ width: '100%' }}>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
-          {t('management.maxNbChequesPerCurrency') || 'Max. Nb. Cheques for'} {entry.currency}
-        </Typography>
-        <RTLTextField
-          value={maxCheques[entry.currency] || ''}
-          onChange={e => handleMaxChequesChange(entry.currency, e.target.value)}
-          type="number"
-          placeholder=""
-          sx={{ mb: 1 }}
-        />
-      </Box>
-    ));
+    return openingBalances.map((entry, idx) => {
+      const currencyCode = currencies.find(c => c.id === entry.currency_id)?.code || entry.currency_id;
+      const existingChequeLimit = maxCheques.find(cl => cl.currency_id === entry.currency_id);
+      
+      return (
+        <Box key={entry.currency_id + '-cheques'} sx={{ width: '100%' }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
+            {t('management.maxNbChequesPerCurrency') || 'Max. Nb. Cheques for'} {currencyCode}
+          </Typography>
+          <RTLTextField
+            value={existingChequeLimit?.max_cheques || ''}
+            onChange={e => handleMaxChequesChange(entry.currency_id, e.target.value)}
+            type="number"
+            placeholder=""
+            inputProps={{ min: 1, step: 1 }}
+            sx={{ mb: 1 }}
+          />
+        </Box>
+      );
+    });
   };
 
   return (
@@ -354,7 +343,29 @@ const PaymentTermsSection = React.memo(({
                   onMouseDown={e => e.stopPropagation()}
                   onFocus={e => e.stopPropagation()}
                 >
-                  {renderCreditLimitFields()}
+                                     {openingBalances.map((entry, idx) => {
+                     const currencyCode = currencies.find(c => c.id === entry.currency_id)?.code || entry.currency_id;
+                     const existingCreditLimit = creditLimits.find(cl => cl.currency_id === entry.currency_id);
+                     
+                     return (
+                       <Box key={entry.currency_id + '-credit'} sx={{ mb: 1 }}>
+                         <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
+                           {t('management.creditLimitPerCurrency') || 'Credit Limit for'} {currencyCode}
+                         </Typography>
+                         <RTLTextField
+                           value={existingCreditLimit?.credit_limit || ''}
+                           onChange={e => handleCreditLimitChange(entry.currency_id, e.target.value)}
+                           type="number"
+                           placeholder=""
+                           inputProps={{ min: 0, step: 0.01 }}
+                           onClick={e => e.stopPropagation()}
+                           onFocus={e => e.stopPropagation()}
+                           onMouseDown={e => e.stopPropagation()}
+                           sx={{ background: 'background.paper' }}
+                         />
+                       </Box>
+                     );
+                   })}
                 </Box>
               )}
             </Box>
@@ -393,8 +404,32 @@ const PaymentTermsSection = React.memo(({
 
           {/* Second line: Credit limit fields if conditions are met */}
           {showAllowCreditFields && (
-            <Grid item xs={12} md={6} sx={{ minWidth: 800, display: 'flex', alignItems: 'center', gap: 0 }}>
-              {renderCreditLimitFields()}
+            <Grid item xs={12} sx={{ minWidth: 800 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2, textAlign: isRTL ? 'right' : 'left' }}>
+                {/* {t('management.creditLimits') || 'Credit Limits'} */}
+              </Typography>
+              <Grid container spacing={2}>
+                                 {openingBalances.map((entry, idx) => {
+                   const currencyCode = currencies.find(c => c.id === entry.currency_id)?.code || entry.currency_id;
+                   const existingCreditLimit = creditLimits.find(cl => cl.currency_id === entry.currency_id);
+                   
+                   return (
+                     <Grid item xs={12} md={4} key={entry.currency_id + '-credit'}>
+                       <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
+                         {t('management.creditLimitPerCurrency') || 'Credit Limit for'} {currencyCode}
+                       </Typography>
+                       <RTLTextField
+                         value={existingCreditLimit?.credit_limit || ''}
+                         onChange={e => handleCreditLimitChange(entry.currency_id, e.target.value)}
+                         type="number"
+                         placeholder=""
+                         inputProps={{ min: 0, step: 0.01 }}
+                         fullWidth
+                       />
+                     </Grid>
+                   );
+                 })}
+              </Grid>
             </Grid>
           )}
           
@@ -438,18 +473,33 @@ const PaymentTermsSection = React.memo(({
             </Grid>
           )}
           
-          {/* Accept Cheques section - always visible */}
-          <Grid item xs={12} md={6} sx={{ minWidth: 800, display: 'flex', alignItems: 'center', gap: 0 }}>
-            <Checkbox
-              checked={acceptCheques}
-              onChange={e => handleAcceptChequesChange(e.target.checked)}
-              label={t('management.acceptCheques') || 'Accept Cheques'}
-              isRTL={isRTL}
-              disabled={!hasOpeningCurrency}
-            />
-          </Grid>
+                     {/* Allow Credit checkbox - visible when opening currency exists and payment term has nb_days > 0 */}
+           {hasOpeningCurrency && selectedTerm && selectedTerm.nb_days > 0 && (
+             <Grid item xs={12} md={6} sx={{ minWidth: 375, display: 'flex', alignItems: 'center', gap: 0 }}>
+               <Checkbox
+                 checked={allowCredit}
+                 onChange={e => {
+                   setAllowCredit(e.target.checked);
+                   onFormDataChange('allow_credit', e.target.checked);
+                 }}
+                 label={t('management.allowCredit') || 'Allow Credit'}
+                 isRTL={isRTL}
+               />
+             </Grid>
+           )}
+           
+           {/* Accept Cheques section - always visible */}
+           <Grid item xs={12} md={6} sx={{ minWidth: 800, display: 'flex', alignItems: 'center', gap: 0 }}>
+             <Checkbox
+               checked={acceptCheques}
+               onChange={e => handleAcceptChequesChange(e.target.checked)}
+               label={t('management.acceptCheques') || 'Accept Cheques'}
+               isRTL={isRTL}
+               disabled={!hasOpeningCurrency}
+             />
+           </Grid>
           
-          <Grid item xs={12} md={6} sx={{ minWidth: 800, display: 'flex', alignItems: 'center', gap: 0 }}>
+          <Grid item xs={12} sx={{ minWidth: 800 }}>
             {renderMaxChequesFields()}
           </Grid>
         </Grid>

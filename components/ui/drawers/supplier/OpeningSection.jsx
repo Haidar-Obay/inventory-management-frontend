@@ -46,10 +46,17 @@ const OpeningSection = React.memo(({
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
-        {openingBalances.map((entry, idx) => {
+        {openingBalances.length === 0 ? (
+          <Box sx={{ textAlign: 'center', py: 3, color: 'text.secondary' }}>
+            <Typography variant="body2">
+              {t('management.noOpeningBalances') || 'No opening balances added yet. Click "Add Currency" to add one.'}
+            </Typography>
+          </Box>
+        ) : (
+          openingBalances.map((entry, idx) => {
           // Filter out currencies already selected in other entries
-          const selectedCurrencies = openingBalances.filter((e, i) => i !== idx).map(e => e.currency);
-          const availableCurrencies = currencies.filter(c => !selectedCurrencies.includes(c.code));
+          const selectedCurrencies = openingBalances.filter((e, i) => i !== idx).map(e => e.currency_id);
+          const availableCurrencies = currencies.filter(c => !selectedCurrencies.includes(c.id));
           return (
             <Grid container spacing={2} key={idx} sx={{ mb: 2, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
               <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
@@ -63,12 +70,12 @@ const OpeningSection = React.memo(({
                     if (option?.isAddButton) return option.name;
                     return option ? `${option.name} (${option.code})` : '';
                   }}
-                  value={currencies.find((c) => c.code === entry.currency) || null}
+                  value={currencies.find((c) => c.id === entry.currency_id) || null}
                   onChange={(_, newValue) => {
                     if (newValue?.isAddButton) {
                       return;
                     }
-                    handleOpeningBalanceChange(idx, 'currency', newValue?.code || '');
+                    handleOpeningBalanceChange(idx, 'currency_id', newValue?.id || '');
                   }}
                   renderInput={(params) => <RTLTextField {...params} placeholder="" />}
                   renderOption={(props, option) => {
@@ -88,28 +95,30 @@ const OpeningSection = React.memo(({
                   }}
                 />
               </Grid>
-              <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
+              <Grid item xs={12} md={3} sx={{ minWidth: 200 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
                   {t('management.openingAmount') || 'Opening Amount'}
                 </Typography>
                 <RTLTextField
-                  value={entry.amount}
-                  onChange={e => handleOpeningBalanceChange(idx, 'amount', e.target.value)}
+                  value={entry.opening_amount}
+                  onChange={e => handleOpeningBalanceChange(idx, 'opening_amount', e.target.value)}
                   type="number"
                   placeholder=""
+                  inputProps={{ max: 999999999.99, step: 0.01 }}
                 />
               </Grid>
-              <Grid item xs={12} md={4} sx={{ minWidth: 250 }}>
+              <Grid item xs={12} md={3} sx={{ minWidth: 200 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1, textAlign: isRTL ? 'right' : 'left' }}>
                   {t('management.openingDate') || 'Opening Date'}
                 </Typography>
                 <RTLTextField
-                  value={entry.date}
-                  onChange={e => handleOpeningBalanceChange(idx, 'date', e.target.value)}
+                  value={entry.opening_date}
+                  onChange={e => handleOpeningBalanceChange(idx, 'opening_date', e.target.value)}
                   type="date"
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
+
               {canAddMultiCurrency && openingBalances.length > 1 && (
                 <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button color="error" size="small" onClick={() => handleRemoveOpeningBalance(idx)}>
@@ -119,7 +128,8 @@ const OpeningSection = React.memo(({
               )}
             </Grid>
           );
-        })}
+        })
+        )}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 2, mt: 2 }}>
           {subscriptionChecked && !canAddMultiCurrency && (
             <Typography color="warning.main" sx={{ fontWeight: 500 }}>
