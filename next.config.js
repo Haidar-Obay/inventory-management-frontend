@@ -55,7 +55,6 @@ const nextConfig = {
         }
       });
     }
-
     
     // Handle font loading issues
     config.resolve.fallback = {

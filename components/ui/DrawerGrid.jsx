@@ -128,7 +128,6 @@ const DrawerGrid = ({
           console.log(`DrawerGrid: Adding new row for item ${index}:`, item);
           const newRow = {
             id: `row_${Date.now()}_${index}`,
-            line: "",
             item_id: item.id || null,
             itemcode: item.code || item.itemcode || "",
             price: item.price || 0,
@@ -563,18 +562,32 @@ const DrawerGrid = ({
           backgroundColor: getBackgroundColor()
         }}
       >
-        <Table size="small" sx={{ borderCollapse: 'collapse' }}>
+        <Table size="small" sx={{ borderCollapse: 'collapse', tableLayout: 'fixed' }}>
           <TableHead>
             <TableRow sx={{ 
               backgroundColor: getBackgroundColor()
             }}>
-              {columns.map((column, index) => {
+              {/* Static Line Column */}
+              <TableCell 
+                sx={{ 
+                  fontWeight: 600, 
+                  fontSize: '0.875rem',
+                  width: '6px ',
+                  borderBottom: '2px solid',
+                  borderRight: '1px solid',
+                  borderColor: 'divider',
+                  padding: '12px 0px',
+                  backgroundColor: getBackgroundColor(),
+                  textAlign: 'center'
+                }}
+              >
+                Line
+              </TableCell>
+              {columns.filter(column => column.field !== 'line').map((column, index) => {
                 // Determine column width based on field type
                 let columnWidth = '25%';
                 if (column.field === 'price' || column.field === 'discount') {
                   columnWidth = '15%';
-                } else if (column.field === 'line') {
-                  columnWidth = '20%';
                 } else if (column.field === 'itemcode') {
                   columnWidth = '35%';
                 }
@@ -645,7 +658,24 @@ const DrawerGrid = ({
                   }
                 }}
               >
-                {columns.map((column, index) => (
+                {/* Static Line Column */}
+                <TableCell 
+                  sx={{ 
+                    py: 1,
+                    px: 0,
+                    width: '1px !important',
+                    minWidth: '1px !important',
+                    maxWidth: '1px !important',
+                    borderBottom: rowIndex < gridData.length - 1 ? '1px solid' : 'none',
+                    borderRight: '1px solid',
+                    borderColor: 'divider',
+                    verticalAlign: 'top',
+                    textAlign: 'center'
+                  }}
+                >
+                  {rowIndex + 1}
+                </TableCell>
+                {columns.filter(column => column.field !== 'line').map((column, index) => (
                   <TableCell 
                     key={index} 
                     sx={{ 

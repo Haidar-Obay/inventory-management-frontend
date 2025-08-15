@@ -11,7 +11,8 @@ const tenantApiService = async (method, endpoint, data = null) => {
   const tenantName = hostname.split(".")[0];
 
   // Construct the URL with tenant name and app.localhost
-  const url = `http://${tenantName}.${CENTRAL_DOMAIN}:${TENANT_API_PORT}/${endpoint}`;
+  const url = `${window.location.protocol}//${window.location.hostname}:${TENANT_API_PORT}/${endpoint}`;
+
 
   // Get token from cookies instead of localStorage
   const token = document.cookie
