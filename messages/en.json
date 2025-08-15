@@ -833,6 +833,7 @@
       "openingAmount": "Opening Amount",
       "openingDate": "Opening Date",
       "addCurrency": "Add Currency",
+      "noOpeningBalances": "No opening balances added yet. Click \"Add Currency\" to add one.",
       "remove": "Remove",
       "paymentTermsAccordion": "Payment Terms",
       "paymentTerm": "Payment Term",

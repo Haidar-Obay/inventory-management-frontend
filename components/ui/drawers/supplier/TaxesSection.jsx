@@ -139,6 +139,7 @@ const TaxesSection = React.memo(({
                 value={formData?.added_tax || ''}
                 onChange={handleFieldChange('added_tax')}
                 placeholder=""
+                inputProps={{ min: 0, step: 0.01, max: 100 }}
               />
             </Grid>
           )}

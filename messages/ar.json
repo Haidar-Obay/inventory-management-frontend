@@ -823,6 +823,7 @@
       "openingAmount": "مبلغ الافتتاح",
       "openingDate": "تاريخ الافتتاح",
       "addCurrency": "إضافة عملة",
+      "noOpeningBalances": "لم يتم إضافة أرصدة افتتاحية بعد. انقر على \"إضافة عملة\" لإضافة واحدة.",
       "remove": "إزالة",
       "paymentTermsAccordion": "شروط الدفع",
       "paymentTerm": "شرط الدفع",
