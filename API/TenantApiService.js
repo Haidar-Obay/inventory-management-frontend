@@ -1,6 +1,6 @@
-const TENANT_API_PORT = 8000;
-const TENANT_TOKEN_KEY = "tenant_token";
-const CENTRAL_DOMAIN = "app.localhost";
+const TENANT_API_PORT = process.env.NEXT_PUBLIC_TENANT_API_PORT || 8000;
+const TENANT_TOKEN_KEY = process.env.NEXT_PUBLIC_TENANT_TOKEN_KEY || "tenant_token";
+const CENTRAL_DOMAIN = process.env.NEXT_PUBLIC_CENTRAL_DOMAIN || "app.localhost";
 
 const tenantApiService = async (method, endpoint, data = null) => {
   if (typeof window === "undefined") return;

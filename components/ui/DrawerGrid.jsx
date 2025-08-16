@@ -86,6 +86,7 @@ const DrawerGrid = ({
                   ...row,
                   item_id: item.id || null,
                   itemcode: item.code || item.itemcode || "",
+                  itemname: item.name || "",
                   price: item.price || 0,
                 };
               }
@@ -102,6 +103,7 @@ const DrawerGrid = ({
                     ...row,
                     item_id: item.id || null,
                     itemcode: item.code || item.itemcode || "",
+                    itemname: item.name || "",
                     price: item.price || 0,
                   };
                 }
@@ -116,6 +118,7 @@ const DrawerGrid = ({
                     ...row,
                     item_id: item.id || null,
                     itemcode: item.code || item.itemcode || "",
+                    itemname: item.name || "",
                     price: item.price || 0,
                   };
                 }
@@ -130,6 +133,7 @@ const DrawerGrid = ({
             id: `row_${Date.now()}_${index}`,
             item_id: item.id || null,
             itemcode: item.code || item.itemcode || "",
+            itemname: item.name || "",
             price: item.price || 0,
             discount: 0,
             isEnabled: true,
@@ -187,7 +191,7 @@ const DrawerGrid = ({
     }
   };
 
-  // Function to handle item selection and auto-fill price
+  // Function to handle item selection and auto-fill price and itemname
   const handleItemSelection = (rowId, selectedItem) => {
     if (onGridDataChange) {
       const updatedGridData = gridData.map((gRow) => {
@@ -196,6 +200,8 @@ const DrawerGrid = ({
             ...gRow,
             item_id: selectedItem?.id ?? null,
             itemcode: selectedItem?.itemcode ?? "",
+            // Auto-fill itemname with item's name if available
+            itemname: selectedItem?.name ?? "",
             // Auto-fill price with item's price if available
             price: selectedItem?.price ?? 0,
           };

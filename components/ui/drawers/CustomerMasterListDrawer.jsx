@@ -106,6 +106,7 @@ const CustomerMasterListDrawer = React.memo(({
       line: "",
       item_id: null,
       itemcode: "",
+      itemname: "",
       price: 0,
       discount: 0,
       isEnabled: true,
@@ -153,6 +154,7 @@ const CustomerMasterListDrawer = React.memo(({
             line: row.line ?? "",
             item_id: row.item_id ?? null,
             itemcode: row.itemcode ?? row.code ?? "",
+            itemname: row.itemname ?? "",
             price: typeof row.price === 'number' ? row.price : (row.price ? parseFloat(row.price) || 0 : 0),
             discount: typeof row.discount === 'number' ? row.discount : (row.discount ? parseFloat(row.discount) || 0 : 0),
             isEnabled: row.isEnabled !== undefined ? row.isEnabled : true
@@ -165,6 +167,7 @@ const CustomerMasterListDrawer = React.memo(({
             ...formData,
             items: gridDataWithEnabled.map(row => ({
               item_id: row.item_id,
+              itemname: row.itemname || '',
               price: typeof row.price === 'number' ? row.price : parseFloat(row.price) || 0,
               discount: typeof row.discount === 'number' ? row.discount : parseFloat(row.discount) || 0,
               line: row.line || ''
@@ -187,6 +190,7 @@ const CustomerMasterListDrawer = React.memo(({
             line: "",
             item_id: null,
             itemcode: "",
+            itemname: "",
             price: 0,
             discount: 0,
             isEnabled: true,
@@ -233,6 +237,7 @@ const CustomerMasterListDrawer = React.memo(({
         row.line || 
         row.itemcode || 
         row.item_id ||
+        row.itemname ||
         (row.price && row.price !== 0) || 
         (row.discount && row.discount !== 0)
       );
@@ -281,6 +286,7 @@ const CustomerMasterListDrawer = React.memo(({
         })
         .map(item => ({
           item_id: item.item_id,
+          itemname: item.itemname || '',
           price: typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0,
           discount: typeof item.discount === 'number' ? item.discount : parseFloat(item.discount) || 0,
           line: item.line || ''
@@ -410,6 +416,7 @@ const CustomerMasterListDrawer = React.memo(({
       items: (Array.isArray(gridData) ? gridData : [])
         .map((r) => ({
           item_id: r.item_id ?? (typeof r.itemcode === 'number' ? r.itemcode : (typeof r.itemcode === 'string' && r.itemcode !== '' && !isNaN(Number(r.itemcode)) ? Number(r.itemcode) : null)),
+          itemname: r.itemname ?? "",
           price: typeof r.price === 'number' ? r.price : (r.price !== '' ? parseFloat(r.price) || 0 : 0),
           discount: typeof r.discount === 'number' ? r.discount : (r.discount !== '' ? parseFloat(r.discount) || 0 : 0),
           line: r.line ?? null,
@@ -491,6 +498,7 @@ const CustomerMasterListDrawer = React.memo(({
       items: (Array.isArray(gridData) ? gridData : [])
         .map((r) => ({
           item_id: r.item_id ?? (typeof r.itemcode === 'number' ? r.itemcode : (typeof r.itemcode === 'string' && r.itemcode !== '' && !isNaN(Number(r.itemcode)) ? Number(r.itemcode) : null)),
+          itemname: r.itemname ?? "",
           price: typeof r.price === 'number' ? r.price : (r.price !== '' ? parseFloat(r.price) || 0 : 0),
           discount: typeof r.discount === 'number' ? r.discount : (r.discount !== '' ? parseFloat(r.discount) || 0 : 0),
           line: r.line ?? null,
@@ -582,6 +590,7 @@ const CustomerMasterListDrawer = React.memo(({
       id: newRowId,
       line: "",
       itemcode: "",
+      itemname: "",
       price: 0,
       discount: 0,
       isEnabled: true,
@@ -659,7 +668,7 @@ const CustomerMasterListDrawer = React.memo(({
     );
     
     const gridDataCheck = gridData.some(row => {
-      const hasData = row.line || row.itemcode || row.item_id || row.price || row.discount;
+      const hasData = row.line || row.itemcode || row.item_id || row.itemname || row.price || row.discount;
       return hasData;
     });
     
@@ -667,6 +676,7 @@ const CustomerMasterListDrawer = React.memo(({
       const hasPivotData = item.pivot && (
         item.pivot.line ||
         item.pivot.itemcode ||
+        item.pivot.itemname ||
         item.pivot.price ||
         item.pivot.discount
       );
@@ -819,6 +829,7 @@ const CustomerMasterListDrawer = React.memo(({
                 columns={[
                   { field: "line", label: t("line"), type: "text" },
                   { field: "itemcode", label: t("itemCode"), type: "text" },
+                  { field: "itemname", label: t("itemName"), type: "text" },
                   { field: "price", label: t("price"), type: "number" },
                   { field: "discount", label: t("discount"), type: "number" },
                 ]}
@@ -827,6 +838,7 @@ const CustomerMasterListDrawer = React.memo(({
                 columnActions={{
                   line: { showAddButton: false, showHelpButton: false },
                   itemcode: { showAddButton: true, showHelpButton: true },
+                  itemname: { showAddButton: false, showHelpButton: false },
                   price: { showAddButton: false, showHelpButton: false },
                   discount: { showAddButton: false, showHelpButton: false },
                 }}
