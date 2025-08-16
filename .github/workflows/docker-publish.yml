@@ -24,4 +24,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: haidarsh/inventory_management:frontend-latest
+          tags: haidarsh/frontend-app:latest
