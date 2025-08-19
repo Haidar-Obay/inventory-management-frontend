@@ -11,7 +11,7 @@ const tenantApiService = async (method, endpoint, data = null) => {
   const tenantName = hostname.split(".")[0];
 
   // Construct the URL with tenant name and app.localhost
-  const url = `${window.location.protocol}//${window.location.hostname}:${TENANT_API_PORT}/${endpoint}`;
+  const url = `${window.location.protocol}//${tenantName}.${CENTRAL_DOMAIN}:${TENANT_API_PORT}/${endpoint}`;
 
 
   // Get token from cookies instead of localStorage
@@ -25,8 +25,6 @@ const tenantApiService = async (method, endpoint, data = null) => {
     Accept: "application/json",
     ...(token && { Authorization: `Bearer ${token}` }),
   };
-
-
 
   try {
     const response = await fetch(url, {
