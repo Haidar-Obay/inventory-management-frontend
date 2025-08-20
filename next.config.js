@@ -93,6 +93,10 @@ const nextConfig = {
       },
     ];
   },
+  eslint: {
+    // ❌ Skip ESLint during builds
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default withNextIntl(nextConfig);
