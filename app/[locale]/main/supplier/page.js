@@ -35,6 +35,7 @@ import {
   exportSupplierGroupsToPdf, 
   importSupplierGroupsFromExcel,
   getSuppliers,
+  getSupplierById,
   deleteSupplier,
   editSupplier,
   exportSuppliersToExcel,
@@ -101,6 +102,7 @@ function SuppliersPage() {
   const [supplierDrawerOpen, setSupplierDrawerOpen] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState(null);
   const [saveLoading, setSaveLoading] = useState(false);
+  const [drawerLoading, setDrawerLoading] = useState(false);
 
   // Initialize tab value from URL or localStorage
   useEffect(() => {
@@ -198,13 +200,24 @@ function SuppliersPage() {
     },
   };
 
-  const handleEdit = (type, row) => {
+  const handleEdit = async (type, row) => {
     if (type === "supplierGroup") {
       setEditingSupplierGroup(row);
       setSupplierGroupDrawerOpen(true);
     } else if (type === "supplier") {
-      setEditingSupplier(row);
       setSupplierDrawerOpen(true);
+      setDrawerLoading(true);
+      try {
+        const response = await getSupplierById(row.id);
+        setEditingSupplier(response?.data || row);
+      } catch (error) {
+        toast.error({
+          title: toastT("error"),
+          description: error.message || toastT("failedToFetchData"),
+        });
+      } finally {
+        setDrawerLoading(false);
+      }
     }
   };
 
@@ -593,6 +606,7 @@ function SuppliersPage() {
   const handleSupplierClose = () => {
     setSupplierDrawerOpen(false);
     setEditingSupplier(null);
+    setDrawerLoading(false);
   };
 
   return (
@@ -680,6 +694,7 @@ function SuppliersPage() {
         onSave={handleSupplierSave}
         formData={editingSupplier || {}}
         isEdit={!!editingSupplier}
+        initialLoading={drawerLoading}
       />
     </div>
   );

@@ -184,6 +184,7 @@ const SupplierDrawer = React.memo(({
   formData: externalFormData,
   isEdit = false,
   onSave,
+  initialLoading = false,
 }) => {
   const t = useTranslations("suppliers");
   const tToast = useTranslations("toast");
@@ -1070,7 +1071,34 @@ const SupplierDrawer = React.memo(({
 
   // Content
   const content = (
-    <Box sx={{ p: 2 }}>
+    <Box sx={{ p: 2, position: 'relative', minHeight: 200 }}>
+      {initialLoading && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 10,
+            pointerEvents: 'none',
+            color: '#888'
+          }}
+        >
+          <span
+            style={{
+              display: 'inline-block',
+              width: 48,
+              height: 48,
+              border: '5px solid #eee',
+              borderTop: '5px solid #1976d2',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+            }}
+          />
+          <style>{`@keyframes spin {0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }`}</style>
+          Loading supplier details...
+        </Box>
+      )}
       <Box sx={{ display: 'flex', gap: 2 }}>
         {/* Left Column - Main Sections */}
         <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
