@@ -34,9 +34,10 @@ NODE_ENV=development
 - Calls go to: `http://hadishokor.app.localhost:8000/login`
 - Uses tenant name from subdomain with app.localhost domain
 
-**Production** (centralized):
-- Calls go to: `https://binbothub.com/backend/login`
-- Uses central API server
+**Production** (tenant-specific with backend routing):
+- Calls go to: `https://hadishokor.binbothub.com/backend/login`
+- Uses tenant subdomain with /backend path for proper routing
+- Each tenant gets their own subdomain but shares the backend API
 
 ## 📁 Configuration Structure
 
@@ -93,3 +94,22 @@ useEffect(() => {
 - The backend is accessible at `/backend` path, not directly at the root
 - All API calls now use HTTPS in production
 - Test from external devices, not from the server itself
+
+## 🚨 **Important: Backend Routing Fix**
+
+### **The Problem:**
+- **Before**: API calls went to `https://hadishokor.binbothub.com/login`
+- **Result**: Frontend returned HTML instead of JSON (routing issue)
+- **Error**: "Unexpected token '<'" (trying to parse HTML as JSON)
+
+### **The Solution:**
+- **After**: API calls go to `https://hadishokor.binbothub.com/backend/login`
+- **Result**: Proper routing to Laravel backend
+- **Benefit**: JSON responses instead of HTML
+
+### **Why This Happened:**
+Your Caddyfile routes:
+- `/backend/*` → Laravel backend (API endpoints)
+- `/*` → Next.js frontend (HTML pages)
+
+The tenant service was missing the `/backend` path, so calls hit the frontend instead of the backend.
