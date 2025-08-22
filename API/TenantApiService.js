@@ -76,7 +76,16 @@ const tenantApiService = async (method, endpoint, data = null) => {
     }
 
     // For JSON responses
-    const responseData = await response.json();
+    let responseData;
+    try {
+      responseData = await response.json();
+    } catch (parseError) {
+      // If we can't parse JSON, it might be HTML (routing issue)
+      if (response.headers.get("content-type")?.includes("text/html")) {
+        throw new Error(`API routing issue: Received HTML instead of JSON. Check if URL includes /backend path. URL: ${url}`);
+      }
+      throw new Error(`Failed to parse response: ${parseError.message}`);
+    }
 
     if (!response.ok) {
       throw new Error(responseData?.message || response.statusText);
