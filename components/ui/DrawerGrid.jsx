@@ -433,16 +433,16 @@ const DrawerGrid = ({
           opacity: 1,
         }
       }}>
-        <RTLTextField
-          value={row[field] || ""}
-          onChange={(e) => handleGridDataChange(row.id, field, e.target.value)}
-          fullWidth
-          size="small"
-          type={type}
-          disabled={disabled || !row.isEnabled || field === "price"}
-          placeholder=""
-          label={null}
-          InputLabelProps={{ shrink: false }}
+                 <RTLTextField
+           value={row[field] || ""}
+           onChange={(e) => handleGridDataChange(row.id, field, e.target.value)}
+           fullWidth
+           size="small"
+           type={type}
+           disabled={disabled || !row.isEnabled || field === "price" || field === "itemname"}
+           placeholder=""
+           label={null}
+           InputLabelProps={{ shrink: false }}
           sx={{ 
             '& .MuiInputBase-root': { 
               fontSize: '0.875rem',
@@ -573,22 +573,24 @@ const DrawerGrid = ({
             <TableRow sx={{ 
               backgroundColor: getBackgroundColor()
             }}>
-              {/* Static Line Column */}
-              <TableCell 
-                sx={{ 
-                  fontWeight: 600, 
-                  fontSize: '0.875rem',
-                  width: '6px ',
-                  borderBottom: '2px solid',
-                  borderRight: '1px solid',
-                  borderColor: 'divider',
-                  padding: '12px 0px',
-                  backgroundColor: getBackgroundColor(),
-                  textAlign: 'center'
-                }}
-              >
-                Line
-              </TableCell>
+                             {/* Static Line Column */}
+               <TableCell 
+                 sx={{ 
+                   fontWeight: 600, 
+                   fontSize: '0.875rem',
+                   width: '60px',
+                   minWidth: '60px',
+                   maxWidth: '60px',
+                   borderBottom: '2px solid',
+                   borderRight: '1px solid',
+                   borderColor: 'divider',
+                   padding: '12px 8px',
+                   backgroundColor: getBackgroundColor(),
+                   textAlign: 'center'
+                 }}
+               >
+                 Line
+               </TableCell>
               {columns.filter(column => column.field !== 'line').map((column, index) => {
                 // Determine column width based on field type
                 let columnWidth = '25%';
@@ -664,23 +666,23 @@ const DrawerGrid = ({
                   }
                 }}
               >
-                {/* Static Line Column */}
-                <TableCell 
-                  sx={{ 
-                    py: 1,
-                    px: 0,
-                    width: '1px !important',
-                    minWidth: '1px !important',
-                    maxWidth: '1px !important',
-                    borderBottom: rowIndex < gridData.length - 1 ? '1px solid' : 'none',
-                    borderRight: '1px solid',
-                    borderColor: 'divider',
-                    verticalAlign: 'top',
-                    textAlign: 'center'
-                  }}
-                >
-                  {rowIndex + 1}
-                </TableCell>
+                                 {/* Static Line Column */}
+                 <TableCell 
+                   sx={{ 
+                     py: 1,
+                     px: 1,
+                     width: '60px !important',
+                     minWidth: '60px !important',
+                     maxWidth: '60px !important',
+                     borderBottom: rowIndex < gridData.length - 1 ? '1px solid' : 'none',
+                     borderRight: '1px solid',
+                     borderColor: 'divider',
+                     verticalAlign: 'top',
+                     textAlign: 'center'
+                   }}
+                 >
+                   {rowIndex + 1}
+                 </TableCell>
                 {columns.filter(column => column.field !== 'line').map((column, index) => (
                   <TableCell 
                     key={index} 
