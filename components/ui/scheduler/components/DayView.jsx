@@ -1,0 +1,73 @@
+import React from 'react';
+import EventRenderer from './EventRenderer';
+import { isSameDay, getNowOffsetPx } from '../utils/dateUtils';
+
+const DayView = ({ 
+  selectedDate, 
+  timeSlots, 
+  filteredEvents, 
+  SLOT_HEIGHT_PX, 
+  now, 
+  onSlotClick, 
+  onEventClick 
+}) => {
+  return (
+    <div className="flex h-full min-h-0">
+      {/* Time gutter */}
+      <div className="w-14 sm:w-16 lg:w-20 shrink-0">
+        <div className="h-12 flex items-center justify-end pr-1 sm:pr-2 text-xs sm:text-sm font-medium text-muted-foreground dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">
+          <span className="hidden sm:inline">Time</span>
+          <span className="sm:hidden">T</span>
+        </div>
+        {timeSlots.map((time) => (
+          <div
+            key={time}
+            className="h-16 flex items-center justify-end pr-1 sm:pr-2 text-xs text-muted-foreground dark:text-gray-400 border-r border-gray-200 dark:border-gray-600"
+          >
+            <span className="hidden sm:inline">{time}</span>
+            <span className="sm:hidden">{time.split(':')[0]}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Single day column */}
+      <div className="flex-1 relative">
+                 <div className="h-12 flex items-center justify-center text-xs sm:text-sm font-medium border-b border-gray-200 dark:border-gray-600 px-2">
+           <div className="text-center">
+             <div className="font-semibold text-gray-900 dark:text-gray-100">{selectedDate.toLocaleDateString('en-US', { weekday: 'long' })}</div>
+             <div className="text-sm sm:text-base text-gray-900 dark:text-gray-100">{selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</div>
+           </div>
+         </div>
+        {timeSlots.map((time) => (
+          <div
+            key={time}
+            className="h-16 border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors relative"
+            onClick={() => {
+              const [hour] = time.split(':');
+              const date = new Date(selectedDate);
+              date.setHours(parseInt(hour), 0, 0, 0);
+              onSlotClick(date);
+            }}
+          >
+            {/* Render events */}
+                            <EventRenderer
+                  events={filteredEvents}
+                  date={selectedDate}
+                  time={time}
+                  SLOT_HEIGHT_PX={SLOT_HEIGHT_PX}
+                  onEventClick={onEventClick}
+                />
+          </div>
+        ))}
+        {isSameDay(selectedDate, now) && getNowOffsetPx(now, SLOT_HEIGHT_PX) != null && (
+          <div
+            className="absolute left-0 right-0 h-px bg-red-500"
+            style={{ top: `${getNowOffsetPx(now, SLOT_HEIGHT_PX)}px` }}
+          />
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default DayView;
