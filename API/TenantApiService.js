@@ -1,17 +1,39 @@
-const TENANT_API_PORT = process.env.NEXT_PUBLIC_TENANT_API_PORT || 8000;
+import { getTenantApiUrl } from '../lib/config.js';
+
 const TENANT_TOKEN_KEY = process.env.NEXT_PUBLIC_TENANT_TOKEN_KEY || "tenant_token";
-const CENTRAL_DOMAIN = process.env.NEXT_PUBLIC_CENTRAL_DOMAIN || "app.localhost";
 
 const tenantApiService = async (method, endpoint, data = null) => {
   if (typeof window === "undefined") return;
 
   const hostname = window.location.hostname;
-
-  // Extract tenant name from subdomain (part before .localhost)
+  
+  // Extract tenant name from subdomain (part before .localhost or .binbothub.com)
   const tenantName = hostname.split(".")[0];
-
-  // Construct the URL with tenant name and app.localhost
-  const url = `http://${tenantName}.${CENTRAL_DOMAIN}:${TENANT_API_PORT}/${endpoint}`;
+  
+  // For development: use app.localhost with tenant in subdomain
+  // For production: use tenant-specific URLs
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  
+  let url;
+  if (isDevelopment) {
+    // Use app.localhost structure that backend expects
+    const CENTRAL_DOMAIN = process.env.NEXT_PUBLIC_CENTRAL_DOMAIN || "app.localhost";
+    const API_PORT = process.env.NEXT_PUBLIC_TENANT_API_PORT || "8000";
+    url = `http://${tenantName}.${CENTRAL_DOMAIN}:${API_PORT}/${endpoint}`;
+  } else {
+    // Production: use centralized or tenant-specific URLs
+    url = getTenantApiUrl(tenantName, endpoint);
+  }
+  
+  // Debug logging
+  console.log('🔍 [tenantApiService] Debug Info:');
+  console.log('  - Method:', method);
+  console.log('  - Endpoint:', endpoint);
+  console.log('  - Hostname:', hostname);
+  console.log('  - Tenant Name:', tenantName);
+  console.log('  - Full URL:', url);
+  console.log('  - Environment:', process.env.NODE_ENV);
+  console.log('  - Development Mode:', isDevelopment);
 
 
   // Get token from cookies instead of localStorage
@@ -25,8 +47,6 @@ const tenantApiService = async (method, endpoint, data = null) => {
     Accept: "application/json",
     ...(token && { Authorization: `Bearer ${token}` }),
   };
-
-
 
   try {
     const response = await fetch(url, {
@@ -56,7 +76,16 @@ const tenantApiService = async (method, endpoint, data = null) => {
     }
 
     // For JSON responses
-    const responseData = await response.json();
+    let responseData;
+    try {
+      responseData = await response.json();
+    } catch (parseError) {
+      // If we can't parse JSON, it might be HTML (routing issue)
+      if (response.headers.get("content-type")?.includes("text/html")) {
+        throw new Error(`API routing issue: Received HTML instead of JSON. Check if URL includes /backend path. URL: ${url}`);
+      }
+      throw new Error(`Failed to parse response: ${parseError.message}`);
+    }
 
     if (!response.ok) {
       throw new Error(responseData?.message || response.statusText);
