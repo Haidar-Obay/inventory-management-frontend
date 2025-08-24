@@ -2,24 +2,24 @@ export const isSameDay = (date1, date2) => {
   return date1.toDateString() === date2.toDateString();
 };
 
-export const getNowOffsetPx = (now, SLOT_HEIGHT_PX) => {
+export const getNowOffsetPx = (now, slotHeight, startHour = 7) => {
   const hours = now.getHours();
   const minutes = now.getMinutes();
   
-  // Adjust for 7 AM start time (7 * 60 = 420 minutes)
-  const adjustedMinutes = (hours * 60 + minutes) - 420;
+  // Adjust for start hour (startHour * 60 minutes)
+  const adjustedMinutes = (hours * 60 + minutes) - (startHour * 60);
   
-  // Only show indicator if within the visible time range (7 AM - 9 PM)
-  if (adjustedMinutes < 0 || adjustedMinutes > 900) { // 900 minutes = 15 hours (7 AM to 9 PM)
+  // Only show indicator if within the visible time range
+  if (adjustedMinutes < 0) {
     return null;
   }
   
-  return adjustedMinutes * (SLOT_HEIGHT_PX / 60);
+  return adjustedMinutes * (slotHeight / 60);
 };
 
-export const autoScrollToNow = (scrollRef, now, SLOT_HEIGHT_PX) => {
+export const autoScrollToNow = (scrollRef, now, slotHeight, startHour = 7) => {
   if (scrollRef.current) {
-    const offset = getNowOffsetPx(now, SLOT_HEIGHT_PX);
+    const offset = getNowOffsetPx(now, slotHeight, startHour);
     const scrollTop = offset - 200; // Scroll to 200px above current time
     scrollRef.current.scrollTop = Math.max(0, scrollTop);
   }
