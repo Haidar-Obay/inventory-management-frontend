@@ -5,7 +5,7 @@ const EventRenderer = ({
   events,
   date,
   time,
-  SLOT_HEIGHT_PX,
+  slotHeight,
   onEventClick
 }) => {
   const [tooltipEvent, setTooltipEvent] = useState(null);
@@ -25,7 +25,7 @@ const EventRenderer = ({
         const groupWidth = 100 / group.length;
 
         return group.map((ev, eventIndex) => {
-          const { topOffset, totalHeight } = calculateEventPosition(ev, SLOT_HEIGHT_PX);
+          const { topOffset, totalHeight } = calculateEventPosition(ev, slotHeight);
           
           // Calculate horizontal position for overlapping events
           const leftOffset = (eventIndex * groupWidth) + '%';
