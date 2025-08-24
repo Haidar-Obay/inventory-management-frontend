@@ -16,7 +16,8 @@ const WeekView = ({
     <div className="flex h-full min-h-0">
       {/* Time gutter */}
       <div className="w-14 sm:w-16 lg:w-20 shrink-0">
-        <div className="h-12 flex items-center justify-end pr-1 sm:pr-2 text-xs sm:text-sm font-medium text-muted-foreground dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">
+        {/* Sticky Time Header */}
+        <div className="sticky top-0 z-20 h-12 flex items-center justify-end pr-1 sm:pr-2 text-xs sm:text-sm font-medium text-muted-foreground dark:text-gray-300 border-b border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 shadow-sm">
           <span className="hidden sm:inline">Time</span>
           <span className="sm:hidden">T</span>
         </div>
@@ -36,12 +37,13 @@ const WeekView = ({
       <div className="flex-1 grid grid-cols-7">
         {weekDates.map((date, dayIndex) => (
           <div key={date.toISOString()} className="border-l border-gray-200 dark:border-gray-600 relative">
-                         <div className="h-12 flex items-center justify-center text-xs sm:text-sm font-medium border-b border-gray-200 dark:border-gray-600 px-1">
-               <div className="text-center">
-                 <div className="font-semibold text-gray-900 dark:text-gray-100">{date.toLocaleDateString('en-US', { weekday: 'short' })}</div>
-                 <div className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100">{date.getDate()}</div>
-               </div>
-             </div>
+            {/* Sticky Day Header */}
+            <div className="sticky top-0 z-20 h-12 flex items-center justify-center text-xs sm:text-sm font-medium border-b border-gray-200 dark:border-gray-600 px-1 bg-white dark:bg-gray-900 shadow-sm">
+              <div className="text-center">
+                <div className="font-semibold text-gray-900 dark:text-gray-100">{date.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+                <div className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100">{date.getDate()}</div>
+              </div>
+            </div>
             {timeSlots.map((time) => (
               <div
                 key={`${date.toDateString()}-${time}`}
