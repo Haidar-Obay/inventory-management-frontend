@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useTheme } from "next-themes";
 import { useTableLogic } from "./useTableLogic";
 import { TableHeader } from "./TableHeader";
 import { TableBody } from "./TableBody";
@@ -14,7 +13,6 @@ import PreviewModal from "./PreviewModal";
 import { Badge } from "./CustomControls";
 
 const Table = (props) => {
-  const { theme } = useTheme();
   const {
     customActions = [],
     onCustomAction,
@@ -200,7 +198,7 @@ const Table = (props) => {
     if (lastAppliedTemplate && lastAppliedTemplate.headerColor !== undefined) {
       return lastAppliedTemplate.headerColor;
     }
-    return persisted.headerColor ?? "";
+    return persisted.headerColor ?? null;
   });
   
   const [headerFontSize, setHeaderFontSize] = useState(() => {
@@ -208,21 +206,21 @@ const Table = (props) => {
       const fontSize = lastAppliedTemplate.headerFontSize ? parseInt(lastAppliedTemplate.headerFontSize.replace('px', '')) : 16;
       return fontSize;
     }
-    return persisted.headerFontSize ?? 16;
+    return persisted.headerFontSize ?? null;
   });
   
   const [headerFontStyle, setHeaderFontStyle] = useState(() => {
     if (lastAppliedTemplate && lastAppliedTemplate.headerFontStyle !== undefined) {
       return lastAppliedTemplate.headerFontStyle;
     }
-    return persisted.headerFontStyle ?? 'normal';
+    return persisted.headerFontStyle ?? null;
   });
   
   const [headerFontColor, setHeaderFontColor] = useState(() => {
     if (lastAppliedTemplate && lastAppliedTemplate.headerFontColor !== undefined) {
       return lastAppliedTemplate.headerFontColor;
     }
-    return persisted.headerFontColor ?? '#000000';
+    return persisted.headerFontColor ?? null;
   });
   
   const [showHeaderSeparator, setShowHeaderSeparator] = useState(() => {
