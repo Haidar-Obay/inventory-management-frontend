@@ -55,6 +55,7 @@ const Scheduler = () => {
     now,
     scrollRef,
     SLOT_HEIGHT_PX,
+    slotHeight,
     weekDays,
     timeSlots,
     startOfWeek,
@@ -87,8 +88,8 @@ const Scheduler = () => {
 
   // Auto-scroll to current time
   useEffect(() => {
-    autoScrollToNow(scrollRef, now, SLOT_HEIGHT_PX);
-  }, [now, SLOT_HEIGHT_PX]);
+    autoScrollToNow(scrollRef, now, slotHeight, timeSettings.startHour);
+  }, [now, slotHeight, timeSettings.startHour]);
 
   // Event click handler
   const handleEventClick = (event) => {
@@ -147,7 +148,8 @@ const Scheduler = () => {
               weekDates={weekDates}
               timeSlots={timeSlots}
               filteredEvents={filteredEvents}
-              SLOT_HEIGHT_PX={SLOT_HEIGHT_PX}
+              slotHeight={slotHeight}
+              timeSettings={timeSettings}
               now={now}
               onSlotClick={handleSlotClick}
               onEventClick={handleEventClick}
@@ -160,7 +162,8 @@ const Scheduler = () => {
               selectedDate={selectedDate}
               timeSlots={timeSlots}
               filteredEvents={filteredEvents}
-              SLOT_HEIGHT_PX={SLOT_HEIGHT_PX}
+              slotHeight={slotHeight}
+              timeSettings={timeSettings}
               now={now}
               onSlotClick={handleSlotClick}
               onEventClick={handleEventClick}

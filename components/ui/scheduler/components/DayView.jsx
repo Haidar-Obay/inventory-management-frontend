@@ -6,7 +6,8 @@ const DayView = ({
   selectedDate, 
   timeSlots, 
   filteredEvents, 
-  SLOT_HEIGHT_PX, 
+  slotHeight, 
+  timeSettings,
   now, 
   onSlotClick, 
   onEventClick 
@@ -22,7 +23,8 @@ const DayView = ({
         {timeSlots.map((time) => (
           <div
             key={time}
-            className="h-16 flex items-center justify-end pr-1 sm:pr-2 text-xs text-muted-foreground dark:text-gray-400 border-r border-gray-200 dark:border-gray-600"
+            className="flex items-center justify-end pr-1 sm:pr-2 text-xs text-muted-foreground dark:text-gray-400 border-r border-gray-200 dark:border-gray-600"
+            style={{ height: `${slotHeight}px` }}
           >
             <span className="hidden sm:inline">{time}</span>
             <span className="sm:hidden">{time.split(':')[0]}</span>
@@ -41,7 +43,8 @@ const DayView = ({
         {timeSlots.map((time) => (
           <div
             key={time}
-            className="h-16 border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors relative"
+            className="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors relative"
+            style={{ height: `${slotHeight}px` }}
             onClick={() => {
               const [hour] = time.split(':');
               const date = new Date(selectedDate);
@@ -50,19 +53,19 @@ const DayView = ({
             }}
           >
             {/* Render events */}
-                            <EventRenderer
-                  events={filteredEvents}
-                  date={selectedDate}
-                  time={time}
-                  SLOT_HEIGHT_PX={SLOT_HEIGHT_PX}
-                  onEventClick={onEventClick}
-                />
+            <EventRenderer
+              events={filteredEvents}
+              date={selectedDate}
+              time={time}
+              slotHeight={slotHeight}
+              onEventClick={onEventClick}
+            />
           </div>
         ))}
-        {isSameDay(selectedDate, now) && getNowOffsetPx(now, SLOT_HEIGHT_PX) != null && (
+        {isSameDay(selectedDate, now) && getNowOffsetPx(now, slotHeight, timeSettings.startHour) != null && (
           <div
             className="absolute left-0 right-0 h-px bg-red-500"
-            style={{ top: `${getNowOffsetPx(now, SLOT_HEIGHT_PX)}px` }}
+            style={{ top: `${getNowOffsetPx(now, slotHeight, timeSettings.startHour)}px` }}
           />
         )}
       </div>

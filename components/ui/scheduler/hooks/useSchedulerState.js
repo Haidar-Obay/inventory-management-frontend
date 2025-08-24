@@ -42,7 +42,8 @@ export const useSchedulerState = () => {
     return {
       startHour: 7,  // 7 AM
       endHour: 21,   // 9 PM
-      use24HourFormat: true
+      use24HourFormat: true,
+      timeInterval: 60 // 60 minutes = 1 hour
     };
   });
   const [showTimeSettings, setShowTimeSettings] = useState(false);
@@ -63,23 +64,37 @@ export const useSchedulerState = () => {
   };
   
   // Constants
-  const SLOT_HEIGHT_PX = 64;
+  const SLOT_HEIGHT_PX = 64; // Base height for 1-hour slots
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   
-  // Dynamic time slots based on user settings
+  // Dynamic slot height based on time interval
+  const slotHeight = useMemo(() => {
+    const baseHeight = SLOT_HEIGHT_PX;
+    const intervalRatio = timeSettings.timeInterval / 60; // Convert to hours
+    return Math.max(baseHeight * intervalRatio, 32); // Minimum height of 32px
+  }, [timeSettings.timeInterval]);
+  
+  // Dynamic time slots based on user settings and interval
   const timeSlots = useMemo(() => {
     const slots = [];
-    for (let hour = timeSettings.startHour; hour <= timeSettings.endHour; hour++) {
+    const totalMinutes = (timeSettings.endHour - timeSettings.startHour + 1) * 60;
+    const intervalMinutes = timeSettings.timeInterval;
+    
+    for (let minute = 0; minute <= totalMinutes; minute += intervalMinutes) {
+      const currentHour = timeSettings.startHour + Math.floor(minute / 60);
+      const currentMinute = minute % 60;
+      
       if (timeSettings.use24HourFormat) {
-        slots.push(`${hour.toString().padStart(2, '0')}:00`);
+        slots.push(`${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`);
       } else {
-        const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-        const ampm = hour >= 12 ? 'PM' : 'AM';
-        slots.push(`${displayHour}:00 ${ampm}`);
+        const displayHour = currentHour === 0 ? 12 : currentHour > 12 ? currentHour - 12 : currentHour;
+        const ampm = currentHour >= 12 ? 'PM' : 'AM';
+        const minuteDisplay = currentMinute === 0 ? '' : `:${currentMinute.toString().padStart(2, '0')}`;
+        slots.push(`${displayHour}${minuteDisplay} ${ampm}`);
       }
     }
     return slots;
-  }, [timeSettings.startHour, timeSettings.endHour, timeSettings.use24HourFormat]);
+  }, [timeSettings.startHour, timeSettings.endHour, timeSettings.use24HourFormat, timeSettings.timeInterval]);
   
   // Computed values
   const startOfWeek = useMemo(() => {
@@ -157,6 +172,7 @@ export const useSchedulerState = () => {
     
     // Constants
     SLOT_HEIGHT_PX,
+    slotHeight,
     weekDays,
     timeSlots,
     

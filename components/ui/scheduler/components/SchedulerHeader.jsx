@@ -299,6 +299,23 @@ const SchedulerHeader = ({
             </div>
           </div>
           
+          {/* Time Interval Control */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 min-w-0">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Interval:</label>
+            <select
+              value={timeSettings.timeInterval}
+              onChange={(e) => setTimeSettings(prev => ({ ...prev, timeInterval: parseInt(e.target.value) }))}
+              className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-0 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            >
+              <option value={15}>15 minutes</option>
+              <option value={30}>30 minutes</option>
+              <option value={60}>1 hour</option>
+              <option value={120}>2 hours</option>
+              <option value={180}>3 hours</option>
+              <option value={240}>4 hours</option>
+            </select>
+          </div>
+          
           {/* Time Range Info */}
           <div className="text-sm text-gray-600 dark:text-gray-400 sm:ml-auto w-full sm:w-auto text-center sm:text-left">
             {timeSettings.endHour - timeSettings.startHour + 1} hours ({timeSettings.startHour === 0 ? '12 AM' : timeSettings.startHour < 12 ? `${timeSettings.startHour} AM` : timeSettings.startHour === 12 ? '12 PM' : `${timeSettings.startHour - 12} PM`} - {timeSettings.endHour === 0 ? '12 AM' : timeSettings.endHour < 12 ? `${timeSettings.endHour} AM` : timeSettings.endHour === 12 ? '12 PM' : `${timeSettings.endHour - 12} PM`})
