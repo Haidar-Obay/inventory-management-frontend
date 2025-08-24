@@ -22,7 +22,11 @@ const SchedulerHeader = ({
   uniqueColors,
   clearFilters,
   filteredEvents,
-  events
+  events,
+  timeSettings,
+  setTimeSettings,
+  showTimeSettings,
+  setShowTimeSettings
 }) => {
   return (
     <>
@@ -119,6 +123,20 @@ const SchedulerHeader = ({
             <span className="hidden sm:inline">Filters</span>
             <span className="sm:hidden">Filter</span>
           </Button>
+          
+          {/* Time Settings Toggle */}
+          <Button
+            variant={showTimeSettings ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setShowTimeSettings(!showTimeSettings)}
+            className="flex items-center gap-2 px-3 sm:px-4"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="hidden sm:inline">Time</span>
+            <span className="sm:hidden">Time</span>
+          </Button>
         </div>
         
         {/* Clear Filters */}
@@ -175,6 +193,115 @@ const SchedulerHeader = ({
           {/* Results Count */}
           <div className="text-sm text-gray-600 dark:text-gray-400 sm:ml-auto w-full sm:w-auto text-center sm:text-left">
             {filteredEvents.length} of {events.length} events
+          </div>
+        </div>
+      )}
+      
+      {/* Time Settings Panel */}
+      {showTimeSettings && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mt-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+          {/* Start Hour */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 min-w-0">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Start Time:</label>
+            <div className="flex items-center gap-2">
+              <select
+                value={timeSettings.startHour === 0 ? 12 : timeSettings.startHour > 12 ? timeSettings.startHour - 12 : timeSettings.startHour}
+                onChange={(e) => {
+                  const hour = parseInt(e.target.value);
+                  const isPM = timeSettings.startHour >= 12;
+                  const newHour = hour === 12 ? (isPM ? 12 : 0) : (isPM ? hour + 12 : hour);
+                  setTimeSettings(prev => ({ ...prev, startHour: newHour }));
+                }}
+                className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-0 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              >
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={timeSettings.startHour >= 12 ? 'PM' : 'AM'}
+                onChange={(e) => {
+                  const isPM = e.target.value === 'PM';
+                  const currentHour = timeSettings.startHour === 0 ? 12 : timeSettings.startHour > 12 ? timeSettings.startHour - 12 : timeSettings.startHour;
+                  const newHour = currentHour === 12 ? (isPM ? 12 : 0) : (isPM ? currentHour + 12 : currentHour);
+                  setTimeSettings(prev => ({ ...prev, startHour: newHour }));
+                }}
+                className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-0 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              >
+                <option value="AM">AM</option>
+                <option value="PM">PM</option>
+              </select>
+            </div>
+          </div>
+          
+          {/* End Hour */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 min-w-0">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">End Time:</label>
+            <div className="flex items-center gap-2">
+              <select
+                value={timeSettings.endHour === 0 ? 12 : timeSettings.endHour > 12 ? timeSettings.endHour - 12 : timeSettings.endHour}
+                onChange={(e) => {
+                  const hour = parseInt(e.target.value);
+                  const isPM = timeSettings.endHour >= 12;
+                  const newHour = hour === 12 ? (isPM ? 12 : 0) : (isPM ? hour + 12 : hour);
+                  setTimeSettings(prev => ({ ...prev, endHour: newHour }));
+                }}
+                className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-0 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              >
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={timeSettings.endHour >= 12 ? 'PM' : 'AM'}
+                onChange={(e) => {
+                  const isPM = e.target.value === 'PM';
+                  const currentHour = timeSettings.endHour === 0 ? 12 : timeSettings.endHour > 12 ? timeSettings.endHour - 12 : timeSettings.endHour;
+                  const newHour = currentHour === 12 ? (isPM ? 12 : 0) : (isPM ? currentHour + 12 : currentHour);
+                  setTimeSettings(prev => ({ ...prev, endHour: newHour }));
+                }}
+                className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:border-transparent min-w-0 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              >
+                <option value="AM">AM</option>
+                <option value="PM">PM</option>
+              </select>
+            </div>
+          </div>
+          
+          {/* Time Format Toggle */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 min-w-0">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Format:</label>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setTimeSettings(prev => ({ ...prev, use24HourFormat: true }))}
+                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  timeSettings.use24HourFormat
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                }`}
+              >
+                24h
+              </button>
+              <button
+                onClick={() => setTimeSettings(prev => ({ ...prev, use24HourFormat: false }))}
+                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  !timeSettings.use24HourFormat
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                }`}
+              >
+                12h
+              </button>
+            </div>
+          </div>
+          
+          {/* Time Range Info */}
+          <div className="text-sm text-gray-600 dark:text-gray-400 sm:ml-auto w-full sm:w-auto text-center sm:text-left">
+            {timeSettings.endHour - timeSettings.startHour + 1} hours ({timeSettings.startHour === 0 ? '12 AM' : timeSettings.startHour < 12 ? `${timeSettings.startHour} AM` : timeSettings.startHour === 12 ? '12 PM' : `${timeSettings.startHour - 12} PM`} - {timeSettings.endHour === 0 ? '12 AM' : timeSettings.endHour < 12 ? `${timeSettings.endHour} AM` : timeSettings.endHour === 12 ? '12 PM' : `${timeSettings.endHour - 12} PM`})
           </div>
         </div>
       )}

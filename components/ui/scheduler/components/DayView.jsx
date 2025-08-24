@@ -33,7 +33,7 @@ const DayView = ({
       {/* Single day column */}
       <div className="flex-1 relative">
                  <div className="h-12 flex items-center justify-center text-xs sm:text-sm font-medium border-b border-gray-200 dark:border-gray-600 px-2">
-           <div className="text-center">
+           <div className="flex items-center gap-2">
              <div className="font-semibold text-gray-900 dark:text-gray-100">{selectedDate.toLocaleDateString('en-US', { weekday: 'long' })}</div>
              <div className="text-sm sm:text-base text-gray-900 dark:text-gray-100">{selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</div>
            </div>

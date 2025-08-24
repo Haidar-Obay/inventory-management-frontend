@@ -59,7 +59,11 @@ const Scheduler = () => {
     timeSlots,
     startOfWeek,
     weekDates,
-    headerRangeLabel
+    headerRangeLabel,
+    timeSettings,
+    setTimeSettings,
+    showTimeSettings,
+    setShowTimeSettings
   } = useSchedulerState();
 
   // Use custom hooks for event handling and navigation
@@ -124,6 +128,10 @@ const Scheduler = () => {
             clearFilters={clearFilters}
             filteredEvents={filteredEvents}
             events={events}
+            timeSettings={timeSettings}
+            setTimeSettings={setTimeSettings}
+            showTimeSettings={showTimeSettings}
+            setShowTimeSettings={setShowTimeSettings}
           />
         </CardHeader>
         

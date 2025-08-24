@@ -27,14 +27,59 @@ export const useSchedulerState = () => {
   const [now, setNow] = useState(new Date());
   const scrollRef = useRef(null);
   
+  // Time settings state with localStorage persistence
+  const [timeSettings, setTimeSettings] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('scheduler-time-settings');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.warn('Failed to parse saved time settings, using defaults');
+        }
+      }
+    }
+    return {
+      startHour: 7,  // 7 AM
+      endHour: 21,   // 9 PM
+      use24HourFormat: true
+    };
+  });
+  const [showTimeSettings, setShowTimeSettings] = useState(false);
+  
+  // Validated time settings setter with localStorage persistence
+  const setTimeSettingsValidated = (newSettings) => {
+    const { startHour, endHour } = newSettings;
+    if (startHour >= endHour) {
+      // If start hour is greater than or equal to end hour, adjust end hour
+      newSettings.endHour = startHour + 1;
+    }
+    setTimeSettings(newSettings);
+    
+    // Save to localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('scheduler-time-settings', JSON.stringify(newSettings));
+    }
+  };
+  
   // Constants
   const SLOT_HEIGHT_PX = 64;
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  // Reduced time slots to a more reasonable range (7 AM to 9 PM)
-  const timeSlots = [
-    '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00',
-    '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'
-  ];
+  
+  // Dynamic time slots based on user settings
+  const timeSlots = useMemo(() => {
+    const slots = [];
+    for (let hour = timeSettings.startHour; hour <= timeSettings.endHour; hour++) {
+      if (timeSettings.use24HourFormat) {
+        slots.push(`${hour.toString().padStart(2, '0')}:00`);
+      } else {
+        const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        slots.push(`${displayHour}:00 ${ampm}`);
+      }
+    }
+    return slots;
+  }, [timeSettings.startHour, timeSettings.endHour, timeSettings.use24HourFormat]);
   
   // Computed values
   const startOfWeek = useMemo(() => {
@@ -98,6 +143,11 @@ export const useSchedulerState = () => {
     setDraftEvent,
     showDayEvents,
     setShowDayEvents,
+    // Time settings
+    timeSettings,
+    setTimeSettings: setTimeSettingsValidated,
+    showTimeSettings,
+    setShowTimeSettings,
     selectedDayEvents,
     setSelectedDayEvents,
     selectedDayDate,
