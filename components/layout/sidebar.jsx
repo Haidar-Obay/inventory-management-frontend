@@ -1123,7 +1123,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
               onClick={toggleSidebar}
             />
             {!isCollapsed && (
-              <span className="font-bold pl-2 text-lg">Brain</span>
+              <span className="font-bold pl-2 text-lg">BinBot</span>
             )}
           </div>
         </div>
