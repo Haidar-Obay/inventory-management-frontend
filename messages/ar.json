@@ -18,7 +18,8 @@
     "notificationsRead": "تم تحديد جميع الإشعارات كمقروءة",
     "notificationsCleared": "تم مسح جميع الإشعارات",
     "zoomIn": "تكبير",
-    "zoomOut": "تصغير"
+    "zoomOut": "تصغير",
+    "scheduler": "المجدول الزمني"
   },
   "breadcrumbs": {
     "home": "الرئيسية",

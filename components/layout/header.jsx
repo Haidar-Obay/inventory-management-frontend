@@ -14,6 +14,7 @@ import {
   Trash,
   User,
   LogOut,
+  Calendar,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -201,6 +202,28 @@ const LanguageSelector = () => {
   );
 };
 
+const CalendarButton = () => {
+  const router = useRouter();
+  const currentLocale = useLocale();
+  const t = useTranslations("header");
+
+  const navigateToScheduler = () => {
+    router.push(`/${currentLocale}/main/scheduler`);
+  };
+
+  return (
+    <Button
+      variant="outline"
+      size="icon"
+      onClick={navigateToScheduler}
+      className="relative hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors duration-200"
+      title={t("scheduler") || "Scheduler"}
+    >
+      <Calendar className="h-[1.2rem] w-[1.2rem]" />
+    </Button>
+  );
+};
+
 const ThemeToggle = ({ theme, setTheme }) => (
   <Button
     variant="outline"
@@ -323,6 +346,7 @@ export function Header({ hideSidebar, showSidebar, isSidebarVisible, onToggleFul
           {/* Right Section - User Controls */}
           <div className="flex items-center gap-2 flex-shrink-0 w-48">
             <LanguageSelector />
+            <CalendarButton />
             <ThemeToggle theme={theme} setTheme={setTheme} />
             <NotificationCenter
               notifications={notifications}
