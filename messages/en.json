@@ -18,7 +18,8 @@
     "notificationsRead": "All notifications marked as read",
     "notificationsCleared": "All notifications cleared",
     "zoomIn": "Zoom In",
-    "zoomOut": "Zoom Out"
+    "zoomOut": "Zoom Out",
+    "scheduler": "Scheduler"
   },
   "breadcrumbs": {
     "home": "Home",
