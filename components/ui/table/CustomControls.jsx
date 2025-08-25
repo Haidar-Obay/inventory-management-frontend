@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useTheme } from "next-themes";
 import Portal from "../Portal";
 
 // Utility function to check if an element is a descendant of another
@@ -24,7 +23,6 @@ export const Button = ({
   onClick,
   ...props
 }) => {
-  const { theme } = useTheme();
   const baseStyles =
     "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50";
 
@@ -57,7 +55,6 @@ export const Button = ({
 };
 
 export const Input = ({ className = "", type = "text", ...props }) => {
-  const { theme } = useTheme();
   return (
     <input
       type={type}
@@ -68,7 +65,6 @@ export const Input = ({ className = "", type = "text", ...props }) => {
 };
 
 export const Select = ({ children, className = "", ...props }) => {
-  const { theme } = useTheme();
   return (
     <select
       className={`flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm text-foreground shadow-sm transition-colors focus:outline-none focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
@@ -80,7 +76,6 @@ export const Select = ({ children, className = "", ...props }) => {
 };
 
 export const Checkbox = ({ className = "", ...props }) => {
-  const { theme } = useTheme();
   return (
     <input
       type="checkbox"
@@ -91,7 +86,6 @@ export const Checkbox = ({ className = "", ...props }) => {
 };
 
 export const Tooltip = ({ children, content, position = "top" }) => {
-  const { theme } = useTheme();
   const [isVisible, setIsVisible] = useState(false);
   const tooltipRef = useRef(null);
 
@@ -140,7 +134,6 @@ export const Dropdown = ({
   isOpen: controlledIsOpen,
   setIsOpen: controlledSetIsOpen,
 }) => {
-  const { theme } = useTheme();
   const [uncontrolledIsOpen, setUncontrolledIsOpen] = useState(false);
   const isControlled =
     controlledIsOpen !== undefined && controlledSetIsOpen !== undefined;
@@ -230,7 +223,6 @@ export const Dropdown = ({
 };
 
 export const DropdownItem = ({ children, onClick }) => {
-  const { theme } = useTheme();
   return (
     <div
       className="flex cursor-pointer items-center rounded-sm px-3 py-2 text-sm text-foreground hover:bg-muted gap-2 min-h-[36px]"
@@ -243,7 +235,6 @@ export const DropdownItem = ({ children, onClick }) => {
 };
 
 export const Badge = ({ children, variant = "default", className = "" }) => {
-  const { theme } = useTheme();
   const variantStyles = {
     default: "bg-muted text-muted-foreground",
     primary: "bg-primary text-primary-foreground",
@@ -263,7 +254,6 @@ export const Badge = ({ children, variant = "default", className = "" }) => {
 };
 
 export const DatePicker = ({ value, onChange, className = "" }) => {
-  const { theme } = useTheme();
   return (
     <input
       type="date"
@@ -275,7 +265,6 @@ export const DatePicker = ({ value, onChange, className = "" }) => {
 };
 
 export const Modal = ({ isOpen, onClose, title, children }) => {
-  const { theme } = useTheme();
   if (!isOpen) return null;
 
   return (

@@ -23,7 +23,7 @@ export function ThemeProvider({ children, ...props }: { children: React.ReactNod
   return (
     <NextThemesProvider
       themes={Object.keys(themes)}
-      defaultTheme="system"
+      defaultTheme="light"
       enableSystem
       {...props}
     >
@@ -34,8 +34,9 @@ export function ThemeProvider({ children, ...props }: { children: React.ReactNod
 }
 
 function ThemeStyles() {
-  const { theme } = useTheme()
-  const currentTheme = themes[theme as keyof typeof themes] || themes.light
+  const { theme, resolvedTheme } = useTheme()
+  // Ensure light mode is always the fallback to prevent background color conflicts
+  const currentTheme = themes[resolvedTheme as keyof typeof themes] || themes[theme as keyof typeof themes] || themes.light
   const variables = generateThemeVariables(currentTheme as Theme)
 
   return (

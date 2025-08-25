@@ -24,20 +24,6 @@ const tenantApiService = async (method, endpoint, data = null) => {
     // Production: use centralized or tenant-specific URLs
     url = getTenantApiUrl(tenantName, endpoint);
   }
-  
-  // Debug logging
-  console.log('🔍 [tenantApiService] Debug Info:');
-  console.log('  - Method:', method);
-  console.log('  - Endpoint:', endpoint);
-  console.log('  - Hostname:', hostname);
-  console.log('  - Tenant Name:', tenantName);
-  console.log('  - Full URL:', url);
-  console.log('  - Environment:', process.env.NODE_ENV);
-  console.log('  - Development Mode:', isDevelopment);
-  console.log('🔧 [DEBUG] URL Construction:');
-  console.log('  - isDevelopment:', isDevelopment);
-  console.log('  - Using getTenantApiUrl result:', getTenantApiUrl(tenantName, endpoint));
-  console.log('  - Final URL assigned:', url);
 
   // Get token from cookies instead of localStorage
   const token = document.cookie
