@@ -52,6 +52,18 @@ const DrawerGrid = ({
   const [tableAttributes, setTableAttributes] = useState(null);
   const [currentEditingRowId, setCurrentEditingRowId] = useState(null);
 
+  // Auto-sync item details when helpData changes or when editing existing data
+  useEffect(() => {
+    if (helpData && gridData) {
+      gridData.forEach((row) => {
+        if (row.itemcode && !row.itemname && helpData.length > 0) {
+          // If we have an itemcode but no itemname, try to sync the details
+          syncItemDetails(row.id, row.itemcode);
+        }
+      });
+    }
+  }, [helpData, gridData]);
+
   // Fast lookup from itemcode -> id (only if helpData is provided)
   const itemCodeToId = useMemo(() => {
     if (!helpData || !Array.isArray(helpData)) return new Map();
@@ -199,11 +211,37 @@ const DrawerGrid = ({
           return {
             ...gRow,
             item_id: selectedItem?.id ?? null,
-            itemcode: selectedItem?.itemcode ?? "",
+            itemcode: selectedItem?.code ?? selectedItem?.itemcode ?? "",
             // Auto-fill itemname with item's name if available
             itemname: selectedItem?.name ?? "",
             // Auto-fill price with item's price if available
             price: selectedItem?.price ?? 0,
+          };
+        }
+        return gRow;
+      });
+      onGridDataChange(updatedGridData);
+    }
+  };
+
+  // Function to sync item details when item code is manually entered
+  const syncItemDetails = (rowId, itemcode) => {
+    if (!helpData || !itemcode) return;
+    
+    // Find the item by code
+    const foundItem = helpData.find(item => 
+      (item.code === itemcode || item.itemcode === itemcode)
+    );
+    
+    if (foundItem && onGridDataChange) {
+      const updatedGridData = gridData.map((gRow) => {
+        if (gRow.id === rowId) {
+          return {
+            ...gRow,
+            item_id: foundItem.id,
+            itemcode: foundItem.code || foundItem.itemcode || itemcode,
+            itemname: foundItem.name || "",
+            price: foundItem.price || 0,
           };
         }
         return gRow;
@@ -255,7 +293,20 @@ const DrawerGrid = ({
             options={createOptions(availableOptions)}
             getOptionLabel={(option) => {
               if (!option) return "";
-              return `${option.code || ""} - ${option.name || ""}`;
+              // Return only the code for display in the field
+              return option.code || option.itemcode || "";
+            }}
+            filterOptions={(options, { inputValue }) => {
+              if (!inputValue) return options;
+              
+              const searchTerm = inputValue.toLowerCase();
+              return options.filter((option) => {
+                const code = (option.code || option.itemcode || "").toLowerCase();
+                const name = (option.name || option.title || "").toLowerCase();
+                
+                // Search in both code and name
+                return code.includes(searchTerm) || name.includes(searchTerm);
+              });
             }}
             isOptionEqualToValue={(option, value) => {
               if (!option || !value) return false;
@@ -286,6 +337,7 @@ const DrawerGrid = ({
                 placeholder=""
                 label={null}
                 InputLabelProps={{ shrink: false }}
+                value={row.itemcode || ""}
                 sx={{ 
                   '& .MuiInputBase-root': { 
                     fontSize: '0.875rem',
@@ -435,7 +487,18 @@ const DrawerGrid = ({
       }}>
                  <RTLTextField
            value={row[field] || ""}
-           onChange={(e) => handleGridDataChange(row.id, field, e.target.value)}
+           onChange={(e) => {
+             const newValue = e.target.value;
+             handleGridDataChange(row.id, field, newValue);
+             
+             // If this is the itemcode field and we have helpData, try to sync item details
+             if (field === "itemcode" && helpData && newValue) {
+               // Use a small delay to avoid excessive API calls while typing
+               setTimeout(() => {
+                 syncItemDetails(row.id, newValue);
+               }, 500);
+             }
+           }}
            fullWidth
            size="small"
            type={type}
@@ -683,21 +746,32 @@ const DrawerGrid = ({
                  >
                    {rowIndex + 1}
                  </TableCell>
-                {columns.filter(column => column.field !== 'line').map((column, index) => (
-                  <TableCell 
-                    key={index} 
-                    sx={{ 
-                      py: 1,
-                      px: 2,
-                      borderBottom: rowIndex < gridData.length - 1 ? '1px solid' : 'none',
-                      borderRight: '1px solid',
-                      borderColor: 'divider',
-                      verticalAlign: 'top'
-                    }}
-                  >
-                    {renderCell(row, column)}
-                  </TableCell>
-                ))}
+                {columns.filter(column => column.field !== 'line').map((column, index) => {
+                  // Determine column width based on field type (same logic as header)
+                  let columnWidth = '25%';
+                  if (column.field === 'price' || column.field === 'discount') {
+                    columnWidth = '15%';
+                  } else if (column.field === 'itemcode') {
+                    columnWidth = '35%';
+                  }
+                  
+                  return (
+                    <TableCell 
+                      key={index} 
+                      sx={{ 
+                        py: 1,
+                        px: 2,
+                        width: columnWidth,
+                        borderBottom: rowIndex < gridData.length - 1 ? '1px solid' : 'none',
+                        borderRight: '1px solid',
+                        borderColor: 'divider',
+                        verticalAlign: 'top'
+                      }}
+                    >
+                      {renderCell(row, column)}
+                    </TableCell>
+                  );
+                })}
                 {/* Separator column in body for RTL mode */}
                 {isRTL && (
                   <TableCell 

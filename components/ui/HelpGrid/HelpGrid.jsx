@@ -44,7 +44,7 @@ const HelpGrid = ({
   
   // Debug: Log when jumpToPageInput changes
   useEffect(() => {
-    console.log('HelpGrid - jumpToPageInput changed to:', jumpToPageInput);
+    
   }, [jumpToPageInput]);
   const [sortConfig, setSortConfig] = useState(() => {
     if (typeof window !== 'undefined') {

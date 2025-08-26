@@ -316,7 +316,9 @@
     "bookmarkAdded": "تمت إضافة الإشارة المرجعية",
     "bookmarkRemoved": "تمت إزالة الإشارة المرجعية",
     "bookmarksCleared": "تم مسح جميع الإشارات المرجعية",
-    "logout": "تسجيل الخروج"
+    "logout": "تسجيل الخروج",
+    "bookmarkAdded": "تم إضافة {pageName} إلى الإشارات المرجعية",
+    "bookmarkRemoved": "تم إزالة {pageName} من الإشارات المرجعية"
   },
   "toast": {
     "success": "نجاح",

@@ -685,7 +685,10 @@
     "logout": "Log out",
     "payment": "Payment",
     "paymentTerms": "Payment Terms",
-    "paymentMethods": "Payment Methods"
+    "paymentMethods": "Payment Methods",
+    "bookmarkAdded": "{pageName} added to bookmark",
+    "bookmarkRemoved": "{pageName} removed from bookmark",
+    "bookmarksCleared": "All bookmarks cleared"
   },
   "addressCodes": {
     "title": "Address Codes",

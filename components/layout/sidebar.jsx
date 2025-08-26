@@ -950,16 +950,24 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
     const item = allItems.find((i) => i.name === itemName);
     if (!item) return;
     let newBookmarks;
-    if (bookmarks.includes(item.uniqueId)) {
-      newBookmarks = bookmarks.filter((b) => b !== item.uniqueId);
-      toast.info({ title: "info", description: "sidebarInfo", isTranslated: true });
-    } else {
-      newBookmarks = [...bookmarks, item.uniqueId];
-      toast.info({ title: "info", description: "sidebarInfo", isTranslated: true });
-    }
+            if (bookmarks.includes(item.uniqueId)) {
+          newBookmarks = bookmarks.filter((b) => b !== item.uniqueId);
+          toast.info({
+            title: "info",
+            description: t("bookmarkRemoved", { pageName: item.name }),
+            isTranslated: false
+          });
+        } else {
+          newBookmarks = [...bookmarks, item.uniqueId];
+          toast.info({
+            title: "info",
+            description: t("bookmarkAdded", { pageName: item.name }),
+            isTranslated: false
+          });
+        }
     setBookmarks(newBookmarks);
     localStorage.setItem("sidebarBookmarks", JSON.stringify(newBookmarks));
-  }, [allItems, bookmarks]);
+  }, [allItems, bookmarks, t]);
 
   const toggleGroup = useCallback((group) => {
     // Find the language-agnostic key for this group
@@ -1084,8 +1092,8 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
     if (bookmarks.length === 0) {
       toast.info({
         title: "info",
-        description: "sidebarInfo",
-        isTranslated: true,
+        description: t("bookmarksCleared"),
+        isTranslated: false,
       });
       return;
     }
@@ -1094,10 +1102,10 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
     localStorage.removeItem("sidebarBookmarks");
     toast.info({
       title: "info",
-      description: "sidebarInfo",
-      isTranslated: true,
+      description: t("bookmarksCleared"),
+      isTranslated: false,
     });
-  }, [bookmarks]);
+  }, [bookmarks, t]);
 
   // ====== FILTER ITEMS BY ROLE (currently passthrough) ======
   const filterItemsByRole = useCallback((items) => items, []);
