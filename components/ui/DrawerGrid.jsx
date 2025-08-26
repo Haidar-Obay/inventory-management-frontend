@@ -77,21 +77,16 @@ const DrawerGrid = ({
 
   // Handler for when items are added from help modal
   const handleHelpAdd = (addedItems) => {
-    console.log('DrawerGrid: Received items from help modal:', addedItems);
-    console.log('DrawerGrid: Current editing row ID:', currentEditingRowId);
-    
+
     if (addedItems && addedItems.length > 0) {
       // Start with a copy of current grid data
       let updatedGridData = [...gridData];
       
       // Process each added item
       addedItems.forEach((item, index) => {
-        console.log(`DrawerGrid: Processing item ${index}:`, item);
-        
         if (index === 0) {
           // First item: update the row that opened the help modal
           if (currentEditingRowId) {
-            console.log(`DrawerGrid: Updating row ${currentEditingRowId} with item:`, item);
             updatedGridData = updatedGridData.map(row => {
               if (row.id === currentEditingRowId) {
                 return {
@@ -108,7 +103,6 @@ const DrawerGrid = ({
             // Fallback: try to find an empty row or use the first row
             const emptyRow = updatedGridData.find(row => !row.item_id && !row.itemcode);
             if (emptyRow) {
-              console.log(`DrawerGrid: Found empty row ${emptyRow.id}, updating with item:`, item);
               updatedGridData = updatedGridData.map(row => {
                 if (row.id === emptyRow.id) {
                   return {
@@ -123,7 +117,6 @@ const DrawerGrid = ({
               });
             } else {
               // No empty row found, update the first row
-              console.log(`DrawerGrid: No empty row found, updating first row with item:`, item);
               updatedGridData = updatedGridData.map((row, idx) => {
                 if (idx === 0) {
                   return {
@@ -140,7 +133,6 @@ const DrawerGrid = ({
           }
         } else {
           // Additional items: add new rows
-          console.log(`DrawerGrid: Adding new row for item ${index}:`, item);
           const newRow = {
             id: `row_${Date.now()}_${index}`,
             item_id: item.id || null,
@@ -157,10 +149,7 @@ const DrawerGrid = ({
       });
       
       // Apply all changes at once
-      console.log('DrawerGrid: Applying all changes at once:', updatedGridData);
       onGridDataChange(updatedGridData);
-      
-      console.log('DrawerGrid: Finished processing all items');
     }
     
     // Reset the current editing row ID

@@ -283,47 +283,7 @@ function CustomerPage() {
         if (response.status) {
           const customerData = response.data;
           
-          // Debug: Log the customer data structure
-          console.log('Customer data from backend:', customerData);
-          console.log('Address data:', {
-            primary_billing: customerData.primary_billing_address,
-            primary_shipping: customerData.primary_shipping_address,
-            shipping_addresses: customerData.shipping_addresses,
-            billing_addresses: customerData.billing_addresses,
-            addresses: customerData.addresses,
-            first_shipping_address: customerData.shipping_addresses?.[0],
-            first_billing_address: customerData.billing_addresses?.[0],
-          });
-          console.log('Contact data:', {
-            primary_contact: customerData.primary_contact,
-            contacts: customerData.contacts,
-          });
-          console.log('Opening balances data:', {
-            opening_balances: customerData.opening_balances,
-            mapped_opening_balances: customerData.opening_balances?.map(balance => ({
-              currency: balance.currency_code || balance.currency_id,
-              amount: balance.opening_amount || balance.amount,
-              date: balance.opening_date || balance.date,
-              notes: balance.notes,
-              is_active: balance.is_active
-            })) || []
-          });
-          
-          // Debug each opening balance individually
-          if (customerData.opening_balances) {
-            customerData.opening_balances.forEach((balance, index) => {
-              console.log(`Opening balance ${index}:`, {
-                original: balance,
-                currency_code: balance.currency_code,
-                currency_id: balance.currency_id,
-                currency: balance.currency,
-                opening_amount: balance.opening_amount,
-                amount: balance.amount,
-                opening_date: balance.opening_date,
-                date: balance.date
-              });
-            });
-          }
+
           
           // Map backend data to frontend form structure
           const mappedData = {
@@ -462,9 +422,7 @@ function CustomerPage() {
             })) || [],
           };
           
-          // Debug: Log the mapped data
-          console.log('handleEdit: Mapped customer data:', mappedData);
-          console.log('handleEdit: Credit limits data:', mappedData.credit_limits);
+
           
           setFormData(mappedData);
         } else {
@@ -804,9 +762,6 @@ function CustomerPage() {
          ];
          
          // Ensure opening balances are preserved and not affected by field mappings
-         if (preparedData.opening_balances) {
-           console.log('Opening balances preserved:', preparedData.opening_balances);
-         }
       
       // Ensure all categorize fields are present and properly formatted
       categorizeFields.forEach(field => {
@@ -952,41 +907,28 @@ function CustomerPage() {
         delete preparedData.position;
         delete preparedData.extension;
 
-                 // Debug: Log the opening balances form data
-         console.log('Opening balances form data:', preparedData.opening_balances_form);
-         
          // Process opening balances for backend - map to correct field names
          if (preparedData.opening_balances_form && Array.isArray(preparedData.opening_balances_form) && preparedData.opening_balances_form.length > 0) {
-           console.log('Opening balances form data is valid, processing...');
-           console.log('Raw opening balances form data:', preparedData.opening_balances_form);
-           
            // Only process balances that have both currency and amount
            const validBalances = preparedData.opening_balances_form.filter(balance => {
              const hasCurrency = balance.currency && balance.currency.toString().trim() !== '';
              const hasAmount = balance.amount && balance.amount.toString().trim() !== '';
-             console.log('Balance check:', { balance, hasCurrency, hasAmount });
              return hasCurrency && hasAmount;
            });
-           
-           console.log('Valid balances:', validBalances);
            
            if (validBalances.length > 0) {
              try {
                // Import currencies to get the mapping
                const { getCurrencies } = await import('@/API/Currency');
                const currenciesResponse = await getCurrencies();
-               console.log('Currencies API response:', currenciesResponse);
                
                const currencies = currenciesResponse.data || currenciesResponse || [];
-               console.log('Currencies data:', currencies);
                
                // Create a mapping from currency code to ID
                const currencyCodeToId = {};
                currencies.forEach(currency => {
                  currencyCodeToId[currency.code] = currency.id;
                });
-               
-               console.log('Currency mapping:', currencyCodeToId);
                
                // If no currencies found, try a fallback approach
                if (Object.keys(currencyCodeToId).length === 0) {
@@ -1002,7 +944,6 @@ function CustomerPage() {
                  
                  preparedData.opening_balances = validBalances.map(balance => {
                    const currencyId = fallbackMapping[balance.currency] || 1; // Default to USD (ID: 1)
-                   console.log(`Using fallback: Converting currency ${balance.currency} to ID:`, currencyId);
                    
                    return {
                      currency_id: currencyId,
@@ -1016,9 +957,7 @@ function CustomerPage() {
                } else {
                  preparedData.opening_balances = validBalances.map(balance => {
                    const currencyId = currencyCodeToId[balance.currency];
-                   console.log(`Converting currency ${balance.currency} to ID:`, currencyId);
-                   console.log('Available currencies:', currencies.map(c => ({ code: c.code, id: c.id })));
-                  
+                   
                    if (!currencyId) {
                      console.error(`Currency code "${balance.currency}" not found in currencies list`);
                      // Use fallback ID for unknown currencies
@@ -1028,7 +967,7 @@ function CustomerPage() {
                        amount: parseFloat(balance.amount) || 0, // Add amount field
                        opening_amount: parseFloat(balance.amount) || 0,
                        opening_date: balance.date || null,
-                       notes: balance.notes || ''
+                     notes: balance.notes || ''
                      };
                    }
                    
@@ -1042,8 +981,6 @@ function CustomerPage() {
                    };
                  });
                }
-               
-               console.log('Mapped opening balances for backend:', preparedData.opening_balances);
              } catch (error) {
                console.error('Error fetching currencies, using fallback:', error);
                // Fallback: use currency code as ID (assuming backend can handle it)
@@ -1057,16 +994,11 @@ function CustomerPage() {
                }));
              }
            } else {
-             console.log('No valid opening balances found');
              preparedData.opening_balances = [];
            }
          } else {
-           console.log('No opening balances form data or empty array');
            preparedData.opening_balances = [];
          }
-         
-         // Debug: Log the opening balances data being sent
-         console.log('Opening balances being sent to backend:', preparedData.opening_balances);
          
          // Remove the form version since we've mapped it to the correct format
          delete preparedData.opening_balances_form;
@@ -1191,20 +1123,7 @@ function CustomerPage() {
           delete preparedData.payment_method_id;
         }
         
-        // Debug: log pricing values before normalization
-        console.log('Pricing (incoming from formData):', {
-          form_markup: formData.markup,
-          form_markdown: formData.markdown,
-          form_markup_percentage: formData.markup_percentage,
-          form_markdown_percentage: formData.markdown_percentage,
-        });
 
-        console.log('Pricing (prepared before normalize):', {
-          prepared_markup: preparedData.markup,
-          prepared_markdown: preparedData.markdown,
-          prepared_markup_percentage: preparedData.markup_percentage,
-          prepared_markdown_percentage: preparedData.markdown_percentage,
-        });
 
         // Normalize pricing keys to backend contract (send markup/markdown)
         if (preparedData.global_discount !== undefined && preparedData.global_discount !== null && preparedData.global_discount !== '') {
@@ -1227,19 +1146,8 @@ function CustomerPage() {
         if ('markup_percentage' in preparedData) delete preparedData.markup_percentage;
         if ('markdown_percentage' in preparedData) delete preparedData.markdown_percentage;
 
-        console.log('Pricing (after normalize):', {
-          markup: preparedData.markup,
-          markdown: preparedData.markdown,
-          has_markup_percentage: 'markup_percentage' in preparedData,
-          has_markdown_percentage: 'markdown_percentage' in preparedData,
-        });
-      }
 
-      // Debug: Log the final prepared data being sent
-      console.log('Final prepared data being sent to backend:', preparedData);
-      console.log('Opening balances in final data:', preparedData.opening_balances);
-      console.log('Opening balances type:', typeof preparedData.opening_balances);
-      console.log('Opening balances length:', preparedData.opening_balances?.length);
+      }
 
       let response;
       if (isEditMode) {

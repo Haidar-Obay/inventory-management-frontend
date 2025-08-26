@@ -54,15 +54,7 @@ const PaymentTermsSection = React.memo((props) => {
   const selectedTerm = paymentTerms.find(pt => pt.id === selectedPaymentTerm);
   const showAllowCreditFields = hasOpeningCurrency && selectedTerm && selectedTerm.nb_days > 0;
   
-  // Debug: Log the conditions for showing credit fields
-  console.log('PaymentTermsSection: Debug credit fields visibility:', {
-    hasOpeningCurrency,
-    openingBalances,
-    selectedPaymentTerm,
-    selectedTerm,
-    selectedTermNbDays: selectedTerm?.nb_days,
-    showAllowCreditFields
-  });
+
 
   // Effect: If allowCredit is checked but no opening currency, uncheck it
   React.useEffect(() => {
@@ -354,10 +346,6 @@ const PaymentTermsSection = React.memo((props) => {
                 <Checkbox
                   checked={!!trackPayment}
                   onChange={e => {
-                    console.log('Track payment checkbox clicked:', e.target.checked);
-                    console.log('Current allowCredit:', allowCredit);
-                    console.log('Current showAllowCreditFields:', showAllowCreditFields);
-                    
                     // Mark that user has manually changed this
                     userChangedTrackPayment.current = true;
                     

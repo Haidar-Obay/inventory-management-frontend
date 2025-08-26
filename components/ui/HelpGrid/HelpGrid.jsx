@@ -247,11 +247,7 @@ const HelpGrid = ({
       existingItem.itemcode === item.itemcode
     );
     
-    console.log('isItemAlreadyAdded check:', {
-      item,
-      existingItems: itemsWithData, // Only show items with data
-      result
-    });
+
     
     return result;
   }, [existingItems]);
@@ -259,8 +255,6 @@ const HelpGrid = ({
   // Clear selections when modal opens/closes
   useEffect(() => {
     if (isOpen) {
-      console.log('Modal opening, existingItems:', existingItems);
-      
       // Mark existing items as pre-selected but disabled
       const existingItemIds = new Set();
       
@@ -272,15 +266,11 @@ const HelpGrid = ({
       itemsWithData.forEach(item => {
         if (item.item_id) {
           existingItemIds.add(item.item_id);
-          console.log('Added existing item_id:', item.item_id);
         }
         if (item.itemcode) {
           existingItemIds.add(item.itemcode);
-          console.log('Added existing itemcode:', item.itemcode);
         }
       });
-      
-      console.log('Final existingItemIds:', Array.from(existingItemIds));
       
       // Set existing items as pre-selected (for visual indication)
       setSelectedRows(existingItemIds);
@@ -588,20 +578,14 @@ const HelpGrid = ({
 
   // Row selection handlers
   const handleRowSelect = (rowId) => {
-    console.log('handleRowSelect called with:', rowId);
-    console.log('Current selectedRows before:', Array.from(selectedRows));
-    
     setSelectedRows((prevSelectedRows) => {
       const newSelectedRows = new Set(prevSelectedRows);
       if (newSelectedRows.has(rowId)) {
         newSelectedRows.delete(rowId);
-        console.log('Removed rowId:', rowId);
       } else {
         newSelectedRows.add(rowId);
-        console.log('Added rowId:', rowId);
       }
       
-      console.log('New selectedRows:', Array.from(newSelectedRows));
       return newSelectedRows;
     });
   };
@@ -661,7 +645,6 @@ const HelpGrid = ({
 
   // Drag and drop handlers
   const handleDragStart = (e, row, rowIndex) => {
-    console.log('Drag started:', { row, rowIndex, rowId: row.id || row.itemcode });
     setDraggedRow({ row, index: rowIndex });
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/html', ''); // Required for Firefox
@@ -705,13 +688,7 @@ const HelpGrid = ({
     const [removedItem] = newDisplayOrder.splice(draggedRow.index, 1);
     newDisplayOrder.splice(targetIndex, 0, removedItem);
 
-    console.log('Drag and drop successful:', {
-      from: draggedRow.index,
-      to: targetIndex,
-      draggedItem: draggedItem.id || draggedItem.itemcode,
-      targetItem: targetItem.id || targetItem.itemcode,
-      newDisplayOrderLength: newDisplayOrder.length
-    });
+
 
     // Update the display order state
     setDisplayOrder(newDisplayOrder);
