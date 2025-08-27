@@ -48,6 +48,9 @@ export const useSchedulerState = () => {
   });
   const [showTimeSettings, setShowTimeSettings] = useState(false);
   
+  // View dropdown state
+  const [showViewDropdown, setShowViewDropdown] = useState(false);
+  
   // Validated time settings setter with localStorage persistence
   const setTimeSettingsValidated = (newSettings) => {
     const { startHour, endHour } = newSettings;
@@ -163,6 +166,9 @@ export const useSchedulerState = () => {
     setTimeSettings: setTimeSettingsValidated,
     showTimeSettings,
     setShowTimeSettings,
+    // View dropdown
+    showViewDropdown,
+    setShowViewDropdown,
     selectedDayEvents,
     setSelectedDayEvents,
     selectedDayDate,

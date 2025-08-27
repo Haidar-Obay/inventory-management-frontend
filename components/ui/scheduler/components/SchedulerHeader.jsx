@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Button } from '../../button';
 import { CardTitle } from '../../card';
 
@@ -6,11 +6,11 @@ const SchedulerHeader = ({
   viewMode,
   setViewMode,
   headerRangeLabel,
+  selectedDate,
   goPrev,
   goNext,
   goToday,
   handleAddEvent,
-  addSampleEvents,
   searchQuery,
   setSearchQuery,
   filterDate,
@@ -26,76 +26,33 @@ const SchedulerHeader = ({
   timeSettings,
   setTimeSettings,
   showTimeSettings,
-  setShowTimeSettings
+  setShowTimeSettings,
+  showViewDropdown,
+  setShowViewDropdown
 }) => {
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowViewDropdown(false);
+      }
+    };
+
+    if (showViewDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showViewDropdown, setShowViewDropdown]);
   return (
     <>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-        {/* Navigation and Title */}
+      <div className="flex items-center justify-between gap-3 sm:gap-4 flex-wrap">
+        {/* Left Side: Search, Filter, Time */}
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center gap-1">
-            <Button variant="outline" size="sm" onClick={goPrev} className="px-2 sm:px-3">
-              <span className="hidden sm:inline">←</span>
-              <span className="sm:hidden">‹</span>
-            </Button>
-            <Button variant="outline" size="sm" onClick={goToday} className="px-2 sm:px-3 text-xs sm:text-sm">
-              Today
-            </Button>
-            <Button variant="outline" size="sm" onClick={goNext} className="px-2 sm:px-3">
-              <span className="hidden sm:inline">→</span>
-              <span className="sm:hidden">›</span>
-            </Button>
-          </div>
-          <CardTitle className="ml-2 text-sm sm:text-base lg:text-lg font-semibold truncate max-w-[200px] sm:max-w-none">
-            {headerRangeLabel}
-          </CardTitle>
-        </div>
-        
-        {/* View Toggles and Actions */}
-        <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
-          <div className="flex items-center gap-1">
-            <Button
-              variant={viewMode === 'day' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('day')}
-              className="px-2 sm:px-3 text-xs sm:text-sm"
-            >
-              Day
-            </Button>
-            <Button
-              variant={viewMode === 'week' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('week')}
-              className="px-2 sm:px-3 text-xs sm:text-sm"
-            >
-              Week
-            </Button>
-            <Button
-              variant={viewMode === 'month' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('month')}
-              className="px-2 sm:px-3 text-xs sm:text-sm"
-            >
-              Month
-            </Button>
-          </div>
-          <div className="flex items-center gap-1">
-            <Button onClick={handleAddEvent} size="sm" className="px-2 sm:px-3 text-xs sm:text-sm">
-              <span className="hidden sm:inline">+ Add Event</span>
-              <span className="sm:hidden">+ Event</span>
-            </Button>
-            <Button onClick={addSampleEvents} size="sm" variant="outline" className="px-2 sm:px-3 text-xs sm:text-sm">
-              <span className="hidden sm:inline">Add Sample Events</span>
-              <span className="sm:hidden">Sample</span>
-            </Button>
-          </div>
-        </div>
-      </div>
-      
-      {/* Search and Filter Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-4">
-        {/* Search and Filter Row */}
-        <div className="flex items-center gap-2">
           {/* Search Input */}
           <div className="relative w-64 sm:w-80">
             <input
@@ -115,13 +72,11 @@ const SchedulerHeader = ({
             variant={showFilters ? 'default' : 'outline'}
             size="sm"
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-3 sm:px-4"
+            className="px-3 sm:px-4"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
             </svg>
-            <span className="hidden sm:inline">Filters</span>
-            <span className="sm:hidden">Filter</span>
           </Button>
           
           {/* Time Settings Toggle */}
@@ -129,18 +84,110 @@ const SchedulerHeader = ({
             variant={showTimeSettings ? 'default' : 'outline'}
             size="sm"
             onClick={() => setShowTimeSettings(!showTimeSettings)}
-            className="flex items-center gap-2 px-3 sm:px-4"
+            className="px-3 sm:px-4"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span className="hidden sm:inline">Time</span>
-            <span className="sm:hidden">Time</span>
           </Button>
         </div>
         
-        {/* Clear Filters */}
-        {(searchQuery || filterDate || filterColor !== 'all') && (
+        {/* Middle: Today Button + Navigation Arrows + Current Date */}
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={goPrev} className="px-2 sm:px-3">
+            <span className="hidden sm:inline">←</span>
+            <span className="sm:hidden">‹</span>
+          </Button>
+          <Button variant="outline" size="sm" onClick={goToday} className="px-2 sm:px-3 text-xs sm:text-sm">
+            Today
+          </Button>
+          <Button variant="outline" size="sm" onClick={goNext} className="px-2 sm:px-3">
+            <span className="hidden sm:inline">→</span>
+            <span className="sm:hidden">›</span>
+          </Button>
+          
+          {/* Current Date Display */}
+          <div className="hidden sm:flex items-center ml-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-600">
+            {selectedDate.toLocaleDateString('en-US', {
+              weekday: 'long',
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric'
+            })}
+          </div>
+        </div>
+        
+        {/* Right Side: View Dropdown + Add Event Button */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* View Dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowViewDropdown(!showViewDropdown)}
+              className="px-2 sm:px-3 text-xs sm:text-sm flex items-center gap-1 min-w-[6rem] justify-between"
+            >
+              <span>{viewMode.charAt(0).toUpperCase() + viewMode.slice(1)}</span>
+              <svg 
+                className={`h-3 w-3 transition-transform duration-200 ${showViewDropdown ? 'rotate-180' : ''}`} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </Button>
+            
+            {/* Dropdown Menu */}
+            {showViewDropdown && (
+              <div className="absolute top-full left-0 mt-1 w-20 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-30">
+                <button
+                  onClick={() => {
+                    setViewMode('day');
+                    setShowViewDropdown(false);
+                  }}
+                  className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 rounded-t-lg ${
+                    viewMode === 'day' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
+                  }`}
+                >
+                  Day
+                </button>
+                <button
+                  onClick={() => {
+                    setViewMode('week');
+                    setShowViewDropdown(false);
+                  }}
+                  className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 ${
+                    viewMode === 'week' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
+                  }`}
+                >
+                  Week
+                </button>
+                <button
+                  onClick={() => {
+                    setViewMode('month');
+                    setShowViewDropdown(false);
+                  }}
+                  className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 rounded-b-lg ${
+                    viewMode === 'month' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
+                  }`}
+                >
+                  Month
+                </button>
+              </div>
+            )}
+          </div>
+          
+          {/* Add Event Button */}
+          <Button onClick={handleAddEvent} size="sm" className="px-2 sm:px-3 text-xs sm:text-sm">
+            <span>+</span>
+          </Button>
+        </div>
+      </div>
+      
+      {/* Clear Filters - Only show when needed */}
+      {(searchQuery || filterDate || filterColor !== 'all') && (
+        <div className="flex justify-end mt-3">
           <Button
             variant="outline"
             size="sm"
@@ -149,12 +196,12 @@ const SchedulerHeader = ({
           >
             Clear
           </Button>
-        )}
-      </div>
+        </div>
+      )}
       
       {/* Filter Panel */}
       {showFilters && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mt-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mt-1 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
           {/* Date Filter */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 min-w-0">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Date:</label>
@@ -199,7 +246,7 @@ const SchedulerHeader = ({
       
       {/* Time Settings Panel */}
       {showTimeSettings && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mt-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mt-0 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
           {/* Start Hour */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 min-w-0">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Start Time:</label>

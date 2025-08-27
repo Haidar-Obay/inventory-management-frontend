@@ -64,7 +64,9 @@ const Scheduler = () => {
     timeSettings,
     setTimeSettings,
     showTimeSettings,
-    setShowTimeSettings
+    setShowTimeSettings,
+    showViewDropdown,
+    setShowViewDropdown
   } = useSchedulerState();
 
   // Use custom hooks for event handling and navigation
@@ -73,7 +75,6 @@ const Scheduler = () => {
     handleSlotClick,
     handleEventSave,
     handleEventDelete,
-    addSampleEvents,
     handleShowDayEvents
   } = useEventHandlers(setEvents, setDraftEvent, setDialogOpen, selectedDate);
 
@@ -112,11 +113,11 @@ const Scheduler = () => {
             viewMode={viewMode}
             setViewMode={setViewMode}
             headerRangeLabel={headerRangeLabel}
+            selectedDate={selectedDate}
             goPrev={goPrev}
             goNext={goNext}
             goToday={goToday}
             handleAddEvent={handleAddEvent}
-            addSampleEvents={addSampleEvents}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
             filterDate={filterDate}
@@ -133,6 +134,8 @@ const Scheduler = () => {
             setTimeSettings={setTimeSettings}
             showTimeSettings={showTimeSettings}
             setShowTimeSettings={setShowTimeSettings}
+            showViewDropdown={showViewDropdown}
+            setShowViewDropdown={setShowViewDropdown}
           />
         </CardHeader>
         
