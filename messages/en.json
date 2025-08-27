@@ -696,6 +696,7 @@
         "placeholder": "Search all columns...",
         "columnPlaceholder": "Search {column}...",
         "columnNamePlaceholder": "{column}",
+        
         "clear": "Clear Search",
         "clearFilters": "Clear Filters",
         "activeFilters": "Active Filters"
@@ -1138,7 +1139,8 @@
       "columnNamePlaceholder": "{column}",
       "clear": "Clear Search",
       "clearFilters": "Clear Filters",
-      "activeFilters": "Active Filters"
+      "activeFilters": "Active Filters",
+      "tableHeaderSearch": "Search"
     },
     "actions": "Actions",
     "columns": {

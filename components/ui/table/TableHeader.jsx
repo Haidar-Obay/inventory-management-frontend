@@ -37,17 +37,21 @@ export const TableHeader = ({
   const t = useTranslations("table");
   const locale = useLocale();
   const isRTL = locale === "ar";
-  const { theme } = useTheme();
+  const { theme, resolvedTheme } = useTheme();
+  
+  // Get the effective theme, with fallback to 'light' if theme is undefined
+  // This ensures consistent light mode defaults on first visit
+  const effectiveTheme = resolvedTheme || theme || 'light';
 
   const theadStyle = headerColor ? { 
     background: headerColor,
     fontSize: headerFontSize ? `${headerFontSize}px` : '16px',
     fontStyle: headerFontStyle || 'normal',
-    color: headerFontColor || (theme === 'dark' ? '#e2e8f0' : '#1e293b')
+    color: headerFontColor || (effectiveTheme === 'dark' ? '#e2e8f0' : '#1e293b')
   } : {
     fontSize: headerFontSize ? `${headerFontSize}px` : '16px',
     fontStyle: headerFontStyle || 'normal',
-    color: headerFontColor || (theme === 'dark' ? '#e2e8f0' : '#1e293b')
+    color: headerFontColor || (effectiveTheme === 'dark' ? '#e2e8f0' : '#1e293b')
   };
 
   return (
@@ -62,11 +66,11 @@ export const TableHeader = ({
           background: headerColor,
           fontSize: headerFontSize ? `${headerFontSize}px` : '16px',
           fontStyle: headerFontStyle || 'normal',
-          color: headerFontColor || (theme === 'dark' ? '#e2e8f0' : '#1e293b')
+          color: headerFontColor || (effectiveTheme === 'dark' ? '#e2e8f0' : '#1e293b')
         } : {
           fontSize: headerFontSize ? `${headerFontSize}px` : '16px',
           fontStyle: headerFontStyle || 'normal',
-          color: headerFontColor || (theme === 'dark' ? '#e2e8f0' : '#1e293b')
+          color: headerFontColor || (effectiveTheme === 'dark' ? '#e2e8f0' : '#1e293b')
         }}
       >
         <th
@@ -217,7 +221,7 @@ export const TableHeader = ({
                      className="font-semibold text-slate-700 dark:text-slate-200 text-sm uppercase tracking-wide group-hover:text-slate-900 dark:group-hover:text-white transition-colors duration-200"
                      style={{
                        fontSize: headerFontSize ? `${headerFontSize}px` : undefined,
-                       color: headerFontColor || (theme === 'dark' ? '#e2e8f0' : '#1e293b'),
+                       color: headerFontColor || (effectiveTheme === 'dark' ? '#e2e8f0' : '#1e293b'),
                        fontWeight: headerFontStyle && headerFontStyle.includes('bold') ? 'bold' : undefined,
                        fontStyle: headerFontStyle && headerFontStyle.includes('italic') ? 'italic' : undefined,
                      }}
@@ -337,7 +341,7 @@ export const TableHeader = ({
             className="flex items-center justify-center w-full font-semibold text-slate-700 dark:text-slate-200 text-sm uppercase tracking-wide hover:text-slate-900 dark:hover:text-white transition-colors duration-200"
             style={{
               fontSize: headerFontSize ? `${headerFontSize}px` : undefined,
-              color: headerFontColor || (theme === 'dark' ? '#e2e8f0' : '#1e293b'),
+              color: headerFontColor || (effectiveTheme === 'dark' ? '#e2e8f0' : '#1e293b'),
               fontWeight: headerFontStyle && headerFontStyle.includes('bold') ? 'bold' : undefined,
               fontStyle: headerFontStyle && headerFontStyle.includes('italic') ? 'italic' : undefined,
             }}
@@ -372,7 +376,7 @@ export const TableHeader = ({
         >
           <td className={`${showHeaderColSeparator !== false ? 'border-r border-slate-300 dark:border-slate-600' : ''}`}>
             <div className="flex items-center justify-center">
-              <span className="text-xs text-slate-500 dark:text-slate-400">Search</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400">{t("search.tableHeaderSearch")}</span>
             </div>
           </td>
           {showSearchColumn && (

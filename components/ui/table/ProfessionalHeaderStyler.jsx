@@ -35,7 +35,11 @@ const ProfessionalHeaderStyler = React.memo(({
   const [tempFontStyle, setTempFontStyle] = useState(fontStyle);
   const [activeColorPicker, setActiveColorPicker] = useState(null); // 'bg' or 'font'
   const modalRef = useRef(null);
-  const { theme } = useTheme();
+  const { theme, resolvedTheme } = useTheme();
+  
+  // Get the effective theme, with fallback to 'light' if theme is undefined
+  // This ensures consistent light mode defaults on first visit
+  const effectiveTheme = resolvedTheme || theme || 'light';
   const t = useTranslations();
 
   // Update temp values when props change
@@ -204,8 +208,8 @@ const ProfessionalHeaderStyler = React.memo(({
           <div 
             className="w-10 h-10 rounded-lg border border-border flex items-center justify-center text-sm font-medium shadow-sm"
             style={{ 
-              backgroundColor: tempBgColor || (theme === 'dark' ? '#1e293b' : '#f8fafc'),
-              color: tempFontColor || (theme === 'dark' ? '#e2e8f0' : '#1e293b'),
+              backgroundColor: tempBgColor || (effectiveTheme === 'dark' ? '#1e293b' : '#f8fafc'),
+              color: tempFontColor || (effectiveTheme === 'dark' ? '#e2e8f0' : '#1e293b'),
               fontSize: `${tempFontSize}px`,
               fontStyle: tempFontStyle.includes('italic') ? 'italic' : 'normal',
               fontWeight: tempFontStyle.includes('bold') ? 'bold' : 'normal'
@@ -253,8 +257,8 @@ const ProfessionalHeaderStyler = React.memo(({
                <div 
                  className="p-4 rounded-lg border border-border text-center transition-all duration-200"
                  style={{ 
-                   backgroundColor: tempBgColor || (theme === 'dark' ? '#1e293b' : '#f8fafc'),
-                   color: tempFontColor || (theme === 'dark' ? '#e2e8f0' : '#1e293b'),
+                   backgroundColor: tempBgColor || (effectiveTheme === 'dark' ? '#1e293b' : '#f8fafc'),
+                   color: tempFontColor || (effectiveTheme === 'dark' ? '#e2e8f0' : '#1e293b'),
                    fontSize: `${tempFontSize}px`,
                    fontStyle: tempFontStyle.includes('italic') ? 'italic' : 'normal',
                    fontWeight: tempFontStyle.includes('bold') ? 'bold' : 'normal'

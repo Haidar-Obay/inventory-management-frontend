@@ -268,7 +268,11 @@ export const ColumnModal = React.memo(({
   const t = useTranslations("table");
   const locale = useLocale();
   const isRTL = locale === "ar";
-  const { theme } = useTheme();
+  const { theme, resolvedTheme } = useTheme();
+  
+  // Get the effective theme, with fallback to 'light' if theme is undefined
+  // This ensures consistent light mode defaults on first visit
+  const effectiveTheme = resolvedTheme || theme || 'light';
 
   // State
   const [activeTab, setActiveTab] = useState("settings");
@@ -782,12 +786,12 @@ export const ColumnModal = React.memo(({
       // This will trigger a re-render with the correct color for the theme
       setOtherHeaderColor(""); // Keep as empty, input will show correct color
     }
-  }, [theme]);
+  }, [effectiveTheme]);
 
   const renderOtherSettingsTab = useCallback(() => (
     <div className="space-y-6 px-2 py-4">
       <ProfessionalHeaderStyler
-        backgroundColor={otherHeaderColor || (theme === 'dark' ? '#1e293b' : '#f1f5f9')}
+        backgroundColor={otherHeaderColor || (effectiveTheme === 'dark' ? '#1e293b' : '#f1f5f9')}
         onBackgroundColorChange={setOtherHeaderColor}
         fontSize={otherHeaderFontSize}
         onFontSizeChange={setOtherHeaderFontSize}
@@ -824,7 +828,7 @@ export const ColumnModal = React.memo(({
         </label>
       </div>
     </div>
-  ), [otherHeaderColor, otherHeaderFontSize, otherHeaderFontStyle, otherHeaderFontColor, otherShowHeaderSeparator, otherShowHeaderColSeparator, otherShowBodyColSeparator, t, theme]);
+  ), [otherHeaderColor, otherHeaderFontSize, otherHeaderFontStyle, otherHeaderFontColor, otherShowHeaderSeparator, otherShowHeaderColSeparator, otherShowBodyColSeparator, t, effectiveTheme]);
 
   // Tab content renderers
   const renderColumnSettingsTab = useCallback(() => (
