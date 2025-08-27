@@ -952,12 +952,10 @@ const SupplierDrawer = React.memo(({
                  // Handle max cheques - send empty array if no valid entries
          // Backend expects cheque_limits instead of max_cheques
          cheque_limits: (() => {
-           console.log('Processing maxCheques:', maxCheques);
            const validCheques = maxCheques.filter(cheque => 
              cheque.currency_id && cheque.currency_id !== '' && 
              cheque.max_cheques && cheque.max_cheques !== ''
            ) || [];
-           console.log('Valid cheques:', validCheques);
            
            return validCheques.map(cheque => ({
              currency_id: parseInt(cheque.currency_id),
@@ -1008,9 +1006,6 @@ const SupplierDrawer = React.memo(({
        let response;
 
        if (isEdit) {
-         console.log('Edit mode - ID:', processedFormData.id, 'Type:', typeof processedFormData.id);
-         console.log('FormData ID:', formData.id, 'Type:', typeof formData.id);
-         console.log('Original externalFormData ID:', externalFormData?.id, 'Type:', typeof externalFormData?.id);
          response = await editSupplier(processedFormData.id, processedFormData);
        } else {
          response = await createSupplier(processedFormData);

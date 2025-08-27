@@ -333,7 +333,6 @@ const CustomerMasterListDrawer = React.memo(
               typeof item.discount === "number"
                 ? item.discount
                 : parseFloat(item.discount) || 0,
-            line: item.line || "",
           }))
           .sort((a, b) => {
             // Sort by item_id if available, otherwise put new rows at the end
@@ -403,7 +402,6 @@ const CustomerMasterListDrawer = React.memo(
                   : r.discount !== ""
                     ? parseFloat(r.discount) || 0
                     : 0,
-              line: r.line ?? null,
             }))
             .filter((i) => i.item_id !== null && i.item_id !== undefined),
         };
@@ -438,7 +436,6 @@ const CustomerMasterListDrawer = React.memo(
                     typeof row.discount === "number"
                       ? row.discount
                       : parseFloat(row.discount) || 0,
-                  line: row.line || "",
                 }))
                 .filter(
                   (item) => item.item_id !== null && item.item_id !== undefined
@@ -528,7 +525,6 @@ const CustomerMasterListDrawer = React.memo(
                   : r.discount !== ""
                     ? parseFloat(r.discount) || 0
                     : 0,
-              line: r.line ?? null,
             }))
             .filter((i) => i.item_id !== null && i.item_id !== undefined),
         };
@@ -563,7 +559,6 @@ const CustomerMasterListDrawer = React.memo(
                     typeof row.discount === "number"
                       ? row.discount
                       : parseFloat(row.discount) || 0,
-                  line: row.line || "",
                 }))
                 .filter(
                   (item) => item.item_id !== null && item.item_id !== undefined
@@ -654,7 +649,6 @@ const CustomerMasterListDrawer = React.memo(
                   : r.discount !== ""
                     ? parseFloat(r.discount) || 0
                     : 0,
-              line: r.line ?? null,
             }))
             .filter((i) => i.item_id !== null && i.item_id !== undefined),
         };
@@ -689,7 +683,6 @@ const CustomerMasterListDrawer = React.memo(
                     typeof row.discount === "number"
                       ? row.discount
                       : parseFloat(row.discount) || 0,
-                  line: row.line || "",
                 }))
                 .filter(
                   (item) => item.item_id !== null && item.item_id !== undefined
@@ -857,7 +850,6 @@ const CustomerMasterListDrawer = React.memo(
 
       const gridDataCheck = gridData.some((row) => {
         const hasData =
-          row.line ||
           row.itemcode ||
           row.item_id ||
           row.itemname ||
@@ -871,8 +863,7 @@ const CustomerMasterListDrawer = React.memo(
         formData.items.some((item) => {
           const hasPivotData =
             item.pivot &&
-            (item.pivot.line ||
-              item.pivot.itemcode ||
+            (item.pivot.itemcode ||
               item.pivot.itemname ||
               item.pivot.price ||
               item.pivot.discount);
@@ -1077,3 +1068,4 @@ const CustomerMasterListDrawer = React.memo(
 CustomerMasterListDrawer.displayName = "CustomerMasterListDrawer";
 
 export default CustomerMasterListDrawer;
+
