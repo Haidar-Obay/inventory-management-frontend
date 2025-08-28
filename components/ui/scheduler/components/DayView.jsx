@@ -18,7 +18,7 @@ const DayView = ({
       <div className="w-14 sm:w-16 lg:w-20 shrink-0">
         {/* Sticky Time Header */}
         <div 
-          className="sticky top-0 z-20 flex items-center justify-end pr-1 sm:pr-2 text-xs sm:text-sm font-medium text-muted-foreground dark:text-gray-300 border-b border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 shadow-sm"
+          className="sticky top-0 z-20 flex items-center justify-end pr-1 sm:pr-2 text-xs sm:text-sm font-medium text-muted-foreground dark:text-gray-300 border-b border-gray-500 dark:border-gray-600 bg-white dark:bg-gray-900 shadow-sm"
           style={{ height: '60px', top: '-25px' }}
         >
           <span className="hidden sm:inline">Time</span>
@@ -40,7 +40,7 @@ const DayView = ({
       <div className="flex-1 relative">
         {/* Sticky Day Header */}
         <div 
-          className="sticky top-0 z-20 flex items-center justify-center text-xs sm:text-sm font-medium border-b border-gray-200 dark:border-gray-600 px-2 bg-white dark:bg-gray-900 shadow-sm"
+          className="sticky top-0 z-20 flex items-center justify-center text-xs sm:text-sm font-medium border-b border-gray-500 dark:border-gray-600 px-2 bg-white dark:bg-gray-900 shadow-sm"
           style={{ height: '60px', top: '-25px' }}
         >
           <div className="flex items-center gap-2">
@@ -51,7 +51,7 @@ const DayView = ({
         {timeSlots.map((time) => (
           <div
             key={time}
-            className="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors relative"
+            className="border-b border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition-colors relative"
             style={{ height: `${slotHeight}px` }}
             onClick={() => {
               const [hour] = time.split(':');

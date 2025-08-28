@@ -18,7 +18,7 @@ const WeekView = ({
       <div className="w-14 sm:w-16 lg:w-20 shrink-0">
         {/* Sticky Time Header */}
         <div 
-          className="sticky top-0 z-20 flex items-center justify-end pr-1 sm:pr-2 text-xs sm:text-sm font-medium text-muted-foreground dark:text-gray-300 border-b border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 shadow-sm"
+          className="sticky top-0 z-20 flex items-center justify-end pr-1 sm:pr-2 text-xs sm:text-sm font-medium text-muted-foreground dark:text-gray-300 border-b border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 shadow-sm"
           style={{ height: '60px', top: '-25px' }}
         >
           <span className="hidden sm:inline">Time</span>
@@ -39,10 +39,10 @@ const WeekView = ({
       {/* Week days grid */}
       <div className="flex-1 grid grid-cols-7">
         {weekDates.map((date, dayIndex) => (
-          <div key={date.toISOString()} className="border-l border-gray-200 dark:border-gray-600 relative">
+          <div key={date.toISOString()} className="border-l border-gray-300 dark:border-gray-600 relative">
             {/* Sticky Day Header */}
             <div 
-              className="sticky top-0 z-20 flex items-center justify-center text-xs sm:text-sm font-medium border-b border-gray-200 dark:border-gray-600 px-1 bg-white dark:bg-gray-900 shadow-sm"
+              className="sticky top-0 z-20 flex items-center justify-center text-xs sm:text-sm font-medium border-b border-gray-300 dark:border-gray-600 px-1 bg-white dark:bg-gray-900 shadow-sm"
               style={{ height: '60px', top: '-25px' }}
             >
               <div className="text-center">
@@ -53,7 +53,7 @@ const WeekView = ({
             {timeSlots.map((time) => (
               <div
                 key={`${date.toDateString()}-${time}`}
-                className="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors relative"
+                className="border-b border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition-colors relative"
                 style={{ height: `${slotHeight}px` }}
                 onClick={() => {
                   const slotDate = new Date(date);

@@ -108,7 +108,7 @@ const Scheduler = () => {
   return (
     <div className="w-full h-full p-4 max-h-screen">
       <Card className="h-full flex flex-col">
-        <CardHeader className="pb-4 flex-shrink-0">
+        <CardHeader className="pb-0 flex-shrink-0">
           <SchedulerHeader
             viewMode={viewMode}
             setViewMode={setViewMode}

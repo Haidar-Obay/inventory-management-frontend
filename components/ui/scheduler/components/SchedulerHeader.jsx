@@ -71,7 +71,10 @@ const SchedulerHeader = ({
           <Button
             variant={showFilters ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setShowFilters(!showFilters)}
+            onClick={() => {
+              setShowFilters(!showFilters);
+              if (showTimeSettings) setShowTimeSettings(false);
+            }}
             className="px-3 sm:px-4"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,7 +86,10 @@ const SchedulerHeader = ({
           <Button
             variant={showTimeSettings ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setShowTimeSettings(!showTimeSettings)}
+            onClick={() => {
+              setShowTimeSettings(!showTimeSettings);
+              if (showFilters) setShowFilters(false);
+            }}
             className="px-3 sm:px-4"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -201,9 +207,9 @@ const SchedulerHeader = ({
       
       {/* Filter Panel */}
       {showFilters && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mt-1 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
           {/* Date Filter */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 min-w-0">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 min-w-0 relative z-30">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Date:</label>
             <input
               type="date"
@@ -214,7 +220,7 @@ const SchedulerHeader = ({
           </div>
           
           {/* Color Filter */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 min-w-0">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 min-w-0 relative z-30">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Color:</label>
             <select
               value={filterColor}
@@ -246,7 +252,7 @@ const SchedulerHeader = ({
       
       {/* Time Settings Panel */}
       {showTimeSettings && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mt-0 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
           {/* Start Hour */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 min-w-0">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Start Time:</label>
@@ -275,7 +281,7 @@ const SchedulerHeader = ({
                   const newHour = currentHour === 12 ? (isPM ? 12 : 0) : (isPM ? currentHour + 12 : currentHour);
                   setTimeSettings(prev => ({ ...prev, startHour: newHour }));
                 }}
-                className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-0 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:border-transparent min-w-0 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               >
                 <option value="AM">AM</option>
                 <option value="PM">PM</option>

@@ -46,7 +46,7 @@ const MonthView = ({
                  key={index}
                  className={`min-h-[60px] sm:min-h-[80px] p-1 border-r border-b border-gray-200 dark:border-gray-600 cursor-pointer transition-colors ${
                    isCurrentMonth 
-                     ? 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700' 
+                     ? 'bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700' 
                      : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500'
                  } ${
                    isToday 
