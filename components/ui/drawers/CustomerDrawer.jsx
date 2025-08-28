@@ -234,15 +234,12 @@ const CustomerDrawer = React.memo(({
       
       // Sync credit limits
       if (formData.credit_limits && formData.credit_limits.length > 0) {
-        console.log('CustomerDrawer: Processing credit_limits from formData:', formData.credit_limits);
         const creditLimitsMap = {};
         formData.credit_limits.forEach(limit => {
           const currencyKey = limit.currency_code || limit.currency_id;
           const limitValue = limit.credit_limit || limit.limit_amount || limit.amount;
           creditLimitsMap[currencyKey] = limitValue;
-          console.log(`CustomerDrawer: Mapping ${currencyKey} -> ${limitValue}`, limit);
         });
-        console.log('CustomerDrawer: Final creditLimitsMap:', creditLimitsMap);
         setCreditLimits(creditLimitsMap);
       }
       

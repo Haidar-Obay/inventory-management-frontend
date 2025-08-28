@@ -52,6 +52,18 @@ const DrawerGrid = ({
   const [tableAttributes, setTableAttributes] = useState(null);
   const [currentEditingRowId, setCurrentEditingRowId] = useState(null);
 
+  // Auto-sync item details when helpData changes or when editing existing data
+  useEffect(() => {
+    if (helpData && gridData) {
+      gridData.forEach((row) => {
+        if (row.itemcode && !row.itemname && helpData.length > 0) {
+          // If we have an itemcode but no itemname, try to sync the details
+          syncItemDetails(row.id, row.itemcode);
+        }
+      });
+    }
+  }, [helpData, gridData]);
+
   // Fast lookup from itemcode -> id (only if helpData is provided)
   const itemCodeToId = useMemo(() => {
     if (!helpData || !Array.isArray(helpData)) return new Map();
@@ -65,21 +77,16 @@ const DrawerGrid = ({
 
   // Handler for when items are added from help modal
   const handleHelpAdd = (addedItems) => {
-    console.log('DrawerGrid: Received items from help modal:', addedItems);
-    console.log('DrawerGrid: Current editing row ID:', currentEditingRowId);
-    
+
     if (addedItems && addedItems.length > 0) {
       // Start with a copy of current grid data
       let updatedGridData = [...gridData];
       
       // Process each added item
       addedItems.forEach((item, index) => {
-        console.log(`DrawerGrid: Processing item ${index}:`, item);
-        
         if (index === 0) {
           // First item: update the row that opened the help modal
           if (currentEditingRowId) {
-            console.log(`DrawerGrid: Updating row ${currentEditingRowId} with item:`, item);
             updatedGridData = updatedGridData.map(row => {
               if (row.id === currentEditingRowId) {
                 return {
@@ -96,7 +103,6 @@ const DrawerGrid = ({
             // Fallback: try to find an empty row or use the first row
             const emptyRow = updatedGridData.find(row => !row.item_id && !row.itemcode);
             if (emptyRow) {
-              console.log(`DrawerGrid: Found empty row ${emptyRow.id}, updating with item:`, item);
               updatedGridData = updatedGridData.map(row => {
                 if (row.id === emptyRow.id) {
                   return {
@@ -111,7 +117,6 @@ const DrawerGrid = ({
               });
             } else {
               // No empty row found, update the first row
-              console.log(`DrawerGrid: No empty row found, updating first row with item:`, item);
               updatedGridData = updatedGridData.map((row, idx) => {
                 if (idx === 0) {
                   return {
@@ -128,7 +133,6 @@ const DrawerGrid = ({
           }
         } else {
           // Additional items: add new rows
-          console.log(`DrawerGrid: Adding new row for item ${index}:`, item);
           const newRow = {
             id: `row_${Date.now()}_${index}`,
             item_id: item.id || null,
@@ -145,10 +149,7 @@ const DrawerGrid = ({
       });
       
       // Apply all changes at once
-      console.log('DrawerGrid: Applying all changes at once:', updatedGridData);
       onGridDataChange(updatedGridData);
-      
-      console.log('DrawerGrid: Finished processing all items');
     }
     
     // Reset the current editing row ID
@@ -199,11 +200,37 @@ const DrawerGrid = ({
           return {
             ...gRow,
             item_id: selectedItem?.id ?? null,
-            itemcode: selectedItem?.itemcode ?? "",
+            itemcode: selectedItem?.code ?? selectedItem?.itemcode ?? "",
             // Auto-fill itemname with item's name if available
             itemname: selectedItem?.name ?? "",
             // Auto-fill price with item's price if available
             price: selectedItem?.price ?? 0,
+          };
+        }
+        return gRow;
+      });
+      onGridDataChange(updatedGridData);
+    }
+  };
+
+  // Function to sync item details when item code is manually entered
+  const syncItemDetails = (rowId, itemcode) => {
+    if (!helpData || !itemcode) return;
+    
+    // Find the item by code
+    const foundItem = helpData.find(item => 
+      (item.code === itemcode || item.itemcode === itemcode)
+    );
+    
+    if (foundItem && onGridDataChange) {
+      const updatedGridData = gridData.map((gRow) => {
+        if (gRow.id === rowId) {
+          return {
+            ...gRow,
+            item_id: foundItem.id,
+            itemcode: foundItem.code || foundItem.itemcode || itemcode,
+            itemname: foundItem.name || "",
+            price: foundItem.price || 0,
           };
         }
         return gRow;
@@ -255,7 +282,20 @@ const DrawerGrid = ({
             options={createOptions(availableOptions)}
             getOptionLabel={(option) => {
               if (!option) return "";
-              return `${option.code || ""} - ${option.name || ""}`;
+              // Return only the code for display in the field
+              return option.code || option.itemcode || "";
+            }}
+            filterOptions={(options, { inputValue }) => {
+              if (!inputValue) return options;
+              
+              const searchTerm = inputValue.toLowerCase();
+              return options.filter((option) => {
+                const code = (option.code || option.itemcode || "").toLowerCase();
+                const name = (option.name || option.title || "").toLowerCase();
+                
+                // Search in both code and name
+                return code.includes(searchTerm) || name.includes(searchTerm);
+              });
             }}
             isOptionEqualToValue={(option, value) => {
               if (!option || !value) return false;
@@ -286,6 +326,7 @@ const DrawerGrid = ({
                 placeholder=""
                 label={null}
                 InputLabelProps={{ shrink: false }}
+                value={row.itemcode || ""}
                 sx={{ 
                   '& .MuiInputBase-root': { 
                     fontSize: '0.875rem',
@@ -435,7 +476,18 @@ const DrawerGrid = ({
       }}>
                  <RTLTextField
            value={row[field] || ""}
-           onChange={(e) => handleGridDataChange(row.id, field, e.target.value)}
+           onChange={(e) => {
+             const newValue = e.target.value;
+             handleGridDataChange(row.id, field, newValue);
+             
+             // If this is the itemcode field and we have helpData, try to sync item details
+             if (field === "itemcode" && helpData && newValue) {
+               // Use a small delay to avoid excessive API calls while typing
+               setTimeout(() => {
+                 syncItemDetails(row.id, newValue);
+               }, 500);
+             }
+           }}
            fullWidth
            size="small"
            type={type}
@@ -683,21 +735,32 @@ const DrawerGrid = ({
                  >
                    {rowIndex + 1}
                  </TableCell>
-                {columns.filter(column => column.field !== 'line').map((column, index) => (
-                  <TableCell 
-                    key={index} 
-                    sx={{ 
-                      py: 1,
-                      px: 2,
-                      borderBottom: rowIndex < gridData.length - 1 ? '1px solid' : 'none',
-                      borderRight: '1px solid',
-                      borderColor: 'divider',
-                      verticalAlign: 'top'
-                    }}
-                  >
-                    {renderCell(row, column)}
-                  </TableCell>
-                ))}
+                {columns.filter(column => column.field !== 'line').map((column, index) => {
+                  // Determine column width based on field type (same logic as header)
+                  let columnWidth = '25%';
+                  if (column.field === 'price' || column.field === 'discount') {
+                    columnWidth = '15%';
+                  } else if (column.field === 'itemcode') {
+                    columnWidth = '35%';
+                  }
+                  
+                  return (
+                    <TableCell 
+                      key={index} 
+                      sx={{ 
+                        py: 1,
+                        px: 2,
+                        width: columnWidth,
+                        borderBottom: rowIndex < gridData.length - 1 ? '1px solid' : 'none',
+                        borderRight: '1px solid',
+                        borderColor: 'divider',
+                        verticalAlign: 'top'
+                      }}
+                    >
+                      {renderCell(row, column)}
+                    </TableCell>
+                  );
+                })}
                 {/* Separator column in body for RTL mode */}
                 {isRTL && (
                   <TableCell 

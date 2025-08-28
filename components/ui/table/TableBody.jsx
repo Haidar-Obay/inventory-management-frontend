@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import {
   Button,
@@ -13,6 +13,7 @@ import {
   DropdownItem,
 } from "./CustomControls";
 import { CustomActions } from "./CustomActions";
+import Portal from "../Portal";
 
 export const TableBody = ({
   paginatedData,
@@ -54,6 +55,26 @@ export const TableBody = ({
   const isRTL = locale === "ar";
 
   const colBorderClass = showBodyColSeparator === false ? "" : "border-r border-slate-300 dark:border-slate-600";
+
+  // Full content popover state and handlers
+  const [fullTextPopover, setFullTextPopover] = useState({ open: false, content: "", x: 0, y: 0 });
+
+  const openFullText = useCallback((e, content) => {
+    const offset = 10;
+    const clickX = e.clientX + offset;
+    const clickY = e.clientY + offset;
+    const maxWidth = 420;
+    const maxHeight = 260;
+    let x = clickX;
+    let y = clickY;
+    if (typeof window !== "undefined") {
+      if (x + maxWidth > window.innerWidth - 8) x = Math.max(8, window.innerWidth - maxWidth - 8);
+      if (y + maxHeight > window.innerHeight - 8) y = Math.max(8, window.innerHeight - maxHeight - 8);
+    }
+    setFullTextPopover({ open: true, content: content == null ? "" : String(content), x, y });
+  }, []);
+
+  const closeFullText = useCallback(() => setFullTextPopover({ open: false, content: "", x: 0, y: 0 }), []);
 
   return (
     <tbody>
@@ -384,7 +405,23 @@ export const TableBody = ({
                             </span>
                           )
                         ) : column.type === "date" ? (
-                          cellValue ? new Date(cellValue).toLocaleDateString() : ""
+                          <div
+                            onClick={(e) => openFullText(e, cellValue ? new Date(cellValue).toLocaleDateString() : "")}
+                            className="cursor-pointer"
+                            title={cellValue ? new Date(cellValue).toLocaleDateString() : undefined}
+                            style={{
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                              whiteSpace: "normal",
+                              wordBreak: "break-word",
+                              lineHeight: "1.25rem",
+                              maxHeight: "2.5rem",
+                            }}
+                          >
+                            {cellValue ? new Date(cellValue).toLocaleDateString() : ""}
+                          </div>
                         ) : Array.isArray(cellValue) ? (
                           <div className="flex flex-wrap gap-1">
                             {cellValue.map((item, index) => (
@@ -396,12 +433,31 @@ export const TableBody = ({
                               </span>
                             ))}
                           </div>
-                        ) : column.options ? (
-                          column.options.find(
-                            (option) => option.value === cellValue
-                          )?.label || cellValue
                         ) : (
-                          cellValue || ""
+                          // Clamp both options-label value and default text/number
+                          <div
+                            onClick={(e) => openFullText(e, cellValue)}
+                            className="cursor-pointer"
+                            title={typeof cellValue === "string" ? cellValue : undefined}
+                            style={{
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                              whiteSpace: "normal",
+                              wordBreak: "break-word",
+                              lineHeight: "1.25rem",
+                              maxHeight: "2.5rem",
+                            }}
+                          >
+                            {(() => {
+                              if (column.options) {
+                                const label = column.options.find((option) => option.value === cellValue)?.label;
+                                return label ?? (cellValue || "");
+                              }
+                              return cellValue || "";
+                            })()}
+                          </div>
                         )}
                       </div>
                     )}
@@ -479,6 +535,37 @@ export const TableBody = ({
             </div>
           </td>
         </tr>
+      )}
+      {fullTextPopover.open && (
+        <Portal>
+          <div
+            className="fixed inset-0 z-[2147483647]"
+            onClick={closeFullText}
+            data-nextjs-scroll-focus-boundary
+          >
+            <div
+              className="fixed bg-background text-foreground border border-border shadow-lg rounded-md p-3 max-w-sm max-h-64 overflow-auto"
+              style={{ left: fullTextPopover.x, top: fullTextPopover.y, width: "auto" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-end gap-2 mb-2">
+                <button
+                  onClick={closeFullText}
+                  className="rounded-full p-1 hover:bg-muted text-muted-foreground"
+                  aria-label="Close"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+              <div className="whitespace-pre-wrap break-words text-sm">
+                {fullTextPopover.content}
+              </div>
+            </div>
+          </div>
+        </Portal>
       )}
     </tbody>
   );

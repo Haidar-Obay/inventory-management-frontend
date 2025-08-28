@@ -255,7 +255,6 @@ function SuppliersPage() {
 
   const handleToggleActive = async (type, row) => {
     // This will be handled by the ActiveStatusAction component
-    console.log("Toggle active", type, row);
   };
 
   const handleAddNew = (type) => {
