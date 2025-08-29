@@ -8,9 +8,9 @@ const MonthView = ({
   onShowDayEvents 
 }) => {
   return (
-    <div className="h-full min-h-0">
-             {/* Month grid */}
-       <div className="grid grid-cols-7 gap-px bg-gray-200 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden">
+    <div className="w-full">
+      {/* Month grid */}
+      <div className="grid grid-cols-7 gap-px bg-gray-200 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden">
          {/* Day headers */}
          {weekDays.map((day) => (
            <div
@@ -46,11 +46,13 @@ const MonthView = ({
                  key={index}
                  className={`min-h-[60px] sm:min-h-[80px] p-1 border-r border-b border-gray-200 dark:border-gray-600 cursor-pointer transition-colors ${
                    isCurrentMonth 
-                     ? 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700' 
+                     ? isToday
+                       ? 'bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/40'
+                       : 'bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
                      : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500'
                  } ${
                    isToday 
-                     ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-600' 
+                     ? 'border-blue-300 dark:border-blue-500' 
                      : ''
                  } ${
                    isSelected 

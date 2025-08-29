@@ -19,6 +19,7 @@ import {
   WeekView, 
   DayView, 
   MonthView, 
+  ListView,
   NoEventsFound 
 } from './components';
 
@@ -106,14 +107,15 @@ const Scheduler = () => {
   };
 
   return (
-    <div className="w-full h-full p-4 max-h-screen">
+    <div className="w-full h-full p-4">
       <Card className="h-full flex flex-col">
-        <CardHeader className="pb-4 flex-shrink-0">
+        <CardHeader className="pb-0 flex-shrink-0">
           <SchedulerHeader
             viewMode={viewMode}
             setViewMode={setViewMode}
             headerRangeLabel={headerRangeLabel}
             selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
             goPrev={goPrev}
             goNext={goNext}
             goToday={goToday}
@@ -139,7 +141,7 @@ const Scheduler = () => {
           />
         </CardHeader>
         
-        <CardContent ref={scrollRef} className="flex-1 overflow-auto min-h-0 max-h-[calc(100vh-200px)]">
+        <CardContent ref={scrollRef} className="flex-1 overflow-auto min-h-0">
           {/* No events found message */}
           {filteredEvents.length === 0 && events.length > 0 && (
             <NoEventsFound onClearFilters={() => clearFilters(setSearchQuery, setFilterDate, setFilterColor)} />
@@ -181,6 +183,15 @@ const Scheduler = () => {
               filteredEvents={filteredEvents}
               onDayClick={setSelectedDate}
               onShowDayEvents={handleShowDayEventsModal}
+            />
+          )}
+
+          {/* List View */}
+          {viewMode === 'list' && (
+            <ListView
+              filteredEvents={filteredEvents}
+              selectedDate={selectedDate}
+              onEventClick={handleEventClick}
             />
           )}
         </CardContent>

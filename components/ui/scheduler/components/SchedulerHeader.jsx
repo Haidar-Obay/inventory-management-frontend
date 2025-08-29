@@ -1,12 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '../../button';
 import { CardTitle } from '../../card';
+import DatePicker from './DatePicker';
 
 const SchedulerHeader = ({
   viewMode,
   setViewMode,
   headerRangeLabel,
   selectedDate,
+  setSelectedDate,
   goPrev,
   goNext,
   goToday,
@@ -31,6 +33,7 @@ const SchedulerHeader = ({
   setShowViewDropdown
 }) => {
   const dropdownRef = useRef(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -71,7 +74,10 @@ const SchedulerHeader = ({
           <Button
             variant={showFilters ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setShowFilters(!showFilters)}
+            onClick={() => {
+              setShowFilters(!showFilters);
+              if (showTimeSettings) setShowTimeSettings(false);
+            }}
             className="px-3 sm:px-4"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,7 +89,10 @@ const SchedulerHeader = ({
           <Button
             variant={showTimeSettings ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setShowTimeSettings(!showTimeSettings)}
+            onClick={() => {
+              setShowTimeSettings(!showTimeSettings);
+              if (showFilters) setShowFilters(false);
+            }}
             className="px-3 sm:px-4"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,13 +116,29 @@ const SchedulerHeader = ({
           </Button>
           
           {/* Current Date Display */}
-          <div className="hidden sm:flex items-center ml-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-600">
-            {selectedDate.toLocaleDateString('en-US', {
-              weekday: 'long',
-              month: 'long',
-              day: 'numeric',
-              year: 'numeric'
-            })}
+          <div className="relative">
+            <button
+              onClick={() => setShowDatePicker(!showDatePicker)}
+              className="hidden sm:flex items-center gap-2 ml-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+            >
+              {selectedDate.toLocaleDateString('en-US', {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+              })}
+              <svg className="h-4 w-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </button>
+            
+            {/* DatePicker Popup */}
+            <DatePicker
+              selectedDate={selectedDate}
+              onDateSelect={setSelectedDate}
+              isOpen={showDatePicker}
+              onClose={() => setShowDatePicker(false)}
+            />
           </div>
         </div>
         
@@ -168,11 +193,22 @@ const SchedulerHeader = ({
                     setViewMode('month');
                     setShowViewDropdown(false);
                   }}
-                  className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 rounded-b-lg ${
+                  className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 ${
                     viewMode === 'month' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
                   }`}
                 >
                   Month
+                </button>
+                <button
+                  onClick={() => {
+                    setViewMode('list');
+                    setShowViewDropdown(false);
+                  }}
+                  className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 rounded-b-lg ${
+                    viewMode === 'list' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
+                  }`}
+                >
+                  List
                 </button>
               </div>
             )}
@@ -201,9 +237,9 @@ const SchedulerHeader = ({
       
       {/* Filter Panel */}
       {showFilters && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mt-1 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
           {/* Date Filter */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 min-w-0">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 min-w-0 relative z-30">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Date:</label>
             <input
               type="date"
@@ -214,7 +250,7 @@ const SchedulerHeader = ({
           </div>
           
           {/* Color Filter */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 min-w-0">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 min-w-0 relative z-30">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Color:</label>
             <select
               value={filterColor}
@@ -246,7 +282,7 @@ const SchedulerHeader = ({
       
       {/* Time Settings Panel */}
       {showTimeSettings && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mt-0 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
           {/* Start Hour */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 min-w-0">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Start Time:</label>
@@ -275,7 +311,7 @@ const SchedulerHeader = ({
                   const newHour = currentHour === 12 ? (isPM ? 12 : 0) : (isPM ? currentHour + 12 : currentHour);
                   setTimeSettings(prev => ({ ...prev, startHour: newHour }));
                 }}
-                className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-0 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:border-transparent min-w-0 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               >
                 <option value="AM">AM</option>
                 <option value="PM">PM</option>
