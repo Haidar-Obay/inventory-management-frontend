@@ -48,17 +48,17 @@ export function SidebarTooltipItem({
         <div className="flex flex-col items-center gap-1">
           <Link
             href={getFullPath()}
-            className="flex justify-center p-2 mx-2 rounded-md hover:bg-primary-foreground/20 active:bg-primary-foreground/30 transition-colors duration-200"
+            className="flex justify-center p-2 mx-2 rounded-md hover:bg-primary-foreground/20 active:bg-primary-foreground/30 transition-all duration-200 hover:scale-105"
             onClick={() => onNavigate && onNavigate(name)}
           >
-            <Icon className="h-4 w-4" />
+            <Icon className="h-4 w-4 transition-transform duration-200 hover:scale-110" />
           </Link>
           {onToggleBookmark && (
             <Button
               variant="ghost"
               size="icon"
               className={cn(
-                "text-primary-foreground hover:bg-transparent focus:ring-0 focus:ring-offset-0 w-6 h-6 flex items-center justify-center transition-opacity duration-200",
+                "text-primary-foreground hover:bg-transparent focus:ring-0 focus:ring-offset-0 w-6 h-6 flex items-center justify-center transition-all duration-200",
                 isBookmarked
                   ? "opacity-100"
                   : "opacity-0 group-hover:opacity-100"
@@ -69,7 +69,7 @@ export function SidebarTooltipItem({
             >
               <Star
                 className={cn(
-                  "h-3 w-3 transition-colors duration-200",
+                  "h-3 w-3 transition-all duration-200 hover:scale-110",
                   isBookmarked
                     ? "text-yellow-400 fill-yellow-400"
                     : "text-primary-foreground/50 hover:text-yellow-400 hover:fill-yellow-400"
@@ -138,18 +138,19 @@ export function SidebarItem({
   return (
     <div
       className={cn(
-        "group flex w-full items-center min-w-0",
+        "group flex w-full items-center min-w-0 sidebar-menu-item",
         compact ? "h-8" : "h-12"
       )}
+      data-rtl={isRTL}
     >
-      <Link
-        href={getFullPath()}
-        className={cn(
-          "flex items-center flex-1 h-full rounded-md hover:bg-primary-foreground/10 transition-colors duration-200 min-w-0 overflow-x-auto scrollbar-hide",
-          isActive && "bg-primary-foreground/10 font-medium",
-          padding,
-          className
-        )}
+              <Link
+          href={getFullPath()}
+          className={cn(
+            "flex items-center flex-1 h-full rounded-md hover:bg-primary-foreground/10 transition-all duration-200 min-w-0 overflow-x-auto scrollbar-hide",
+            isActive && "bg-primary-foreground/10 font-medium",
+            padding,
+            className
+          )}
         style={
           isRTL
             ? { paddingRight: compact ? 16 : 24 }
@@ -159,12 +160,12 @@ export function SidebarItem({
       >
         <Icon
           className={cn(
-            "flex-shrink-0",
+            "flex-shrink-0 transition-transform duration-200 group-hover:scale-110",
             compact ? "h-3 w-3" : "h-4 w-4",
             isRTL ? "ml-2" : "mr-2"
           )}
         />
-        <span className={cn("whitespace-nowrap", "text-sm")}>
+        <span className={cn("whitespace-nowrap transition-all duration-200", "text-sm")}>
           {label}
         </span>
       </Link>
@@ -173,21 +174,21 @@ export function SidebarItem({
           className="flex-shrink-0 flex items-center justify-center"
           style={{ width: compact ? 32 : 40 }}
         >
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "text-primary-foreground hover:bg-transparent focus:ring-0 focus:ring-offset-0 flex items-center justify-center transition-opacity duration-200",
-              compact ? "w-8 h-8" : "w-10 h-10",
-              isBookmarked ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-            )}
+                      <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "text-primary-foreground hover:bg-transparent focus:ring-0 focus:ring-offset-0 flex items-center justify-center transition-all duration-200",
+                compact ? "w-8 h-8" : "w-10 h-10",
+                isBookmarked ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+              )}
             onClick={() => onToggleBookmark(name)}
             tabIndex={-1}
             style={{ minHeight: 0, padding: 0, margin: 0 }}
           >
             <Star
               className={cn(
-                "transition-colors duration-200",
+                "transition-all duration-200 hover:scale-110",
                 compact ? "h-3 w-3" : "h-4 w-4",
                 isBookmarked
                   ? "text-yellow-400 fill-yellow-400"

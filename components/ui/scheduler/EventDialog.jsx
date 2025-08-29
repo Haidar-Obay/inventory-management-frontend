@@ -84,7 +84,7 @@ const EventDialog = ({ open, onOpenChange, initialEvent, onSave, onDelete }) => 
         >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-              {initialEvent ? 'Edit event' : 'Create event'}
+              {initialEvent?.id ? 'Edit Event' : 'Add Event'}
             </h2>
             <button 
               onClick={() => onOpenChange?.(false)} 

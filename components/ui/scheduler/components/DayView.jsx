@@ -13,7 +13,7 @@ const DayView = ({
   onEventClick 
 }) => {
   return (
-    <div className="flex h-full min-h-0">
+    <div className="flex w-full">
       {/* Time gutter */}
       <div className="w-14 sm:w-16 lg:w-20 shrink-0">
         {/* Sticky Time Header */}
@@ -36,7 +36,6 @@ const DayView = ({
         ))}
       </div>
 
-      {/* Single day column */}
       <div className="flex-1 relative">
         {/* Sticky Day Header */}
         <div 
