@@ -346,6 +346,7 @@
     "sidebarInfo": "رسالة معلومات الشريط الجانبي",
     "sidebarSuccess": "تمت العملية بنجاح في الشريط الجانبي",
     "sidebarError": "فشلت العملية في الشريط الجانبي",
+    "logoutSuccess": "تم تسجيل الخروج بنجاح",
     "country": {
       "deleteSuccess": "تم حذف الدولة بنجاح",
       "deleteError": "فشل في حذف الدولة",

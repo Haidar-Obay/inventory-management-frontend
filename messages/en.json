@@ -165,6 +165,7 @@
     "sidebarInfo": "Sidebar info message",
     "sidebarSuccess": "Sidebar action was successful",
     "sidebarError": "Sidebar action failed",
+    "logoutSuccess": "Logout successful",
     "countryUpdatedSuccessfully": "Country updated successfully",
     "countryCreatedSuccessfully": "Country created successfully",
     "deleteSuccess": "Deleted successfully",

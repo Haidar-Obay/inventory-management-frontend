@@ -1061,7 +1061,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
 
       toast.success({
         title: "success",
-        description: "sidebarSuccess",
+        description: "logoutSuccess",
         isTranslated: true,
       });
 
