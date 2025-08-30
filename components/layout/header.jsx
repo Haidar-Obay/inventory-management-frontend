@@ -250,6 +250,22 @@ const UserMenu = ({ t }) => {
   const currentLocale = useLocale();
   const isRTL = currentLocale === "ar";
 
+  const handleLogout = () => {
+    // Clear any stored user data or tokens
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    
+    // Show logout success toast
+    toast.success({
+      title: "success",
+      description: "logoutSuccess",
+      isTranslated: true,
+    });
+    
+    // Redirect to login page
+    router.push(`/${currentLocale}/login`);
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -279,6 +295,7 @@ const UserMenu = ({ t }) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className={`flex items-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors duration-200 ${isRTL ? "flex-row-reverse" : ""}`}
+          onClick={handleLogout}
         >
           <LogOut className="h-4 w-4" />
           <span>{t("logout")}</span>

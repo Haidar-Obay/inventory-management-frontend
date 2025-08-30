@@ -55,7 +55,13 @@
     "paymentTabs": {
       "paymentTerms": "Payment Terms",
       "paymentMethods": "Payment Methods"
-    }
+    },
+    "supplier": "Supplier",
+    "supplierGroups": "Supplier Groups",
+    "suppliers": "Suppliers",
+    "userManagement": "User Management",
+    "permission": "Permission",
+    "roleManagement": "Role Management"
   },
   "headerStyler": {
     "title": "Header Styling",
@@ -159,6 +165,7 @@
     "sidebarInfo": "Sidebar info message",
     "sidebarSuccess": "Sidebar action was successful",
     "sidebarError": "Sidebar action failed",
+    "logoutSuccess": "Logout successful",
     "countryUpdatedSuccessfully": "Country updated successfully",
     "countryCreatedSuccessfully": "Country created successfully",
     "deleteSuccess": "Deleted successfully",
@@ -679,6 +686,8 @@
     
     "settings": "Settings",
     "userManagement": "User Management",
+    "permission": "Permission",
+    "roleManagement": "Role Management",
     "systemSettings": "System Settings",
     "support": "Support",
     "helpCenter": "Help Center",
@@ -1839,5 +1848,17 @@
       "message": "An error occurred while processing your request."
     }
   }
+  },
+  "settings": {
+    "userManagement": "User Management",
+    "permission": "Permission",
+    "roleManagement": "Role Management",
+    "systemSettings": "System Settings",
+    "loading": "Loading...",
+    "tabs": {
+      "userManagement": "User Management",
+      "permission": "Permission",
+      "roleManagement": "Role Management"
+    }
   }
 }

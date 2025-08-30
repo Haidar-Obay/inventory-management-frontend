@@ -55,7 +55,13 @@
     "paymentTabs": {
       "paymentTerms": "شروط الدفع",
       "paymentMethods": "طرق الدفع"
-    }
+    },
+    "supplier": "المورد",
+    "supplierGroups": "مجموعات الموردين",
+    "suppliers": "الموردين",
+    "userManagement": "إدارة المستخدمين",
+    "permission": "الصلاحيات",
+    "roleManagement": "إدارة الأدوار"
   },
   "headerStyler": {
     "title": "تنسيق الترويسة",
@@ -306,6 +312,8 @@
     "mediaChannels": "قنوات الإعلام",
     "settings": "الإعدادات",
     "userManagement": "إدارة المستخدمين",
+    "permission": "الصلاحيات",
+    "roleManagement": "إدارة الأدوار",
     "systemSettings": "إعدادات النظام",
     "support": "الدعم",
     "helpCenter": "مركز المساعدة",
@@ -338,6 +346,7 @@
     "sidebarInfo": "رسالة معلومات الشريط الجانبي",
     "sidebarSuccess": "تمت العملية بنجاح في الشريط الجانبي",
     "sidebarError": "فشلت العملية في الشريط الجانبي",
+    "logoutSuccess": "تم تسجيل الخروج بنجاح",
     "country": {
       "deleteSuccess": "تم حذف الدولة بنجاح",
       "deleteError": "فشل في حذف الدولة",
@@ -1860,6 +1869,18 @@
     "database": {
       "title": "خطأ في قاعدة البيانات",
       "message": "حدث خطأ أثناء معالجة طلبك."
+    }
+  },
+  "settings": {
+    "userManagement": "إدارة المستخدمين",
+    "permission": "الصلاحيات",
+    "roleManagement": "إدارة الأدوار",
+    "systemSettings": "إعدادات النظام",
+    "loading": "جار التحميل...",
+    "tabs": {
+      "userManagement": "إدارة المستخدمين",
+      "permission": "الصلاحيات",
+      "roleManagement": "إدارة الأدوار"
     }
   }
 }
