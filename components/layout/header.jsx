@@ -204,6 +204,7 @@ const LanguageSelector = () => {
 
 const CalendarButton = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const currentLocale = useLocale();
   const t = useTranslations("header");
 
@@ -211,12 +212,19 @@ const CalendarButton = () => {
     router.push(`/${currentLocale}/main/scheduler`);
   };
 
+  // Check if we're currently on the scheduler page
+  const isActive = pathname.includes('/main/scheduler');
+
   return (
     <Button
-      variant="outline"
+      variant={isActive ? "default" : "outline"}
       size="icon"
       onClick={navigateToScheduler}
-      className="relative hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors duration-200"
+      className={`relative transition-colors duration-200 ${
+        isActive 
+          ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+          : "hover:bg-gray-200 dark:hover:bg-gray-800"
+      }`}
       title={t("scheduler") || "Scheduler"}
     >
       <Calendar className="h-[1.2rem] w-[1.2rem]" />

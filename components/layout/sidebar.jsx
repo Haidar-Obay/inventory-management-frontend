@@ -194,32 +194,33 @@ const BookmarksSection = ({
 
   return (
     <div>
-      <div className={cn("px-4 mb-2", isCollapsed ? "text-center" : "")}>
-        {!isCollapsed && (
-          <div className="flex items-center justify-between">
-            <button
-              onClick={onToggle}
-              className="flex items-center justify-between w-full text-sm font-medium hover:text-primary-foreground/80 transition-colors duration-200"
-            >
+              <div className={cn("px-4 mb-2 transition-all duration-300 ease-in-out", isCollapsed ? "text-center" : "")}>
+          {!isCollapsed && (
+            <div className="flex items-center justify-between">
+              <button
+                onClick={onToggle}
+                className="flex items-center justify-between w-full text-sm font-medium hover:text-primary-foreground/80 transition-all duration-300 ease-in-out"
+              >
               <div className="flex items-center gap-2">
                 <BookMarked
-                  className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")}
+                  className={cn("h-4 w-4 transition-transform duration-200 group-hover:scale-110", isRTL ? "ml-2" : "mr-2")}
                 />
-                <h3 className="text-sm font-medium">{t("bookmarks")}</h3>
+                <h3 className="text-sm font-medium transition-all duration-200">{t("bookmarks")}</h3>
               </div>
-              <ChevronRight
-                className={cn(
-                  "h-4 w-4 transition-transform duration-200",
-                  isRTL ? "rotate-180" : "",
-                  isExpanded ? "rotate-90" : ""
-                )}
-              />
+                          <ChevronRight
+              className={cn(
+                "h-4 w-4 sidebar-chevron transition-transform duration-300",
+                isRTL ? "rotate-180" : "",
+                isExpanded ? "expanded" : ""
+              )}
+              data-rtl={isRTL}
+            />
             </button>
             <Button
               variant="ghost"
               size="sm"
               onClick={clearAllBookmarks}
-              className="h-6 text-xs text-primary-foreground/70 hover:text-primary-foreground whitespace-nowrap"
+              className="h-6 text-xs text-primary-foreground/70 hover:text-primary-foreground whitespace-nowrap transition-all duration-200 hover:scale-105"
             >
               {t("clearAll")}
             </Button>
@@ -233,7 +234,7 @@ const BookmarksSection = ({
               onMouseEnter={() => setTooltipVisible(true)}
               onMouseLeave={() => setTooltipVisible(false)}
             >
-              <BookMarked className="h-5 w-5 mx-auto" />
+              <BookMarked className="h-5 w-5 mx-auto transition-transform duration-200 hover:scale-110" />
             </div>
             {/* Portal Tooltip */}
             <PortalTooltip
@@ -246,7 +247,7 @@ const BookmarksSection = ({
         )}
       </div>
       <Collapsible open={isExpanded}>
-        <CollapsibleContent>
+        <CollapsibleContent className={cn("sidebar-collapsible-content", isExpanded && "expanded")}>
           <ul className="space-y-1">
             {bookmarks.map((bookmarkId) => {
               const item = allItems.find((i) => i.uniqueId === bookmarkId);
@@ -255,7 +256,7 @@ const BookmarksSection = ({
               const Icon = iconMap[item.icon];
 
               return (
-                <li key={bookmarkId}>
+                <li key={bookmarkId} className="sidebar-menu-item-wrapper">
                   <SidebarItem
                     name={item.name}
                     icon={Icon}
@@ -338,26 +339,27 @@ const GroupHeader = ({
 
   if (!isCollapsed) {
     return (
-      <div className="px-4 mb-2">
+      <div className="px-4 mb-2 transition-all duration-300 ease-in-out">
         <div className="flex items-center justify-between">
           <button
             onClick={() => onToggleGroup(groupName)}
             className={cn(
-              "flex items-center justify-between w-full text-sm font-medium hover:text-primary-foreground/80 transition-colors duration-200",
+              "flex items-center justify-between w-full text-sm font-medium hover:text-primary-foreground/80 transition-all duration-300 ease-in-out",
               isCollapsed ? "" : "h-10"
             )}
           >
             <div className="flex items-center gap-2">
-              <GroupIcon className={cn(isCollapsed ? "h-4 w-4" : "h-4 w-4", isRTL ? "ml-2" : "mr-2")} />
-              <span className={cn("text-sm")}>{groupName}</span>
+              <GroupIcon className={cn(isCollapsed ? "h-4 w-4" : "h-4 w-4", "transition-transform duration-200 group-hover:scale-110", isRTL ? "ml-2" : "mr-2")} />
+              <span className={cn("text-sm transition-all duration-200")}>{groupName}</span>
             </div>
             <ChevronRight
               className={cn(
                 isCollapsed ? "h-4 w-4" : "h-4 w-4",
-                "transition-transform duration-200",
+                "sidebar-chevron transition-transform duration-300",
                 isRTL ? "rotate-180" : "",
-                isExpanded ? "rotate-90" : ""
+                isExpanded ? "expanded" : ""
               )}
+              data-rtl={isRTL}
             />
           </button>
         </div>
@@ -374,11 +376,11 @@ const GroupHeader = ({
             <button
               ref={buttonRef}
               type="button"
-              className="w-full flex justify-center p-2 rounded-md transition-colors duration-200 hover:bg-primary-foreground/20 active:bg-primary-foreground/30"
+              className="w-full flex justify-center p-2 rounded-md transition-all duration-200 hover:bg-primary-foreground/20 active:bg-primary-foreground/30 hover:scale-105"
               onMouseEnter={() => setTooltipVisible(true)}
               onMouseLeave={() => setTooltipVisible(false)}
             >
-              <GroupIcon className="h-5 w-5" />
+              <GroupIcon className="h-5 w-5 transition-transform duration-200 hover:scale-110" />
             </button>
           </PopoverTrigger>
                 <PopoverContent
@@ -405,19 +407,20 @@ const GroupHeader = ({
                         }
                       >
                         <PopoverTrigger asChild>
-                          <button className="w-full flex items-center justify-between px-2 py-1 text-sm rounded-md hover:bg-primary-foreground/10 transition-colors duration-200">
+                          <button className="w-full flex items-center justify-between px-2 py-1 text-sm rounded-md hover:bg-primary-foreground/10 transition-all duration-200 hover:scale-105">
                             <div className="flex items-center gap-2">
-                              {ItemIcon && <ItemIcon className="h-4 w-4" />}
-                              <span>{item.name}</span>
+                              {ItemIcon && <ItemIcon className="h-4 w-4 transition-transform duration-200 hover:scale-110" />}
+                              <span className="transition-all duration-200">{item.name}</span>
                             </div>
                             <ChevronRight
                               className={cn(
-                                "h-4 w-4 transition-transform duration-200",
+                                "h-4 w-4 sidebar-chevron transition-transform duration-300",
                                 isRTL ? "rotate-180" : "",
                                 nestedPopoverOpen === item.name
-                                  ? "rotate-90"
+                                  ? "expanded"
                                   : ""
                               )}
+                              data-rtl={isRTL}
                             />
                           </button>
                         </PopoverTrigger>
@@ -440,30 +443,31 @@ const GroupHeader = ({
                               const uniqueId =
                                 processedSubItem?.uniqueId || subItem.key;
 
-                              return (
-                                <SidebarItem
-                                  key={subItem.name}
-                                  name={subItem.name}
-                                  icon={SubIcon}
-                                  path={subItem.path}
-                                  uniqueId={uniqueId}
-                                  isCollapsed={false}
-                                  isBookmarked={bookmarks.includes(uniqueId)}
-                                  isActive={
-                                    activeItem === subItem.name.toLowerCase()
-                                  }
-                                  onNavigate={() =>
-                                    handlePopoverNavigation(subItem.name)
-                                  }
-                                  onToggleBookmark={() =>
-                                    toggleBookmark(subItem.name)
-                                  }
-                                  padding="px-2"
-                                  className="whitespace-nowrap text-sm"
-                                  t={t}
-                                  isRTL={isRTL}
-                                  compact={true}
-                                />
+                                                            return (
+                                <div key={subItem.name} className="sidebar-menu-item-wrapper">
+                                  <SidebarItem
+                                    name={subItem.name}
+                                    icon={SubIcon}
+                                    path={subItem.path}
+                                    uniqueId={uniqueId}
+                                    isCollapsed={false}
+                                    isBookmarked={bookmarks.includes(uniqueId)}
+                                    isActive={
+                                      activeItem === subItem.name.toLowerCase()
+                                    }
+                                    onNavigate={() =>
+                                      handlePopoverNavigation(subItem.name)
+                                    }
+                                    onToggleBookmark={() =>
+                                      toggleBookmark(subItem.name)
+                                    }
+                                    padding="px-2"
+                                    className="whitespace-nowrap text-sm"
+                                    t={t}
+                                    isRTL={isRTL}
+                                    compact={true}
+                                  />
+                                </div>
                               );
                             })}
                           </div>
@@ -479,24 +483,25 @@ const GroupHeader = ({
                   );
                   const uniqueId = processedItem?.uniqueId || item.key;
 
-                  return (
-                    <SidebarItem
-                      key={item.name}
-                      name={item.name}
-                      icon={Icon}
-                      path={item.path}
-                      uniqueId={uniqueId}
-                      isCollapsed={false}
-                      isBookmarked={bookmarks.includes(uniqueId)}
-                      isActive={activeItem === item.name.toLowerCase()}
-                      onNavigate={() => handlePopoverNavigation(item.name)}
-                      onToggleBookmark={() => toggleBookmark(item.name)}
-                      padding="px-2"
-                      className="whitespace-nowrap text-sm"
-                      t={t}
-                      isRTL={isRTL}
-                      compact={true}
-                    />
+                                    return (
+                    <div key={item.name} className="sidebar-menu-item-wrapper">
+                      <SidebarItem
+                        name={item.name}
+                        icon={Icon}
+                        path={item.path}
+                        uniqueId={uniqueId}
+                        isCollapsed={false}
+                        isBookmarked={bookmarks.includes(uniqueId)}
+                        isActive={activeItem === item.name.toLowerCase()}
+                        onNavigate={() => handlePopoverNavigation(item.name)}
+                        onToggleBookmark={() => toggleBookmark(item.name)}
+                        padding="px-2"
+                        className="whitespace-nowrap text-sm"
+                        t={t}
+                        isRTL={isRTL}
+                        compact={true}
+                      />
+                    </div>
                   );
                 })}
               </div>
@@ -539,11 +544,11 @@ const GroupItems = ({
   const allItems = useAllMenuItems(t);
 
   return (
-    <ul className={cn("mt-1", isCollapsed ? "space-y-1" : "space-y-0.5")}>
+    <ul className={cn("mt-1 sidebar-collapsible-content", isExpanded && "expanded", isCollapsed ? "space-y-1" : "space-y-0.5")}>
       {groupItems.map((item) => {
         if (item.type === "group") {
           return (
-            <li key={item.name}>
+            <li key={item.name} className="sidebar-menu-item-wrapper">
               <NestedGroup
                 item={item}
                 isCollapsed={isCollapsed}
@@ -569,7 +574,7 @@ const GroupItems = ({
         const uniqueId = processedItem?.uniqueId || item.key;
 
         return (
-          <li key={item.name}>
+          <li key={item.name} className="sidebar-menu-item-wrapper">
             <SidebarItem
               name={item.name}
               icon={Icon}
@@ -653,7 +658,7 @@ const NestedGroup = ({
         >
           <div className="flex items-center gap-2">
             <Icon className="h-5 w-5" />
-            <span className="text-sm">{item.name}</span>
+            <span className="text-sm transition-all duration-200">{item.name}</span>
           </div>
           <ChevronRight
             className={cn(
@@ -681,32 +686,33 @@ const NestedGroup = ({
             );
             const uniqueId = processedSubItem?.uniqueId || subItem.key;
 
-            return (
-              <SidebarItem
-                key={subItem.name}
-                name={subItem.name}
-                icon={SubIcon}
-                path={subItem.path}
-                uniqueId={uniqueId}
-                isCollapsed={false}
-                isBookmarked={bookmarks.includes(uniqueId)}
-                isActive={activeItem === subItem.name.toLowerCase()}
-                onNavigate={() => handleNavigate(subItem.name)}
-                onToggleBookmark={() => onToggleBookmark(subItem.name)}
-                padding={
-                  isMainFiles
-                    ? isRTL
-                      ? "pr-8"
-                      : "pl-8"
-                    : isRTL
-                      ? "pr-20"
-                      : "pl-20"
-                }
-                className="whitespace-nowrap text-sm"
-                t={t}
-                isRTL={isRTL}
-                compact={!isCollapsed}
-              />
+                        return (
+              <div key={subItem.name} className="sidebar-menu-item-wrapper">
+                <SidebarItem
+                  name={subItem.name}
+                  icon={SubIcon}
+                  path={subItem.path}
+                  uniqueId={uniqueId}
+                  isCollapsed={false}
+                  isBookmarked={bookmarks.includes(uniqueId)}
+                  isActive={activeItem === subItem.name.toLowerCase()}
+                  onNavigate={() => handleNavigate(subItem.name)}
+                  onToggleBookmark={() => onToggleBookmark(subItem.name)}
+                  padding={
+                    isMainFiles
+                      ? isRTL
+                        ? "pr-8"
+                        : "pl-8"
+                      : isRTL
+                        ? "pr-20"
+                        : "pl-20"
+                  }
+                  className="whitespace-nowrap text-sm"
+                  t={t}
+                  isRTL={isRTL}
+                  compact={!isCollapsed}
+                />
+              </div>
             );
           })}
         </div>
@@ -727,7 +733,7 @@ const NestedGroup = ({
           ) : (
             <button
               ref={buttonRef}
-              className="w-full flex justify-center p-2 rounded-md transition-colors duration-200 hover:bg-primary-foreground/20 active:bg-primary-foreground/30"
+              className="w-full flex justify-center p-2 rounded-md transition-all duration-200 hover:bg-primary-foreground/20 active:bg-primary-foreground/30 hover:scale-105"
               onClick={() => onToggleSubGroup(item.key || item.name)}
               onMouseEnter={() => setTooltipVisible(true)}
               onMouseLeave={() => setTooltipVisible(false)}
@@ -752,35 +758,36 @@ const NestedGroup = ({
     renderPopover()
   ) : (
     <div>
-      <CollapsibleTrigger
-        className={cn("group flex w-full items-center min-w-0", isCollapsed ? "h-12" : "h-8")}
-        onClick={() => onToggleSubGroup(item.key || item.name)}
-      >
-        <div
-          className={cn(
-            "flex items-center flex-1 h-full rounded-md hover:bg-primary-foreground/10 transition-colors duration-200 min-w-0 overflow-x-auto scrollbar-hide",
-            activeItem === item.name.toLowerCase() &&
-              "bg-primary-foreground/10 font-medium",
-            padding,
-            isRTL ? "pr-6" : "pl-6"
-          )}
+              <CollapsibleTrigger
+          className={cn("group flex w-full items-center min-w-0 transition-all duration-300 ease-in-out", isCollapsed ? "h-12" : "h-8")}
+          onClick={() => onToggleSubGroup(item.key || item.name)}
         >
+          <div
+            className={cn(
+              "flex items-center flex-1 h-full rounded-md hover:bg-primary-foreground/10 transition-all duration-300 ease-in-out min-w-0 overflow-x-auto scrollbar-hide",
+              activeItem === item.name.toLowerCase() &&
+                "bg-primary-foreground/10 font-medium",
+              padding,
+              isRTL ? "pr-6" : "pl-6"
+            )}
+          >
           <Icon
-            className={cn(isCollapsed ? "h-4 w-4" : "h-3 w-3", "flex-shrink-0", isRTL ? "ml-2" : "mr-2")}
+            className={cn(isCollapsed ? "h-4 w-4" : "h-3 w-3", "flex-shrink-0 transition-transform duration-200 group-hover:scale-110", isRTL ? "ml-2" : "mr-2")}
           />
-          <span className={cn("whitespace-nowrap", isCollapsed ? "" : "text-sm")}>{item.name}</span>
+          <span className={cn("whitespace-nowrap transition-all duration-200", isCollapsed ? "" : "text-sm")}>{item.name}</span>
         </div>
         <ChevronRight
           className={cn(
             isCollapsed ? "h-4 w-4" : "h-3 w-3",
-            "transition-transform flex-shrink-0",
+            "sidebar-chevron transition-transform duration-300 flex-shrink-0",
             isRTL ? "rotate-180" : "",
-            isExpanded ? "rotate-90" : ""
+            isExpanded ? "expanded" : ""
           )}
+          data-rtl={isRTL}
         />
       </CollapsibleTrigger>
       {isExpanded && (
-        <ul className={cn("mt-1", isCollapsed ? "space-y-1" : "space-y-0.5")}>
+        <ul className={cn("mt-1 sidebar-collapsible-content", isExpanded && "expanded", isCollapsed ? "space-y-1" : "space-y-0.5")}>
           {item.items.map((subItem) => {
             const SubIcon = iconMap[subItem.icon];
             // Find the subItem with proper uniqueId from allItems
@@ -790,7 +797,7 @@ const NestedGroup = ({
             const uniqueId = processedSubItem?.uniqueId || subItem.key;
 
             return (
-              <li key={subItem.name}>
+              <li key={subItem.name} className="sidebar-menu-item-wrapper">
                 <SidebarItem
                   name={subItem.name}
                   icon={SubIcon}
@@ -1115,11 +1122,11 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
     <TooltipProvider delayDuration={600}>
       <aside
         className={cn(
-          "bg-primary text-primary-foreground h-full flex flex-col",
+          "bg-primary text-primary-foreground h-full flex flex-col transition-all duration-300 ease-in-out",
           isCollapsed ? "sidebar-collapsed" : "sidebar-expanded"
         )}
       >
-        <div className="flex items-center h-[var(--header-height)] px-4 border-b border-primary-foreground/10">
+        <div className="flex items-center h-[var(--header-height)] px-4 border-b border-primary-foreground/10 transition-all duration-300 ease-in-out">
           <div
             className={cn(
               "flex items-center",
@@ -1129,14 +1136,15 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
             <SidebarTrigger
               collapsed={isCollapsed ? "true" : "false"}
               onClick={toggleSidebar}
+              className="transition-all duration-300 ease-in-out hover:scale-110"
             />
             {!isCollapsed && (
-              <span className="font-bold pl-2 text-lg">BinBot</span>
+              <span className="font-bold pl-2 text-lg transition-all duration-300 ease-in-out">BinBot</span>
             )}
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto py-4 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto py-4 scrollbar-hide transition-all duration-300 ease-in-out">
           {/* Bookmarks Section */}
           <BookmarksSection
             bookmarks={bookmarks}
@@ -1212,19 +1220,19 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
         </div>
 
         {/* Logout Section */}
-        <div className="border-t border-primary-foreground/10 p-4">
+        <div className="border-t border-primary-foreground/10 p-4 transition-all duration-300 ease-in-out">
           {isCollapsed ? (
             <div className="relative group">
               <Button
                 ref={logoutButtonRef}
                 variant="ghost"
                 size="icon"
-                className="w-full text-primary-foreground hover:bg-primary-foreground/10"
+                className="w-full text-primary-foreground hover:bg-primary-foreground/10 transition-all duration-200 hover:scale-105"
                 onClick={handleLogout}
                 onMouseEnter={() => setTooltipVisible(true)}
                 onMouseLeave={() => setTooltipVisible(false)}
               >
-                <LogOut className="h-5 w-5" />
+                <LogOut className="h-5 w-5 transition-transform duration-200 hover:scale-110" />
               </Button>
               {/* Portal Tooltip */}
               <PortalTooltip
@@ -1237,10 +1245,10 @@ export function Sidebar({ isCollapsed, toggleSidebar, isRTL, ...rest }) {
           ) : (
             <Button
               variant="ghost"
-              className="w-full text-primary-foreground hover:bg-primary-foreground/10 justify-start"
+              className="w-full text-primary-foreground hover:bg-primary-foreground/10 justify-start transition-all duration-200 hover:scale-105"
               onClick={handleLogout}
             >
-              <LogOut className={`h-5 w-5 ${isRTL ? "ml-2" : "mr-2"}`} />
+              <LogOut className={`h-5 w-5 transition-transform duration-200 hover:scale-110 ${isRTL ? "ml-2" : "mr-2"}`} />
               {t("logout")}
             </Button>
           )}
