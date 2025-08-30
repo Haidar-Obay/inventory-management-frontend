@@ -28,6 +28,8 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
   const tItems = useTranslations("items");
   const tPayment = useTranslations("payment");
   const tCustomers = useTranslations("customers");
+  const tSuppliers = useTranslations("suppliers");
+  const tSettings = useTranslations("settings");
   const currentLocale = useLocale();
   const isRTL = currentLocale === "ar";
   const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([]);
@@ -63,9 +65,26 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
       return breadcrumbs;
     }
 
-    for (let i = 0; i < pathSegments.length; i++) {
+    // For main sections (settings, dashboard, support), start from their segment
+    let startIndex = 0;
+    if (pathSegments.includes("settings")) {
+      startIndex = pathSegments.indexOf("settings");
+    } else if (pathSegments.includes("dashboard")) {
+      startIndex = pathSegments.indexOf("dashboard");
+    } else if (pathSegments.includes("support")) {
+      startIndex = pathSegments.indexOf("support");
+    }
+
+    // Build the base path for main section pages
+    if (startIndex > 0) {
+      currentPath = pathSegments.slice(0, startIndex + 1).join("/");
+    }
+
+    for (let i = startIndex; i < pathSegments.length; i++) {
       const segment = pathSegments[i];
-      currentPath += `/${segment}`;
+      if (i > startIndex) {
+        currentPath += `/${segment}`;
+      }
 
       // Skip if we're supposed to skip this segment (to avoid duplicates)
       if (skipNext) {
@@ -108,10 +127,14 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
         label = t("generalFiles");
       } else if (segment === "settings") {
         label = t("settings");
+      } else if (segment === "userManagement") {
+        label = t("userManagement");
       } else if (segment === "profile") {
         label = t("profile");
       } else if (segment === "payment") {
         label = t("payment");
+      } else if (segment === "supplier") {
+        label = t("supplier");
       }
 
       // Check if this is the last segment (current page)
@@ -129,7 +152,9 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
         "items",
         "generalfiles",
         "settings",
+        "userManagement",
         "payment",
+        "supplier",
       ].includes(segment);
       const hasTab = searchParams.get("tab") !== null;
 
@@ -198,6 +223,19 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
           tGeneralFiles("tabs.mediaChannels"),
         ];
         tabLabel = generalFilesTabs[tabIndex] || "";
+      } else if (pathSegments.includes("supplier")) {
+        const supplierTabs = [
+          tSuppliers("tabs.supplierGroups"),
+          tSuppliers("tabs.suppliers"),
+        ];
+        tabLabel = supplierTabs[tabIndex] || "";
+      } else if (pathSegments.includes("userManagement")) {
+        const userManagementTabs = [
+          tSettings("tabs.userManagement"),
+          tSettings("tabs.permission"),
+          tSettings("tabs.roleManagement"),
+        ];
+        tabLabel = userManagementTabs[tabIndex] || "";
       }
 
       if (tabLabel) {
@@ -215,7 +253,7 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
   useEffect(() => {
     const newBreadcrumbs = generateBreadcrumbs();
     setBreadcrumbs(newBreadcrumbs);
-  }, [pathname, searchParams, currentLocale, t, tGeneralFiles, tAddressCodes, tSections, tItems, tPayment, tCustomers]);
+  }, [pathname, searchParams, currentLocale]);
 
   // Allow single breadcrumbs for profile page
   if (breadcrumbs.length <= 1 && !pathname.includes("profile")) {

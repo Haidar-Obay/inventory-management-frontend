@@ -55,7 +55,13 @@
     "paymentTabs": {
       "paymentTerms": "Payment Terms",
       "paymentMethods": "Payment Methods"
-    }
+    },
+    "supplier": "Supplier",
+    "supplierGroups": "Supplier Groups",
+    "suppliers": "Suppliers",
+    "userManagement": "User Management",
+    "permission": "Permission",
+    "roleManagement": "Role Management"
   },
   "headerStyler": {
     "title": "Header Styling",
@@ -679,6 +685,8 @@
     
     "settings": "Settings",
     "userManagement": "User Management",
+    "permission": "Permission",
+    "roleManagement": "Role Management",
     "systemSettings": "System Settings",
     "support": "Support",
     "helpCenter": "Help Center",
@@ -1839,5 +1847,17 @@
       "message": "An error occurred while processing your request."
     }
   }
+  },
+  "settings": {
+    "userManagement": "User Management",
+    "permission": "Permission",
+    "roleManagement": "Role Management",
+    "systemSettings": "System Settings",
+    "loading": "Loading...",
+    "tabs": {
+      "userManagement": "User Management",
+      "permission": "Permission",
+      "roleManagement": "Role Management"
+    }
   }
 }
