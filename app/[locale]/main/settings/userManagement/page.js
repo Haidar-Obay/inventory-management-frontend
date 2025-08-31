@@ -5,6 +5,7 @@ import { Tabs, Tab, Box, Typography, CircularProgress } from "@mui/material";
 import CustomTabs from "@/components/ui/CustomTabs";
 import { useTranslations, useLocale } from "next-intl";
 import { useSearchParams, useRouter } from "next/navigation";
+import RoleManagement from "@/components/ui/roleManagement/RoleManagement";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -130,14 +131,7 @@ function UserManagementPage() {
 
         {/* Role Management Tab */}
         <TabPanel value={value} index={2}>
-          <Box className="p-0">
-            <Typography variant="h6" className="mb-4">
-              {t("roleManagement")}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Create, edit, and manage user roles and their associated permissions.
-            </Typography>
-          </Box>
+          <RoleManagement />
         </TabPanel>
       </Box>
     </div>
