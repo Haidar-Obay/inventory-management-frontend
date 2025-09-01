@@ -26,50 +26,29 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Refresh as RefreshIcon,
-  FileDownload as ExportIcon,
   FilterList as FilterIcon
 } from "@mui/icons-material";
 import { useTranslations, useLocale } from "next-intl";
 import { useDrawerStack } from "../DrawerStackContext";
 import { useSimpleToast } from "../simple-toast";
+import { 
+  getRoles, 
+  createRole, 
+  updateRole, 
+  deleteRole, 
+  importRolesFromExcel,
+  bulkDeleteRoles
+} from "@/API/Roles";
 
 const RoleManagement = () => {
   const t = useTranslations("settings");
   const locale = useLocale();
   const isRTL = locale === "ar";
-  const { openDrawer } = useDrawerStack();
+  const { openDrawer, closeTopDrawer } = useDrawerStack();
   const { addToast } = useSimpleToast();
 
-  // Mock data - replace with actual API calls
-  const [roles, setRoles] = useState([
-    {
-      id: 1,
-      name: "Administrator",
-      code: "ADMIN",
-      description: "Full system access with all permissions",
-      active: true,
-      created_at: "2024-01-15",
-      updated_at: "2024-01-15"
-    },
-    {
-      id: 2,
-      name: "Manager",
-      code: "MGR",
-      description: "Department management with limited system access",
-      active: true,
-      created_at: "2024-01-15",
-      updated_at: "2024-01-15"
-    },
-    {
-      id: 3,
-      name: "User",
-      code: "USER",
-      description: "Basic user with standard permissions",
-      active: true,
-      created_at: "2024-01-15",
-      updated_at: "2024-01-15"
-    }
-  ]);
+  // State for roles data
+  const [roles, setRoles] = useState([]);
 
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -80,11 +59,46 @@ const RoleManagement = () => {
   
   // Filter states
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
+  const [selectedRoles, setSelectedRoles] = useState([]);
+  const [bulkActionAnchorEl, setBulkActionAnchorEl] = useState(null);
   const [filters, setFilters] = useState({
     status: 'all',
     dateRange: 'all',
     sortBy: 'name'
   });
+
+  // Fetch roles from API
+  const fetchRoles = async () => {
+    try {
+      setLoading(true);
+      const response = await getRoles();
+      if (response.status === "success") {
+        setRoles(response.data);
+      } else {
+        addToast({
+          title: t("error"),
+          description: t("fetchRolesError"),
+          type: "error",
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+      addToast({
+        title: t("error"),
+        description: error.message || t("fetchRolesError"),
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial fetch on component mount
+  useEffect(() => {
+    fetchRoles();
+  }, []);
 
   // Filter roles based on search term and filters
   useEffect(() => {
@@ -94,7 +108,6 @@ const RoleManagement = () => {
     if (searchTerm.trim()) {
       filtered = filtered.filter(role =>
         role.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        role.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
         role.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
@@ -132,8 +145,6 @@ const RoleManagement = () => {
       switch (filters.sortBy) {
         case 'name':
           return a.name.localeCompare(b.name);
-        case 'code':
-          return a.code.localeCompare(b.code);
         case 'createdAt':
           return new Date(b.created_at) - new Date(a.created_at);
         case 'updatedAt':
@@ -174,67 +185,21 @@ const RoleManagement = () => {
   // Handle delete role
   const handleDeleteRole = async (role) => {
     try {
-      // Simulate API call - replace with actual API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      setRoles(prev => prev.filter(r => r.id !== role.id));
-
+      setLoading(true);
+      await deleteRole(role.id);
+      // Refresh the roles list after successful deletion
+      await fetchRoles();
       addToast({
         title: t("success"),
-        message: t("roleDeletedSuccessfully"),
+        description: t("roleDeletedSuccessfully"),
         type: "success",
         duration: 3000,
       });
     } catch (error) {
+      console.error("Error deleting role:", error);
       addToast({
         title: t("error"),
-        message: t("roleDeleteError"),
-        type: "error",
-        duration: 3000,
-      });
-    }
-  };
-
-  // Handle save role
-  const handleSaveRole = (roleData) => {
-    if (roleData.id) {
-      // Edit existing role
-      setRoles(prev => prev.map(role =>
-        role.id === roleData.id ? { ...roleData } : role
-      ));
-    } else {
-      // Add new role
-      const newRole = {
-        ...roleData,
-        id: Date.now(), // Generate unique ID
-        created_at: new Date().toISOString().split('T')[0],
-        updated_at: new Date().toISOString().split('T')[0],
-      };
-      setRoles(prev => [...prev, newRole]);
-    }
-  };
-
-  // Handle save and new
-  const handleSaveAndNewRole = () => {
-    // The drawer will handle this automatically
-  };
-
-  // Handle save and close
-  const handleSaveAndCloseRole = () => {
-    // The drawer will handle this automatically
-  };
-
-  // Handle refresh
-  const handleRefresh = async () => {
-    setLoading(true);
-    try {
-      // Simulate API call - replace with actual API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      // Refresh data logic here
-    } catch (error) {
-      addToast({
-        title: t("error"),
-        message: t("refreshError"),
+        description: error.message || t("roleDeleteError"),
         type: "error",
         duration: 3000,
       });
@@ -243,16 +208,142 @@ const RoleManagement = () => {
     }
   };
 
-  // Handle export
-  const handleExportExcel = () => {
-    // Export logic here
-    addToast({
-      title: t("success"),
-      message: t("exportSuccess"),
-      type: "success",
-      duration: 3000,
-    });
+  // Handle save role
+  const handleSaveRole = async (roleData) => {
+    try {
+      setLoading(true);
+      if (roleData.id) {
+        // Edit existing role
+        await updateRole(roleData.id, roleData);
+        addToast({
+          title: t("success"),
+          description: t("roleUpdatedSuccessfully"),
+          type: "success",
+          duration: 3000,
+        });
+      } else {
+        // Add new role
+        await createRole(roleData);
+        addToast({
+          title: t("success"),
+          description: t("roleCreatedSuccessfully"),
+          type: "success",
+          duration: 3000,
+        });
+      }
+      // Refresh the roles list after successful save
+      await fetchRoles();
+    } catch (error) {
+      console.error("Error saving role:", error);
+      addToast({
+        title: t("error"),
+        description: error.message || t("roleSaveError"),
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // Handle save and new
+  const handleSaveAndNewRole = async (roleData) => {
+    try {
+      setLoading(true);
+      if (roleData.id) {
+        // Edit existing role
+        await updateRole(roleData.id, roleData);
+        addToast({
+          title: t("success"),
+          description: t("roleUpdatedSuccessfully"),
+          type: "success",
+          duration: 3000,
+        });
+      } else {
+        // Add new role
+        await createRole(roleData);
+        addToast({
+          title: t("success"),
+          description: t("roleCreatedSuccessfully"),
+          type: "success",
+          duration: 3000,
+        });
+      }
+      // Refresh the roles list after successful save
+      await fetchRoles();
+    } catch (error) {
+      console.error("Error saving role:", error);
+      addToast({
+        title: t("error"),
+        description: error.message || t("roleSaveError"),
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle save and close
+  const handleSaveAndCloseRole = async (roleData) => {
+    try {
+      setLoading(true);
+      if (roleData.id) {
+        // Edit existing role
+        await updateRole(roleData.id, roleData);
+        addToast({
+          title: t("success"),
+          description: t("roleUpdatedSuccessfully"),
+          type: "success",
+          duration: 3000,
+        });
+      } else {
+        // Add new role
+        await createRole(roleData);
+        addToast({
+          title: t("success"),
+          description: t("roleCreatedSuccessfully"),
+          type: "success",
+          duration: 3000,
+        });
+      }
+      // Refresh the roles list after successful save
+      await fetchRoles();
+    } catch (error) {
+      console.error("Error saving role:", error);
+      addToast({
+        title: t("error"),
+        description: error.message || t("roleSaveError"),
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle refresh
+  const handleRefresh = async () => {
+    try {
+      await fetchRoles();
+      setSearchTerm("");
+      setFilters({
+        status: 'all',
+        dateRange: 'all',
+        sortBy: 'name'
+      });
+      setExpandedDescriptions({});
+    } catch (error) {
+      addToast({
+        title: t("error"),
+        description: error.message || t("refreshError"),
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+
 
   // Handle menu open
   const handleMenuOpen = (event, role) => {
@@ -307,6 +398,93 @@ const RoleManagement = () => {
 
   const handleFilterMenuClose = () => {
     setFilterAnchorEl(null);
+  };
+
+
+
+  // Handle role selection for bulk operations
+  const handleRoleSelection = (roleId, isSelected) => {
+    if (isSelected) {
+      setSelectedRoles(prev => [...prev, roleId]);
+    } else {
+      setSelectedRoles(prev => prev.filter(id => id !== roleId));
+    }
+  };
+
+  // Handle select all roles
+  const handleSelectAll = () => {
+    if (selectedRoles.length === filteredRoles.length) {
+      setSelectedRoles([]);
+    } else {
+      setSelectedRoles(filteredRoles.map(role => role.id));
+    }
+  };
+
+  // Handle bulk delete
+  const handleBulkDelete = async () => {
+    if (selectedRoles.length === 0) return;
+    
+    try {
+      setLoading(true);
+      await bulkDeleteRoles(selectedRoles);
+      await fetchRoles();
+      setSelectedRoles([]);
+      addToast({
+        title: t("success"),
+        description: t("bulkDeleteSuccess"),
+        type: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error bulk deleting roles:", error);
+      addToast({
+        title: t("error"),
+        description: error.message || t("bulkDeleteError"),
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle import from Excel
+  const handleImportExcel = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+      setLoading(true);
+      const response = await importRolesFromExcel(file);
+      await fetchRoles();
+      addToast({
+        title: t("success"),
+        description: t("importSuccess"),
+        type: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error importing roles:", error);
+      addToast({
+        title: t("error"),
+        description: error.message || t("importError"),
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setLoading(false);
+      // Reset file input
+      event.target.value = '';
+    }
+  };
+
+  // Handle bulk action menu open/close
+  const handleBulkActionMenuOpen = (event) => {
+    setBulkActionAnchorEl(event.currentTarget);
+  };
+
+  const handleBulkActionMenuClose = () => {
+    setBulkActionAnchorEl(null);
   };
 
   // Handle filter changes
@@ -369,11 +547,7 @@ const RoleManagement = () => {
               {loading ? <CircularProgress size={20} /> : <RefreshIcon />}
             </IconButton>
           </Tooltip>
-          <Tooltip title={t("export")}>
-            <IconButton size="small" onClick={handleExportExcel}>
-              <ExportIcon />
-            </IconButton>
-          </Tooltip>
+          
           <Button
             variant="contained"
             color="primary"
@@ -410,13 +584,6 @@ const RoleManagement = () => {
                     <Typography variant="h6" className="font-semibold mb-1">
                       {role.name}
                     </Typography>
-                    <Chip
-                      label={role.code}
-                      size="small"
-                      variant="outlined"
-                      color="primary"
-                      className="mb-2"
-                    />
                   </Box>
                   <IconButton
                     size="small"
@@ -637,7 +804,6 @@ const RoleManagement = () => {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               {[
                 { value: 'name', label: t("name") },
-                { value: 'code', label: t("code") },
                 { value: 'createdAt', label: t("createdAt") },
                 { value: 'updatedAt', label: t("updatedAt") }
               ].map((option) => (
@@ -666,6 +832,8 @@ const RoleManagement = () => {
           </Typography>
         </MenuItem>
       </Menu>
+
+
     </Box>
   );
 };

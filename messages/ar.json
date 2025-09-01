@@ -1883,7 +1883,8 @@
       "roleManagement": "إدارة الأدوار"
     },
     "roleName": "اسم الدور",
-    "roleCode": "رمز الدور",
+    "error": "خطأ",
+    "success": "نجح",
     "description": "الوصف",
     "active": "نشط",
     "inactive": "غير نشط",
@@ -1893,21 +1894,22 @@
     "addRole": "إضافة دور",
     "editRole": "تعديل الدور",
     "enterRoleName": "أدخل اسم الدور",
-    "enterRoleCode": "أدخل رمز الدور",
+
     "enterRoleDescription": "أدخل وصف الدور",
-    "roleNameAndCodeRequired": "اسم الدور ورمزه مطلوبان",
+    "roleNameRequired": "اسم الدور مطلوب",
+    "noChangesMade": "يرجى تعديل حقل واحد على الأقل قبل الحفظ.",
     "roleCreatedSuccessfully": "تم إنشاء الدور بنجاح",
     "roleUpdatedSuccessfully": "تم تحديث الدور بنجاح",
     "roleDeletedSuccessfully": "تم حذف الدور بنجاح",
     "roleSaveError": "خطأ في حفظ الدور",
     "roleDeleteError": "خطأ في حذف الدور",
     "refreshError": "خطأ في تحديث البيانات",
-    "exportSuccess": "تم تصدير البيانات بنجاح",
+
             "roleManagementDescription": "إنشاء وتعديل وإدارة أدوار المستخدمين والصلاحيات المرتبطة بها.",
         "searchRoles": "البحث في الأدوار...",
         "filter": "تصفية",
         "refresh": "تحديث",
-        "export": "تصدير",
+
         "edit": "تعديل",
         "delete": "حذف",
         "noRolesFound": "لم يتم العثور على أدوار",
@@ -1923,7 +1925,13 @@
         "thisYear": "هذا العام",
         "sortBy": "ترتيب حسب",
         "name": "الاسم",
-        "code": "الرمز",
-        "clearFilters": "مسح جميع المرشحات"
+        "clearFilters": "مسح جميع المرشحات",
+        "fetchRolesError": "فشل في جلب الأدوار",
+        "refreshSuccess": "تم تحديث البيانات بنجاح",
+
+        "bulkDeleteSuccess": "تم حذف الأدوار المحددة بنجاح",
+        "bulkDeleteError": "فشل في حذف الأدوار المحددة",
+        "importSuccess": "تم استيراد الأدوار بنجاح",
+        "importError": "فشل في استيراد الأدوار"
   }
 }

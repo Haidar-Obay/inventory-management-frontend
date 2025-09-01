@@ -1861,7 +1861,8 @@
       "roleManagement": "Role Management"
     },
     "roleName": "Role Name",
-    "roleCode": "Role Code",
+    "error": "Error",
+    "success": "Success",
     "description": "Description",
     "active": "Active",
     "inactive": "Inactive",
@@ -1871,21 +1872,22 @@
     "addRole": "Add Role",
     "editRole": "Edit Role",
     "enterRoleName": "Enter role name",
-    "enterRoleCode": "Enter role code",
+
     "enterRoleDescription": "Enter role description",
-    "roleNameAndCodeRequired": "Role name and code are required",
+    "roleNameRequired": "Role name is required",
+    "noChangesMade": "Please modify at least one field before saving.",
     "roleCreatedSuccessfully": "Role created successfully",
     "roleUpdatedSuccessfully": "Role updated successfully",
     "roleDeletedSuccessfully": "Role deleted successfully",
     "roleSaveError": "Error saving role",
     "roleDeleteError": "Error deleting role",
     "refreshError": "Error refreshing data",
-    "exportSuccess": "Data exported successfully",
+
             "roleManagementDescription": "Create, edit, and manage user roles and their associated permissions.",
         "searchRoles": "Search roles...",
         "filter": "Filter",
         "refresh": "Refresh",
-        "export": "Export",
+
         "edit": "Edit",
         "delete": "Delete",
         "noRolesFound": "No roles found",
@@ -1901,7 +1903,13 @@
         "thisYear": "This Year",
         "sortBy": "Sort By",
         "name": "Name",
-        "code": "Code",
-        "clearFilters": "Clear All Filters"
+        "clearFilters": "Clear All Filters",
+        "fetchRolesError": "Failed to fetch roles",
+        "refreshSuccess": "Data refreshed successfully",
+
+        "bulkDeleteSuccess": "Selected roles deleted successfully",
+        "bulkDeleteError": "Failed to delete selected roles",
+        "importSuccess": "Roles imported successfully",
+        "importError": "Failed to import roles"
   }
 }

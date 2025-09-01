@@ -26,7 +26,6 @@ const RoleDrawer = ({
   
   const [formData, setFormData] = useState({ 
     name: "", 
-    code: "", 
     description: "", 
     active: true,
     permissions: []
@@ -34,6 +33,7 @@ const RoleDrawer = ({
   const [originalData, setOriginalData] = useState({});
   const [originalName, setOriginalName] = useState("");
   const [internalSaveLoading, setInternalSaveLoading] = useState(false);
+
   const isEdit = !!editData;
 
   // Check if we're in dark mode
@@ -52,11 +52,10 @@ const RoleDrawer = ({
       if (isEdit && editData) {
         setFormData(editData);
         setOriginalData(JSON.parse(JSON.stringify(editData)));
-        setOriginalName(editData?.name || editData?.code || "");
+        setOriginalName(editData?.name || "");
       } else {
         setFormData({ 
           name: "", 
-          code: "", 
           description: "", 
           active: true,
           permissions: []
@@ -69,7 +68,7 @@ const RoleDrawer = ({
 
   function isDataChanged() {
     if (!isEdit) {
-      return formData.name || formData.code || formData.description;
+      return formData.name || formData.description;
     }
     
     return JSON.stringify(formData) !== JSON.stringify(originalData);
@@ -83,10 +82,21 @@ const RoleDrawer = ({
   };
 
   const handleSave = async () => {
-    if (!formData.name || !formData.code) {
+    if (!formData.name) {
       addToast({
         title: tToast("error"),
-        message: t("roleNameAndCodeRequired"),
+        description: t("roleNameRequired"),
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Check if any changes have been made (only for edit mode)
+    if (isEdit && !isDataChanged()) {
+      addToast({
+        title: tToast("error"),
+        description: t("noChangesMade"),
         type: "error",
         duration: 3000,
       });
@@ -95,51 +105,121 @@ const RoleDrawer = ({
 
     setInternalSaveLoading(true);
     try {
-      // Simulate API call - replace with actual API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      // Pass the form data to the parent component to handle the API call
       if (onSave) {
-        onSave(formData);
+        await onSave(formData);
       }
-      
-      addToast({
-        title: tToast("success"),
-        message: isEdit ? t("roleUpdatedSuccessfully") : t("roleCreatedSuccessfully"),
-        type: "success",
-        duration: 3000,
-      });
-    } catch (error) {
-      addToast({
-        title: tToast("error"),
-        message: t("roleSaveError"),
-        type: "error",
-        duration: 3000,
-      });
     } finally {
       setInternalSaveLoading(false);
     }
   };
 
   const handleSaveAndNew = async () => {
-    await handleSave();
-    if (onSaveAndNew) {
-      onSaveAndNew();
+    if (!formData.name) {
+      addToast({
+        title: tToast("error"),
+        description: t("roleNameRequired"),
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Check if any changes have been made (only for edit mode)
+    if (isEdit && !isDataChanged()) {
+      addToast({
+        title: tToast("error"),
+        description: t("noChangesMade"),
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    setInternalSaveLoading(true);
+    try {
+      // Pass the form data to the parent component to handle the API call
+      if (onSaveAndNew) {
+        await onSaveAndNew(formData);
+      }
+      
+      // Clear the form fields for a new entry
+      setFormData({ 
+        name: "", 
+        description: "", 
+        active: true,
+        permissions: []
+      });
+      setOriginalData({});
+      setOriginalName("");
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
   const handleSaveAndClose = async () => {
-    await handleSave();
-    if (onSaveAndClose) {
-      onSaveAndClose();
+    if (!formData.name) {
+      addToast({
+        title: tToast("error"),
+        description: t("roleNameRequired"),
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Check if any changes have been made (only for edit mode)
+    if (isEdit && !isDataChanged()) {
+      addToast({
+        title: tToast("error"),
+        description: t("noChangesMade"),
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    setInternalSaveLoading(true);
+    try {
+      // Pass the form data to the parent component to handle the API call
+      if (onSaveAndClose) {
+        await onSaveAndClose(formData);
+      }
+      
+      // Close the drawer after successful save
+      if (onClose) {
+        onClose();
+      }
+    } finally {
+      setInternalSaveLoading(false);
     }
   };
 
   const getContent = () => (
-    <Box sx={{ p: 2, backgroundColor: getBackgroundColor() }}>
-      <Grid container spacing={3}>
+    <Box
+  sx={{
+    p: 5,
+    backgroundColor: getBackgroundColor(),
+    borderRadius: 1,
+    border: "1px solid",
+    borderColor: "divider",
+    boxShadow: 1,
+  }}
+>
+  <Box sx={{ display: "flex", gap: 2 }}>
+    {/* Left side - Form fields */}
+    <Box sx={{ flex: 1 }}>
+      <Grid container spacing={2}>
         {/* Role Name */}
-        <Grid item xs={12}>
-          <Typography variant="subtitle2" className="mb-2 font-medium">
+        <Grid
+          sx={{ minWidth: 230, gridColumn: { xs: "span 12", md: "span 6" } }}
+          md={6}
+        >
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}
+          >
             {t("roleName")} *
           </Typography>
           <RTLTextField
@@ -153,25 +233,16 @@ const RoleDrawer = ({
           />
         </Grid>
 
-        {/* Role Code */}
-        <Grid item xs={12}>
-          <Typography variant="subtitle2" className="mb-2 font-medium">
-            {t("roleCode")} *
-          </Typography>
-          <RTLTextField
-            fullWidth
-            value={formData.code}
-            onChange={(e) => handleInputChange("code", e.target.value)}
-            placeholder={t("enterRoleCode")}
-            variant="outlined"
-            size="small"
-            dir={isRTL ? "rtl" : "ltr"}
-          />
-        </Grid>
-
         {/* Description */}
-        <Grid item xs={12}>
-          <Typography variant="subtitle2" className="mb-2 font-medium">
+        <Grid
+          sx={{ minWidth: 230, gridColumn: { xs: "span 12", md: "span 6" } }}
+          md={6}
+        >
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ mb: 1, textAlign: isRTL ? "right" : "left" }}
+          >
             {t("description")}
           </Typography>
           <RTLTextField
@@ -186,22 +257,31 @@ const RoleDrawer = ({
             dir={isRTL ? "rtl" : "ltr"}
           />
         </Grid>
-
-        {/* Active Status */}
-        <Grid item xs={12}>
-          <Box className="flex items-center space-x-2">
-            <Checkbox
-              id="active"
-              checked={formData.active}
-              onChange={(e) => handleInputChange("active", e.target.checked)}
-            />
-            <label htmlFor="active" className="text-sm font-medium">
-              {t("active")}
-            </label>
-          </Box>
-        </Grid>
       </Grid>
     </Box>
+
+    {/* Right side - Active Status */}
+    <Box
+      sx={{
+        width: 200,
+        display: "flex",
+        alignItems: "flex-start",
+        pt: 4.5,
+        justifyContent: "flex-end",
+      }}
+    >
+      <Checkbox
+        id="active"
+        checked={formData.active}
+        onChange={(e) => handleInputChange("active", e.target.checked)}
+      />
+      <label htmlFor="active" className="text-sm font-medium" style={{ marginLeft: '8px' }}>
+        {t("active")}
+      </label>
+    </Box>
+  </Box>
+</Box>
+
   );
 
   const getTitle = () => {
