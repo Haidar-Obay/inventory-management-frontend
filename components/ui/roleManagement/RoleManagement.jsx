@@ -545,8 +545,7 @@ const RoleManagement = () => {
                          {filteredRoles.map((role) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={role.id}>
             <Card 
-              className="role-permissions-surface"
-              className="hover:shadow-lg transition-shadow duration-200"
+              className="role-permissions-surface hover:shadow-lg transition-shadow duration-200"
               sx={{ 
                 border: role.active ? '2px solid #1976d2' : '2px solid #e0e0e0',
                 opacity: role.active ? 1 : 0.7,
