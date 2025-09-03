@@ -1,19 +1,20 @@
 export const darkTheme = {
   colors: {
-    background: 'hsl(224 71% 4%)',
+    // Softer dark background for better contrast
+    background: 'hsl(222 28% 12%)',
     foreground: 'hsl(0 0% 100%)',
     primary: 'hsl(226 71% 40%)',
     primaryForeground: 'hsl(0 0% 100%)',
     secondary: 'hsl(217 91% 67%)',
     secondaryForeground: 'hsl(0 0% 100%)',
-    muted: 'hsl(223 47% 11%)',
-    mutedForeground: 'hsl(215 20% 65%)',
-    accent: 'hsl(223 47% 11%)',
+    muted: 'hsl(222 24% 16%)',
+    mutedForeground: 'hsl(215 20% 70%)',
+    accent: 'hsl(222 24% 16%)',
     accentForeground: 'hsl(0 0% 100%)',
     destructive: 'hsl(350 89% 60%)',
     destructiveForeground: 'hsl(0 0% 100%)',
-    border: 'hsl(240 3.7% 15.9%)',
-    input: 'hsl(240 3.7% 15.9%)',
+    border: 'hsl(220 14% 23%)',
+    input: 'hsl(220 14% 23%)',
     ring: 'hsl(246 84% 59%)',
   },
   spacing: {

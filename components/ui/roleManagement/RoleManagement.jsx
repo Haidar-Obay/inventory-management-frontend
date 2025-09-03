@@ -448,36 +448,6 @@ const RoleManagement = () => {
     }
   };
 
-  // Handle import from Excel
-  const handleImportExcel = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    try {
-      setLoading(true);
-      const response = await importRolesFromExcel(file);
-      await fetchRoles();
-      addToast({
-        title: t("success"),
-        description: t("importSuccess"),
-        type: "success",
-        duration: 3000,
-      });
-    } catch (error) {
-      console.error("Error importing roles:", error);
-      addToast({
-        title: t("error"),
-        description: error.message || t("importError"),
-        type: "error",
-        duration: 3000,
-      });
-    } finally {
-      setLoading(false);
-      // Reset file input
-      event.target.value = '';
-    }
-  };
-
   // Handle bulk action menu open/close
   const handleBulkActionMenuOpen = (event) => {
     setBulkActionAnchorEl(event.currentTarget);
@@ -560,11 +530,22 @@ const RoleManagement = () => {
         </Box>
       </Box>
 
+      {/* Loading State */}
+      {loading && (
+        <Box className="text-center py-12">
+          <CircularProgress />
+          <Typography variant="body2" color="text.secondary" className="mt-2">
+            {t("loading")}
+          </Typography>
+        </Box>
+      )}
+
                    {/* Roles Grid */}
       <Grid container spacing={3}>
                          {filteredRoles.map((role) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={role.id}>
             <Card 
+              className="role-permissions-surface"
               className="hover:shadow-lg transition-shadow duration-200"
               sx={{ 
                 border: role.active ? '2px solid #1976d2' : '2px solid #e0e0e0',
@@ -678,7 +659,7 @@ const RoleManagement = () => {
           <Typography variant="body2" color="text.secondary" className="mb-4">
             {searchTerm ? t("tryDifferentSearch") : t("createFirstRole")}
           </Typography>
-          {!searchTerm && (
+          {/* {!searchTerm && (
             <Button
               variant="contained"
               color="primary"
@@ -687,7 +668,7 @@ const RoleManagement = () => {
             >
               {t("addRole")}
             </Button>
-          )}
+          )} */}
         </Box>
       )}
 

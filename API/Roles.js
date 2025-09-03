@@ -82,4 +82,37 @@ export const bulkDeleteRoles = async (roleIds) => {
   }
 };
 
+// Get role permissions
+export const getRolePermissions = async (roleId) => {
+  try {
+    const response = await TenantApiService('GET', `roles/${roleId}/permissions`);
+    return response;
+  } catch (error) {
+    console.error('Error fetching role permissions:', error);
+    throw error;
+  }
+};
+
+// Update role permissions
+export const updateRolePermissions = async (roleId, permissions) => {
+  try {
+    const response = await TenantApiService('PUT', `roles/${roleId}/permissions`, permissions);
+    return response;
+  } catch (error) {
+    console.error('Error updating role permissions:', error);
+    throw error;
+  }
+};
+
+// Get all role permissions
+export const getAllRolePermissions = async () => {
+  try {
+    const response = await TenantApiService('GET', 'roles/permissions');
+    return response;
+  } catch (error) {
+    console.error('Error fetching all role permissions:', error);
+    throw error;
+  }
+};
+
 

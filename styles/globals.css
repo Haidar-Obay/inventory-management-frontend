@@ -101,13 +101,14 @@
   }
 
   .dark {
-    --background: 224 71% 4%;
+    /* Softer dark background */
+    --background: 222 28% 12%;
     --foreground: 0 0% 100%;
 
-    --card: 224 71% 4%;
+    --card: 222 24% 14%;
     --card-foreground: 0 0% 100%;
 
-    --popover: 224 71% 4%;
+    --popover: 222 24% 14%;
     --popover-foreground: 0 0% 100%;
 
     --primary: 226 71% 40%;
@@ -119,10 +120,10 @@
     --alternate-primary: 222 84% 53%;
     --alternate-primary-foreground: 0 0% 100%;
 
-    --muted: 223 47% 11%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 222 24% 16%;
+    --muted-foreground: 215 20% 70%;
 
-    --accent: 223 47% 11%;
+    --accent: 222 24% 16%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 350 89% 60%;
@@ -133,8 +134,8 @@
 
     --text: 0 0% 100%;
 
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
+    --border: 220 14% 23%;
+    --input: 220 14% 23%;
     --ring: 246 84% 59%;
   }
 }
@@ -145,6 +146,14 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Role & Permission admin surfaces */
+  .role-permissions-surface {
+    background-color: hsl(0 0% 100%);
+  }
+  .dark .role-permissions-surface {
+    background-color: hsl(222 24% 14%);
   }
 }
 
