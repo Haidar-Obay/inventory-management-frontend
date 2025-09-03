@@ -6,6 +6,7 @@ import CustomTabs from "@/components/ui/CustomTabs";
 import { useTranslations, useLocale } from "next-intl";
 import { useSearchParams, useRouter } from "next/navigation";
 import RoleManagement from "@/components/ui/roleManagement/RoleManagement";
+import PermissionsManagement from "@/components/ui/permissionsManagement/PermissionsManagement";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -119,14 +120,7 @@ function UserManagementPage() {
 
         {/* Permission Tab */}
         <TabPanel value={value} index={1}>
-          <Box className="p-0">
-            <Typography variant="h6" className="mb-4">
-              {t("permission")}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Configure and manage user permissions and access rights.
-            </Typography>
-          </Box>
+          <PermissionsManagement />
         </TabPanel>
 
         {/* Role Management Tab */}
