@@ -323,7 +323,7 @@ const PermissionsManagement = () => {
               value={selectedRole}
               onChange={(e) => loadRolePermissions(e.target.value)}
               label={t("selectRole") || "Select Role"}
-              disabled={loading}
+              disabled={loading || roleLoading}
               MenuProps={{
                 PaperProps: {
                   className: 'role-permissions-surface',
@@ -342,7 +342,7 @@ const PermissionsManagement = () => {
             <IconButton 
               size="small" 
               onClick={fetchRoles}
-              disabled={loading}
+              disabled={loading || roleLoading}
             >
               {loading ? <CircularProgress size={20} /> : <RefreshIcon />}
             </IconButton>
