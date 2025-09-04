@@ -155,6 +155,27 @@
   .dark .role-permissions-surface {
     background-color: hsl(222 24% 14%);
   }
+
+  /* Diagonal header cell (for Action/Permission combined header) */
+  .diagonal-header {
+    position: relative;
+  }
+  .diagonal-header::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom left,
+      transparent 49.4%,
+      hsl(var(--border)) 49.5%,
+      hsl(var(--border)) 50.5%,
+      transparent 50.6%
+    );
+  }
 }
 
 /* Sidebar transitions */

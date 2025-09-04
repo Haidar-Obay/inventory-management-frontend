@@ -1859,6 +1859,7 @@
     "role": "Role",
     "selectRole": "Select Role",
     "allowView": "Allow View",
+    "allowAdd": "Allow Add",
     "allowEdit": "Allow Edit",
     "allowDelete": "Allow Delete",
     "allowShare": "Allow Share",
