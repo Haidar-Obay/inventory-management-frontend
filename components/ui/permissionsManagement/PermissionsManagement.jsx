@@ -44,6 +44,7 @@ const PermissionsManagement = () => {
   const [permissions, setPermissions] = useState({});
   const [originalPermissions, setOriginalPermissions] = useState({});
   const [loading, setLoading] = useState(false);
+  const [roleLoading, setRoleLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
@@ -57,6 +58,7 @@ const PermissionsManagement = () => {
 
   const permissionTypes = [
     { key: "allowView", label: t("allowView") || "Allow View" },
+    { key: "allowAdd", label: t("allowAdd") || "Allow Add" },
     { key: "allowEdit", label: t("allowEdit") || "Allow Edit" },
     { key: "allowDelete", label: t("allowDelete") || "Allow Delete" },
   ];
@@ -113,7 +115,7 @@ const PermissionsManagement = () => {
     if (!roleId) return;
     
     try {
-      setLoading(true);
+      setRoleLoading(true);
       setSelectedRole(roleId);
       
       // Try to fetch existing permissions from API
@@ -164,7 +166,7 @@ const PermissionsManagement = () => {
         duration: 3000,
       });
     } finally {
-      setLoading(false);
+      setRoleLoading(false);
     }
   };
 
@@ -311,9 +313,30 @@ const PermissionsManagement = () => {
 
   return (
     <Box className="p-0">
-      {/* Header */}
-      <Box className="flex justify-end items-center mb-6">
-        
+      {/* Header with Role select (left) and refresh (right) */}
+      <Box className="flex justify-between items-center mb-6">
+        {/* Compact Role selector */}
+        <Box className="flex items-center space-x-3">
+          <FormControl size="small" sx={{ minWidth: 240 }}>
+            <InputLabel>{t("selectRole") || "Select Role"}</InputLabel>
+            <Select
+              value={selectedRole}
+              onChange={(e) => loadRolePermissions(e.target.value)}
+              label={t("selectRole") || "Select Role"}
+              disabled={loading}
+              MenuProps={{
+                PaperProps: {
+                  className: 'role-permissions-surface',
+                },
+              }}
+            >
+              {roles.map((role) => (
+                <MenuItem key={role.id} value={role.id}>{role.name}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
         <Box className="flex items-center space-x-2">
           <Tooltip title={t("refresh") || "Refresh"}>
             <IconButton 
@@ -326,38 +349,6 @@ const PermissionsManagement = () => {
           </Tooltip>
         </Box>
       </Box>
-
-      {/* Role Selection */}
-      <Card className="mb-6 role-permissions-surface">
-        <CardContent>
-          <Typography variant="h6" className="mb-4">
-            {t("role") || "Role"}
-          </Typography>
-          <FormControl fullWidth size="small">
-            <InputLabel>{t("selectRole") || "Select Role"}</InputLabel>
-            <Select
-              value={selectedRole}
-              onChange={(e) => loadRolePermissions(e.target.value)}
-              label={t("selectRole") || "Select Role"}
-              disabled={loading}
-            >
-              {roles.map((role) => (
-                <MenuItem key={role.id} value={role.id}>
-                  <Box className="flex items-center justify-between w-full">
-                    <Typography>{role.name}</Typography>
-                    <Chip
-                      label={role.active ? t("active") || "Active" : t("inactive") || "Inactive"}
-                      color={role.active ? "success" : "default"}
-                      size="small"
-                      variant="outlined"
-                    />
-                  </Box>
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </CardContent>
-      </Card>
 
       {/* Permissions Grid */}
       {selectedRole && selectedRoleData && (
@@ -399,15 +390,26 @@ const PermissionsManagement = () => {
 
             <Divider className="mb-4" />
 
-            {/* Permissions Table */}
+            {/* Loader while role permissions are loading */}
+            {(roleLoading || loading) ? (
+              <Box className="flex items-center justify-center py-12">
+                <CircularProgress />
+              </Box>
+            ) : (
+            /* Permissions Table */
             <Box className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
                   <tr>
-                    <th className="border border-gray-300 dark:border-gray-700 p-3 text-center min-w-[120px]">
-                      <Typography variant="subtitle2" className="font-semibold text-center">
+                    <th className="border border-gray-300 dark:border-gray-700 p-3 text-center min-w-[120px] diagonal-header">
+                      <Box className="relative h-10">
+                        <Typography variant="subtitle2" className="absolute top-0 right-0">
                         {t("action") || "Action"}
-                      </Typography>
+                        </Typography>
+                        <Typography variant="subtitle2" className="font-semibold absolute bottom-0 left-3">
+                          {t("permission") || "Permission"}
+                        </Typography>
+                      </Box>
                     </th>
                     {permissionTypes.map((type) => (
                       <th key={type.key} className="border border-gray-300 dark:border-gray-700 p-3 text-center min-w-[120px]">
@@ -463,6 +465,7 @@ const PermissionsManagement = () => {
                 </tbody>
               </table>
             </Box>
+            )}
 
             {/* Legend */}
             <Box className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
@@ -490,7 +493,7 @@ const PermissionsManagement = () => {
       )}
 
       {/* Loading State */}
-      {loading && (
+      {loading && !selectedRole && (
         <Card className="role-permissions-surface">
           <CardContent className="text-center py-12">
             <CircularProgress />
