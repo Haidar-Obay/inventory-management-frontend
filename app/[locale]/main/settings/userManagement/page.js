@@ -7,6 +7,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { useSearchParams, useRouter } from "next/navigation";
 import RoleManagement from "@/components/ui/roleManagement/RoleManagement";
 import PermissionsManagement from "@/components/ui/permissionsManagement/PermissionsManagement";
+import UserManagement from "@/components/ui/userManagement/UserManagement";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -108,14 +109,7 @@ function UserManagementPage() {
 
         {/* User Management Tab */}
         <TabPanel value={value} index={0}>
-          <Box className="p-0">
-            <Typography variant="h6" className="mb-4">
-              {t("userManagement")}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Manage system users, their accounts, and basic information.
-            </Typography>
-          </Box>
+          <UserManagement />
         </TabPanel>
 
         {/* Permission Tab */}

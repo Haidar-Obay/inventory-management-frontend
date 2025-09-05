@@ -43,18 +43,14 @@ const PermissionsManagement = () => {
   const [selectedRole, setSelectedRole] = useState("");
   const [permissions, setPermissions] = useState({});
   const [originalPermissions, setOriginalPermissions] = useState({});
+  const [permissionActions, setPermissionActions] = useState([]);
+  const [permissionMapping, setPermissionMapping] = useState({});
   const [loading, setLoading] = useState(false);
   const [roleLoading, setRoleLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
-  // Permission structure - testing placeholders
-  const permissionActions = [
-    { key: "permission1", label: "Permission 1" },
-    { key: "permission2", label: "Permission 2" },
-    { key: "permission3", label: "Permission 3" },
-    { key: "permission4", label: "Permission 4" },
-  ];
+  // Permission structure - will be populated from API
 
   const permissionTypes = [
     { key: "allowView", label: t("allowView") || "Allow View" },
@@ -63,16 +59,22 @@ const PermissionsManagement = () => {
     { key: "allowDelete", label: t("allowDelete") || "Allow Delete" },
   ];
 
-  // Initialize permissions structure
-  const initializePermissions = () => {
+  // Initialize permissions structure with dynamic actions
+  const initializePermissionsWithActions = (actions) => {
     const initialPermissions = {};
-    permissionActions.forEach((action) => {
+    actions.forEach((action) => {
       initialPermissions[action.key] = {};
       permissionTypes.forEach((type) => {
         initialPermissions[action.key][type.key] = false;
       });
     });
     return initialPermissions;
+  };
+
+  // Initialize permissions structure (legacy - for backward compatibility)
+  const initializePermissions = () => {
+    const defaultActions = getPermissionActions(null);
+    return initializePermissionsWithActions(defaultActions);
   };
 
   // Fetch roles from API
@@ -110,6 +112,58 @@ const PermissionsManagement = () => {
     }
   };
 
+  // Transform API permissions data to expected format
+  const transformPermissionsData = (apiData) => {
+    const transformedPermissions = {};
+    
+    if (apiData && apiData.permissions) {
+      apiData.permissions.forEach(permission => {
+        const actionKey = permission.resource_key;
+        transformedPermissions[actionKey] = {
+          allowView: permission.can_view || false,
+          allowAdd: permission.can_add || false,
+          allowEdit: permission.can_edit || false,
+          allowDelete: permission.can_delete || false,
+        };
+      });
+    }
+    
+    return transformedPermissions;
+  };
+
+  // Get permission actions from API data or use defaults
+  const getPermissionActions = (apiData) => {
+    if (apiData && apiData.permissions) {
+      return apiData.permissions.map(permission => ({
+        key: permission.resource_key,
+        label: permission.resource_label
+      }));
+    }
+    // Fallback to default actions if no API data
+    return [
+      { key: "users", label: "User Management" },
+      { key: "roles", label: "Role Management" },
+      { key: "permissions", label: "Permission Management" },
+    ];
+  };
+
+  // Create permission mapping for API calls
+  const createPermissionMapping = (apiData) => {
+    const mapping = {};
+    if (apiData && apiData.permissions) {
+      apiData.permissions.forEach(permission => {
+        mapping[permission.resource_key] = {
+          id: permission.id,
+          can_view: permission.can_view,
+          can_add: permission.can_add,
+          can_edit: permission.can_edit,
+          can_delete: permission.can_delete
+        };
+      });
+    }
+    return mapping;
+  };
+
   // Load permissions for selected role
   const loadRolePermissions = async (roleId) => {
     if (!roleId) return;
@@ -122,17 +176,27 @@ const PermissionsManagement = () => {
       try {
         const response = await getRolePermissions(roleId);
         if (response.status === "success" && response.data) {
+          const transformedPermissions = transformPermissionsData(response.data);
+          const actions = getPermissionActions(response.data);
+          const mapping = createPermissionMapping(response.data);
+          setPermissionActions(actions);
+          setPermissionMapping(prev => ({
+            ...prev,
+            [roleId]: mapping
+          }));
           setPermissions(prev => ({
             ...prev,
-            [roleId]: response.data
+            [roleId]: transformedPermissions
           }));
           setOriginalPermissions(prev => ({
             ...prev,
-            [roleId]: JSON.parse(JSON.stringify(response.data))
+            [roleId]: JSON.parse(JSON.stringify(transformedPermissions))
           }));
         } else {
           // If no permissions found, use default structure
-          const defaultPermissions = initializePermissions();
+          const defaultActions = getPermissionActions(null);
+          const defaultPermissions = initializePermissionsWithActions(defaultActions);
+          setPermissionActions(defaultActions);
           setPermissions(prev => ({
             ...prev,
             [roleId]: defaultPermissions
@@ -145,7 +209,9 @@ const PermissionsManagement = () => {
       } catch (error) {
         // If API call fails, use default structure
         console.warn("Could not fetch role permissions, using defaults:", error);
-        const defaultPermissions = initializePermissions();
+        const defaultActions = getPermissionActions(null);
+        const defaultPermissions = initializePermissionsWithActions(defaultActions);
+        setPermissionActions(defaultActions);
         setPermissions(prev => ({
           ...prev,
           [roleId]: defaultPermissions
@@ -179,7 +245,7 @@ const PermissionsManagement = () => {
       [selectedRole]: {
         ...prev[selectedRole],
         [action]: {
-          ...prev[selectedRole][action],
+          ...(prev[selectedRole]?.[action] || {}),
           [type]: checked,
         },
       },
@@ -247,7 +313,11 @@ const PermissionsManagement = () => {
       setSaving(true);
       
       // Call API to save permissions
-      const response = await updateRolePermissions(selectedRole, permissions[selectedRole]);
+      const response = await updateRolePermissions(
+        selectedRole, 
+        permissions[selectedRole], 
+        permissionMapping[selectedRole]
+      );
       
       if (response.status === "success") {
         // Update the original permissions to mark as saved
@@ -294,13 +364,18 @@ const PermissionsManagement = () => {
   // Check if all permissions are selected for an action
   const isAllSelectedForAction = (action) => {
     if (!selectedRole || !permissions[selectedRole]) return false;
-    return permissionTypes.every((type) => permissions[selectedRole][action][type.key]);
+    const actionPermissions = permissions[selectedRole][action];
+    if (!actionPermissions) return false;
+    return permissionTypes.every((type) => actionPermissions[type.key] === true);
   };
 
   // Check if all permissions are selected for a type
   const isAllSelectedForType = (type) => {
     if (!selectedRole || !permissions[selectedRole]) return false;
-    return permissionActions.every((action) => permissions[selectedRole][action.key][type]);
+    return permissionActions.every((action) => {
+      const actionPermissions = permissions[selectedRole][action.key];
+      return actionPermissions && actionPermissions[type] === true;
+    });
   };
 
   // Get selected role data
@@ -351,7 +426,7 @@ const PermissionsManagement = () => {
       </Box>
 
       {/* Permissions Grid */}
-      {selectedRole && selectedRoleData && (
+      {selectedRole && selectedRoleData && permissionActions.length > 0 && (
         <Card className="role-permissions-surface">
           <CardContent>
             <Box className="flex justify-between items-center mb-4">
@@ -421,7 +496,10 @@ const PermissionsManagement = () => {
                             checked={isAllSelectedForType(type.key)}
                             indeterminate={
                               !isAllSelectedForType(type.key) &&
-                              permissionActions.some((action) => permissions[selectedRole][action.key][type.key])
+                              permissionActions.some((action) => {
+                                const actionPermissions = permissions[selectedRole][action.key];
+                                return actionPermissions && actionPermissions[type.key] === true;
+                              })
                             }
                             onChange={(e) => handleSelectAllForType(type.key, e.target.checked)}
                             size="small"
@@ -440,7 +518,10 @@ const PermissionsManagement = () => {
                             checked={isAllSelectedForAction(action.key)}
                             indeterminate={
                               !isAllSelectedForAction(action.key) &&
-                              permissionTypes.some((type) => permissions[selectedRole][action.key][type.key])
+                              permissionTypes.some((type) => {
+                                const actionPermissions = permissions[selectedRole][action.key];
+                                return actionPermissions && actionPermissions[type.key] === true;
+                              })
                             }
                             onChange={(e) => handleSelectAllForAction(action.key, e.target.checked)}
                             size="small"
@@ -453,7 +534,7 @@ const PermissionsManagement = () => {
                       {permissionTypes.map((type) => (
                         <td key={type.key} className="border border-gray-300 dark:border-gray-700 p-3 text-center">
                           <Checkbox
-                            checked={permissions[selectedRole][action.key][type.key]}
+                            checked={permissions[selectedRole]?.[action.key]?.[type.key] || false}
                             onChange={(e) => handlePermissionChange(action.key, type.key, e.target.checked)}
                             size="small"
                             color="primary"
